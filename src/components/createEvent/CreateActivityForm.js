@@ -120,32 +120,37 @@ class CreateActivityForm extends Component {
     // }
 
     // REWRITE FUNCTION TO VALIDATE
-    // var eventObj = {
-    //   startDay: newActivity.startDay,
-    //   endDay: newActivity.endDay,
-    //   startTime: newActivity.startTime,
-    //   endTime: newActivity.endTime
-    // }
-    // validateIntervals(this.props.events, eventObj)
+    var eventObj = {
+      startDay: newActivity.startDay,
+      endDay: newActivity.endDay,
+      startTime: newActivity.startTime,
+      endTime: newActivity.endTime
+    }
+    var isError = validateIntervals(this.props.events, eventObj)
+    console.log('isError', isError)
 
-    var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
+    if (isError) {
+      window.alert('timing clashes detected')
+    }
 
-    this.props.changingLoadSequence({
-      variables: {
-        input: helperOutput.loadSequenceInput
-      }
-    })
-
-    this.props.createActivity({
-      variables: helperOutput.newEvent,
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: { id: this.props.ItineraryId }
-      }]
-    })
-
-    this.resetState()
-    this.props.toggleCreateEventType()
+    // var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
+    //
+    // this.props.changingLoadSequence({
+    //   variables: {
+    //     input: helperOutput.loadSequenceInput
+    //   }
+    // })
+    //
+    // this.props.createActivity({
+    //   variables: helperOutput.newEvent,
+    //   refetchQueries: [{
+    //     query: queryItinerary,
+    //     variables: { id: this.props.ItineraryId }
+    //   }]
+    // })
+    //
+    // this.resetState()
+    // this.props.toggleCreateEventType()
   }
 
   closeForm () {

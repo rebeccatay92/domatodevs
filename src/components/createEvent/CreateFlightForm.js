@@ -27,6 +27,8 @@ import newEventLoadSeqAssignment from
  '../../helpers/newEventLoadSeqAssignment'
 // import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 
+import { validateIntervals } from '../../helpers/intervalValidationTesting'
+
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
 class CreateFlightForm extends Component {
@@ -127,6 +129,22 @@ class CreateFlightForm extends Component {
     //   window.alert(`some flight instances hv timing clash`)
     //   console.log('ERROR ROWS', output.errorRows)
     // }
+
+    // REWRITTEN FUNCTION TO VALIDATE
+    var eventObjArr = newFlight.flightInstances.map(e => {
+      return {
+        startDay: e.startDay,
+        endDay: e.endDay,
+        startTime: e.startTime,
+        endTime: e.endTime
+      }
+    })
+    var isError = validateIntervals(this.props.events, eventObjArr)
+    console.log('isError', isError)
+
+    if (isError) {
+      window.alert('timing clashes detected')
+    }
 
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Flight', newFlight.flightInstances)
     console.log('helper output', helperOutput)

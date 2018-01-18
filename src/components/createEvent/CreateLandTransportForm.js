@@ -27,6 +27,8 @@ import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
 import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 
+import { validateIntervals } from '../../helpers/intervalValidationTesting'
+
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}landTransportDefaultBackground.jpg`
 
 class CreateLandTransportForm extends Component {
@@ -124,6 +126,20 @@ class CreateLandTransportForm extends Component {
     //   window.alert(`time ${newLandTransport.startTime} // ${newLandTransport.endTime} clashes with pre existing events.`)
     //   console.log('ERROR ROWS', output.errorRows)
     // }
+
+    // REWRITTEN FUNCTION TO VALIDATE
+    var eventObj = {
+      startDay: newLandTransport.startDay,
+      endDay: newLandTransport.endDay,
+      startTime: newLandTransport.startTime,
+      endTime: newLandTransport.endTime
+    }
+    var isError = validateIntervals(this.props.events, eventObj)
+    console.log('isError', isError)
+
+    if (isError) {
+      window.alert('timing clashes detected')
+    }
 
     // console.log('newLandTransport', newLandTransport)
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'LandTransport', newLandTransport)

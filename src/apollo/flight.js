@@ -62,3 +62,61 @@ export const deleteFlightBooking = gql`
     deleteFlightBooking(id: $id)
   }
 `
+
+export const findFlightInstance = gql`
+  findFlightInstance($id: ID!) {
+    findFlightInstance(id: $id)
+  }
+`
+
+export const updateFlightInstance = gql`
+  mutation updateFlightInstance(
+    $id: ID!
+    $FlightBookingId: ID,
+    $flightNumber: Int,
+    $airlineName: String,
+    $airlineCode: String,
+    $departureIATA: String,
+    $arrivalIATA: String,
+    $departureTerminal: String,
+    $arrivalTerminal: String,
+    $departureGate: String,
+    $arrivalGate: String,
+    $startDay: Int,
+    $endDay: Int,
+    $startTime: Int,
+    $endTime: Int,
+    $startLoadSequence: Int,
+    $endLoadSequence: Int,
+    $notes: String,
+    $firstFlight: Boolean
+  ) {
+    updateFlightInstance(
+      id: $id,
+      FlightBookingId: $FlightBookingId,
+      flightNumber: $flightNumber,
+      airlineName: $airlineName,
+      airlineCode: $airlineCode,
+      departureIATA: $departureIATA,
+      arrivalIATA: $arrivalIATA,
+      departureTerminal: $departureTerminal,
+      arrivalTerminal: $arrivalTerminal,
+      departureGate: $departureGate,
+      arrivalGate: $arrivalGate,
+      startDay: $startDay,
+      endDay: $endDay,
+      startTime: $startTime,
+      endTime: $endTime,
+      startLoadSequence: $startLoadSequence,
+      endLoadSequence: $endLoadSequence,
+      notes: $notes,
+      firstFlight: $firstFlight
+    )
+  }
+`
+
+export const deleteFlightInstance = gql`
+  mutation deleteFlightInstance(id: ID!) {
+    deleteFlightInstance(id: ID!)
+  }
+`

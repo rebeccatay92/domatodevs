@@ -26,6 +26,8 @@ import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
 import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 
+import { validateIntervals } from '../../helpers/intervalValidationTesting'
+
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}lodgingDefaultBackground.jpg`
 
 class CreateLodgingForm extends Component {
@@ -109,6 +111,20 @@ class CreateLodgingForm extends Component {
     //   window.alert(`time ${newLodging.startTime} // ${newLodging.endTime} clashes with pre existing events.`)
     //   console.log('ERROR ROWS', output.errorRows)
     // }
+
+    // REWRITTEN FUNCTION TO VALIDATE
+    var eventObj = {
+      startDay: newLodging.startDay,
+      endDay: newLodging.endDay,
+      startTime: newLodging.startTime,
+      endTime: newLodging.endTime
+    }
+    var isError = validateIntervals(this.props.events, eventObj)
+    console.log('isError', isError)
+
+    if (isError) {
+      window.alert('timing clashes detected')
+    }
 
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Lodging', newLodging)
     console.log('helper output', helperOutput)

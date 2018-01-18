@@ -28,6 +28,8 @@ import { validateOpeningHours } from '../../helpers/openingHoursValidation'
 import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
 
+import { validateIntervals } from '../../helpers/intervalValidationTesting'
+
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}foodDefaultBackground.jpg`
 
 class CreateFoodForm extends Component {
@@ -113,6 +115,20 @@ class CreateFoodForm extends Component {
     //   window.alert(`time ${newFood.startTime} --- ${newFood.endTime} clashes with pre existing events.`)
     //   console.log('ERROR ROWS', output.errorRows)
     // }
+
+    // REWRITTEN FUNCTION TO VALIDATE
+    var eventObj = {
+      startDay: newFood.startDay,
+      endDay: newFood.endDay,
+      startTime: newFood.startTime,
+      endTime: newFood.endTime
+    }
+    var isError = validateIntervals(this.props.events, eventObj)
+    console.log('isError', isError)
+
+    if (isError) {
+      window.alert('timing clashes detected')
+    }
 
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Food', newFood)
     console.log('helper output', helperOutput)
