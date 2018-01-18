@@ -107,16 +107,16 @@ class ActivityInfo extends Component {
       return (
         <p style={this.props.timeStyle} onClick={() => this.handleClick()}>
           <span className='activityInfo' style={{paddingTop: '3px', display: 'inline-block'}}>
-            <span title={this.state.startTime} style={{display: 'inline-block', height: '18px', maxWidth: '223px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.startTime}</span>
+            <span title={this.state.startTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.startTime}</span>
             <span style={this.props.typeStyle}> - </span>
-            <span title={this.state.endTime} style={{display: 'inline-block', height: '18px', maxWidth: '223px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.endTime}</span>
+            <span title={this.state.endTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.endTime}</span>
           </span>
           {this.props.errorIcon}{this.props.errorBox}
         </p>
       )
     }
     return (
-      <span className={'activityInfo ' + this.props.type} onClick={() => this.handleClick()} title={this.state.value} style={{display: 'inline-block', height: '18px', padding: '1px', maxWidth: '223px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.value}</span>
+      <span className={'activityInfo ' + this.props.type} onClick={() => this.handleClick()} title={this.state.value} style={{display: 'inline-block', height: '18px', padding: '1px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.value}</span>
     )
   }
 
