@@ -40,17 +40,35 @@ export const createFlightBooking = gql`
 export const updateFlightBooking = gql`
   mutation updateFlightBooking(
     $id: ID!,
+    $paxAdults: Int,
+    $paxChildren: Int,
+    $paxInfants: Int,
+    $cost: Int,
+    $currency: String,
+    $classCode: String,
     $bookingStatus: Boolean,
     $bookedThrough: String,
     $bookingConfirmation: String,
-    $backgroundImage: String
+    $backgroundImage: String,
+    $addAttachments: [attachmentInput],
+    $removeAttachments: [ID],
+    $flightInstances: [updateFlightInstanceInput]
   ) {
     updateFlightBooking(
       id: $id,
+      paxAdults: $paxAdults,
+      paxChildren: $paxChildren,
+      paxInfants: $paxInfants,
+      cost: $cost,
+      currency: $currency,
+      classCode: $classCode,
       bookingStatus: $bookingStatus,
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
-      backgroundImage: $backgroundImage
+      backgroundImage: $backgroundImage,
+      addAttachments: $addAttachments,
+      removeAttachments: $removeAttachments,
+      flightInstances: $flightInstances
     ) {
       id
     }
@@ -64,7 +82,7 @@ export const deleteFlightBooking = gql`
 `
 
 export const findFlightInstance = gql`
-  findFlightInstance($id: ID!) {
+  query findFlightInstance($id: ID!) {
     findFlightInstance(id: $id)
   }
 `
@@ -88,8 +106,7 @@ export const updateFlightInstance = gql`
     $endTime: Int,
     $startLoadSequence: Int,
     $endLoadSequence: Int,
-    $notes: String,
-    $firstFlight: Boolean
+    $notes: String
   ) {
     updateFlightInstance(
       id: $id,
@@ -109,14 +126,15 @@ export const updateFlightInstance = gql`
       endTime: $endTime,
       startLoadSequence: $startLoadSequence,
       endLoadSequence: $endLoadSequence,
-      notes: $notes,
-      firstFlight: $firstFlight
-    )
+      notes: $notes
+    ) {
+      id
+    }
   }
 `
 
 export const deleteFlightInstance = gql`
-  mutation deleteFlightInstance(id: ID!) {
-    deleteFlightInstance(id: ID!)
+  mutation deleteFlightInstance($id: ID!) {
+    deleteFlightInstance(id: $id)
   }
 `

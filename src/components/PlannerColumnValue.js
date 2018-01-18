@@ -5,7 +5,7 @@ import onClickOutside from 'react-onclickoutside'
 import { columnValueContainerStyle, expandEventIconStyle } from '../Styles/styles'
 
 import { updateActivity } from '../apollo/activity'
-import { updateFlightBooking } from '../apollo/flight'
+import { updateFlightBooking, updateFlightInstance } from '../apollo/flight'
 import { updateLodging } from '../apollo/lodging'
 import { updateLandTransport } from '../apollo/landtransport'
 import { updateFood } from '../apollo/food'
@@ -83,7 +83,7 @@ class PlannerColumnValue extends Component {
 
     const update = {
       Activity: this.props.updateActivity,
-      Flight: this.props.updateFlightBooking,
+      Flight: flightBookingOrInstance[this.props.column] === 'FlightBooking' ? this.props.updateFlightBooking : this.props.updateFlightInstance,
       Lodging: this.props.updateLodging,
       Food: this.props.updateFood,
       LandTransport: this.props.updateLandTransport
@@ -91,8 +91,9 @@ class PlannerColumnValue extends Component {
 
     update[this.props.activity.type]({
       variables: {
-        id: this.props.activity.modelId,
-        [columnValues[this.props.column]]: this.state.newValue
+        id: flightBookingOrInstance[this.props.column] === 'FlightInstance' ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
+        [columnValues[this.props.column]]: this.state.newValue,
+        flightInstances: []
       },
       refetchQueries: [{
         query: queryItinerary,
@@ -121,7 +122,7 @@ class PlannerColumnValue extends Component {
       return (
         <td style={{position: 'relative'}}>
           {this.props.isLast && this.props.expandedEvent && (
-            <i key='eventOptions' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_less</i>
+            <i key='eventOptions' title='Hide' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_less</i>
           )}
         </td>
       )
@@ -136,7 +137,7 @@ class PlannerColumnValue extends Component {
         </span>}
         {this.state.editing && this.props.column !== 'Notes' && <input autoFocus type='text' style={{width: '70%'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
         {this.state.editing && this.props.column === 'Notes' && <textarea autoFocus style={{width: '90%', resize: 'none'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
-        {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_more</i>}
+        {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' title='Expand' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_more</i>}
       </td>
     )
   }
@@ -180,6 +181,7 @@ class PlannerColumnValue extends Component {
 export default compose(
   graphql(updateActivity, { name: 'updateActivity' }),
   graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
+  graphql(updateFlightInstance, { name: 'updateFlightInstance' }),
   graphql(updateLandTransport, { name: 'updateLandTransport' }),
   graphql(updateLodging, { name: 'updateLodging' }),
   graphql(updateFood, { name: 'updateFood' })

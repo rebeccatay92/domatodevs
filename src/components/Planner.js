@@ -120,9 +120,10 @@ class Planner extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
       const allEvents = nextProps.data.findItinerary.events
-      const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
-      console.log(activitiesWithTimelineErrors)
-      this.props.initializePlanner(activitiesWithTimelineErrors)
+      // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
+      // console.log(activitiesWithTimelineErrors)
+      // this.props.initializePlanner(activitiesWithTimelineErrors)
+      this.props.initializePlanner(allEvents)
     }
   }
 }

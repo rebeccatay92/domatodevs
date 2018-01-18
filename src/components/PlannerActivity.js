@@ -112,7 +112,7 @@ class PlannerActivity extends Component {
   }
 
   render () {
-    const { connectDropTarget, connectDragSource, getItem } = this.props
+    const { connectDropTarget, connectDragSource, connectDragPreview, getItem } = this.props
     let minHeight
     if (!this.props.activity.modelId && !this.props.empty) {
       minHeight = '12vh'
@@ -140,6 +140,7 @@ class PlannerActivity extends Component {
             <EditEventFormHOC eventType={this.state.editEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} event={this.props.activity[`${this.state.editEventType}`]} toggleEditEventType={() => this.handleEditEventClick()} />
           }
           <div style={eventBoxFirstColumnStyle(this.props.activity.modelId, minHeight)} key={this.props.activity.modelId}>
+            {this.state.hover && !this.state.expanded && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-24px', cursor: 'move', ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
             {this.renderInfo(this.props.activity.type, this.state.expanded)}
           </div>
         </td>
@@ -228,7 +229,7 @@ class PlannerActivity extends Component {
     // if (this.state.draggable && !this.state.expanded) {
     //   return connectDragSource(connectDropTarget(activityBox))
     // } else {
-      return activityBox
+    return connectDragPreview(connectDropTarget(activityBox))
     // }
   }
 
@@ -334,7 +335,7 @@ class PlannerActivity extends Component {
                 {expandButton}
                 {expandMenu}
               </div>
-              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} />
+              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} />
             </div>
           )
         case 'Flight':
@@ -377,7 +378,7 @@ class PlannerActivity extends Component {
                 {expandButton}
                 {expandMenu}
               </div>
-              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} />
+              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} />
             </div>
           )
         case 'LandTransport':
@@ -390,7 +391,7 @@ class PlannerActivity extends Component {
               {expandButton}
               {expandMenu}
             </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} />{errorIcon}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} />{errorIcon}</p>
               </div>
             )
           } else if (!this.props.activity.start) {
@@ -402,7 +403,7 @@ class PlannerActivity extends Component {
               {expandButton}
               {expandMenu}
             </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} />{errorIcon}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} />{errorIcon}</p>
               </div>
             )
           }
@@ -426,7 +427,7 @@ class PlannerActivity extends Component {
                   {expandButton}
                   {expandMenu}
                 </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} />{errorIcon}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} />{errorIcon}</p>
               </div>
             </div>
           )

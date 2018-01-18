@@ -102,7 +102,7 @@ export const eventBoxStyle = (draggable, activityId, clash, allDay) => {
   }
 }
 export const eventBoxFirstColumnStyle = (activityId, minHeight) => {
-  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh' }
+  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh', position: 'relative' }
 }
 export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}

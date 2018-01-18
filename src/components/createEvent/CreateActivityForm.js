@@ -133,24 +133,24 @@ class CreateActivityForm extends Component {
       window.alert('timing clashes detected')
     }
 
-    // var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
-    //
-    // this.props.changingLoadSequence({
-    //   variables: {
-    //     input: helperOutput.loadSequenceInput
-    //   }
-    // })
-    //
-    // this.props.createActivity({
-    //   variables: helperOutput.newEvent,
-    //   refetchQueries: [{
-    //     query: queryItinerary,
-    //     variables: { id: this.props.ItineraryId }
-    //   }]
-    // })
-    //
-    // this.resetState()
-    // this.props.toggleCreateEventType()
+    var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
+
+    this.props.changingLoadSequence({
+      variables: {
+        input: helperOutput.loadSequenceInput
+      }
+    })
+
+    this.props.createActivity({
+      variables: helperOutput.newEvent,
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: { id: this.props.ItineraryId }
+      }]
+    })
+
+    this.resetState()
+    this.props.toggleCreateEventType()
   }
 
   closeForm () {

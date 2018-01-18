@@ -1,7 +1,9 @@
+import checkForTimelineErrorsInPlanner from '../helpers/checkForTimelineErrorsInPlanner'
+
 export const plannerReducer = (state = [], action) => {
   switch (action.type) {
     case 'INITIALIZE_PLANNER':
-      return action.activities
+      return checkForTimelineErrorsInPlanner(action.activities)
     case 'DROP_ACTIVITY':
       if (action.index === 'none') {
         return [

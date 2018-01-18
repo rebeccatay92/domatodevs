@@ -5,6 +5,7 @@ import { graphql, compose } from 'react-apollo'
 
 import checkStartAndEndTime from '../helpers/checkStartAndEndTime'
 import { constructGooglePlaceDataObj } from '../helpers/location'
+import updateEventLoadSeqAssignment from '../helpers/updateEventLoadSeqAssignment'
 import LocationSearch from './location/LocationSearch'
 
 import { updateActivity } from '../apollo/activity'
@@ -12,6 +13,7 @@ import { updateFlightBooking } from '../apollo/flight'
 import { updateLodging } from '../apollo/lodging'
 import { updateLandTransport } from '../apollo/landtransport'
 import { updateFood } from '../apollo/food'
+import { changingLoadSequence } from '../apollo/changingLoadSequence'
 
 import { queryItinerary } from '../apollo/itinerary'
 
@@ -159,7 +161,7 @@ class ActivityInfo extends Component {
 
     this.setState({
       value: this.props.googlePlaceData ? this.state.googlePlaceData.name : this.state.newValue,
-      endTime: this.state.newEndtime,
+      endTime: this.state.newEndTime,
       startTime: this.state.newStartTime
     }, () => {
       let unix, startUnix, endUnix
@@ -203,12 +205,28 @@ class ActivityInfo extends Component {
         else if (!this.state.newStartTime) timeObj = checkStartAndEndTime(this.props.events, {endTime: endUnix}, 'startTimeMissing')
         else if (!this.state.newEndTime) timeObj = checkStartAndEndTime(this.props.events, {startTime: startUnix}, 'endTimeMissing')
 
+        const helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {
+          startDay: this.props.event.startDay,
+          endDay: this.props.event.endDay,
+          startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
+          endTime: this.state.newEndTime ? endUnix : timeObj.endTime
+        })
+
+        console.log(helperOutput)
+
+        this.props.changingLoadSequence({
+          variables: {
+            input: helperOutput.loadSequenceInput
+          }
+        })
+
         update[this.props.type]({
           variables: {
             id: this.props.activityId,
             startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
             endTime: this.state.newEndTime ? endUnix : timeObj.endTime,
-            allDayEvent: timeObj.allDayEvent
+            allDayEvent: timeObj.allDayEvent,
+            loadSequence: helperOutput.updateEvent.loadSequence
           },
           refetchQueries: [{
             query: queryItinerary,
@@ -231,5 +249,6 @@ export default connect(mapStateToProps)(compose(
   graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
   graphql(updateLandTransport, { name: 'updateLandTransport' }),
   graphql(updateLodging, { name: 'updateLodging' }),
-  graphql(updateFood, { name: 'updateFood' })
+  graphql(updateFood, { name: 'updateFood' }),
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(onClickOutside(ActivityInfo)))
