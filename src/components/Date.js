@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Radium from 'radium'
 import PlannerActivity from './PlannerActivity'
+import PlannerTimelineHeader from './PlannerTimelineHeader'
 import { graphql, compose } from 'react-apollo'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
@@ -42,50 +43,12 @@ class DateBox extends Component {
     const timeline = (
       <div style={timelineStyle} />
     )
-    // if (this.props.activities.length > 0) console.log(this.props.activities)
-    const headerSticky = this.props.timelineAtTop
-    const sticky = this.props.timelineAtTop && this.props.timeline.days
     return (
       <div>
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              <th id='timeline-top' style={timelineColumnStyle()}>
-                {this.props.firstDay && (
-                <div style={timelineTitleStyle(headerSticky)}>
-                  <span style={{fontSize: '24px', color: primaryColor, display: 'inline-block'}}>
-                    <i key='leftArrowTimeline' onClick={() => this.handleClick()} className='material-icons' style={{width: '15px', overflow: 'hidden', cursor: 'pointer', opacity: '0.6', ':hover': {opacity: '1'}}}>keyboard_arrow_left</i>
-                    <i key='righttArrowTimeline' onClick={() => this.handleClick()} className='material-icons' style={{cursor: 'pointer', opacity: '0.6', ':hover': {opacity: '1'}}}>keyboard_arrow_right</i>
-                  </span>
-                  <span style={timelineTitleWordStyle}>{this.props.timeline.events ? 'Duration' : 'Days'}</span>
-                </div>
-                )}
-                {this.props.firstDay && this.props.timeline.days && !this.props.getItem && (
-                <div style={dayTimelineStyle(sticky)}>
-                  {this.props.dates.map((date, i) => {
-                    const isDateOnScreen = this.props.dateOffsets[`day ${i + 1}`]
-                    return (
-                      <div key={i}>
-                        <a href={'#day-' + (i + 1)}>
-                          <div style={dayTimelineContainerStyle(isDateOnScreen)}>
-                            <span style={dayTimelineWordStyle(isDateOnScreen)}>Day {i + 1}</span>
-                          </div>
-                        </a>
-                        {i < this.props.dates.length - 1 && <div style={{height: '10px', position: 'relative'}}>
-                          {timeline}
-                        </div>}
-                      </div>
-                    )
-                  })}
-                  <div onClick={() => this.addDay()} style={addDayButtonStyle}>
-                    <span style={addDayWordStyle}>+ Day</span>
-                  </div>
-                </div>
-                )}
-                {!this.props.firstDay && this.props.timeline.events && (
-                  timeline
-                )}
-              </th>
+              <PlannerTimelineHeader firstDay={this.props.firstDay} getItem={this.props.getItem} dates={this.props.dates} />
               <th style={dateTableFirstHeaderStyle}>
                 <div id={'day-' + this.props.day}>
                   <h3 style={headerDayStyle}>Day {this.props.day} </h3>
@@ -228,7 +191,8 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
   return {
     columns: state.plannerColumns,
-    timeline: state.plannerTimeline
+    timeline: state.plannerTimeline,
+    timelineDay: state.plannerTimelineDay
   }
 }
 

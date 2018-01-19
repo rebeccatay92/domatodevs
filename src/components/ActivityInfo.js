@@ -5,6 +5,7 @@ import { graphql, compose } from 'react-apollo'
 
 import checkStartAndEndTime from '../helpers/checkStartAndEndTime'
 import { constructGooglePlaceDataObj } from '../helpers/location'
+import updateEventLoadSeqAssignment from '../helpers/updateEventLoadSeqAssignment'
 import LocationSearch from './location/LocationSearch'
 
 import { updateActivity } from '../apollo/activity'
@@ -12,6 +13,7 @@ import { updateFlightBooking } from '../apollo/flight'
 import { updateLodging } from '../apollo/lodging'
 import { updateLandTransport } from '../apollo/landtransport'
 import { updateFood } from '../apollo/food'
+import { changingLoadSequence } from '../apollo/changingLoadSequence'
 
 import { queryItinerary } from '../apollo/itinerary'
 
@@ -107,16 +109,16 @@ class ActivityInfo extends Component {
       return (
         <p style={this.props.timeStyle} onClick={() => this.handleClick()}>
           <span className='activityInfo' style={{paddingTop: '3px', display: 'inline-block'}}>
-            <span title={this.state.startTime} style={{display: 'inline-block', height: '18px', maxWidth: '223px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.startTime}</span>
+            <span title={this.state.startTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.startTime}</span>
             <span style={this.props.typeStyle}> - </span>
-            <span title={this.state.endTime} style={{display: 'inline-block', height: '18px', maxWidth: '223px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.endTime}</span>
+            <span title={this.state.endTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.endTime}</span>
           </span>
           {this.props.errorIcon}{this.props.errorBox}
         </p>
       )
     }
     return (
-      <span className={'activityInfo ' + this.props.type} onClick={() => this.handleClick()} title={this.state.value} style={{display: 'inline-block', height: '18px', padding: '1px', maxWidth: '223px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.value}</span>
+      <span className={'activityInfo ' + this.props.type} onClick={() => this.handleClick()} title={this.state.value} style={{display: 'inline-block', height: '18px', padding: '1px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.value}</span>
     )
   }
 
@@ -159,7 +161,7 @@ class ActivityInfo extends Component {
 
     this.setState({
       value: this.props.googlePlaceData ? this.state.googlePlaceData.name : this.state.newValue,
-      endTime: this.state.newEndtime,
+      endTime: this.state.newEndTime,
       startTime: this.state.newStartTime
     }, () => {
       let unix, startUnix, endUnix
@@ -186,11 +188,33 @@ class ActivityInfo extends Component {
         LandTransport: this.props.updateLandTransport
       }
       if (this.props.name !== 'time') {
-        console.log(this.props.googlePlaceData);
+        let helperOutput
+        if (this.props.name === 'startTime' || this.props.name === 'endTime') {
+          helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {
+            startDay: this.props.event.startDay,
+            endDay: this.props.event.endDay,
+            startTime: this.props.name === 'startTime' ? unix : this.props.event.startTime,
+            endTime: this.props.name === 'endTime' ? unix : this.props.event.endTime
+          })
+
+          this.props.changingLoadSequence({
+            variables: {
+              input: helperOutput.loadSequenceInput
+            }
+          })
+        }
         update[this.props.type]({
           variables: {
-            id: this.props.activityId,
-            [this.props.name]: isTime ? unix : (this.props.googlePlaceData ? this.state.googlePlaceData : this.state.newValue)
+            ...{
+              id: this.props.activityId,
+              [this.props.name]: isTime ? unix : (this.props.googlePlaceData ? this.state.googlePlaceData : this.state.newValue)
+            },
+            ...this.props.name === 'startTime' && {
+              startLoadSequence: helperOutput.updateEvent.startLoadSequence
+            },
+            ...this.props.name === 'endTime' && {
+              endLoadSequence: helperOutput.updateEvent.endLoadSequence
+            }
           },
           refetchQueries: [{
             query: queryItinerary,
@@ -203,12 +227,28 @@ class ActivityInfo extends Component {
         else if (!this.state.newStartTime) timeObj = checkStartAndEndTime(this.props.events, {endTime: endUnix}, 'startTimeMissing')
         else if (!this.state.newEndTime) timeObj = checkStartAndEndTime(this.props.events, {startTime: startUnix}, 'endTimeMissing')
 
+        const helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {
+          startDay: this.props.event.startDay,
+          endDay: this.props.event.endDay,
+          startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
+          endTime: this.state.newEndTime ? endUnix : timeObj.endTime
+        })
+
+        console.log(helperOutput)
+
+        this.props.changingLoadSequence({
+          variables: {
+            input: helperOutput.loadSequenceInput
+          }
+        })
+
         update[this.props.type]({
           variables: {
             id: this.props.activityId,
             startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
             endTime: this.state.newEndTime ? endUnix : timeObj.endTime,
-            allDayEvent: timeObj.allDayEvent
+            allDayEvent: timeObj.allDayEvent,
+            loadSequence: helperOutput.updateEvent.loadSequence
           },
           refetchQueries: [{
             query: queryItinerary,
@@ -231,5 +271,6 @@ export default connect(mapStateToProps)(compose(
   graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
   graphql(updateLandTransport, { name: 'updateLandTransport' }),
   graphql(updateLodging, { name: 'updateLodging' }),
-  graphql(updateFood, { name: 'updateFood' })
+  graphql(updateFood, { name: 'updateFood' }),
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(onClickOutside(ActivityInfo)))

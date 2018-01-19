@@ -152,9 +152,6 @@ class IntuitiveFlightInput extends Component {
           endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
           startTime: startTime,
           endTime: endTime,
-          // startLoadSequence: 1,
-          // endLoadSequence: 2,
-          notes: 'testing load seq assignments',
           firstFlight: i === 0
         }
       })

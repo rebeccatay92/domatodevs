@@ -10,6 +10,7 @@ import { bucketReducer } from './reducers/bucketReducer'
 import { userReducer } from './reducers/userReducer'
 import { plannerColumnReducer } from './reducers/plannerColumnReducer'
 import { plannerTimelineReducer } from './reducers/plannerTimelineReducer'
+import { plannerTimelineDayReducer } from './reducers/plannerTimelineDayReducer'
 import { cloudStorageReducer } from './reducers/cloudStorageReducer'
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
@@ -38,6 +39,7 @@ const store = createStore(combineReducers({
   bucketList: bucketReducer,
   plannerColumns: plannerColumnReducer,
   plannerTimeline: plannerTimelineReducer,
+  plannerTimelineDay: plannerTimelineDayReducer,
   token: userReducer,
   cloudStorageToken: cloudStorageReducer,
   apollo: client.reducer()

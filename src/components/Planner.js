@@ -1,18 +1,14 @@
 import React, { Component } from 'react'
-import Radium from 'radium'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../actions/plannerActions'
+import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { queryItinerary } from '../apollo/itinerary'
 import { Image } from 'react-bootstrap'
 import { Scrollbars } from 'react-custom-scrollbars'
-import { primaryColor, plannerContainerStyle, plannerHeaderContainerStyle, plannerHeaderRightBarIconStyle, itineraryNameStyle, itineraryDescStyle, plannerHeaderIconsContainerStyle, userIconsContainerStyle, userIconStyle, plannerIconStyle, plannerHeaderRightBarIconContainerStyle } from '../Styles/styles'
+import { primaryColor, plannerContainerStyle, plannerHeaderContainerStyle, itineraryNameStyle, itineraryDescStyle, plannerHeaderIconsContainerStyle, userIconsContainerStyle, userIconStyle, plannerIconStyle } from '../Styles/styles'
 import DateBox from './Date'
 import PlannerHeaderRightBarIcons from './PlannerHeaderRightBarIcons'
-
-import checkForTimelineErrorsInPlanner from '../helpers/checkForTimelineErrorsInPlanner'
-
-const _ = require('lodash')
 
 class Planner extends Component {
   constructor (props) {
@@ -25,6 +21,8 @@ class Planner extends Component {
 
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
+    console.log(this.props.activities)
+    console.log('rerender');
     // console.log('apollo', this.props.data.findItinerary)
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
@@ -64,7 +62,7 @@ class Planner extends Component {
                   <Image src='https://scontent-sin6-2.xx.fbcdn.net/v/t1.0-9/14225571_677406772406900_4575646425482055747_n.jpg?oh=935665cd290c11b5c698a4b91772fe91&oe=5AACAA18' circle style={userIconStyle} />
                   <Image src='https://scontent-sin6-2.xx.fbcdn.net/v/t1.0-9/13335715_630881200392791_5149958966299133966_n.jpg?oh=c360bd9cf2063d1daf86cd294e3e231f&oe=5A9CF157' circle style={userIconStyle} />
                   <Image src='https://media.licdn.com/media/AAEAAQAAAAAAAAqQAAAAJDhmZmZhOTg2LWE1YmYtNDQ2OC1iMzhiLWU0Y2RiZTBmNGRkMw.jpg' circle style={userIconStyle} />
-                  <i className='material-icons' style={{...plannerIconStyle, ...{verticalAlign: 'middle', margin: '0 0 10px 10px'}}}>person_add</i>
+                  <i className='material-icons person-add' style={{...plannerIconStyle, ...{verticalAlign: 'middle', margin: '0 0 10px 10px'}}}>person_add</i>
                 </div>
                 <PlannerHeaderRightBarIcons />
               </div>
@@ -110,8 +108,8 @@ class Planner extends Component {
       }
     }
     // console.log(_.isEqual(obj, this.state.dateOffsets))
-    if ((divOffset.top < 0) === this.state.timelineAtTop && _.isEqual(obj, this.state.dateOffsets)) return
-    this.setState({
+    // if ((divOffset.top < 0) === this.props.timelineDay.timelineAtTop && _.isEqual(obj, this.props.timelineDay.dateOffsets)) return
+    this.props.toggleTimelineDay({
       timelineAtTop: divOffset.top < 0,
       dateOffsets: obj
     })
@@ -120,9 +118,10 @@ class Planner extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
       const allEvents = nextProps.data.findItinerary.events
-      const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
-      console.log(activitiesWithTimelineErrors)
-      this.props.initializePlanner(activitiesWithTimelineErrors)
+      // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
+      // console.log(activitiesWithTimelineErrors)
+      // this.props.initializePlanner(activitiesWithTimelineErrors)
+      this.props.initializePlanner(allEvents)
     }
   }
 }
@@ -145,8 +144,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initializePlanner: (activities) => {
       dispatch(initializePlanner(activities))
+    },
+    toggleTimelineDay: (options) => {
+      dispatch(toggleTimelineDay(options))
     }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(graphql(queryItinerary, options)(Radium(Planner)))
+export default connect(mapStateToProps, mapDispatchToProps)(graphql(queryItinerary, options)(Planner))

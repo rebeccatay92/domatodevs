@@ -5,7 +5,7 @@ import onClickOutside from 'react-onclickoutside'
 import { columnValueContainerStyle, expandEventIconStyle } from '../Styles/styles'
 
 import { updateActivity } from '../apollo/activity'
-import { updateFlightBooking } from '../apollo/flight'
+import { updateFlightBooking, updateFlightInstance } from '../apollo/flight'
 import { updateLodging } from '../apollo/lodging'
 import { updateLandTransport } from '../apollo/landtransport'
 import { updateFood } from '../apollo/food'
@@ -16,6 +16,7 @@ const columnValues = {
   'Price': 'cost',
   'Booking Status': 'bookingStatus',
   'Booking Platform': 'bookedThrough',
+  'Booking Number': 'bookingConfirmation',
   'Notes': 'notes'
 }
 
@@ -23,6 +24,7 @@ const flightBookingOrInstance = {
   Price: 'FlightBooking',
   'Booking Status': 'FlightBooking',
   'Booking Platform': 'FlightBooking',
+  'Booking Number': 'FlightBooking',
   Notes: 'FlightInstance'
 }
 
@@ -34,7 +36,7 @@ class PlannerColumnValue extends Component {
 
     if (!props.expandedEvent) value = props.activity[props.activity.type][columnValues[props.column]]
 
-    if (props.activity.type === 'Flight') value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column]]
+    if (!props.expandedEvent && props.activity.type === 'Flight') value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column]]
 
     this.state = {
       editing: false,
@@ -44,6 +46,7 @@ class PlannerColumnValue extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.props.expandedEvent) return
     let value
     value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column]]
     if (nextProps.activity.type === 'Flight') value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column]]
@@ -82,7 +85,7 @@ class PlannerColumnValue extends Component {
 
     const update = {
       Activity: this.props.updateActivity,
-      Flight: this.props.updateFlightBooking,
+      Flight: flightBookingOrInstance[this.props.column] === 'FlightBooking' ? this.props.updateFlightBooking : this.props.updateFlightInstance,
       Lodging: this.props.updateLodging,
       Food: this.props.updateFood,
       LandTransport: this.props.updateLandTransport
@@ -90,8 +93,14 @@ class PlannerColumnValue extends Component {
 
     update[this.props.activity.type]({
       variables: {
-        id: this.props.activity.modelId,
-        [columnValues[this.props.column]]: this.state.newValue
+        ...{
+          id: flightBookingOrInstance[this.props.column] === 'FlightInstance' ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
+          [columnValues[this.props.column]]: this.state.newValue,
+          flightInstances: []
+        },
+        ...this.props.column === 'Booking Number' && {
+          bookingStatus: this.state.newValue
+        }
       },
       refetchQueries: [{
         query: queryItinerary,
@@ -100,7 +109,15 @@ class PlannerColumnValue extends Component {
     })
   }
 
-  handleClick () {
+  handleClick (e, clickOutsideInput) {
+    if (clickOutsideInput && this.state.editing) {
+      if (e.target.localName !== 'input' && e.target.localName !== 'textarea') {
+        this.setState({
+          editing: false
+        })
+      }
+      return
+    } else if (clickOutsideInput) return
     if (this.props.column === 'Booking Status') return
     this.setState({
       editing: true
@@ -112,20 +129,22 @@ class PlannerColumnValue extends Component {
       return (
         <td style={{position: 'relative'}}>
           {this.props.isLast && this.props.expandedEvent && (
-            <i key='eventOptions' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_less</i>
+            <i key='eventOptions' title='Hide' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_less</i>
           )}
         </td>
       )
     }
-    const value = this.renderInfo()
+    const obj = this.renderInfo()
+    const value = obj.value
+    const display = obj.display
     return (
-      <td colSpan={this.props.column === 'Notes' ? 4 : 1} style={columnValueContainerStyle(this.props.column)}>
-        {!this.state.editing && value !== '' && <span className={'activityInfo ' + columnValues[this.props.column]} onClick={() => this.handleClick()} style={{padding: '1px', width: this.props.column === 'Notes' ? '95%' : '75%', display: 'inline-block', wordWrap: 'break-word'}}>
+      <td onClick={(e) => this.handleClick(e, 'clickOutsideInput')} colSpan={this.props.column === 'Notes' ? 4 : 1} style={columnValueContainerStyle(this.props.column)}>
+        {!this.state.editing && display && <span className={'activityInfo ' + columnValues[this.props.column]} onClick={() => this.handleClick()} style={{padding: '1px', width: this.props.column === 'Notes' ? '95%' : '75%', minHeight: this.props.column === 'Notes' ? '51px' : '28px', display: 'inline-block', wordWrap: 'break-word'}}>
           {value}
         </span>}
         {this.state.editing && this.props.column !== 'Notes' && <input autoFocus type='text' style={{width: '70%'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
         {this.state.editing && this.props.column === 'Notes' && <textarea autoFocus style={{width: '90%', resize: 'none'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
-        {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_more</i>}
+        {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' title='Expand' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_more</i>}
       </td>
     )
   }
@@ -135,25 +154,38 @@ class PlannerColumnValue extends Component {
     let value = this.state.value
     switch (this.props.column) {
       case 'Notes':
-        if (start) return value || ''
-        else return ''
+        if (start) return {value: value || '', display: true}
+        else {
+          return {value: '', display: false}
+        }
       case 'Price':
         if (this.props.activity.type === 'Flight' && this.props.firstInFlightBooking && start) {
-          return value || ''
+          return {value: value || '', display: true}
         } else if (this.props.activity.type === 'Flight') {
-          return ''
+          return {value: '', display: false}
         } else {
-          if (start) return value || ''
-          else return ''
+          if (start) return {value: value || '', display: true}
+          else {
+            return {value: '', display: false}
+          }
         }
       case 'Booking Status':
-        if (start) return value === false ? 'Not Booked' : 'Booked'
-        else return ''
+        if (start) return {value: value === false ? 'Not Booked' : 'Booked', display: true}
+        else {
+          return {value: '', display: false}
+        }
       case 'Booking Platform':
-        if (start) return value
-        else return ''
+        if (start) return {value: value, display: true}
+        else {
+          return {value: '', display: false}
+        }
+      case 'Booking Number':
+        if (start) return {value: value, display: true}
+        else {
+          return {value: '', display: false}
+        }
       default:
-        return value
+        return {value: value, display: true}
     }
   }
 }
@@ -161,6 +193,7 @@ class PlannerColumnValue extends Component {
 export default compose(
   graphql(updateActivity, { name: 'updateActivity' }),
   graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
+  graphql(updateFlightInstance, { name: 'updateFlightInstance' }),
   graphql(updateLandTransport, { name: 'updateLandTransport' }),
   graphql(updateLodging, { name: 'updateLodging' }),
   graphql(updateFood, { name: 'updateFood' })
