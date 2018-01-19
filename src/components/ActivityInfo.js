@@ -188,11 +188,33 @@ class ActivityInfo extends Component {
         LandTransport: this.props.updateLandTransport
       }
       if (this.props.name !== 'time') {
-        console.log(this.props.googlePlaceData);
+        let helperOutput
+        if (this.props.name === 'startTime' || this.props.name === 'endTime') {
+          helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {
+            startDay: this.props.event.startDay,
+            endDay: this.props.event.endDay,
+            startTime: this.props.name === 'startTime' ? unix : this.props.event.startTime,
+            endTime: this.props.name === 'endTime' ? unix : this.props.event.endTime
+          })
+
+          this.props.changingLoadSequence({
+            variables: {
+              input: helperOutput.loadSequenceInput
+            }
+          })
+        }
         update[this.props.type]({
           variables: {
-            id: this.props.activityId,
-            [this.props.name]: isTime ? unix : (this.props.googlePlaceData ? this.state.googlePlaceData : this.state.newValue)
+            ...{
+              id: this.props.activityId,
+              [this.props.name]: isTime ? unix : (this.props.googlePlaceData ? this.state.googlePlaceData : this.state.newValue)
+            },
+            ...this.props.name === 'startTime' && {
+              startLoadSequence: helperOutput.updateEvent.startLoadSequence
+            },
+            ...this.props.name === 'endTime' && {
+              endLoadSequence: helperOutput.updateEvent.endLoadSequence
+            }
           },
           refetchQueries: [{
             query: queryItinerary,

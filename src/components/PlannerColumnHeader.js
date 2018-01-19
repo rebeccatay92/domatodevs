@@ -5,7 +5,7 @@ import { changeColumns } from '../actions/plannerColumnActions'
 import onClickOutside from 'react-onclickoutside'
 import { tableDropdownStyle, tableOptionStyle, tableHeadingStyle } from '../Styles/styles'
 
-const options = ['Price', 'Booking Status', 'Booking Platform', 'Notes'].sort()
+const options = ['Price', 'Booking Status', 'Booking Platform', 'Notes', 'Booking Number'].sort()
 
 class PlannerColumnHeader extends Component {
   constructor (props) {

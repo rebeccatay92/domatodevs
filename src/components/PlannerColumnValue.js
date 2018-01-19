@@ -16,6 +16,7 @@ const columnValues = {
   'Price': 'cost',
   'Booking Status': 'bookingStatus',
   'Booking Platform': 'bookedThrough',
+  'Booking Number': 'bookingConfirmation',
   'Notes': 'notes'
 }
 
@@ -23,6 +24,7 @@ const flightBookingOrInstance = {
   Price: 'FlightBooking',
   'Booking Status': 'FlightBooking',
   'Booking Platform': 'FlightBooking',
+  'Booking Number': 'FlightBooking',
   Notes: 'FlightInstance'
 }
 
@@ -91,9 +93,14 @@ class PlannerColumnValue extends Component {
 
     update[this.props.activity.type]({
       variables: {
-        id: flightBookingOrInstance[this.props.column] === 'FlightInstance' ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
-        [columnValues[this.props.column]]: this.state.newValue,
-        flightInstances: []
+        ...{
+          id: flightBookingOrInstance[this.props.column] === 'FlightInstance' ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
+          [columnValues[this.props.column]]: this.state.newValue,
+          flightInstances: []
+        },
+        ...this.props.column === 'Booking Number' && {
+          bookingStatus: this.state.newValue
+        }
       },
       refetchQueries: [{
         query: queryItinerary,
@@ -172,8 +179,13 @@ class PlannerColumnValue extends Component {
         else {
           return {value: '', display: false}
         }
+      case 'Booking Number':
+        if (start) return {value: value, display: true}
+        else {
+          return {value: '', display: false}
+        }
       default:
-        return value
+        return {value: value, display: true}
     }
   }
 }
