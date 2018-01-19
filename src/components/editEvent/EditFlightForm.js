@@ -311,7 +311,7 @@ class EditFlightForm extends Component {
             <div style={greyTintStyle} />
             {/* SEARCH PARAMS FOR AIRHOB */}
             <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
-            <EditFormFlightDetailsContainer />
+            <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} />
           </div>
 
           <div style={createEventFormRightPanelStyle('flight')}>

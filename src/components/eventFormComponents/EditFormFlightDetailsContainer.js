@@ -5,6 +5,13 @@ class EditFormFlightDetailsContainer extends Component {
     super(props)
     this.state = {}
   }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.flightInstances !== nextProps.flightInstances) {
+      console.log('NEXT PROPS', nextProps)
+    }
+  }
+
   render () {
     return (
       <div style={{position: 'relative'}}>
