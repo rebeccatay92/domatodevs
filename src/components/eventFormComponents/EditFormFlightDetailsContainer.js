@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import EditFormFlightDetailsPage from './EditFormFlightDetailsPage'
 
 class EditFormFlightDetailsContainer extends Component {
   constructor (props) {
@@ -26,8 +27,8 @@ class EditFormFlightDetailsContainer extends Component {
       var flightInstances = nextProps.flightInstances
       if (isReturn) {
         if (flightInstances.length === 2) {
-          var page1 = flightInstances[0]
-          var page2 = flightInstances[1]
+          var page1 = flightInstances.slice(0, 1)
+          var page2 = flightInstances.slice(1)
         } else if (flightInstances.length === 4) {
           page1 = flightInstances.slice(0, 2)
           page2 = flightInstances.slice(2)
@@ -50,9 +51,6 @@ class EditFormFlightDetailsContainer extends Component {
   render () {
     return (
       <div style={{position: 'relative'}}>
-        {/* FLIGHT INSTANCE PAGE COMPONENT */}
-        <EditFormFlightDetailsPage instances={this.state[`page${this.state.currentPage}`]} />
-
         {/* DEPART/RETURN HEADER */}
         {this.state.currentPage === 1 &&
         <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Departing Flights</p>
@@ -63,6 +61,9 @@ class EditFormFlightDetailsContainer extends Component {
         {!this.state.isReturn && this.state.currentPage === 2 &&
         <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Departing Flights (pg 2)</p>
         }
+
+        {/* FLIGHT INSTANCE PAGE COMPONENT */}
+        <EditFormFlightDetailsPage dates={this.props.dates} instances={this.state[`page${this.state.currentPage}`]} />
 
         {/* NEXT PAGE / PREVIOUS PAGE ARROWS */}
         {this.state.totalPages === 2 && this.state.currentPage === 1 &&

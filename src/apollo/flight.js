@@ -34,6 +34,8 @@ export const findFlightBooking = gql`
         airlineName
         departureIATA
         arrivalIATA
+        departureCityCountry
+        arrivalCityCountry
         departureLocation {
           id
           placeId
@@ -92,6 +94,7 @@ export const findFlightBooking = gql`
         endDay
         startTime
         endTime
+        durationMins
         startLoadSequence
         endLoadSequence
         notes

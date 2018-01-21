@@ -44,6 +44,7 @@ class EditFormAirhobParams extends Component {
       var departureRow = airports.find(e => {
         return e.iata === nextProps.departureIATA
       })
+      console.log('DEPARTURE ROW IS AIRPORT', departureRow)
       if (departureRow) {
         var departureLocation = {
           name: departureRow.name,
@@ -54,6 +55,7 @@ class EditFormAirhobParams extends Component {
         departureRow = airports.find(e => {
           return e.cityCode === nextProps.departureIATA
         })
+        console.log('ELSE', departureRow)
         departureLocation = {
           name: departureRow.city,
           iata: departureRow.iata,
