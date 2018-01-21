@@ -66,6 +66,7 @@ export const timelineStyle = {
   margin: '0 auto',
   backgroundColor: primaryColor
 }
+
 export const dateTableStyle = {width: '1052px'}
 export const timelineColumnStyle = (clash, allDay) => {
   return {width: '89px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}

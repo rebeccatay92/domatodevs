@@ -284,7 +284,7 @@ class EditFlightForm extends Component {
         paxAdults: booking.paxAdults,
         paxChildren: booking.paxChildren,
         paxInfants: booking.paxInfants,
-        cost: booking.cost,
+        cost: booking.cost || 0,
         currency: booking.currency,
         departureDate: booking.departureDate,
         returnDate: booking.returnDate,
@@ -292,12 +292,16 @@ class EditFlightForm extends Component {
         arrivalIATA: booking.arrivalIATA,
         classCode: booking.classCode,
         bookingStatus: booking.bookingStatus,
-        bookedThrough: booking.bookedThrough,
-        bookingConfirmation: booking.bookingConfirmation,
+        bookedThrough: booking.bookedThrough || '',
+        bookingConfirmation: booking.bookingConfirmation || '',
         backgroundImage: booking.backgroundImage,
-        attachments: booking.attachments,
-        flightInstances: booking.flightInstances
+        attachments: booking.attachments
       })
+      var flightInstances = JSON.parse(JSON.stringify(booking.flightInstances))
+      var sortedInstances = flightInstances.sort(function (a, b) {
+        return a.startDay - b.startDay || a.startTime - b.startTime
+      })
+      this.setState({flightInstances: sortedInstances})
     }
   }
 
@@ -329,11 +333,11 @@ class EditFlightForm extends Component {
                         <label style={labelStyle}>
                           Departure Gate
                         </label>
-                        <input style={{width: '90%'}} type='text' name='departureGate' value={instance.departureGate} onChange={(e) => this.handleChange(e, 'flightInstances', 'departureGate', i)} />
+                        <input style={{width: '90%'}} type='text' name='departureGate' value={instance.departureGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'departureGate', i)} />
                         <label style={labelStyle}>
                           Arrival Gate
                         </label>
-                        <input style={{width: '90%'}} type='text' name='arrivalGate' value={instance.arrivalGate} onChange={(e) => this.handleChange(e, 'flightInstances', 'arrivalGate', i)} />
+                        <input style={{width: '90%'}} type='text' name='arrivalGate' value={instance.arrivalGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'arrivalGate', i)} />
                       </div>
                       <div style={{display: 'inline-block', width: '50%', verticalAlign: 'top'}}>
                         <Notes flight index={i} notes={instance.notes} handleChange={(e, field, subfield, index) => this.handleChange(e, field, subfield, index)} />

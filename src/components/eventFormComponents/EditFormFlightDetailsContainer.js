@@ -27,8 +27,6 @@ class EditFormFlightDetailsContainer extends Component {
       var flightInstances = nextProps.flightInstances
       if (isReturn) {
         if (flightInstances.length === 2) {
-          // var page1 = flightInstances.slice(0, 1)
-          // var page2 = flightInstances.slice(1)
           var page1 = flightInstances
           var page2 = []
           this.setState({totalPages: 1, isReturn: true, page1: page1, page2: page2})
