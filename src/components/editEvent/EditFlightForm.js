@@ -10,6 +10,7 @@ import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, cr
 
 import EditFormAirhobParams from '../eventFormComponents/EditFormAirhobParams'
 import EditFormFlightDetailsContainer from '../eventFormComponents/EditFormFlightDetailsContainer'
+import EditFormAirhobSearchParams from '../eventFormComponents/EditFormAirhobSearchParams'
 
 // import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 // import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
@@ -61,8 +62,9 @@ class EditFlightForm extends Component {
 
   searchFlight () {
     console.log('clicked')
+    this.setState({searching: true})
   }
-  
+
   // handleSearch (flights, tripType, adults, children, infants, classCode) {
   //   this.setState({
   //     flights,
@@ -287,11 +289,25 @@ class EditFlightForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
             {/* SEARCH PARAMS FOR AIRHOB */}
-            <div style={{...eventDescContainerStyle}}>
-              <button style={{color: 'black', position: 'relative'}} onClick={() => this.searchFlight()}>Search again</button>
-            </div>
-            <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
-            <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+            {!this.state.searching &&
+              <div style={{...eventDescContainerStyle}}>
+                <button style={{color: 'black', position: 'relative'}} onClick={() => this.searchFlight()}>Search again</button>
+              </div>
+            }
+            {/* {this.state.searching &&
+              <div style={{...eventDescContainerStyle}}>
+                <button style={{color: 'black', position: 'relative'}} onClick={() => this.searchFlight()}>Back to form</button>
+              </div>
+            } */}
+            {!this.state.searching &&
+              <div>
+                <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
+                <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+              </div>
+            }
+            {this.state.searching &&
+              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
+            }
           </div>
 
           <div style={createEventFormRightPanelStyle('flight')}>
