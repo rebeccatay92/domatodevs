@@ -77,7 +77,7 @@ class CreateFlightForm extends Component {
     }
   }
 
-  handleSearch (flights, tripType, adults, children, infants, classCode) {
+  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) {
     this.setState({
       flights,
       tripType: tripType,
@@ -85,9 +85,17 @@ class CreateFlightForm extends Component {
       paxChildren: children,
       paxInfants: infants,
       classCode: classCode,
-      searching: true
+      searching: true,
+      departureIATA: departureIATA,
+      arrivalIATA: arrivalIATA
     })
-    console.log(this.state)
+    if (departureDate) {
+      this.setState({departureDate: departureDate.utc().unix()})
+    }
+    if (returnDate) {
+      this.setState({returnDate: returnDate.utc().unix()})
+    }
+    console.log('HANDLE SEARCH', this.state)
   }
 
   handleSubmit () {
@@ -104,6 +112,10 @@ class CreateFlightForm extends Component {
       cost: this.state.cost,
       currency: this.state.currency,
       classCode: this.state.classCode,
+      departureIATA: this.state.departureIATA,
+      arrivalIATA: this.state.arrivalIATA,
+      departureDate: this.state.departureDate,
+      returnDate: this.state.returnDate,
       bookingStatus: bookingStatus,
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
@@ -227,20 +239,21 @@ class CreateFlightForm extends Component {
           airlineName: flight.airlineName,
           departureIATA: flight.departureAirportCode,
           arrivalIATA: flight.arrivalAirportCode,
+          departureCityCountry: flight.departureCityCountry,
+          arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
           arrivalTerminal: flight.arrivalTerminal,
           startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
           endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
           startTime: startTime,
           endTime: endTime,
-          // startLoadSequence: 1,
-          // endLoadSequence: 2,
+          durationMins: flight.duration,
           notes: 'testing load seq assignments',
           firstFlight: i === 0
         }
       })
     })
-    console.log(this.state)
+    console.log('HANDLE SELECT FLIGHT', this.state)
   }
 
   handleChange (e, field, subfield, index) {
@@ -281,7 +294,7 @@ class CreateFlightForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
             <div style={eventDescContainerStyle}>
-              <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode) => this.handleSearch(flights, tripType, adults, children, infants, classCode)} closeForm={() => this.closeForm()} />
+              <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate)} closeForm={() => this.closeForm()} />
               {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) && <FlightSearchDetailsContainer searching={this.state.searching} flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />}
             </div>
           </div>

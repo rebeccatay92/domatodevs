@@ -39,7 +39,7 @@ class EditFormFlightDetailsPage extends Component {
           </table>
         }
 
-        {this.props.instances.length === 2 && !this.props.isReturn &&
+        {this.props.instances.length === 2 && ((this.props.totalInstances === 2 && !this.props.isReturn) || (this.props.totalInstances === 4)) &&
           <table style={{width: '100%', tableLayout: 'fixed'}}>
             <tbody>
               <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
@@ -53,7 +53,7 @@ class EditFormFlightDetailsPage extends Component {
           </table>
         }
 
-        {this.props.instances.length === 2 && this.props.isReturn &&
+        {this.props.instances.length === 2 && this.props.totalInstances === 2 && this.props.isReturn &&
           <table style={{width: '100%', tableLayout: 'fixed'}}>
             <tbody>
               <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />

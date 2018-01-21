@@ -58,15 +58,15 @@ class EditFormFlightDetailsContainer extends Component {
         {this.state.currentPage === 1 &&
         <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Departing Flights</p>
         }
-        {this.state.isReturn && this.state.currentPage === 2 &&
+        {this.state.currentPage === 2 &&
         <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Returning Flights</p>
         }
-        {!this.state.isReturn && this.state.currentPage === 2 &&
+        {/* {!this.state.isReturn && this.state.currentPage === 2 &&
         <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Departing Flights (pg 2)</p>
-        }
+        } */}
 
         {/* FLIGHT INSTANCE PAGE COMPONENT */}
-        <EditFormFlightDetailsPage dates={this.props.dates} isReturn={this.state.isReturn} instances={this.state[`page${this.state.currentPage}`]} />
+        <EditFormFlightDetailsPage dates={this.props.dates} isReturn={this.state.isReturn} totalInstances={this.props.flightInstances.length} instances={this.state[`page${this.state.currentPage}`]} />
 
         {/* NEXT PAGE / PREVIOUS PAGE ARROWS */}
         {this.state.totalPages === 2 && this.state.currentPage === 1 &&
