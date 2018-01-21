@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import CustomDatePicker from './CustomDatePicker'
 import airports from '../../data/airports.json'
 
-import { eventDescContainerStyle } from '../../Styles/styles'
+import { eventDescContainerStyle, locationSelectionInputStyle } from '../../Styles/styles'
 
 class EditFormAirhobParams extends Component {
   constructor (props) {
@@ -24,6 +24,13 @@ class EditFormAirhobParams extends Component {
       paxChildren: 0,
       paxInfants: 0
     }
+  }
+
+  selectLocation () {
+    console.log('LOCATION CHANGE')
+  }
+  handleChange () {
+    console.log('HANDLE CHANGE')
   }
 
   componentWillReceiveProps (nextProps) {
@@ -92,40 +99,50 @@ class EditFormAirhobParams extends Component {
     return (
       <div style={{position: 'relative'}}>
         <div style={{...eventDescContainerStyle, ...{marginTop: '55px'}}}>
-          <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
-
+          {/* <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} /> */}
+          {this.state.departureLocation &&
+            <p style={{...locationSelectionInputStyle(this.state.marginTop, 'flight'), ...{fontSize: '36px'}}}>{this.state.departureLocation.name}</p>
+          }
           <p style={{textAlign: 'center'}}>to</p>
-
-          <AirportSearch currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+          {this.state.arrivalLocation &&
+            <p style={{...locationSelectionInputStyle(this.state.marginTop, 'flight'), ...{fontSize: '36px'}}}>{this.state.arrivalLocation.name}</p>
+          }
+          {/* <AirportSearch currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} /> */}
         </div>
 
         {/* DATEBOX */}
         <div style={{textAlign: 'center'}}>
           <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.departureDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'departureDate')} />
+            {this.state.departureDate &&
+              <p style={{...locationSelectionInputStyle(0, 'flight'), ...{fontSize: '16px', fontWeight: '300', textTransform: 'uppercase'}}}>{this.state.departureDate.format('DD MMM YYYY').toString()}</p>
+            }
+            {/* <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.departureDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'departureDate')} disabled /> */}
           </div>
           <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'returnDate')} />
+            {this.state.arrivalDate &&
+              <p style={{...locationSelectionInputStyle(0, 'flight'), ...{fontSize: '16px', fontWeight: '300', textTransform: 'uppercase'}}}>{this.state.arrivalDate.format('DD MMM YYYY').toString()}</p>
+            }
+            {/* <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'returnDate')} disabled /> */}
           </div>
 
-          <select value={this.props.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.props.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             <option style={{color: 'black'}} value='Economy'>E</option>
             <option style={{color: 'black'}} value='PremiumEconomy'>PE</option>
             <option style={{color: 'black'}} value='Business'>B</option>
             <option style={{color: 'black'}} value='First'>F</option>
           </select>
 
-          <select value={this.props.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.props.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             {[1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.props.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.props.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.props.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.props.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}

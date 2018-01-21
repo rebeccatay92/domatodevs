@@ -22,7 +22,6 @@ class EditFormFlightDetailsContainer extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (this.props.flightInstances !== nextProps.flightInstances) {
-      console.log('NEXT PROPS', nextProps)
       var isReturn = nextProps.returnTrip
       var flightInstances = nextProps.flightInstances
       if (isReturn) {

@@ -33,16 +33,6 @@ const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaul
 class EditFlightForm extends Component {
   constructor (props) {
     super(props)
-    // this.state = {
-    //   ItineraryId: this.props.ItineraryId,
-    //   flights: [],
-    //   searching: false,
-    //   bookingDetails: false,
-    //   selected: 0,
-    //   tripType: '',
-    //   flightDetailsPage: 1,
-    //   searchClicked: 1
-    // }
     this.state = {
       id: null,
       paxAdults: 0,
@@ -62,34 +52,17 @@ class EditFlightForm extends Component {
       attachments: [],
       holderNewAttachments: [],
       holderDeleteAttachments: [],
-      flightInstances: []
-      /*
-      flightInstance data structure
-      {
-      id
-      FlightBookingId
-      flightNumber
-      airlineCode
-      airlineName
-      departureLocation
-      arrivalLocation
-      departureTerminal
-      arrivalTerminal
-      departureGate
-      arrivalGate
-      startDay
-      endDay
-      startTime
-      endTime
-      startLoadSequence
-      endLoadSequence
-      notes
-      firstFlight
-      }
-      */
+      flightInstances: [],
+      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm seelct flight is clicked, replaced all of these with the new flight. if changedFlight is true, delete from db, create new FlightBooking row.
+      searching: false,
+      changedFlight: false,
     }
   }
 
+  searchFlight () {
+    console.log('clicked')
+  }
+  
   // handleSearch (flights, tripType, adults, children, infants, classCode) {
   //   this.setState({
   //     flights,
@@ -314,6 +287,9 @@ class EditFlightForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
             {/* SEARCH PARAMS FOR AIRHOB */}
+            <div style={{...eventDescContainerStyle}}>
+              <button style={{color: 'black', position: 'relative'}} onClick={() => this.searchFlight()}>Search again</button>
+            </div>
             <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
             <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
           </div>
