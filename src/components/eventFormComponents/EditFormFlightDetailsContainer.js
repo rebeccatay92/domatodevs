@@ -27,13 +27,16 @@ class EditFormFlightDetailsContainer extends Component {
       var flightInstances = nextProps.flightInstances
       if (isReturn) {
         if (flightInstances.length === 2) {
-          var page1 = flightInstances.slice(0, 1)
-          var page2 = flightInstances.slice(1)
+          // var page1 = flightInstances.slice(0, 1)
+          // var page2 = flightInstances.slice(1)
+          var page1 = flightInstances
+          var page2 = []
+          this.setState({totalPages: 1, isReturn: true, page1: page1, page2: page2})
         } else if (flightInstances.length === 4) {
           page1 = flightInstances.slice(0, 2)
           page2 = flightInstances.slice(2)
+          this.setState({totalPages: 2, isReturn: true, page1: page1, page2: page2})
         }
-        this.setState({totalPages: 2, isReturn: true, page1: page1, page2: page2})
       } else {
         // one way
         if (flightInstances.length === 4) {
@@ -63,7 +66,7 @@ class EditFormFlightDetailsContainer extends Component {
         }
 
         {/* FLIGHT INSTANCE PAGE COMPONENT */}
-        <EditFormFlightDetailsPage dates={this.props.dates} instances={this.state[`page${this.state.currentPage}`]} />
+        <EditFormFlightDetailsPage dates={this.props.dates} isReturn={this.state.isReturn} instances={this.state[`page${this.state.currentPage}`]} />
 
         {/* NEXT PAGE / PREVIOUS PAGE ARROWS */}
         {this.state.totalPages === 2 && this.state.currentPage === 1 &&
