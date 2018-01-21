@@ -16,6 +16,7 @@ import Notes from '../eventFormComponents/Notes'
 
 import Attachments from '../eventFormComponents/Attachments'
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
+import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { createFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -342,8 +343,13 @@ class CreateFlightForm extends Component {
                   bookingDetails: true
                 })
               }}>Confirm</Button>}
+
               {this.state.bookingDetails && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({bookingDetails: false, searching: true})}>Back</Button>}
               {this.state.bookingDetails && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>}
+
+              {/* {this.state.bookingDetails &&
+                <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
+              } */}
             </div>
           </div>
 
