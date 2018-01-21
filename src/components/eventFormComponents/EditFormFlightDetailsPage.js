@@ -17,6 +17,20 @@ class EditFormFlightDetailsPage extends Component {
   }
 
   render () {
+    var hasLayover = (this.props.instances.length === 2 && ((this.props.totalInstances === 2 && !this.props.isReturn) || (this.props.totalInstances === 4)))
+    let layoverHours, layoverMins
+    if (hasLayover) {
+      // console.log('instances', this.props.instances)
+      var firstInstance = this.props.instances[0]
+      var secondInstance = this.props.instances[1]
+      var firstInstanceUnix = firstInstance.endTime
+      var secondInstanceUnix = (secondInstance.startDay - firstInstance.endDay) * 86400 + secondInstance.startTime
+      var unixDifference = secondInstanceUnix - firstInstanceUnix
+      // console.log('unix difference', unixDifference)
+      layoverHours = Math.floor(unixDifference / 3600) ? Math.floor(unixDifference / 3600) : null
+      layoverMins = unixDifference % 3600 / 60
+      // console.log('hours', layoverHours, 'minutes', layoverMins)
+    }
     return (
       <div style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>
 
@@ -28,13 +42,13 @@ class EditFormFlightDetailsPage extends Component {
           </table>
         }
 
-        {this.props.instances.length === 2 && ((this.props.totalInstances === 2 && !this.props.isReturn) || (this.props.totalInstances === 4)) &&
+        {hasLayover &&
           <table style={{width: '100%', tableLayout: 'fixed', position: 'relative'}}>
             <tbody>
               <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
               <tr>
                 <td style={{width: '100%', height: '90px'}}>
-                  <p style={infoStyle}>layover xxx mins</p>
+                  <p style={infoStyle}>layover {layoverHours}h {layoverMins}m</p>
                 </td>
               </tr>
               {/* <tr>
