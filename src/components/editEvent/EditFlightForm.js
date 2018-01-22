@@ -17,7 +17,7 @@ import EditFormAirhobSearchParams from '../eventFormComponents/EditFormAirhobSea
 // import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import Notes from '../eventFormComponents/Notes'
-
+import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 import Attachments from '../eventFormComponents/Attachments'
 
 import { findFlightBooking, updateFlightBooking } from '../../apollo/flight'
@@ -350,8 +350,10 @@ class EditFlightForm extends Component {
                   bookingDetails: true
                 })
               }}>Confirm</Button>} */}
-              <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
-              <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
+
+              {/* <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
+              <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button> */}
+              <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
 
