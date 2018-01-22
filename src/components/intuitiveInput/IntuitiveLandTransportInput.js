@@ -23,8 +23,8 @@ class IntuitiveLandTransportInput extends Component {
     this.state = {
       search: '',
       searching: false,
-      departureGooglePlaceData: {},
-      arrivalGooglePlaceData: {}
+      departureGooglePlaceData: null,
+      arrivalGooglePlaceData: null
     }
   }
 
