@@ -46,7 +46,7 @@ class FlightSearchResults extends Component {
             }
           }
           return (
-            flight.flights.length < 5 && flight.flights.length !== 3 && <FlightSearchResultsRow key={i} index={i} handleSelectFlight={(index) => this.props.handleSelectFlight(index)}selected={this.props.selected} flight={flight} totalHours={totalHours} totalMins={totalMins} returnTotalHours={returnTotalHours} returnTotalMins={returnTotalMins} layoverHours={layoverHours} layoverMins={layoverMins} layoverAirport={layoverAirport} returnLayoverHours={returnLayoverHours} returnLayoverMins={returnLayoverMins} returnLayoverAirport={returnLayoverAirport} tripType={this.props.tripType} />
+            flight.flights.length < 5 && flight.flights.length !== 3 && <FlightSearchResultsRow key={i} index={i} handleSelectFlight={(index) => this.props.handleSelectFlight(index)} selected={this.props.selected} flight={flight} totalHours={totalHours} totalMins={totalMins} returnTotalHours={returnTotalHours} returnTotalMins={returnTotalMins} layoverHours={layoverHours} layoverMins={layoverMins} layoverAirport={layoverAirport} returnLayoverHours={returnLayoverHours} returnLayoverMins={returnLayoverMins} returnLayoverAirport={returnLayoverAirport} tripType={this.props.tripType} />
           )
         })}
       </table>

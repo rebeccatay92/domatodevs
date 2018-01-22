@@ -25,11 +25,108 @@ class EditFormAirhobSearchParams extends Component {
     }
   }
 
-  selectLocation () {
-    console.log('LOCATION CHANGE')
+  handleFlightSearch () {
+    console.log('search flights again with this state', this.state)
+    const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
+    const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
+    const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
+    const travelDate = this.state.departureDate.format('MM/DD/YYYY')
+    let returnDate
+    if (this.state.returnDate) returnDate = this.state.returnDate.format('MM/DD/YYYY')
+    const tripType = this.state.returnDate ? 'R' : 'O'
+    console.log('searching...')
+    fetch(uriFull, {
+      method: 'POST',
+      headers: {
+        apikey: 'f7da6320-6bda-4',
+        mode: 'sandbox',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        TripType: this.state.returnDate ? 'R' : 'O',
+        NoOfAdults: this.state.paxAdults,
+        NoOfChilds: this.state.paxChildren,
+        NoOfInfants: this.state.paxInfants,
+        ClassType: this.state.classCode,
+        OriginDestination: this.state.returnDate ? [
+          {
+            'Origin': origin,
+            'Destination': destination,
+            'TravelDate': travelDate
+          },
+          {
+            'Origin': destination,
+            'Destination': origin,
+            'TravelDate': returnDate
+          }
+        ] : [
+          {
+            'Origin': origin,
+            'Destination': destination,
+            'TravelDate': travelDate
+          }
+        ],
+        Currency: 'USD',
+        FlightsCount: '200ITINS'
+      })
+    }).then(response => {
+      const json = response.json()
+      console.log('json', json)
+      return json
+    }).then(results => {
+      if (!results.OneWayAvailabilityResponse.ItinearyDetails.length) {
+        console.log('no results')
+        return
+      }
+      const flights = results.OneWayAvailabilityResponse.ItinearyDetails[0].Items
+      // console.log(flights);
+      const details = flights.map(flight => {
+        return {
+          cost: flight.FareDescription.PaxFareDetails[0].OtherInfo.GrossAmount,
+          totalDuration: [parseInt(flight.ElapsedTime[0], 10), parseInt(flight.ElapsedTime[1], 10)],
+          flights: flight.FlightDetails.map(flightDetails => {
+            return {
+              departureDateTime: flightDetails.DepartureDateTime,
+              arrivalDateTime: flightDetails.ArrivalDateTime,
+              duration: flightDetails.Duration,
+              departureLocation: flightDetails.OriginAirportName,
+              departureCityCountry: flightDetails.OriginAirportCity + ', ' + flightDetails.OriginAirportCountry,
+              departureAirportCode: flightDetails.Origin,
+              departureTerminal: flightDetails.OrgTerminal,
+              arrivalLocation: flightDetails.DestinationAirportName,
+              arrivalCityCountry: flightDetails.DestinationAirportCity + ', ' + flightDetails.DestinationAirportCountry,
+              arrivalAirportCode: flightDetails.Destination,
+              arrivalTerminal: flightDetails.DesTerminal,
+              carrierCode: flightDetails.CarrierCode,
+              flightNum: flightDetails.FlightNum,
+              airlineName: flightDetails.AirlineName,
+              direction: flightDetails.JourneyType
+            }
+          })
+        }
+      })
+      console.log('DONE DETAILS OF ALL FLIGHTS', details)
+      // this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, this.state.departureDate, this.state.returnDate)
+
+      // ONLY HOIST FLIGHT RESULTS UP. DO NOT CHANGE PARAMS OF PARENT FORM UNTIL CONFIRM FLIGHT SELECTION HAS CHANGED
+      this.props.handleSearch(details, tripType)
+    })
   }
-  handleChange () {
-    console.log('HANDLE CHANGE')
+
+  selectLocation (type, details) {
+    this.setState({[`${type}Location`]: details}, () => console.log('select airport', this.state)) // set airport/city details
+  }
+
+  handleChange (e, field) {
+    if (field === 'departureDate' || field === 'returnDate') {
+      this.setState({
+        [field]: moment(e._d)
+      }, () => console.log('dates change', this.state))
+    } else {
+      this.setState({
+        [field]: e.target.value
+      }, () => console.log('change', this.state))
+    }
   }
 
   componentDidMount () {
@@ -55,7 +152,7 @@ class EditFormAirhobSearchParams extends Component {
       })
       departureLocation = {
         name: departureRow.city,
-        iata: departureRow.iata,
+        cityCode: departureRow.iata,
         type: 'city'
       }
     }
@@ -74,13 +171,19 @@ class EditFormAirhobSearchParams extends Component {
       })
       arrivalLocation = {
         name: arrivalRow.city,
-        iata: arrivalRow.iata,
+        cityCode: arrivalRow.iata,
         type: 'city'
       }
     }
     this.setState({
       departureLocation: departureLocation,
       arrivalLocation: arrivalLocation
+    })
+    this.setState({
+      classCode: this.props.classCode,
+      paxAdults: this.props.paxAdults,
+      paxChildren: this.props.paxChildren,
+      paxInfants: this.props.paxInfants
     })
   }
 
@@ -151,9 +254,9 @@ class EditFormAirhobSearchParams extends Component {
     return (
       <div style={{position: 'relative'}}>
         <div style={{...eventDescContainerStyle, ...{marginTop: '55px'}}}>
-          <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
+          <AirportSearch edit currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
           <p style={{textAlign: 'center'}}>to</p>
-          <AirportSearch currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+          <AirportSearch edit currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
         </div>
 
         {/* DATEBOX */}
@@ -197,6 +300,8 @@ class EditFormAirhobSearchParams extends Component {
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>2-11y</span>
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>{'<2y'}</span>
         </div>
+
+        <button onClick={() => this.handleFlightSearch()} style={{color: 'black'}}>Search</button>
       </div>
     )
   }

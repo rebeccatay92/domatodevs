@@ -85,6 +85,7 @@ class AirportSearch extends Component {
 
   handleClickOutside () {
     this.setState({selecting: false, results: []})
+    if (this.props.edit) return
     if (this.props.currentLocation) {
       this.setState({search: this.props.currentLocation.name})
     } else {
@@ -93,11 +94,6 @@ class AirportSearch extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    // if (nextProps.currentLocation === '') {
-    //   this.setState({
-    //     search: ''
-    //   })
-    // }
     if (nextProps.currentLocation !== this.props.currentLocation) {
       this.setState({
         search: nextProps.currentLocation.name

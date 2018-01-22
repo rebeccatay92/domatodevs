@@ -13,8 +13,8 @@ import EditFormFlightDetailsContainer from '../eventFormComponents/EditFormFligh
 import EditFormAirhobSearchParams from '../eventFormComponents/EditFormAirhobSearchParams'
 
 // import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
-// import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
-// import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
+import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
+import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import Notes from '../eventFormComponents/Notes'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
@@ -55,8 +55,13 @@ class EditFlightForm extends Component {
       holderDeleteAttachments: [],
       flightInstances: [],
       // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm seelct flight is clicked, replaced all of these with the new flight. if changedFlight is true, delete from db, create new FlightBooking row.
-      searching: false,
       changedFlight: false,
+      searching: false,
+      flights: [], // flight search results from airhob
+      tripType: '', // 'O' or 'R'
+      selected: 0,
+      searchFlightInstances: [],
+      flightDetailsPage: 1
     }
   }
 
@@ -77,6 +82,11 @@ class EditFlightForm extends Component {
   //   })
   //   console.log(this.state)
   // }
+
+  handleSearch (flights, tripType) {
+    console.log('details are hoisted up to editFlightForm')
+    this.setState({flights: flights, tripType: tripType})
+  }
 
   handleSubmit () {
     var updatesObj = {
@@ -190,41 +200,39 @@ class EditFlightForm extends Component {
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
-  // handleSelectFlight (index) {
-  //   const datesUnix = this.props.dates.map(e => {
-  //     return moment(e).unix()
-  //   })
-  //   console.log(datesUnix)
-  //   this.setState({
-  //     selected: index,
-  //     flightDetailsPage: 1,
-  //     flightInstances: this.state.flights[index].flights.map((flight, i) => {
-  //       const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
-  //       const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
-  //       const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
-  //       const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
-  //       console.log(startTime, endTime)
-  //       return {
-  //         flightNumber: flight.flightNum,
-  //         airlineCode: flight.carrierCode,
-  //         airlineName: flight.airlineName,
-  //         departureIATA: flight.departureAirportCode,
-  //         arrivalIATA: flight.arrivalAirportCode,
-  //         departureTerminal: flight.departureTerminal,
-  //         arrivalTerminal: flight.arrivalTerminal,
-  //         startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
-  //         endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
-  //         startTime: startTime,
-  //         endTime: endTime,
-  //         // startLoadSequence: 1,
-  //         // endLoadSequence: 2,
-  //         notes: 'testing load seq assignments',
-  //         firstFlight: i === 0
-  //       }
-  //     })
-  //   })
-  //   console.log(this.state)
-  // }
+  handleSelectFlight (index) {
+    const datesUnix = this.props.dates.map(e => {
+      return moment(e).unix()
+    })
+    console.log(datesUnix)
+    this.setState({
+      selected: index,
+      flightDetailsPage: 1,
+      searchFlightInstances: this.state.flights[index].flights.map((flight, i) => {
+        const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
+        const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
+        const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
+        const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
+        console.log(startTime, endTime)
+        return {
+          flightNumber: flight.flightNum,
+          airlineCode: flight.carrierCode,
+          airlineName: flight.airlineName,
+          departureIATA: flight.departureAirportCode,
+          arrivalIATA: flight.arrivalAirportCode,
+          departureTerminal: flight.departureTerminal,
+          arrivalTerminal: flight.arrivalTerminal,
+          startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
+          endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
+          startTime: startTime,
+          endTime: endTime,
+          notes: 'edit form search flights',
+          firstFlight: i === 0
+        }
+      })
+    })
+    console.log(this.state)
+  }
 
   handleChange (e, field, subfield, index) {
     if (subfield) {
@@ -306,41 +314,48 @@ class EditFlightForm extends Component {
               </div>
             }
             {this.state.searching &&
-              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
+              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType) => this.handleSearch(flights, tripType)} />
+            }
+            {this.state.searching &&
+              <FlightSearchDetailsContainer flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />
             }
           </div>
 
           <div style={createEventFormRightPanelStyle('flight')}>
             <div style={bookingNotesContainerStyle}>
-              <div>
-                <h4 style={{fontSize: '24px'}}>Booking Details</h4>
-                <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
+              {!this.state.searching &&
+                <div>
+                  <h4 style={{fontSize: '24px'}}>Booking Details</h4>
+                  <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
 
-                {/* flight instances. gate and notes */}
-                {this.state.flightInstances.map((instance, i) => {
-                  return (
-                    <div key={i}>
-                      <h4 style={{fontSize: '24px'}} key={i}>{instance.departureIATA} to {instance.arrivalIATA}</h4>
-                      <div style={{display: 'inline-block', width: '40%'}}>
-                        <label style={labelStyle}>
-                          Departure Gate
-                        </label>
-                        <input style={{width: '90%'}} type='text' name='departureGate' value={instance.departureGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'departureGate', i)} />
-                        <label style={labelStyle}>
-                          Arrival Gate
-                        </label>
-                        <input style={{width: '90%'}} type='text' name='arrivalGate' value={instance.arrivalGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'arrivalGate', i)} />
+                  {/* flight instances. gate and notes */}
+                  {this.state.flightInstances.map((instance, i) => {
+                    return (
+                      <div key={i}>
+                        <h4 style={{fontSize: '24px'}} key={i}>{instance.departureIATA} to {instance.arrivalIATA}</h4>
+                        <div style={{display: 'inline-block', width: '40%'}}>
+                          <label style={labelStyle}>
+                            Departure Gate
+                          </label>
+                          <input style={{width: '90%'}} type='text' name='departureGate' value={instance.departureGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'departureGate', i)} />
+                          <label style={labelStyle}>
+                            Arrival Gate
+                          </label>
+                          <input style={{width: '90%'}} type='text' name='arrivalGate' value={instance.arrivalGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'arrivalGate', i)} />
+                        </div>
+                        <div style={{display: 'inline-block', width: '50%', verticalAlign: 'top'}}>
+                          <Notes flight index={i} notes={instance.notes} handleChange={(e, field, subfield, index) => this.handleChange(e, field, subfield, index)} />
+                        </div>
                       </div>
-                      <div style={{display: 'inline-block', width: '50%', verticalAlign: 'top'}}>
-                        <Notes flight index={i} notes={instance.notes} handleChange={(e, field, subfield, index) => this.handleChange(e, field, subfield, index)} />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-              {/* <div style={{width: '100%', height: '91%', margin: '2% 0 6% 0', overflowY: 'auto'}}>
-                {this.state.searching && <FlightSearchResults flights={this.state.flights} searching={this.state.searching} selected={this.state.selected} handleSelectFlight={(index) => this.handleSelectFlight(index)} tripType={this.state.tripType} />}
-              </div> */}
+                    )
+                  })}
+                </div>
+              }
+              {this.state.searching &&
+                <div style={{width: '100%', height: '91%', margin: '2% 0 6% 0', overflowY: 'auto'}}>
+                  <FlightSearchResults flights={this.state.flights} searching={this.state.searching} selected={this.state.selected} handleSelectFlight={(index) => this.handleSelectFlight(index)} tripType={this.state.tripType} />
+                </div>
+              }
             </div>
             <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
               {/* {this.state.searching && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({searchClicked: this.state.searchClicked + 1})}>Search</Button>}
@@ -350,10 +365,17 @@ class EditFlightForm extends Component {
                   bookingDetails: true
                 })
               }}>Confirm</Button>} */}
-
+              {this.state.searching &&
+                <Button bsStyle='danger' style={{marginRight: '5px'}}>Back</Button>
+              }
+              {this.state.searching &&
+                <Button bsStyle='danger'>Change flight</Button>
+              }
               {/* <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
               <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button> */}
-              <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
+              {!this.state.searching &&
+                <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
+              }
             </div>
           </div>
 

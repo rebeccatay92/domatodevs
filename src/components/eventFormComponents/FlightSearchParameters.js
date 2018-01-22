@@ -58,26 +58,17 @@ class FlightSearchParameters extends Component {
             'Origin': origin,
             'Destination': destination,
             'TravelDate': travelDate
-            // 'Origin': 'SIN',
-            // 'Destination': 'PEK',
-            // 'TravelDate': travelDate
           },
           {
             'Origin': destination,
             'Destination': origin,
             'TravelDate': returnDate
-            // 'Origin': 'PEK',
-            // 'Destination': 'SIN',
-            // 'TravelDate': returnDate
           }
         ] : [
           {
             'Origin': origin,
             'Destination': destination,
             'TravelDate': travelDate
-            // 'Origin': 'SIN',
-            // 'Destination': 'BJS',
-            // 'TravelDate': travelDate
           }
         ],
         Currency: 'USD',

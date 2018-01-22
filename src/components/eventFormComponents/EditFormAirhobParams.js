@@ -65,7 +65,7 @@ class EditFormAirhobParams extends Component {
         console.log('ELSE', departureRow)
         departureLocation = {
           name: departureRow.city,
-          iata: departureRow.iata,
+          cityCode: departureRow.iata,
           type: 'city'
         }
       }
@@ -84,7 +84,7 @@ class EditFormAirhobParams extends Component {
         })
         arrivalLocation = {
           name: arrivalRow.city,
-          iata: arrivalRow.iata,
+          cityCode: arrivalRow.iata,
           type: 'city'
         }
       }

@@ -18,6 +18,8 @@ class FlightSearchDetailsContainer extends Component {
   }
 
   render () {
+    // console.log('SELECTED', this.props.selected)
+    if (this.props.flights.length < 1) return null
     const flightsArr = this.props.flights[this.props.selected].flights
     if (flightsArr.length === 1) {
       return (
