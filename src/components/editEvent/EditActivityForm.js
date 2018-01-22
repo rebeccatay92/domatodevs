@@ -14,7 +14,7 @@ import Notes from '../eventFormComponents/Notes'
 import Attachments from '../eventFormComponents/Attachments'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
-import { updateActivity } from '../../apollo/activity'
+import { updateActivity, deleteActivity } from '../../apollo/activity'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
@@ -199,6 +199,74 @@ class EditActivityForm extends Component {
   // changes are not saved. remove all holderNewAttachments. ignore holderDeleteAttachments
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    this.resetState()
+    this.props.toggleEditEventType()
+  }
+
+  deleteEvent () {
+    var eventType = 'Activity'
+    // var deleteMutationNaming = apolloNaming[eventType]
+    var modelId = this.state.id
+
+    // REASSIGN LOAD SEQ AFTER DELETING
+    function constructLoadSeqInputObj (event, correctLoadSeq) {
+      var inputObj = {
+        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
+        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
+        loadSequence: correctLoadSeq,
+        day: event.day
+      }
+      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
+        inputObj.start = event.start
+      }
+      return inputObj
+    }
+    // console.log('all events', this.props.events)
+    var loadSequenceInputArr = []
+    var eventsArr = this.props.events
+    // remove deleted rows from eventsArr
+    var newEventsArr = eventsArr.filter(e => {
+      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
+      return (!isDeletedEvent)
+    })
+    // console.log('newEventsArr', newEventsArr)
+    // find how many days with events exist in eventsArr, split by day
+    var daysArr = []
+    newEventsArr.forEach(e => {
+      if (!daysArr.includes(e.day)) {
+        daysArr.push(e.day)
+      }
+    })
+    // console.log('daysArr', daysArr)
+    // check load seq and reassign
+    daysArr.forEach(day => {
+      var dayEvents = newEventsArr.filter(e => {
+        return e.day === day
+      })
+      dayEvents.forEach(event => {
+        var correctLoadSeq = dayEvents.indexOf(event) + 1
+        if (event.loadSequence !== correctLoadSeq) {
+          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
+          loadSequenceInputArr.push(loadSequenceInputObj)
+        }
+      })
+    })
+    console.log('loadSequenceInputArr', loadSequenceInputArr)
+    this.props.changingLoadSequence({
+      variables: {
+        input: loadSequenceInputArr
+      }
+    })
+    this.props.deleteActivity({
+      variables: {
+        id: modelId
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: { id: this.props.ItineraryId }
+      }]
+    })
+
     this.resetState()
     this.props.toggleEditEventType()
   }
@@ -403,7 +471,7 @@ class EditActivityForm extends Component {
               <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
               <Notes notes={this.state.notes} handleChange={(e, field) => this.handleChange(e, field)} />
-              <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
+              <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
@@ -434,5 +502,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(updateActivity, {name: 'updateActivity'}),
-  graphql(changingLoadSequence, {name: 'changingLoadSequence'})
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
+  graphql(deleteActivity, {name: 'deleteActivity'})
 )(Radium(EditActivityForm)))

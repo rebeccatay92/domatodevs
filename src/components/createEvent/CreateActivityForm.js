@@ -249,6 +249,7 @@ class CreateActivityForm extends Component {
   }
 
   render () {
+    console.log('PROPS', this.props)
     return (
       <div style={createEventFormContainerStyle}>
 
