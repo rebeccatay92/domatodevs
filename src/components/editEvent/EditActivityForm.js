@@ -205,7 +205,6 @@ class EditActivityForm extends Component {
 
   deleteEvent () {
     var eventType = 'Activity'
-    // var deleteMutationNaming = apolloNaming[eventType]
     var modelId = this.state.id
 
     // REASSIGN LOAD SEQ AFTER DELETING

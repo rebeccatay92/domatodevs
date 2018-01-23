@@ -20,7 +20,7 @@ import Notes from '../eventFormComponents/Notes'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 import Attachments from '../eventFormComponents/Attachments'
 
-import { findFlightBooking, updateFlightBooking } from '../../apollo/flight'
+import { findFlightBooking, updateFlightBooking, deleteFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
@@ -115,6 +115,73 @@ class EditFlightForm extends Component {
 
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    this.resetState()
+    this.props.toggleEditEventType()
+  }
+
+  deleteEvent () {
+    var eventType = 'Flight'
+    var modelId = this.state.id
+
+    // REASSIGN LOAD SEQ AFTER DELETING
+    function constructLoadSeqInputObj (event, correctLoadSeq) {
+      var inputObj = {
+        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
+        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
+        loadSequence: correctLoadSeq,
+        day: event.day
+      }
+      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
+        inputObj.start = event.start
+      }
+      return inputObj
+    }
+    // console.log('all events', this.props.events)
+    var loadSequenceInputArr = []
+    var eventsArr = this.props.events
+    // remove deleted rows from eventsArr
+    var newEventsArr = eventsArr.filter(e => {
+      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
+      return (!isDeletedEvent)
+    })
+    // console.log('newEventsArr', newEventsArr)
+    // find how many days with events exist in eventsArr, split by day
+    var daysArr = []
+    newEventsArr.forEach(e => {
+      if (!daysArr.includes(e.day)) {
+        daysArr.push(e.day)
+      }
+    })
+    // console.log('daysArr', daysArr)
+    // check load seq and reassign
+    daysArr.forEach(day => {
+      var dayEvents = newEventsArr.filter(e => {
+        return e.day === day
+      })
+      dayEvents.forEach(event => {
+        var correctLoadSeq = dayEvents.indexOf(event) + 1
+        if (event.loadSequence !== correctLoadSeq) {
+          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
+          loadSequenceInputArr.push(loadSequenceInputObj)
+        }
+      })
+    })
+    console.log('loadSequenceInputArr', loadSequenceInputArr)
+    this.props.changingLoadSequence({
+      variables: {
+        input: loadSequenceInputArr
+      }
+    })
+    this.props.deleteFlightBooking({
+      variables: {
+        id: modelId
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: { id: this.props.ItineraryId }
+      }]
+    })
+
     this.resetState()
     this.props.toggleEditEventType()
   }
@@ -374,7 +441,7 @@ class EditFlightForm extends Component {
               {/* <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
               <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button> */}
               {!this.state.searching &&
-                <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
+                <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
               }
             </div>
           </div>
@@ -416,5 +483,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(findFlightBooking, options),
   graphql(updateFlightBooking, {name: 'updateFlightBooking'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
+  graphql(deleteFlightBooking, {name: 'deleteFlightBooking'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(Radium(EditFlightForm)))
