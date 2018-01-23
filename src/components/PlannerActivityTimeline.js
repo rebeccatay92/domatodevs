@@ -62,7 +62,10 @@ class PlannerActivityTimeline extends Component {
         return activity === this.props.activity
       }) + 1
     }
-    let dayAdjustedTime
+    let dayAdjustedTime, nextOffset
+    let utcDiff = 0
+    let location = typeof this.props.start !== 'boolean' || this.props.start ? this.props.startLocation : this.props.endLocation
+    let offset = location ? location.utcOffset : 0
     if (indexOfNextActivity === 0 || this.props.draggingItem) {
       dayAdjustedTime = this.props.endTime
     } else if (indexOfNextActivity >= this.props.activities.length) {
@@ -71,8 +74,16 @@ class PlannerActivityTimeline extends Component {
       const nextActivity = daySortedActivities[indexOfNextActivity]
       timeOfNextActivity = nextActivity.start || typeof nextActivity.start !== 'boolean' ? nextActivity[nextActivity.type]['startTime'] : nextActivity[nextActivity.type]['endTime']
       if (nextActivity.type === 'Flight') timeOfNextActivity = nextActivity.start || typeof nextActivity.start !== 'boolean' ? nextActivity[nextActivity.type].FlightInstance['startTime'] : nextActivity[nextActivity.type].FlightInstance['endTime']
+
       const dayOfNextActivity = nextActivity.day
       dayAdjustedTime = timeOfNextActivity + (dayOfNextActivity - this.props.day) * 86400
+
+      const nextLocation = nextActivity.start || typeof nextActivity.start !== 'boolean' ? nextActivity[nextActivity.type].location || nextActivity[nextActivity.type].departureLocation || (nextActivity[nextActivity.type].FlightInstance && nextActivity[nextActivity.type].FlightInstance.departureLocation) : nextActivity[nextActivity.type].location || nextActivity[nextActivity.type].arrivalLocation || (nextActivity[nextActivity.type].FlightInstance && nextActivity[nextActivity.type].FlightInstance.arrivalLocation)
+
+      nextOffset = nextLocation ? nextLocation.utcOffset : offset
+
+      utcDiff = (offset - nextOffset) * 60
+
       if (nextActivity.timelineClash || nextActivity.inBetweenStartEndRow || nextActivity[nextActivity.type].allDayEvent) {
         doNotShowTime = true
       } else {
@@ -85,39 +96,39 @@ class PlannerActivityTimeline extends Component {
         return (
           <div>
             {this.renderIcon('directions_run', this.props.expanded && {fontSize: '48px'})}
-            {this.renderDuration(dayAdjustedTime - this.props.endTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {this.renderDuration(dayAdjustedTime - this.props.endTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
           </div>
         )
       case 'Food':
         return (
           <div>
             {this.renderIcon('restaurant', this.props.expanded && {fontSize: '48px'})}
-            {this.renderDuration(dayAdjustedTime - this.props.endTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {this.renderDuration(dayAdjustedTime - this.props.endTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
           </div>
         )
       case 'Lodging':
         return (
           <div>
             {this.renderIcon('hotel', {...!this.props.start && endStyle, ...this.props.expanded && {fontSize: '48px'}})}
-            {this.renderDuration(dayAdjustedTime - endTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {this.renderDuration(dayAdjustedTime - endTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
           </div>
         )
       case 'Flight':
         return (
           <div>
             {this.props.start && this.renderIcon('flight_takeoff', this.props.expanded && {fontSize: '48px'})}
-            {this.props.start && this.renderDuration(dayAdjustedTime - this.props.startTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {this.props.start && this.renderDuration(dayAdjustedTime - this.props.startTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
             {!this.props.start && this.renderIcon('flight_land', {...endStyle, ...this.props.expanded && {fontSize: '48px'}})}
-            {!this.props.start && this.renderDuration(dayAdjustedTime - this.props.endTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {!this.props.start && this.renderDuration(dayAdjustedTime - this.props.endTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
           </div>
         )
       case 'LandTransport':
         return (
           <div>
             {this.props.start && this.renderIcon('local_car_wash', this.props.expanded && {fontSize: '48px'})}
-            {this.props.start && this.renderDuration(dayAdjustedTime - this.props.startTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {this.props.start && this.renderDuration(dayAdjustedTime - this.props.startTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
             {!this.props.start && this.renderIcon('local_car_wash', {...endStyle, ...this.props.expanded && {fontSize: '48px'}})}
-            {!this.props.start && this.renderDuration(dayAdjustedTime - this.props.endTime, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
+            {!this.props.start && this.renderDuration(dayAdjustedTime - this.props.endTime + utcDiff, this.props.isLast && {top: this.props.expanded ? '165px' : '60px', zIndex: 1}, doNotShowTime || this.props.doNotShowTime)}
           </div>
         )
       default:
