@@ -12,6 +12,7 @@ class EditFormAirhobSearchParams extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      // location obj {name, iata, type}
       departureLocation: null,
       arrivalLocation: null,
       departureIATA: '',
@@ -26,7 +27,6 @@ class EditFormAirhobSearchParams extends Component {
   }
 
   handleFlightSearch () {
-    console.log('search flights again with this state', this.state)
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
@@ -71,7 +71,7 @@ class EditFormAirhobSearchParams extends Component {
       })
     }).then(response => {
       const json = response.json()
-      console.log('json', json)
+      console.log('json returned, pending')
       return json
     }).then(results => {
       if (!results.OneWayAvailabilityResponse.ItinearyDetails.length) {
@@ -83,6 +83,7 @@ class EditFormAirhobSearchParams extends Component {
       const details = flights.map(flight => {
         return {
           cost: flight.FareDescription.PaxFareDetails[0].OtherInfo.GrossAmount,
+          currency: 'USD',
           totalDuration: [parseInt(flight.ElapsedTime[0], 10), parseInt(flight.ElapsedTime[1], 10)],
           flights: flight.FlightDetails.map(flightDetails => {
             return {
@@ -106,10 +107,8 @@ class EditFormAirhobSearchParams extends Component {
         }
       })
       console.log('DONE DETAILS OF ALL FLIGHTS', details)
-      // this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, this.state.departureDate, this.state.returnDate)
-
-      // ONLY HOIST FLIGHT RESULTS UP. DO NOT CHANGE PARAMS OF PARENT FORM UNTIL CONFIRM FLIGHT SELECTION HAS CHANGED
-      this.props.handleSearch(details, tripType)
+      // HOIST PARAMS UP TO EDIT FORM. SAVED SEPARATELY FROM THE EDIT STATE
+      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, this.state.departureDate, this.state.returnDate)
     })
   }
 

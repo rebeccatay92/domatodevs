@@ -88,6 +88,7 @@ class FlightSearchParameters extends Component {
       const details = flights.map(flight => {
         return {
           cost: flight.FareDescription.PaxFareDetails[0].OtherInfo.GrossAmount,
+          currency: 'USD',
           totalDuration: [parseInt(flight.ElapsedTime[0], 10), parseInt(flight.ElapsedTime[1], 10)],
           flights: flight.FlightDetails.map(flightDetails => {
             return {

@@ -227,6 +227,8 @@ class CreateFlightForm extends Component {
     console.log(datesUnix)
     this.setState({
       selected: index,
+      cost: this.state.flights[index].cost,
+      currency: this.state.flights[index].currency,
       flightDetailsPage: 1,
       flightInstances: this.state.flights[index].flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
@@ -249,7 +251,7 @@ class CreateFlightForm extends Component {
           startTime: startTime,
           endTime: endTime,
           durationMins: flight.duration,
-          notes: 'testing load seq assignments',
+          notes: '',
           firstFlight: i === 0
         }
       })

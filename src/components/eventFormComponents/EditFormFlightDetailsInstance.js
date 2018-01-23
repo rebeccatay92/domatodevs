@@ -26,6 +26,7 @@ class EditFormFlightDetailsInstance extends Component {
 
   render () {
     if (!this.props.instance) return null
+    // console.log('instance', this.props.instance)
 
     var instance = this.props.instance
     var departureDate = this.props.dates[instance.startDay - 1]
@@ -47,6 +48,7 @@ class EditFormFlightDetailsInstance extends Component {
       <tr>
         <td style={{width: '40%', textAlign: 'right', verticalAlign: 'top'}}>
           <p style={pStyle}>{instance.departureIATA}</p>
+          {/* DEPARTURE LOCATION NEED TO BE {NAME, IATA, TYPE} OBJ HERE */}
           <p style={infoStyle}>{instance.departureLocation.name}</p>
           <p style={cityCountryStyle}>{instance.departureCityCountry}</p>
           <p style={infoStyle}>{instance.departureTerminal}</p>

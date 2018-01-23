@@ -90,6 +90,7 @@ class EditFormAirhobParams extends Component {
 
   // component was already mounted. but after apollo query returns, update fields
   componentWillReceiveProps (nextProps) {
+    // console.log('AIRHOB PARAMS RECEIVED PROPS', nextProps)
     if (this.props.departureDate !== nextProps.departureDate) {
       this.setState({
         departureDate: moment(nextProps.departureDate * 1000)
@@ -148,6 +149,12 @@ class EditFormAirhobParams extends Component {
         departureLocation: departureLocation,
         arrivalLocation: arrivalLocation
       })
+      this.setState({
+        classCode: this.props.classCode,
+        paxAdults: this.props.paxAdults,
+        paxChildren: this.props.paxChildren,
+        paxInfants: this.props.paxInfants
+      })
     }
   }
 
@@ -182,24 +189,24 @@ class EditFormAirhobParams extends Component {
             {/* <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'returnDate')} disabled /> */}
           </div>
 
-          <select value={this.props.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}} disabled>
+          <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             <option style={{color: 'black'}} value='Economy'>E</option>
             <option style={{color: 'black'}} value='PremiumEconomy'>PE</option>
             <option style={{color: 'black'}} value='Business'>B</option>
             <option style={{color: 'black'}} value='First'>F</option>
           </select>
 
-          <select value={this.props.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
+          <select value={this.state.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             {[1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.props.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
+          <select value={this.state.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.props.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
+          <select value={this.state.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} disabled>
             {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}

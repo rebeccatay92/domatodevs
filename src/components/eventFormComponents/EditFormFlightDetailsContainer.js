@@ -20,6 +20,35 @@ class EditFormFlightDetailsContainer extends Component {
     this.setState({currentPage: 1})
   }
 
+  // after reselecting flight, flight details container is remounted
+  componentDidMount () {
+    var isReturn = this.props.returnTrip
+    var flightInstances = this.props.flightInstances
+    console.log('flight instances', flightInstances)
+    if (isReturn) {
+      if (flightInstances.length === 2) {
+        var page1 = flightInstances
+        var page2 = []
+        this.setState({totalPages: 1, isReturn: true, page1: page1, page2: page2})
+      } else if (flightInstances.length === 4) {
+        page1 = flightInstances.slice(0, 2)
+        page2 = flightInstances.slice(2)
+        this.setState({totalPages: 2, isReturn: true, page1: page1, page2: page2})
+      }
+    } else {
+      // one way
+      if (flightInstances.length === 4) {
+        page1 = flightInstances.slice(0, 2)
+        page2 = flightInstances.slice(2)
+        this.setState({totalPages: 2, isReturn: false, page1: page1, page2: page2})
+      } else {
+        page1 = flightInstances
+        this.setState({totalPages: 1, isReturn: false, page1: page1, page2: []})
+      }
+    }
+  }
+
+  // component was already mounted with null as editForm is opened. handles apollo findFlightBooking props
   componentWillReceiveProps (nextProps) {
     if (this.props.flightInstances !== nextProps.flightInstances) {
       var isReturn = nextProps.returnTrip
@@ -58,9 +87,6 @@ class EditFormFlightDetailsContainer extends Component {
         {this.state.currentPage === 2 &&
         <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Returning Flights</p>
         }
-        {/* {!this.state.isReturn && this.state.currentPage === 2 &&
-        <p style={{textAlign: 'center', fontSize: '18px', color: 'white', position: 'relative'}}>Departing Flights (pg 2)</p>
-        } */}
 
         {/* FLIGHT INSTANCE PAGE COMPONENT */}
         <EditFormFlightDetailsPage dates={this.props.dates} isReturn={this.state.isReturn} totalInstances={this.props.flightInstances.length} instances={this.state[`page${this.state.currentPage}`]} />

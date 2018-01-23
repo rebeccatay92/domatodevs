@@ -54,13 +54,19 @@ class EditFlightForm extends Component {
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       flightInstances: [],
-      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm select flight is clicked, replaced all of these with the new flight. if cancel is clicked, close form and dont send db req. if submit edit form with changed flight, treat as deleteFlightBooking and createFlightBooking. if changedFlight is false, update accordingly.
+      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm select flight is clicked, replaced all of these with the new flight. if cancel is clicked, close form and dont send db req. if submit edit form with changed flight, treat as deleteFlightBooking and createFlightBooking. if changedFlight is false, update accordingly. if changed flight
+      // if changed flight -> clear out attachments, add to holderDeleteAttachments. any new attachments go to new FLightBooking row.
       changedFlight: false,
       searching: false,
       flights: [], // flight search results from airhob
       tripType: '', // 'O' or 'R'
       selected: 0,
       searchFlightInstances: [],
+      searchParams: {}, // for storing search params without affected editForm state
+      searchedCostCurrency: {
+        cost: 0,
+        currency: ''
+      },
       flightDetailsPage: 1
     }
   }
@@ -83,9 +89,26 @@ class EditFlightForm extends Component {
   //   console.log(this.state)
   // }
 
-  handleSearch (flights, tripType) {
+  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) {
     console.log('details are hoisted up to editFlightForm')
     this.setState({flights: flights, tripType: tripType})
+    var searchParams = {
+      paxAdults: adults,
+      paxChildren: children,
+      paxInfants: infants,
+      classCode: classCode,
+      departureIATA: departureIATA,
+      arrivalIATA: arrivalIATA
+    }
+    if (departureDate) {
+      searchParams.departureDate = departureDate.utc().unix()
+    }
+    if (returnDate) {
+      searchParams.returnDate = returnDate.utc().unix()
+    }
+    this.setState({
+      searchParams: searchParams
+    })
   }
 
   handleSubmit () {
@@ -273,10 +296,29 @@ class EditFlightForm extends Component {
   }
 
   changeFlight () {
-    console.log('CHANGE FLIGHT')
-    // this.setState({searching: false})
+    var params = this.state.searchParams
+    this.setState({
+      paxAdults: params.paxAdults,
+      paxChildren: params.paxChildren,
+      paxInfants: params.paxInfants,
+      classCode: params.classCode,
+      departureIATA: params.departureIATA,
+      arrivalIATA: params.arrivalIATA,
+      departureDate: params.departureDate,
+      returnDate: params.returnDate,
+      bookedThrough: '',
+      bookingConfirmation: '',
+      cost: this.state.searchedCostCurrency.cost,
+      currency: this.state.searchedCostCurrency.currency,
+      flightInstances: this.state.searchFlightInstances
+      // dont touch attachments
+    }, () => console.log('after change flight', this.state))
+
+    removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    this.setState({searching: false, changedFlight: true})
   }
 
+  // WHEN CLICKING ON A FLIGHT, SEARCH FLIGHT INSTANCES ARR CHANGES TO GRAPHQL STRCUTURE
   handleSelectFlight (index) {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
@@ -285,6 +327,10 @@ class EditFlightForm extends Component {
     this.setState({
       selected: index,
       flightDetailsPage: 1,
+      searchedCostCurrency: {
+        cost: this.state.flights[index].cost,
+        currency: this.state.flights[index].currency
+      },
       searchFlightInstances: this.state.flights[index].flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
@@ -336,7 +382,8 @@ class EditFlightForm extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.data.findFlightBooking) {
+    if (nextProps.data.findFlightBooking && nextProps.data.findFlightBooking !== this.props.data.findFlightBooking) {
+      console.log('initialize to db data')
       var booking = nextProps.data.findFlightBooking
       // INITIALIZE DATA FROM DB
       this.setState({
@@ -361,7 +408,9 @@ class EditFlightForm extends Component {
       var sortedInstances = flightInstances.sort(function (a, b) {
         return a.startDay - b.startDay || a.startTime - b.startTime
       })
+      console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
       this.setState({flightInstances: sortedInstances})
+      // FLIGHT INSTANCES FROM DB HV DEPARTURE LOCATION AS A DB ROW. FLIGHT INSTANCES FROM SEARCH HAS DEPARTURE LOCATION AS A STR
     }
   }
 
@@ -380,15 +429,15 @@ class EditFlightForm extends Component {
               </div>
             }
             {!this.state.searching &&
-              <div>
-                <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
-                <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
-              </div>
+              <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
+            }
+            {!this.state.searching && !this.state.changedFlight &&
+              <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
             {this.state.searching &&
-              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType) => this.handleSearch(flights, tripType)} />
+              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate)} />
             }
-            {this.state.searching &&
+            {(this.state.searching || this.state.changedFlight) &&
               <FlightSearchDetailsContainer flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />
             }
           </div>
