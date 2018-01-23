@@ -4,11 +4,10 @@ import { connect } from 'react-redux'
 import { initializePlanner } from '../actions/plannerActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { queryItinerary } from '../apollo/itinerary'
-import { Image } from 'react-bootstrap'
 import { Scrollbars } from 'react-custom-scrollbars'
-import { primaryColor, plannerContainerStyle, plannerHeaderContainerStyle, itineraryNameStyle, itineraryDescStyle, plannerHeaderIconsContainerStyle, userIconsContainerStyle, userIconStyle, plannerIconStyle } from '../Styles/styles'
+import { primaryColor, plannerContainerStyle } from '../Styles/styles'
 import DateBox from './Date'
-import PlannerHeaderRightBarIcons from './PlannerHeaderRightBarIcons'
+import PlannerHeader from './PlannerHeader'
 
 class Planner extends Component {
   constructor (props) {
@@ -22,7 +21,7 @@ class Planner extends Component {
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
     console.log(this.props.activities)
-    console.log('rerender');
+    console.log('rerender')
     // console.log('apollo', this.props.data.findItinerary)
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
@@ -54,19 +53,7 @@ class Planner extends Component {
             paddingRight: '44px',
             paddingLeft: '10px'
           }}>
-            <div style={plannerHeaderContainerStyle}>
-              <h1 style={itineraryNameStyle}>{this.props.data.findItinerary.name}</h1>
-              <p style={itineraryDescStyle}>Just a short getaway, 5D4N to DomLand, maybe we can see some Dominics whoop whoop!</p>
-              <div style={plannerHeaderIconsContainerStyle}>
-                <div style={userIconsContainerStyle}>
-                  <Image src='https://scontent-sin6-2.xx.fbcdn.net/v/t1.0-9/14225571_677406772406900_4575646425482055747_n.jpg?oh=935665cd290c11b5c698a4b91772fe91&oe=5AACAA18' circle style={userIconStyle} />
-                  <Image src='https://scontent-sin6-2.xx.fbcdn.net/v/t1.0-9/13335715_630881200392791_5149958966299133966_n.jpg?oh=c360bd9cf2063d1daf86cd294e3e231f&oe=5A9CF157' circle style={userIconStyle} />
-                  <Image src='https://media.licdn.com/media/AAEAAQAAAAAAAAqQAAAAJDhmZmZhOTg2LWE1YmYtNDQ2OC1iMzhiLWU0Y2RiZTBmNGRkMw.jpg' circle style={userIconStyle} />
-                  <i className='material-icons person-add' style={{...plannerIconStyle, ...{verticalAlign: 'middle', margin: '0 0 10px 10px'}}}>person_add</i>
-                </div>
-                <PlannerHeaderRightBarIcons />
-              </div>
-            </div>
+            <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} />
             {/* <h4 style={{lineHeight: '-0px'}}>{this.props.data.findItinerary.countries[0].name}</h4> */}
             {/* <button onClick={() => this.setState({draggable: !this.state.draggable})}>{this.state.draggable ? 'Rearrange Mode: On' : 'Rearrange Mode: Off'}</button> */}
             <div>

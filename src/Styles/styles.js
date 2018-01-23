@@ -33,9 +33,9 @@ export const plannerContainerStyle = {
 }
 
 export const plannerHeaderContainerStyle = {marginLeft: '89px'}
-export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', marginTop: '0'}
-export const itineraryDescStyle = {margin: '0 0 2vh 0', fontSize: '16px', fontWeight: '100', color: secondaryFontColor}
-export const plannerHeaderIconsContainerStyle = {position: 'relative', height: '6vh', margin: '0 0 2vh 0'}
+export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', marginTop: '10px', marginBottom: '-20px'}
+export const itineraryDescStyle = {fontSize: '16px', fontWeight: '100', color: secondaryFontColor, marginBottom: '0px'}
+export const plannerHeaderIconsContainerStyle = {position: 'relative', height: '6vh', margin: '10px 0 2vh 0'}
 export const userIconsContainerStyle = {position: 'absolute', left: '0', top: '0'}
 export const userIconStyle = {height: '30px', width: '30px', margin: '0 0 10px 10px'}
 export const plannerIconStyle = {
