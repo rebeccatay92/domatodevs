@@ -54,8 +54,8 @@ class EditFlightForm extends Component {
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       flightInstances: [],
-      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm select flight is clicked, replaced all of these with the new flight. if cancel is clicked, close form and dont send db req. if submit edit form with changed flight, treat as deleteFlightBooking and createFlightBooking. if changedFlight is false, update accordingly. if changed flight
-      // if changed flight -> clear out attachments, add to holderDeleteAttachments. any new attachments go to new FLightBooking row.
+      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm select flight is clicked, replaced all of these with the new flight. if cancel is clicked, close form and dont send db req.
+      // if changedFlight, notes get copied over, attachments remain
       changedFlight: false,
       searching: false,
       flights: [], // flight search results from airhob
@@ -75,19 +75,6 @@ class EditFlightForm extends Component {
     console.log('clicked')
     this.setState({searching: true})
   }
-
-  // handleSearch (flights, tripType, adults, children, infants, classCode) {
-  //   this.setState({
-  //     flights,
-  //     tripType: tripType,
-  //     paxAdults: adults,
-  //     paxChildren: children,
-  //     paxInfants: infants,
-  //     classCode: classCode,
-  //     searching: true
-  //   })
-  //   console.log(this.state)
-  // }
 
   handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) {
     console.log('details are hoisted up to editFlightForm')
@@ -228,7 +215,17 @@ class EditFlightForm extends Component {
       attachments: [],
       holderNewAttachments: [],
       holderDeleteAttachments: [],
-      flightInstances: []
+      flightInstances: [],
+      // for searching
+      changedFlight: false,
+      searching: false,
+      flights: [],
+      tripType: '',
+      selected: 0,
+      searchFlightInstances: [],
+      searchParams: {},
+      searchedCostCurrency: {cost: 0, currency: ''},
+      flightDetailsPage: 1
     })
   }
 
@@ -291,11 +288,13 @@ class EditFlightForm extends Component {
   }
 
   returnToForm () {
-    console.log('BACK BUTTON')
     this.setState({searching: false})
   }
 
+  // dont touch attachments
   changeFlight () {
+    console.log('current instances', this.state.flightInstances, 'new instances', this.state.searchFlightInstances)
+
     var params = this.state.searchParams
     this.setState({
       paxAdults: params.paxAdults,
@@ -311,14 +310,11 @@ class EditFlightForm extends Component {
       cost: this.state.searchedCostCurrency.cost,
       currency: this.state.searchedCostCurrency.currency,
       flightInstances: this.state.searchFlightInstances
-      // dont touch attachments
     }, () => console.log('after change flight', this.state))
-
-    removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
     this.setState({searching: false, changedFlight: true})
   }
 
-  // WHEN CLICKING ON A FLIGHT, SEARCH FLIGHT INSTANCES ARR CHANGES TO GRAPHQL STRCUTURE
+  // WHEN CLICKING ON A FLIGHT, SEARCH FLIGHT INSTANCES ARR CHANGES TO GRAPHQL STRUCTURE
   handleSelectFlight (index) {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
@@ -379,6 +375,37 @@ class EditFlightForm extends Component {
     })
     var currencyList = allCurrenciesList()
     this.setState({currencyList: currencyList})
+
+    // if cancel and reopen, reinitialize state
+    if (this.props.data.findFlightBooking) {
+      console.log('initialize to db data')
+      var booking = this.props.data.findFlightBooking
+      // INITIALIZE DATA FROM DB
+      this.setState({
+        id: booking.id,
+        paxAdults: booking.paxAdults,
+        paxChildren: booking.paxChildren,
+        paxInfants: booking.paxInfants,
+        cost: booking.cost || 0,
+        currency: booking.currency,
+        departureDate: booking.departureDate,
+        returnDate: booking.returnDate,
+        departureIATA: booking.departureIATA,
+        arrivalIATA: booking.arrivalIATA,
+        classCode: booking.classCode,
+        bookingStatus: booking.bookingStatus,
+        bookedThrough: booking.bookedThrough || '',
+        bookingConfirmation: booking.bookingConfirmation || '',
+        backgroundImage: booking.backgroundImage,
+        attachments: booking.attachments
+      })
+      var flightInstances = JSON.parse(JSON.stringify(booking.flightInstances))
+      var sortedInstances = flightInstances.sort(function (a, b) {
+        return a.startDay - b.startDay || a.startTime - b.startTime
+      })
+      console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
+      this.setState({flightInstances: sortedInstances})
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -410,7 +437,6 @@ class EditFlightForm extends Component {
       })
       console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
       this.setState({flightInstances: sortedInstances})
-      // FLIGHT INSTANCES FROM DB HV DEPARTURE LOCATION AS A DB ROW. FLIGHT INSTANCES FROM SEARCH HAS DEPARTURE LOCATION AS A STR
     }
   }
 
