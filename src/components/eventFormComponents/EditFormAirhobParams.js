@@ -33,6 +33,62 @@ class EditFormAirhobParams extends Component {
     console.log('HANDLE CHANGE')
   }
 
+  // if back button is clicked in search, repopulate fields with db data
+  componentDidMount () {
+    if (!this.props.departureDate) return
+    this.setState({
+      departureDate: moment(this.props.departureDate * 1000),
+      returnDate: this.props.returnDate ? moment(this.props.returnDate * 1000) : null,
+      departureIATA: this.props.departureIATA,
+      arrivalIATA: this.props.arrivalIATA
+    })
+    var departureRow = airports.find(e => {
+      return e.iata === this.props.departureIATA
+    })
+    // console.log('DEPARTURE ROW IS AIRPORT', departureRow)
+    if (departureRow) {
+      var departureLocation = {
+        name: departureRow.name,
+        iata: departureRow.iata,
+        type: 'airport'
+      }
+    } else {
+      departureRow = airports.find(e => {
+        return e.cityCode === this.props.departureIATA
+      })
+      // console.log('ELSE', departureRow)
+      departureLocation = {
+        name: departureRow.city,
+        cityCode: departureRow.iata,
+        type: 'city'
+      }
+    }
+    var arrivalRow = airports.find(e => {
+      return e.iata === this.props.arrivalIATA
+    })
+    if (arrivalRow) {
+      var arrivalLocation = {
+        name: arrivalRow.name,
+        iata: arrivalRow.iata,
+        type: 'airport'
+      }
+    } else {
+      arrivalRow = airports.find(e => {
+        return e.cityCode === this.props.arrivalIATA
+      })
+      arrivalLocation = {
+        name: arrivalRow.city,
+        cityCode: arrivalRow.iata,
+        type: 'city'
+      }
+    }
+    this.setState({
+      departureLocation: departureLocation,
+      arrivalLocation: arrivalLocation
+    })
+  }
+
+  // component was already mounted. but after apollo query returns, update fields
   componentWillReceiveProps (nextProps) {
     if (this.props.departureDate !== nextProps.departureDate) {
       this.setState({
@@ -51,7 +107,7 @@ class EditFormAirhobParams extends Component {
       var departureRow = airports.find(e => {
         return e.iata === nextProps.departureIATA
       })
-      console.log('DEPARTURE ROW IS AIRPORT', departureRow)
+      // console.log('DEPARTURE ROW IS AIRPORT', departureRow)
       if (departureRow) {
         var departureLocation = {
           name: departureRow.name,
@@ -62,7 +118,7 @@ class EditFormAirhobParams extends Component {
         departureRow = airports.find(e => {
           return e.cityCode === nextProps.departureIATA
         })
-        console.log('ELSE', departureRow)
+        // console.log('ELSE', departureRow)
         departureLocation = {
           name: departureRow.city,
           cityCode: departureRow.iata,
@@ -96,6 +152,7 @@ class EditFormAirhobParams extends Component {
   }
 
   render () {
+    // console.log('AIRHOB PARAMS', this.state)
     return (
       <div style={{position: 'relative'}}>
         <div style={{...eventDescContainerStyle, ...{marginTop: '55px'}}}>
@@ -119,8 +176,8 @@ class EditFormAirhobParams extends Component {
             {/* <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.departureDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'departureDate')} disabled /> */}
           </div>
           <div style={{display: 'inline-block', width: '25%'}}>
-            {this.state.arrivalDate &&
-              <p style={{...locationSelectionInputStyle(0, 'flight'), ...{fontSize: '16px', fontWeight: '300', textTransform: 'uppercase'}}}>{this.state.arrivalDate.format('DD MMM YYYY').toString()}</p>
+            {this.state.returnDate &&
+              <p style={{...locationSelectionInputStyle(0, 'flight'), ...{fontSize: '16px', fontWeight: '300', textTransform: 'uppercase'}}}>{this.state.returnDate.format('DD MMM YYYY').toString()}</p>
             }
             {/* <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'returnDate')} disabled /> */}
           </div>

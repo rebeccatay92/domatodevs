@@ -24,12 +24,6 @@ class EditFormFlightDetailsInstance extends Component {
     super(props)
   }
 
-  // componentWillReceiveProps (nextProps) {
-  //   if (this.props.instance !== nextProps.instance) {
-  //
-  //   }
-  // }
-
   render () {
     if (!this.props.instance) return null
 

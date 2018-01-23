@@ -54,7 +54,7 @@ class EditFlightForm extends Component {
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       flightInstances: [],
-      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm seelct flight is clicked, replaced all of these with the new flight. if changedFlight is true, delete from db, create new FlightBooking row.
+      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm select flight is clicked, replaced all of these with the new flight. if cancel is clicked, close form and dont send db req. if submit edit form with changed flight, treat as deleteFlightBooking and createFlightBooking. if changedFlight is false, update accordingly.
       changedFlight: false,
       searching: false,
       flights: [], // flight search results from airhob
@@ -267,11 +267,21 @@ class EditFlightForm extends Component {
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
+  returnToForm () {
+    console.log('BACK BUTTON')
+    this.setState({searching: false})
+  }
+
+  changeFlight () {
+    console.log('CHANGE FLIGHT')
+    // this.setState({searching: false})
+  }
+
   handleSelectFlight (index) {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    console.log(datesUnix)
+    // console.log(datesUnix)
     this.setState({
       selected: index,
       flightDetailsPage: 1,
@@ -280,7 +290,7 @@ class EditFlightForm extends Component {
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
         const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
-        console.log(startTime, endTime)
+        // console.log(startTime, endTime)
         return {
           flightNumber: flight.flightNum,
           airlineCode: flight.carrierCode,
@@ -293,7 +303,7 @@ class EditFlightForm extends Component {
           endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
           startTime: startTime,
           endTime: endTime,
-          notes: 'edit form search flights',
+          notes: '',
           firstFlight: i === 0
         }
       })
@@ -369,11 +379,6 @@ class EditFlightForm extends Component {
                 <button style={{color: 'black', position: 'relative'}} onClick={() => this.searchFlight()}>Search again</button>
               </div>
             }
-            {/* {this.state.searching &&
-              <div style={{...eventDescContainerStyle}}>
-                <button style={{color: 'black', position: 'relative'}} onClick={() => this.searchFlight()}>Back to form</button>
-              </div>
-            } */}
             {!this.state.searching &&
               <div>
                 <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
@@ -433,10 +438,10 @@ class EditFlightForm extends Component {
                 })
               }}>Confirm</Button>} */}
               {this.state.searching &&
-                <Button bsStyle='danger' style={{marginRight: '5px'}}>Back</Button>
+                <Button bsStyle='danger' onClick={() => this.returnToForm()} style={{marginRight: '5px'}}>Back</Button>
               }
               {this.state.searching &&
-                <Button bsStyle='danger'>Change flight</Button>
+                <Button bsStyle='danger' onClick={() => this.changeFlight()}>Change flight</Button>
               }
               {/* <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
               <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button> */}
