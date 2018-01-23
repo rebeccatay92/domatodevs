@@ -264,7 +264,9 @@ class PlannerActivity extends Component {
   }
 
   toggleEventDropdown (event) {
-    if (event.target.textContent === 'more_horiz' && event.target.id === this.props.activity.type + this.props.activity.modelId + this.props.activity.start) return
+    if (event) {
+      if (event.target.textContent === 'more_horiz' && event.target.id === this.props.activity.type + this.props.activity.modelId + this.props.activity.start) return
+    }
     this.setState({
       expandedMenu: false
     })
