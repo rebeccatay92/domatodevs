@@ -76,6 +76,8 @@ class EditLandTransportForm extends Component {
   }
 
   handleSubmit () {
+    console.log('submit state', this.state)
+
     var updatesObj = {
       id: this.state.id
     }
@@ -103,6 +105,7 @@ class EditLandTransportForm extends Component {
     }
 
     if (this.state.holderNewAttachments.length) {
+      console.log('ADD ATTACHMENTS')
       updatesObj.addAttachments = this.state.holderNewAttachments
     }
     // removeAttachments obj only takes id
@@ -231,19 +234,55 @@ class EditLandTransportForm extends Component {
 
   handleFileUpload (attachmentInfo) {
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
+    this.setState({holderNewAttachments: this.state.holderNewAttachments.concat([attachmentInfo])})
   }
 
   removeUpload (index) {
-    var fileToRemove = this.state.attachments[index]
-    var fileNameToRemove = fileToRemove.fileName
+    var files = this.state.attachments
+    var holderNew = this.state.holderNewAttachments
+
+    var fileToDelete = files[index]
+    var fileNameToRemove = fileToDelete.fileName
     if (this.state.backgroundImage.indexOf(fileNameToRemove) > -1) {
       this.setState({backgroundImage: defaultBackground})
     }
 
-    var files = this.state.attachments
-    var newFilesArr = (files.slice(0, index)).concat(files.slice(index + 1))
+    var isRecentUpload = holderNew.includes(fileToDelete)
 
+    // removing from attachments arr
+    var newFilesArr = (files.slice(0, index)).concat(files.slice(index + 1))
     this.setState({attachments: newFilesArr})
+
+    var uriBase = process.env.REACT_APP_CLOUD_DELETE_URI
+    var objectName = fileToDelete.fileName
+    objectName = objectName.replace('/', '%2F')
+    var uriFull = uriBase + objectName
+
+    if (isRecentUpload) {
+      console.log('isRecentUpload')
+      // remove from holding area, send delete http req
+      var holdingIndex = holderNew.indexOf(fileToDelete)
+      var newArr = (holderNew.slice(0, holdingIndex)).concat(holderNew.slice(holdingIndex + 1))
+      this.setState({holderNewAttachments: newArr})
+
+      fetch(uriFull, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.apiToken}`
+        }
+      })
+      .then(response => {
+        if (response.status === 204) {
+          console.log('delete from cloud storage succeeded')
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    } else {
+      // add to holderDeleteAttachments. dont send req
+      this.setState({holderDeleteAttachments: this.state.holderDeleteAttachments.concat([fileToDelete])})
+    }
   }
 
   setBackground (previewUrl) {

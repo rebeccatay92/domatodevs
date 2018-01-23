@@ -5,6 +5,7 @@ export const queryItinerary = gql`
     findItinerary(id: $id){
       id
       name
+      description
       countries {
         id
         name
@@ -479,6 +480,7 @@ export const itinerariesByUser = gql`
       name
       days
       startDate
+      description
       countries {
         id
         name
@@ -504,6 +506,7 @@ export const createItinerary = gql`
     $name: String!,
     $days: Int!,
     $startDate: Int
+    $description: String
   ) {
     createItinerary(
       UserId:$UserId,
@@ -511,11 +514,13 @@ export const createItinerary = gql`
       name: $name,
       days: $days,
       startDate: $startDate
+      description: $description
     ) {
       id
       name
       days
       startDate
+      description
     }
   }`
 
@@ -524,19 +529,22 @@ export const updateItineraryDetails = gql`
     $id: ID!,
     $name: String,
     $startDate: Int,
-    $days: Int
+    $days: Int,
+    $description: String
   ) {
     updateItineraryDetails(
       id: $id,
       name: $name,
       startDate: $startDate,
-      days: $days
+      days: $days,
+      description: $description
     ) {
       id
       name
       days
       startDate
       days
+      description
     }
   }`
 

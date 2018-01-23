@@ -1,5 +1,106 @@
 import { gql } from 'react-apollo'
 
+export const findFlightBooking = gql`
+  query findFlightBooking($id: ID!) {
+    findFlightBooking(id: $id) {
+      id
+      ItineraryId
+      paxAdults
+      paxChildren
+      paxInfants
+      cost
+      currency
+      classCode
+      departureDate
+      returnDate
+      departureIATA
+      arrivalIATA
+      bookingStatus
+      bookedThrough
+      bookingConfirmation
+      backgroundImage
+      attachments {
+        id
+        fileName
+        fileAlias
+        fileType
+        fileSize
+      }
+      flightInstances {
+        id
+        FlightBookingId
+        flightNumber
+        airlineCode
+        airlineName
+        departureIATA
+        arrivalIATA
+        departureLocation {
+          id
+          placeId
+          country {
+            id
+            name
+          }
+          name
+          telephone
+          address
+          latitude
+          longitude
+          utcOffset
+          openingHours {
+            open {
+              day
+              time
+            }
+            close {
+              day
+              time
+            }
+          }
+          openingHoursText
+        }
+        arrivalLocation {
+          id
+          placeId
+          country {
+            id
+            name
+          }
+          name
+          telephone
+          address
+          latitude
+          longitude
+          utcOffset
+          openingHours {
+            open {
+              day
+              time
+            }
+            close {
+              day
+              time
+            }
+          }
+          openingHoursText
+        }
+        departureTerminal
+        arrivalTerminal
+        departureGate
+        arrivalGate
+        startDay
+        endDay
+        startTime
+        endTime
+        startLoadSequence
+        endLoadSequence
+        notes
+        firstFlight
+      }
+    }
+  }
+`
+
 export const createFlightBooking = gql`
   mutation createFlightBooking(
     $ItineraryId: ID!,

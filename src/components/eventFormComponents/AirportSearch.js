@@ -77,6 +77,7 @@ class AirportSearch extends Component {
   }
 
   selectLocation (details) {
+    console.log('AIRPORT LOCATION', details)
     this.setState({selecting: false, results: []})
     this.setState({search: details.name})
     this.props.selectLocation(details)
@@ -92,9 +93,14 @@ class AirportSearch extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.currentLocation === '') {
+    // if (nextProps.currentLocation === '') {
+    //   this.setState({
+    //     search: ''
+    //   })
+    // }
+    if (nextProps.currentLocation !== this.props.currentLocation) {
       this.setState({
-        search: ''
+        search: nextProps.currentLocation.name
       })
     }
   }

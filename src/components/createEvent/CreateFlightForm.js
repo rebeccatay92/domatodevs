@@ -122,14 +122,6 @@ class CreateFlightForm extends Component {
     }
     // console.log('newFlight', newFlight)
 
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Flight', newFlight.flightInstances)
-    // console.log('output', output)
-    // if (!output.isValid) {
-    //   window.alert(`some flight instances hv timing clash`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
-
     // REWRITTEN FUNCTION TO VALIDATE
     var eventObjArr = newFlight.flightInstances.map(e => {
       return {
