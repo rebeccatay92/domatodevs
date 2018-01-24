@@ -4,7 +4,10 @@
 //   startDay,
 //   endDay,
 //   startTime,
-//   endTime
+//   endTime,
+//   utcOffset, // for activity, food, lodging
+//   startUtcOffset, // transport, flight
+//   endUtcOffset
 // }
 
 function constructLoadSeqInputObj (event, correctLoadSeq) {
