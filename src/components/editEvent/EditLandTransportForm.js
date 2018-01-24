@@ -137,12 +137,14 @@ class EditLandTransportForm extends Component {
     }
 
     // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime) {
+    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.departureGooglePlaceData || updatesObj.arrivalGooglePlaceData) {
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
-        endTime: this.state.endTime
+        endTime: this.state.endTime,
+        departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
+        arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
       }
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, updateEvent)
       console.log('helperOutput', helperOutput)

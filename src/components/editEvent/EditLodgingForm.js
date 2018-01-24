@@ -125,12 +125,13 @@ class EditLodgingForm extends Component {
     }
 
     // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime) {
+    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
-        endTime: this.state.endTime
+        endTime: this.state.endTime,
+        utcOffset: this.state.googlePlaceData.utcOffset
       }
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, updateEvent)
       console.log('helperOutput', helperOutput)

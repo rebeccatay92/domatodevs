@@ -155,16 +155,20 @@ class EditActivityForm extends Component {
       this.props.toggleEditEventType()
     }
 
-    // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime) {
+    // if time or day changes, reassign load seq. if googlePlaceData changes, run anyway (utcOffset might change)
+    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+      // add utcOffset into obj
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
-        endTime: this.state.endTime
+        endTime: this.state.endTime,
+        utcOffset: this.state.googlePlaceData.utcOffset
       }
+      console.log('updateEvent before helper', updateEvent)
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, updateEvent)
       console.log('helperOutput', helperOutput)
+
       updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
       var loadSequenceInput = helperOutput.loadSequenceInput
       if (loadSequenceInput.length) {
