@@ -110,30 +110,23 @@ class CreateActivityForm extends Component {
       newActivity = checkStartAndEndTime(this.props.events, newActivity, 'endTimeMissing')
     }
 
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Activity', newActivity)
-    // console.log('output', output)
+    // REWRITE FUNCTION TO VALIDATE
+    // var eventObj = {
+    //   startDay: newActivity.startDay,
+    //   endDay: newActivity.endDay,
+    //   startTime: newActivity.startTime,
+    //   endTime: newActivity.endTime
+    // }
+    // var isError = validateIntervals(this.props.events, eventObj)
+    // console.log('isError', isError)
     //
-    // if (!output.isValid) {
-    //   window.alert(`time ${newActivity.startTime} --- ${newActivity.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
+    // if (isError) {
+    //   window.alert('timing clashes detected')
     // }
 
-    // REWRITE FUNCTION TO VALIDATE
-    var eventObj = {
-      startDay: newActivity.startDay,
-      endDay: newActivity.endDay,
-      startTime: newActivity.startTime,
-      endTime: newActivity.endTime
-    }
-    var isError = validateIntervals(this.props.events, eventObj)
-    console.log('isError', isError)
-
-    if (isError) {
-      window.alert('timing clashes detected')
-    }
-
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
+
+    console.log('helperOutput', helperOutput)
 
     this.props.changingLoadSequence({
       variables: {
@@ -249,7 +242,6 @@ class CreateActivityForm extends Component {
   }
 
   render () {
-    console.log('PROPS', this.props)
     return (
       <div style={createEventFormContainerStyle}>
 

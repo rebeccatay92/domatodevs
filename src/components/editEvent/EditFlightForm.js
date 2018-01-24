@@ -294,7 +294,9 @@ class EditFlightForm extends Component {
   // dont touch attachments
   changeFlight () {
     console.log('current instances', this.state.flightInstances, 'new instances', this.state.searchFlightInstances)
-
+    // compare one way vs return
+    console.log('current', this.state.returnDate, 'updating', this.state.searchParams.returnDate)
+    
     var params = this.state.searchParams
     this.setState({
       paxAdults: params.paxAdults,
