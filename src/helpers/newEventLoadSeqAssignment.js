@@ -353,7 +353,28 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
     })
   }
 
+  // after assigning load seq, remove utcTimings from newEvent
   console.log('newEvent after assigning load seq', newEvent)
+  if (eventModel !== 'Flight') {
+    var removedUtcEvent = {}
+    Object.keys(newEvent).forEach(key => {
+      if (key !== 'timeUtcZero' && key !== 'startTimeUtcZero' && key !== 'endTimeUtcZero') {
+        removedUtcEvent[key] = newEvent[key]
+      }
+    })
+    newEvent = removedUtcEvent
+  } else if (eventModel === 'Flight') {
+    newEvent = newEvent.map(instance => {
+      var removedUtcInstance = {}
+      Object.keys(instance).forEach(key => {
+        if (key !== 'startTimeUtcZero' && key !== 'endTimeUtcZero') {
+          removedUtcInstance[key] = instance[key]
+        }
+      })
+      return removedUtcInstance
+    })
+  }
+  console.log('newEvent after removing utc properties', newEvent)
   console.log('loadSequenceInput', loadSequenceInput)
 
   var output = {
