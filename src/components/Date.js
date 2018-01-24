@@ -7,7 +7,7 @@ import { changingLoadSequence } from '../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
-import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner } from '../actions/plannerActions'
+import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../actions/plannerActions'
 import { addActivityToBucket, deleteActivityFromBucket } from '../actions/bucketActions'
 import { toggleTimeline } from '../actions/plannerTimelineActions'
 import PlannerColumnHeader from './PlannerColumnHeader'
@@ -44,7 +44,7 @@ class DateBox extends Component {
       <div style={timelineStyle} />
     )
     return (
-      <div>
+      <div ref={elem => { this.elem = elem }}>
         <table style={dateTableStyle}>
           <thead>
             <tr>
@@ -144,26 +144,41 @@ class DateBox extends Component {
     if (!checkIfNoBlankBoxes(this.props.activities) && checkIfNoBlankBoxes(nextProps.activities) && nextProps.isOver) {
       // console.log(nextProps.activities)
       // let loadSequenceArr = []
-      const loadSequenceArr = nextProps.activities.map((activity, i) => {
-        const day = activity.day
-        const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
-        // console.log(diff);
-        return {...{
-          id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
-          type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
-          loadSequence: i + 1,
-          day: day,
-          start: activity.start
-        },
-          ...diff && {diff: diff}
-        }
-      })
+      // console.log(this.elem);
+      const changeLoadSeq = () => {
+        const loadSequenceArr = nextProps.activities.map((activity, i) => {
+          const day = activity.day
+          const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
+          // console.log(diff);
+          return {...{
+            id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
+            type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
+            loadSequence: i + 1,
+            day: day,
+            start: activity.start
+          },
+            ...diff && {diff: diff}
+          }
+        })
       // console.log(loadSequenceArr)
-      this.props.changingLoadSequence({
-        variables: {
-          input: loadSequenceArr
+        this.props.changingLoadSequence({
+          variables: {
+            input: loadSequenceArr
+          }
+        })
+      }
+      const handleKeydown = (event) => {
+        if (event.keyCode === 27) {
+          // console.log(this.props.data);
+          this.props.data.refetch()
+          .then(response => this.props.initializePlanner(response.data.findItinerary.events))
         }
-      })
+        if (event.keyCode === 13) changeLoadSeq()
+      }
+      if (nextProps.activities.length !== 1) document.addEventListener('keydown', event => handleKeydown(event))
+      if (nextProps.activities.length === 1) {
+        changeLoadSeq()
+      }
     }
   }
 }
@@ -190,6 +205,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleTimeline: (options) => {
       dispatch(toggleTimeline(options))
+    },
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
     }
   }
 }
@@ -202,7 +220,16 @@ const mapStateToProps = (state) => {
   }
 }
 
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
   graphql(changingLoadSequence, { name: 'changingLoadSequence' }),
   graphql(updateItineraryDetails, { name: 'updateItineraryDetails' })
 )(DropTarget(['activity', 'plannerActivity'], dateTarget, collect)(Radium(DateBox))))
