@@ -5,7 +5,7 @@ function checkForTimelineErrorsInPlanner (events) {
   let flightsTransportArr = []
   let validatedEvents = []
   events.forEach((event, i) => {
-    console.log(latestUnix);
+    // console.log(latestUnix);
     const eventType = event.type
     const eventHasOneRow = eventType !== 'Lodging' && eventType !== 'LandTransport' && eventType !== 'Flight'
     const eventHasTwoRows = !eventHasOneRow
