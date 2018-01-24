@@ -75,8 +75,12 @@ class PlannerActivityTimeline extends Component {
       timeOfNextActivity = nextActivity.start || typeof nextActivity.start !== 'boolean' ? nextActivity[nextActivity.type]['startTime'] : nextActivity[nextActivity.type]['endTime']
       if (nextActivity.type === 'Flight') timeOfNextActivity = nextActivity.start || typeof nextActivity.start !== 'boolean' ? nextActivity[nextActivity.type].FlightInstance['startTime'] : nextActivity[nextActivity.type].FlightInstance['endTime']
 
+      let diff = 0
+      if (this.props.activity.type === 'Food' || this.props.activity.type === 'Activity') {
+        diff = this.props.activity[this.props.activity.type].endDay - this.props.activity[this.props.activity.type].startDay
+      }
       const dayOfNextActivity = nextActivity.day
-      dayAdjustedTime = timeOfNextActivity + (dayOfNextActivity - this.props.day) * 86400
+      dayAdjustedTime = timeOfNextActivity + (dayOfNextActivity - (this.props.day + diff)) * 86400
 
       const nextLocation = nextActivity.start || typeof nextActivity.start !== 'boolean' ? nextActivity[nextActivity.type].location || nextActivity[nextActivity.type].departureLocation || (nextActivity[nextActivity.type].FlightInstance && nextActivity[nextActivity.type].FlightInstance.departureLocation) : nextActivity[nextActivity.type].location || nextActivity[nextActivity.type].arrivalLocation || (nextActivity[nextActivity.type].FlightInstance && nextActivity[nextActivity.type].FlightInstance.arrivalLocation)
 
