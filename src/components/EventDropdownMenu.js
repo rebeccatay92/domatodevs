@@ -71,6 +71,7 @@ class EventDropdownMenu extends Component {
         }
       })
     })
+    this.props.toggleEventDropdown()
     console.log('loadSequenceInputArr', loadSequenceInputArr)
     this.props.changingLoadSequence({
       variables: {

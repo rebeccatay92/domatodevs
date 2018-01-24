@@ -19,43 +19,45 @@ export const plannerReducer = (state = [], action) => {
         let newStateWithActivitiesWithThatDate = state.filter(activity => {
           return activity.modelId && activity.day === action.activity.day
         })
-        return [
+        return checkForTimelineErrorsInPlanner([
           ...stateWithoutActivitiesWithThatDate,
           ...[
             ...newStateWithActivitiesWithThatDate.slice(0, action.index),
             ...[action.activity],
             ...newStateWithActivitiesWithThatDate.slice(action.index, newStateWithActivitiesWithThatDate.length)
           ]
-        ]
+        ].sort((a, b) => {
+          return a.day - b.day
+        }))
       }
     case 'DELETE_ACTIVITY':
       return state.filter((activity) => {
         return activity.id !== action.activity.id
       })
-    case 'HOVER_OVER_ACTIVITY':
-      if (!(action.index + 1)) {
-        return state.filter(activity => {
-          return activity.id
-        })
-      }
-      let stateWithoutActivitiesWithThatDate = state.filter(activity => {
-        return activity.id && activity.day !== action.day
-      })
-      let newStateWithActivitiesWithThatDate = state.filter(activity => {
-        return activity.id && activity.day === action.day
-      })
-      return [
-        ...stateWithoutActivitiesWithThatDate,
-        ...[
-          ...newStateWithActivitiesWithThatDate.slice(0, action.index),
-          ...[{
-            modelId: '',
-            day: action.day,
-            dropzone: true
-          }],
-          ...newStateWithActivitiesWithThatDate.slice(action.index, newStateWithActivitiesWithThatDate.length)
-        ]
-      ]
+    // case 'HOVER_OVER_ACTIVITY':
+    //   if (!(action.index + 1)) {
+    //     return state.filter(activity => {
+    //       return activity.id
+    //     })
+    //   }
+    //   let stateWithoutActivitiesWithThatDate = state.filter(activity => {
+    //     return activity.id && activity.day !== action.day
+    //   })
+    //   let newStateWithActivitiesWithThatDate = state.filter(activity => {
+    //     return activity.id && activity.day === action.day
+    //   })
+    //   return [
+    //     ...stateWithoutActivitiesWithThatDate,
+    //     ...[
+    //       ...newStateWithActivitiesWithThatDate.slice(0, action.index),
+    //       ...[{
+    //         modelId: '',
+    //         day: action.day,
+    //         dropzone: true
+    //       }],
+    //       ...newStateWithActivitiesWithThatDate.slice(action.index, newStateWithActivitiesWithThatDate.length)
+    //     ]
+    //   ]
     case 'PLANNERACTIVITY_HOVER_OVER_ACTIVITY':
       // console.log(state)
       if (!(action.index + 1)) {

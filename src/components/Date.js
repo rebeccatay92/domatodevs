@@ -142,14 +142,20 @@ class DateBox extends Component {
     }
 
     if (!checkIfNoBlankBoxes(this.props.activities) && checkIfNoBlankBoxes(nextProps.activities) && nextProps.isOver) {
+      // console.log(nextProps.activities)
+      // let loadSequenceArr = []
       const loadSequenceArr = nextProps.activities.map((activity, i) => {
         const day = activity.day
-        return {
-          id: activity.modelId,
-          type: activity.type,
+        const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
+        // console.log(diff);
+        return {...{
+          id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
+          type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
           loadSequence: i + 1,
           day: day,
           start: activity.start
+        },
+          ...diff && {diff: diff}
         }
       })
       // console.log(loadSequenceArr)
