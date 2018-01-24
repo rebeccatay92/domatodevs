@@ -19,13 +19,6 @@ export const findFlightBooking = gql`
       bookedThrough
       bookingConfirmation
       backgroundImage
-      attachments {
-        id
-        fileName
-        fileAlias
-        fileType
-        fileSize
-      }
       flightInstances {
         id
         FlightBookingId
@@ -88,8 +81,6 @@ export const findFlightBooking = gql`
         }
         departureTerminal
         arrivalTerminal
-        departureGate
-        arrivalGate
         startDay
         endDay
         startTime
@@ -97,8 +88,17 @@ export const findFlightBooking = gql`
         durationMins
         startLoadSequence
         endLoadSequence
-        notes
+        departureNotes
+        arrivalNotes
         firstFlight
+        attachments {
+          id
+          fileName
+          fileAlias
+          fileType
+          fileSize
+          arrivalDeparture
+        }
       }
     }
   }
@@ -121,7 +121,6 @@ export const createFlightBooking = gql`
     $bookedThrough: String,
     $bookingConfirmation: String,
     $backgroundImage: String,
-    $attachments: [attachmentInput],
     $flightInstances: [createFlightInstanceInput]
   ) {
     createFlightBooking(
@@ -140,7 +139,6 @@ export const createFlightBooking = gql`
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
       backgroundImage: $backgroundImage,
-      attachments: $attachments,
       flightInstances: $flightInstances
       ) {
       id
@@ -166,8 +164,6 @@ export const updateFlightBooking = gql`
     $bookedThrough: String,
     $bookingConfirmation: String,
     $backgroundImage: String,
-    $addAttachments: [attachmentInput],
-    $removeAttachments: [ID],
     $flightInstances: [updateFlightInstanceInput]
   ) {
     updateFlightBooking(
@@ -186,8 +182,6 @@ export const updateFlightBooking = gql`
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
       backgroundImage: $backgroundImage,
-      addAttachments: $addAttachments,
-      removeAttachments: $removeAttachments,
       flightInstances: $flightInstances
     ) {
       id
@@ -220,8 +214,6 @@ export const updateFlightInstance = gql`
     $arrivalCityCountry: String,
     $departureTerminal: String,
     $arrivalTerminal: String,
-    $departureGate: String,
-    $arrivalGate: String,
     $startDay: Int,
     $endDay: Int,
     $startTime: Int,
@@ -229,7 +221,10 @@ export const updateFlightInstance = gql`
     $durationMins: Int,
     $startLoadSequence: Int,
     $endLoadSequence: Int,
-    $notes: String
+    $departureNotes: String,
+    $arrivalNotes: String,
+    $addAttachments: [attachmentInput],
+    $removeAttachments: [ID]
   ) {
     updateFlightInstance(
       id: $id,
@@ -243,8 +238,6 @@ export const updateFlightInstance = gql`
       arrivalCityCountry: $arrivalCityCountry,
       departureTerminal: $departureTerminal,
       arrivalTerminal: $arrivalTerminal,
-      departureGate: $departureGate,
-      arrivalGate: $arrivalGate,
       startDay: $startDay,
       endDay: $endDay,
       startTime: $startTime,
@@ -252,7 +245,10 @@ export const updateFlightInstance = gql`
       durationMins: $durationMins,
       startLoadSequence: $startLoadSequence,
       endLoadSequence: $endLoadSequence,
-      notes: $notes
+      departureNotes: $departureNotes,
+      arrivalNotes: $arrivalNotes,
+      addAttachments: $addAttachments,
+      removeAttachments: $removeAttachments
     ) {
       id
     }
