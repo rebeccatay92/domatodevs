@@ -79,7 +79,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
   console.log('after adding utc offset and utcTimeZero to eventsArr', allEvents)
 
   // add timeUtcZero to updateEvent
-  console.log('before calculating utcTimeZero', updateEvent)
+  // console.log('before calculating utcTimeZero', updateEvent)
   if (eventModel === 'Activity' || eventModel === 'Food' || eventModel === 'Lodging') {
     updateEvent.startTimeUtcZero = updateEvent.startTime - (updateEvent.utcOffset * 60)
     updateEvent.endTimeUtcZero = updateEvent.endTime - (updateEvent.utcOffset * 60)
@@ -99,7 +99,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     })
   }
 
-  console.log('updateEventObj', updateEvent)
+  console.log('updateEventObj with timeUtcZero', updateEvent)
 
   // reassign load seqs etc
   if (eventModel === 'Activity' || eventModel === 'Food') {
@@ -379,7 +379,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     })
   } // close flight logic
 
-  console.log('updateEvent', updateEvent, 'changingLoadSequence', loadSequenceInput)
+  // NO NEED TO REMOVE UTCOFFSET KEYS ETC. EDITEVENTFORMS WILL ONLY REMOVE LOAD SEQ PROPERTY FROM UDPATEVENT AND CHANGE THE UPDATESOBJ TO BE SENT TO BACKEND
   var output = {
     updateEvent,
     loadSequenceInput

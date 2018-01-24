@@ -111,18 +111,19 @@ class CreateActivityForm extends Component {
     }
 
     // REWRITE FUNCTION TO VALIDATE
-    // var eventObj = {
-    //   startDay: newActivity.startDay,
-    //   endDay: newActivity.endDay,
-    //   startTime: newActivity.startTime,
-    //   endTime: newActivity.endTime
-    // }
-    // var isError = validateIntervals(this.props.events, eventObj)
-    // console.log('isError', isError)
-    //
-    // if (isError) {
-    //   window.alert('timing clashes detected')
-    // }
+    var eventObj = {
+      startDay: newActivity.startDay,
+      endDay: newActivity.endDay,
+      startTime: newActivity.startTime,
+      endTime: newActivity.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
+    }
+    var isError = validateIntervals(this.props.events, eventObj, 'Activity')
+    console.log('isError', isError)
+
+    if (isError) {
+      window.alert('timing clashes detected')
+    }
 
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
 
