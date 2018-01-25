@@ -50,6 +50,7 @@ class FlightSearchDetails extends Component {
             <tr>
               <td style={{width: '40%', textAlign: 'right', verticalAlign: 'top'}}>
                 <p style={pStyle}>{this.props.flight[this.props.index].departureAirportCode}</p>
+                {/* DEPARTURE LOCATION IS A STRING HERE. */}
                 <p style={infoStyle}>{this.props.flight[this.props.index].departureLocation}</p>
                 <p style={cityCountryStyle}>{this.props.flight[this.props.index].departureCityCountry}</p>
                 <p style={infoStyle}>Terminal {this.props.flight[this.props.index].departureTerminal}</p>

@@ -19,7 +19,7 @@ class EditEventFormHOC extends Component {
   render () {
     const EditEventForm = this.components[this.props.eventType]
     return (
-      <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} event={this.props.event} toggleEditEventType={() => this.props.toggleEditEventType()} />
+      <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} event={this.props.event} events={this.props.events} toggleEditEventType={() => this.props.toggleEditEventType()} />
     )
   }
 }

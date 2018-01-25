@@ -34,6 +34,8 @@ export const findFlightBooking = gql`
         airlineName
         departureIATA
         arrivalIATA
+        departureCityCountry
+        arrivalCityCountry
         departureLocation {
           id
           placeId
@@ -92,6 +94,7 @@ export const findFlightBooking = gql`
         endDay
         startTime
         endTime
+        durationMins
         startLoadSequence
         endLoadSequence
         notes
@@ -110,6 +113,10 @@ export const createFlightBooking = gql`
     $cost: Int,
     $currency: String,
     $classCode: String,
+    $departureDate: Int,
+    $returnDate: Int,
+    $departureIATA: String,
+    $arrivalIATA: String,
     $bookingStatus: Boolean,
     $bookedThrough: String,
     $bookingConfirmation: String,
@@ -125,6 +132,10 @@ export const createFlightBooking = gql`
       cost: $cost,
       currency: $currency,
       classCode: $classCode,
+      departureDate: $departureDate,
+      returnDate: $returnDate,
+      departureIATA: $departureIATA,
+      arrivalIATA: $arrivalIATA,
       bookingStatus: $bookingStatus,
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
@@ -147,6 +158,10 @@ export const updateFlightBooking = gql`
     $cost: Int,
     $currency: String,
     $classCode: String,
+    $departureDate: Int,
+    $returnDate: Int,
+    $departureIATA: String,
+    $arrivalIATA: String,
     $bookingStatus: Boolean,
     $bookedThrough: String,
     $bookingConfirmation: String,
@@ -163,6 +178,10 @@ export const updateFlightBooking = gql`
       cost: $cost,
       currency: $currency,
       classCode: $classCode,
+      departureDate: $departureDate,
+      returnDate: $returnDate,
+      departureIATA: $departureIATA,
+      arrivalIATA: $arrivalIATA,
       bookingStatus: $bookingStatus,
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
@@ -197,6 +216,8 @@ export const updateFlightInstance = gql`
     $airlineCode: String,
     $departureIATA: String,
     $arrivalIATA: String,
+    $departureCityCountry: String,
+    $arrivalCityCountry: String,
     $departureTerminal: String,
     $arrivalTerminal: String,
     $departureGate: String,
@@ -205,6 +226,7 @@ export const updateFlightInstance = gql`
     $endDay: Int,
     $startTime: Int,
     $endTime: Int,
+    $durationMins: Int,
     $startLoadSequence: Int,
     $endLoadSequence: Int,
     $notes: String
@@ -217,6 +239,8 @@ export const updateFlightInstance = gql`
       airlineCode: $airlineCode,
       departureIATA: $departureIATA,
       arrivalIATA: $arrivalIATA,
+      departureCityCountry: $departureCityCountry,
+      arrivalCityCountry: $arrivalCityCountry,
       departureTerminal: $departureTerminal,
       arrivalTerminal: $arrivalTerminal,
       departureGate: $departureGate,
@@ -225,6 +249,7 @@ export const updateFlightInstance = gql`
       endDay: $endDay,
       startTime: $startTime,
       endTime: $endTime,
+      durationMins: $durationMins,
       startLoadSequence: $startLoadSequence,
       endLoadSequence: $endLoadSequence,
       notes: $notes

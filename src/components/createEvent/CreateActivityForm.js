@@ -12,7 +12,7 @@ import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
 import Attachments from '../eventFormComponents/Attachments'
-import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
+import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { createActivity } from '../../apollo/activity'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -110,30 +110,23 @@ class CreateActivityForm extends Component {
       newActivity = checkStartAndEndTime(this.props.events, newActivity, 'endTimeMissing')
     }
 
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Activity', newActivity)
-    // console.log('output', output)
+    // REWRITE FUNCTION TO VALIDATE
+    // var eventObj = {
+    //   startDay: newActivity.startDay,
+    //   endDay: newActivity.endDay,
+    //   startTime: newActivity.startTime,
+    //   endTime: newActivity.endTime
+    // }
+    // var isError = validateIntervals(this.props.events, eventObj)
+    // console.log('isError', isError)
     //
-    // if (!output.isValid) {
-    //   window.alert(`time ${newActivity.startTime} --- ${newActivity.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
+    // if (isError) {
+    //   window.alert('timing clashes detected')
     // }
 
-    // REWRITE FUNCTION TO VALIDATE
-    var eventObj = {
-      startDay: newActivity.startDay,
-      endDay: newActivity.endDay,
-      startTime: newActivity.startTime,
-      endTime: newActivity.endTime
-    }
-    var isError = validateIntervals(this.props.events, eventObj)
-    console.log('isError', isError)
-
-    if (isError) {
-      window.alert('timing clashes detected')
-    }
-
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', newActivity)
+
+    console.log('helperOutput', helperOutput)
 
     this.props.changingLoadSequence({
       variables: {
@@ -201,6 +194,7 @@ class CreateActivityForm extends Component {
     var fileToRemove = this.state.attachments[index]
     var fileNameToRemove = fileToRemove.fileName
     // reset background img to default only if deleted file is background img file
+    // console.log('backgroundImg', this.state.backgroundImage, 'fileNameToRemove', fileNameToRemove)
     if (this.state.backgroundImage.indexOf(fileNameToRemove) > -1) {
       this.setState({backgroundImage: defaultBackground})
     }
@@ -277,7 +271,7 @@ class CreateActivityForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              <SubmitCancelForm handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
+              {/* <SubmitCancelForm handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} /> */}
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
               <h4 style={{fontSize: '24px', marginTop: '50px'}}>
@@ -287,6 +281,7 @@ class CreateActivityForm extends Component {
               <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
               <Notes handleChange={(e, field) => this.handleChange(e, field)} />
+              <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
         </div>

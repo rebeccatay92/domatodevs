@@ -12,9 +12,9 @@ import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
 import Attachments from '../eventFormComponents/Attachments'
-import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
+import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
-import { updateLodging } from '../../apollo/lodging'
+import { updateLodging, deleteLodging } from '../../apollo/lodging'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
@@ -168,6 +168,73 @@ class EditLodgingForm extends Component {
 
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    this.resetState()
+    this.props.toggleEditEventType()
+  }
+
+  deleteEvent () {
+    var eventType = 'Lodging'
+    var modelId = this.state.id
+
+    // REASSIGN LOAD SEQ AFTER DELETING
+    function constructLoadSeqInputObj (event, correctLoadSeq) {
+      var inputObj = {
+        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
+        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
+        loadSequence: correctLoadSeq,
+        day: event.day
+      }
+      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
+        inputObj.start = event.start
+      }
+      return inputObj
+    }
+    // console.log('all events', this.props.events)
+    var loadSequenceInputArr = []
+    var eventsArr = this.props.events
+    // remove deleted rows from eventsArr
+    var newEventsArr = eventsArr.filter(e => {
+      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
+      return (!isDeletedEvent)
+    })
+    // console.log('newEventsArr', newEventsArr)
+    // find how many days with events exist in eventsArr, split by day
+    var daysArr = []
+    newEventsArr.forEach(e => {
+      if (!daysArr.includes(e.day)) {
+        daysArr.push(e.day)
+      }
+    })
+    // console.log('daysArr', daysArr)
+    // check load seq and reassign
+    daysArr.forEach(day => {
+      var dayEvents = newEventsArr.filter(e => {
+        return e.day === day
+      })
+      dayEvents.forEach(event => {
+        var correctLoadSeq = dayEvents.indexOf(event) + 1
+        if (event.loadSequence !== correctLoadSeq) {
+          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
+          loadSequenceInputArr.push(loadSequenceInputObj)
+        }
+      })
+    })
+    console.log('loadSequenceInputArr', loadSequenceInputArr)
+    this.props.changingLoadSequence({
+      variables: {
+        input: loadSequenceInputArr
+      }
+    })
+    this.props.deleteLodging({
+      variables: {
+        id: modelId
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: { id: this.props.ItineraryId }
+      }]
+    })
+
     this.resetState()
     this.props.toggleEditEventType()
   }
@@ -343,7 +410,6 @@ class EditLodgingForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              <SubmitCancelForm handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
 
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
@@ -354,6 +420,7 @@ class EditLodgingForm extends Component {
               <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
               <Notes notes={this.state.notes} handleChange={(e, field) => this.handleChange(e, field)} />
+              <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
@@ -384,5 +451,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(updateLodging, {name: 'updateLodging'}),
-  graphql(changingLoadSequence, {name: 'changingLoadSequence'})
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
+  graphql(deleteLodging, {name: 'deleteLodging'})
 )(Radium(EditLodgingForm)))

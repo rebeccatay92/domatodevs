@@ -12,7 +12,7 @@ import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
 import Attachments from '../eventFormComponents/Attachments'
-import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
+import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { createLodging } from '../../apollo/lodging'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -256,7 +256,6 @@ class CreateLodgingForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              <SubmitCancelForm handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
               <h4 style={{fontSize: '24px', marginTop: '50px'}}>
@@ -264,6 +263,7 @@ class CreateLodgingForm extends Component {
               </h4>
               <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
               <Notes handleChange={(e, field) => this.handleChange(e, field)} />
+              <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
         </div>

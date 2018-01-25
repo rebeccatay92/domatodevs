@@ -1,37 +1,32 @@
 import React, { Component } from 'react'
 import AirportSearch from './AirportSearch'
-import Radium from 'radium'
 import moment from 'moment'
-import { Button } from 'react-bootstrap'
-
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import CustomDatePicker from './CustomDatePicker'
-import FlightMapHOC from '../location/FlightMapHOC'
+import airports from '../../data/airports.json'
 
-import { dateTimePickerContainerStyle, eventDescContainerStyle, flightMapContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
+import { eventDescContainerStyle } from '../../Styles/styles'
 
-class FlightSearchParameters extends Component {
+class EditFormAirhobSearchParams extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      // location obj {name, iata, type}
       departureLocation: null,
       arrivalLocation: null,
-      // start date, end date, start/end day
-      departureDate: moment(new Date(this.props.date)),
+      departureIATA: '',
+      arrivalIATA: '',
+      departureDate: null,
       returnDate: null,
-      startDay: null,
-      // req params for airhob
-      classCode: 'Economy',
-      paxAdults: 1,
+      classCode: '',
+      paxAdults: 0,
       paxChildren: 0,
       paxInfants: 0
     }
   }
 
   handleFlightSearch () {
-    // console.log(moment(this.state.departureDate).format('MM/DD/YYYY'));
-    console.log(this.state);
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
@@ -76,7 +71,7 @@ class FlightSearchParameters extends Component {
       })
     }).then(response => {
       const json = response.json()
-      console.log(json)
+      console.log('json returned, pending')
       return json
     }).then(results => {
       if (!results.OneWayAvailabilityResponse.ItinearyDetails.length) {
@@ -111,48 +106,156 @@ class FlightSearchParameters extends Component {
           })
         }
       })
+      console.log('DONE DETAILS OF ALL FLIGHTS', details)
+      // HOIST PARAMS UP TO EDIT FORM. SAVED SEPARATELY FROM THE EDIT STATE
       this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, this.state.departureDate, this.state.returnDate)
     })
+  }
+
+  selectLocation (type, details) {
+    this.setState({[`${type}Location`]: details}, () => console.log('select airport', this.state)) // set airport/city details
   }
 
   handleChange (e, field) {
     if (field === 'departureDate' || field === 'returnDate') {
       this.setState({
         [field]: moment(e._d)
-      })
+      }, () => console.log('dates change', this.state))
     } else {
       this.setState({
         [field]: e.target.value
+      }, () => console.log('change', this.state))
+    }
+  }
+
+  componentDidMount () {
+    this.setState({
+      departureDate: moment(this.props.departureDate * 1000),
+      returnDate: moment(this.props.returnDate * 1000),
+      departureIATA: this.props.departureIATA,
+      arrivalIATA: this.props.arrivalIATA
+    })
+      // find the departure/arrival location from airports.json
+    var departureRow = airports.find(e => {
+      return e.iata === this.props.departureIATA
+    })
+    if (departureRow) {
+      var departureLocation = {
+        name: departureRow.name,
+        iata: departureRow.iata,
+        type: 'airport'
+      }
+    } else {
+      departureRow = airports.find(e => {
+        return e.cityCode === this.props.departureIATA
       })
+      departureLocation = {
+        name: departureRow.city,
+        cityCode: departureRow.iata,
+        type: 'city'
+      }
     }
+    var arrivalRow = airports.find(e => {
+      return e.iata === this.props.arrivalIATA
+    })
+    if (arrivalRow) {
+      var arrivalLocation = {
+        name: arrivalRow.name,
+        iata: arrivalRow.iata,
+        type: 'airport'
+      }
+    } else {
+      arrivalRow = airports.find(e => {
+        return e.cityCode === this.props.arrivalIATA
+      })
+      arrivalLocation = {
+        name: arrivalRow.city,
+        cityCode: arrivalRow.iata,
+        type: 'city'
+      }
+    }
+    this.setState({
+      departureLocation: departureLocation,
+      arrivalLocation: arrivalLocation
+    })
+    this.setState({
+      classCode: this.props.classCode,
+      paxAdults: this.props.paxAdults,
+      paxChildren: this.props.paxChildren,
+      paxInfants: this.props.paxInfants
+    })
   }
 
-  selectLocation (type, details) {
-    this.setState({[`${type}Location`]: details}) // set airport/city details
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.searchClicked !== this.props.searchClicked) {
-      this.handleFlightSearch()
-    }
-  }
+  // componentWillReceiveProps (nextProps) {
+  //   console.log('NEXTPROPS', nextProps)
+  //   if (this.props.departureDate !== nextProps.departureDate) {
+  //     this.setState({
+  //       departureDate: moment(nextProps.departureDate * 1000)
+  //     })
+  //   }
+  //   if (this.props.returnDate !== nextProps.returnDate) {
+  //     this.setState({returnDate: moment(nextProps.returnDate * 1000)})
+  //   }
+  //   if (this.props.departureIATA !== nextProps.departureIATA || this.props.arrivalIATA !== nextProps.arrivalIATA) {
+  //     this.setState({
+  //       departureIATA: nextProps.departureIATA,
+  //       arrivalIATA: nextProps.arrivalIATA
+  //     })
+  //     // find the departure/arrival location from airports.json
+  //     var departureRow = airports.find(e => {
+  //       return e.iata === nextProps.departureIATA
+  //     })
+  //     console.log('DEPARTURE ROW IS AIRPORT', departureRow)
+  //     if (departureRow) {
+  //       var departureLocation = {
+  //         name: departureRow.name,
+  //         iata: departureRow.iata,
+  //         type: 'airport'
+  //       }
+  //     } else {
+  //       departureRow = airports.find(e => {
+  //         return e.cityCode === nextProps.departureIATA
+  //       })
+  //       console.log('ELSE', departureRow)
+  //       departureLocation = {
+  //         name: departureRow.city,
+  //         iata: departureRow.iata,
+  //         type: 'city'
+  //       }
+  //     }
+  //     var arrivalRow = airports.find(e => {
+  //       return e.iata === nextProps.arrivalIATA
+  //     })
+  //     if (arrivalRow) {
+  //       var arrivalLocation = {
+  //         name: arrivalRow.name,
+  //         iata: arrivalRow.iata,
+  //         type: 'airport'
+  //       }
+  //     } else {
+  //       arrivalRow = airports.find(e => {
+  //         return e.cityCode === nextProps.arrivalIATA
+  //       })
+  //       arrivalLocation = {
+  //         name: arrivalRow.city,
+  //         iata: arrivalRow.iata,
+  //         type: 'city'
+  //       }
+  //     }
+  //     this.setState({
+  //       departureLocation: departureLocation,
+  //       arrivalLocation: arrivalLocation
+  //     })
+  //   }
+  // }
 
   render () {
     return (
       <div style={{position: 'relative'}}>
-        {!this.props.searching && !this.props.bookingDetails &&
-          <div style={flightMapContainerStyle}>
-            <FlightMapHOC departureLocation={this.state.departureLocation} arrivalLocation={this.state.arrivalLocation} />
-          </div>
-        }
-
-        {/* NEED TO STYLE MARGIN TOP HERE / INSIDE AIRPORTSEARCH */}
-        <div style={{...eventDescContainerStyle, ...{marginTop: this.props.searching || this.props.bookingDetails ? '55px' : '180px'}}}>
-          <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
-
+        <div style={{...eventDescContainerStyle, ...{marginTop: '55px'}}}>
+          <AirportSearch edit currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
           <p style={{textAlign: 'center'}}>to</p>
-
-          <AirportSearch currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+          <AirportSearch edit currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
         </div>
 
         {/* DATEBOX */}
@@ -164,29 +267,30 @@ class FlightSearchParameters extends Component {
             <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'returnDate')} />
           </div>
 
-          <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}} >
             <option style={{color: 'black'}} value='Economy'>E</option>
             <option style={{color: 'black'}} value='PremiumEconomy'>PE</option>
             <option style={{color: 'black'}} value='Business'>B</option>
             <option style={{color: 'black'}} value='First'>F</option>
           </select>
 
-          <select value={this.state.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
-            {[1,2,3,4,5,6].map((num) => {
+          <select value={this.state.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} >
+            {[1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.state.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
-            {[0,1,2,3,4,5,6].map((num) => {
+          <select value={this.state.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} >
+            {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.state.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
-            {[0,1,2,3,4,5,6].map((num) => {
+          <select value={this.state.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}} >
+            {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
         </div>
+
         <div style={{marginBottom: '10px', textAlign: 'center'}}>
           <span style={{width: '25%', display: 'inline-block', textAlign: 'center'}}>Departing</span>
           <span style={{width: '25%', display: 'inline-block', textAlign: 'center'}}>Returning</span>
@@ -195,14 +299,11 @@ class FlightSearchParameters extends Component {
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>2-11y</span>
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>{'<2y'}</span>
         </div>
-        <div style={{textAlign: 'center'}}>
-          <hr style={{opacity: 0.5}} />
-          {!this.props.searching && !this.props.bookingDetails && <Button style={{...createFlightButtonStyle, ...{marginRight: '20px'}}} bsStyle='danger' onClick={() => this.handleFlightSearch()}>SEARCH</Button>}
-          {!this.props.searching && !this.props.bookingDetails && <Button style={createFlightButtonStyle} bsStyle='danger' onClick={() => this.props.closeForm()}>CANCEL</Button>}
-        </div>
+
+        <button onClick={() => this.handleFlightSearch()} style={{color: 'black'}}>Search</button>
       </div>
     )
   }
 }
 
-export default Radium(FlightSearchParameters)
+export default EditFormAirhobSearchParams
