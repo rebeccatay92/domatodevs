@@ -15,11 +15,15 @@ class FlightInstanceNotesAttachments extends Component {
   }
 
   handleChange (e, field) {
-    var instance = this.props.instance
+    // console.log('handlechange field', field)
     // replace the respective notes with the new value, then pass the new instance up to form
     if (field === 'departureNotes' || field === 'arrivalNotes') {
-      var updatedInstance = Object.assign({[`${field}`]: e.target.value}, instance)
-      console.log('updatedInstance', updatedInstance)
+      // deep clone even the objs inside
+      var instanceClone = JSON.parse(JSON.stringify(this.props.instance))
+      instanceClone[field] = e.target.value
+      console.log('updatedInstance', instanceClone)
+      // hoist the updated instance up to form
+      this.props.handleFlightInstanceChange(instanceClone)
     }
   }
 
@@ -33,14 +37,15 @@ class FlightInstanceNotesAttachments extends Component {
 
   render () {
     console.log('PROPS', this.props.instance)
+    if (!this.props.instance) return null
     return (
       <div>
         <div>
-          <Notes handleChange={(e) => this.handleChange(e, 'departureNotes')} label={`Departure: ${this.props.instance.departureLocation}`} />
+          <Notes handleChange={(e) => this.handleChange(e, 'departureNotes')} label={`Departure: ${this.props.instance.departureAirport}`} />
           <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} />
         </div>
         <div>
-          <Notes handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={`Arrival: ${this.props.instance.arrivalLocation}`} />
+          <Notes handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={`Arrival: ${this.props.instance.arrivalAirport}`} />
           <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} />
         </div>
       </div>

@@ -111,7 +111,10 @@ class FlightSearchParameters extends Component {
           })
         }
       })
-      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, this.state.departureDate, this.state.returnDate)
+      // extract departure, arrival name (airport or city name)
+      var departureName = this.state.departureLocation.name
+      var arrivalName = this.state.arrivalLocation.name
+      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, departureName, arrivalName, this.state.departureDate, this.state.returnDate)
     })
   }
 

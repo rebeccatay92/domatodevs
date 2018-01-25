@@ -57,6 +57,8 @@ class CreateFlightForm extends Component {
       //   airlineName: String
       //   departureIATA: String
       //   arrivalIATA: String
+      //   departureAirport: String
+      //   arrivalAirport: String
       //   departureTerminal: String
       //   arrivalTerminal: String
       //   departureGate: String
@@ -83,7 +85,7 @@ class CreateFlightForm extends Component {
     }
   }
 
-  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) {
+  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) {
     this.setState({
       flights,
       tripType: tripType,
@@ -93,7 +95,9 @@ class CreateFlightForm extends Component {
       classCode: classCode,
       searching: true,
       departureIATA: departureIATA,
-      arrivalIATA: arrivalIATA
+      arrivalIATA: arrivalIATA,
+      departureName: departureName,
+      arrivalName: arrivalName
     })
     if (departureDate) {
       this.setState({departureDate: departureDate.utc().unix()})
@@ -126,7 +130,6 @@ class CreateFlightForm extends Component {
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
       backgroundImage: this.state.backgroundImage,
-      // attachments: this.state.attachments,
       flightInstances: this.state.flightInstances
     }
 
@@ -247,6 +250,8 @@ class CreateFlightForm extends Component {
           airlineName: flight.airlineName,
           departureIATA: flight.departureAirportCode,
           arrivalIATA: flight.arrivalAirportCode,
+          departureAirport: flight.departureLocation,
+          arrivalAirport: flight.arrivalLocation,
           departureCityCountry: flight.departureCityCountry,
           arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
@@ -262,10 +267,10 @@ class CreateFlightForm extends Component {
           firstFlight: i === 0
         }
       })
+    }, () => {
+      this.setState({instanceTabIndex: 0, instance: this.state.flightInstances[0]}, () => console.log('handle select flight', this.state))
     })
-    console.log('HANDLE SELECT FLIGHT', this.state)
-    // on flight confirm, initialize first tab immediately
-    this.setState({instanceTabIndex: 0, instance: this.state.flights[index].flights[0]})
+    // on flight confirm, initialize first tab immediately. but only after flightInstances hv been set (callback)
   }
 
   handleChange (e, field, subfield, index) {
@@ -290,10 +295,10 @@ class CreateFlightForm extends Component {
 
   switchInstanceTab (i) {
     this.setState({instanceTabIndex: i})
-    var selectedFlight = this.state.flights[this.state.selected]
+    // var selectedFlight = this.state.flights[this.state.selected]
     // console.log('selected flight', selectedFlight)
     // console.log('instance', selectedFlight.flights[i])
-    this.setState({instance: selectedFlight.flights[i]})
+    this.setState({instance: this.state.flightInstances[i]})
   }
 
   componentDidMount () {
@@ -354,9 +359,9 @@ class CreateFlightForm extends Component {
                       </div>
                     )
                   })} */}
-                  {this.state.flights[this.state.selected].flights.map((flight, i) => {
+                  {this.state.flightInstances.map((instance, i) => {
                     return (
-                      <h3 onClick={() => this.switchInstanceTab(i)} style={{display: 'inline-block', marginRight: '20px'}} key={'instance' + i}>{flight.departureAirportCode} to {flight.arrivalAirportCode}</h3>
+                      <h3 onClick={() => this.switchInstanceTab(i)} style={{display: 'inline-block', marginRight: '20px'}} key={'instance' + i}>{instance.departureIATA} to {instance.arrivalIATA}</h3>
                     )
                   })}
                   <FlightInstanceNotesAttachments instance={this.state.instance} handleChange={(updatedInstance) => this.handleFlightInstanceChange(updatedInstance)} />

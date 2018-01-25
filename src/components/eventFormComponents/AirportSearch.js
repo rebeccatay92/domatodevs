@@ -77,7 +77,7 @@ class AirportSearch extends Component {
   }
 
   selectLocation (details) {
-    // console.log('AIRPORT LOCATION', details)
+    console.log('AIRPORT LOCATION', details)
     this.setState({selecting: false, results: []})
     this.setState({search: details.name})
     this.props.selectLocation(details)
