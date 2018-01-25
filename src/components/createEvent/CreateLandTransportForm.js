@@ -12,7 +12,8 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-import Attachments from '../eventFormComponents/Attachments'
+// import Attachments from '../eventFormComponents/Attachments'
+import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { createLandTransport } from '../../apollo/landtransport'
@@ -42,7 +43,8 @@ class CreateLandTransportForm extends Component {
       arrivalGooglePlaceData: {},
       departureLocationAlias: '',
       arrivalLocationAlias: '',
-      notes: '',
+      departureNotes: '',
+      arrivalNotes: '',
       defaultTime: null, // 24 hr str 'HH:mm'
       // start and end time need to be unix
       startTime: null, // if setstate, will change to unix
@@ -95,7 +97,9 @@ class CreateLandTransportForm extends Component {
       bookingStatus: bookingStatus,
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
-      notes: this.state.notes,
+      // notes: this.state.notes,
+      departureNotes: this.state.departureNotes,
+      arrivalNotes: this.state.arrivalNotes,
       attachments: this.state.attachments,
       backgroundImage: this.state.backgroundImage
     }
@@ -223,7 +227,6 @@ class CreateLandTransportForm extends Component {
   }
 
   setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
@@ -265,7 +268,6 @@ class CreateLandTransportForm extends Component {
         this.setState({arrivalLocationDetails: arrivalLocationDetails})
       }
     }
-    // transport doesnt need opening hours validation
   }
 
   render () {
@@ -299,17 +301,25 @@ class CreateLandTransportForm extends Component {
               <LocationAlias handleChange={(e) => this.handleChange(e, 'departureLocationAlias')} placeholder={'Detailed Location (Departure)'} />
 
               <LocationAlias handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
+              {/* SPLIT INTO ARRIVAL, DEPARTURE NOTES, ATTACHMENTS */}
+              {/* <Notes handleChange={(e, field) => this.handleChange(e, field)} /> */}
+              <Notes handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Departure Notes'} />
 
-              <Notes handleChange={(e, field) => this.handleChange(e, field)} />
+              {/* <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} /> */}
+
+              <Notes handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
+
+              {/* <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} /> */}
+
               <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
         </div>
 
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }

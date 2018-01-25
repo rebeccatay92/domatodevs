@@ -128,6 +128,10 @@ class AttachmentsRework extends Component {
     // this.setState({hoveringOver: null})
   }
 
+  openPreview () {
+    console.log('open preview overlay?')
+  }
+
   componentDidMount () {
     this.props.retrieveCloudStorageToken()
 
@@ -144,7 +148,7 @@ class AttachmentsRework extends Component {
         {!this.state.preview && this.props.attachments.map((info, i) => {
           return (
             <div key={'thumbnail' + i} style={{width: '100%'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
-              <div style={{cursor: 'pointer', display: 'inline-block'}}>
+              <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview()}>
                 {info.fileType === 'application/pdf' &&
                 <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '20px', marginRight: '2px'}}>picture_as_pdf</i>}
                 {info.fileType !== 'application/pdf' &&
