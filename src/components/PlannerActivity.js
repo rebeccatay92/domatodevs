@@ -47,9 +47,9 @@ const plannerActivitySource = {
 const plannerActivityTarget = {
   hover (props, monitor, component) {
     let day = props.activity.day
-    if (props.activity.dropzone) return
-    if (monitor.getItemType() === 'activity') props.hoverOverActivity(props.index, day)
-    else if (monitor.getItemType() === 'plannerActivity') props.plannerActivityHoverOverActivity(props.index, monitor.getItem(), day)
+    // if (props.activity.dropzone) return
+    // if (monitor.getItemType() === 'activity') props.hoverOverActivity(props.index, day)
+    if (monitor.getItemType() === 'plannerActivity') props.plannerActivityHoverOverActivity(props.index, monitor.getItem(), day)
   },
   drop (props, monitor) {
     let day = props.activity.day

@@ -9,6 +9,8 @@ import { primaryColor, plannerContainerStyle } from '../Styles/styles'
 import DateBox from './Date'
 import PlannerHeader from './PlannerHeader'
 
+const _ = require('lodash')
+
 class Planner extends Component {
   constructor (props) {
     super(props)
@@ -18,10 +20,15 @@ class Planner extends Component {
     }
   }
 
+  shouldComponentUpdate (nextProps) {
+    if (_.isEqual(nextProps.activities, this.props.activities)) return false
+    else return true
+  }
+
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
+    console.log('rendering');
     console.log(this.props.activities)
-    // console.log('rerender')
     // console.log('apollo', this.props.data.findItinerary)
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
