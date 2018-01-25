@@ -14,7 +14,8 @@ import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDet
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import Notes from '../eventFormComponents/Notes'
 
-import Attachments from '../eventFormComponents/Attachments'
+// import Attachments from '../eventFormComponents/Attachments'
+import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -311,6 +312,7 @@ class CreateFlightForm extends Component {
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
+                  {/* MAP FLIGHT INSTANCES WITH NOTES AND ATTACHMENTS */}
                   {this.state.flights[this.state.selected].flights.map((flight, i) => {
                     return (
                       <div key={i}>
@@ -357,9 +359,9 @@ class CreateFlightForm extends Component {
 
         </div>
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }

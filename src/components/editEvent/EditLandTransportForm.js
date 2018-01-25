@@ -24,7 +24,6 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
 import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
-import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}landTransportDefaultBackground.jpg`
 
@@ -172,15 +171,6 @@ class EditLandTransportForm extends Component {
 
     this.resetState()
     this.props.toggleEditEventType()
-
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Activity', newActivity)
-    // console.log('output', output)
-    //
-    // if (!output.isValid) {
-    //   window.alert(`time ${newActivity.startTime} --- ${newActivity.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
   }
 
   closeForm () {
@@ -264,7 +254,9 @@ class EditLandTransportForm extends Component {
       endTime: null,
       departureLocationAlias: '',
       arrivalLocationAlias: '',
-      notes: '',
+      // notes: '',
+      departureNotes: '',
+      arrivalNotes: '',
       cost: 0,
       currency: '',
       currencyList: [],
@@ -304,7 +296,8 @@ class EditLandTransportForm extends Component {
     })
   }
 
-  handleFileUpload (attachmentInfo) {
+  handleFileUpload (attachmentInfo, arrivalDeparture) {
+    attachmentInfo.arrivalDeparture = arrivalDeparture
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
     this.setState({holderNewAttachments: this.state.holderNewAttachments.concat([attachmentInfo])})
   }
@@ -357,9 +350,8 @@ class EditLandTransportForm extends Component {
     }
   }
 
-  setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
-    this.setState({backgroundImage: `${previewUrl}`})
+  setBackground (url) {
+    this.setState({backgroundImage: `${url}`})
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -407,7 +399,9 @@ class EditLandTransportForm extends Component {
       cost: this.props.event.cost,
       bookedThrough: this.props.event.bookedThrough || '',
       bookingConfirmation: this.props.event.bookingConfirmation || '',
-      notes: this.props.event.notes || '',
+      // notes: this.props.event.notes || '',
+      departureNotes: this.props.event.departureNotes || '',
+      arrivalNotes: this.props.event.arrivalNotes || '',
       backgroundImage: this.props.event.backgroundImage,
       departureGooglePlaceData: this.props.event.departureLocation,
       arrivalGooglePlaceData: this.props.event.arrivalLocation,
@@ -436,7 +430,7 @@ class EditLandTransportForm extends Component {
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
-            <div style={bookingNotesContainerStyle}>
+            <div style={{...bookingNotesContainerStyle, ...{overflow: 'scroll'}}}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
               <h4 style={{fontSize: '24px', marginTop: '50px'}}>
@@ -449,7 +443,11 @@ class EditLandTransportForm extends Component {
 
               <Notes notes={this.state.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Departure Notes'} />
 
+              <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
+
               <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
+
+              <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
 
               <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
