@@ -465,7 +465,7 @@ class EditFoodForm extends Component {
 
               <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
-              <Notes notes={this.state.notes} handleChange={(e) => this.handleChange(e, 'notes')} />
+              <Notes notes={this.state.notes} handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'}/>
 
               <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
 

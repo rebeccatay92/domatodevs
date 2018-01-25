@@ -11,7 +11,8 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-import Attachments from '../eventFormComponents/Attachments'
+// import Attachments from '../eventFormComponents/Attachments'
+import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { updateLandTransport, deleteLandTransport } from '../../apollo/landtransport'
@@ -38,7 +39,9 @@ class EditLandTransportForm extends Component {
       endTime: null,
       departureLocationAlias: '',
       arrivalLocationAlias: '',
-      notes: '',
+      // notes: '',
+      departureNotes: '',
+      arrivalNotes: '',
       cost: 0,
       currency: '',
       currencyList: [],
@@ -444,16 +447,19 @@ class EditLandTransportForm extends Component {
 
               <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
 
-              <Notes notes={this.state.notes} handleChange={(e, field) => this.handleChange(e, field)} />
+              <Notes notes={this.state.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Departure Notes'} />
+
+              <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
+
               <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
 
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} formType={'edit'} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }
