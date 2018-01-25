@@ -15,6 +15,8 @@ export const findFlightBooking = gql`
       returnDate
       departureIATA
       arrivalIATA
+      departureName
+      arrivalName
       bookingStatus
       bookedThrough
       bookingConfirmation
@@ -27,6 +29,8 @@ export const findFlightBooking = gql`
         airlineName
         departureIATA
         arrivalIATA
+        departureAirport
+        arrivalAirport
         departureCityCountry
         arrivalCityCountry
         departureLocation {
@@ -117,6 +121,8 @@ export const createFlightBooking = gql`
     $returnDate: Int,
     $departureIATA: String,
     $arrivalIATA: String,
+    $departureName: String,
+    $arrivalName: String,
     $bookingStatus: Boolean,
     $bookedThrough: String,
     $bookingConfirmation: String,
@@ -135,6 +141,8 @@ export const createFlightBooking = gql`
       returnDate: $returnDate,
       departureIATA: $departureIATA,
       arrivalIATA: $arrivalIATA,
+      departureName: $departureName,
+      arrivalName: $arrivalName,
       bookingStatus: $bookingStatus,
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
@@ -160,6 +168,8 @@ export const updateFlightBooking = gql`
     $returnDate: Int,
     $departureIATA: String,
     $arrivalIATA: String,
+    $departureName: String,
+    $arrivalName: String,
     $bookingStatus: Boolean,
     $bookedThrough: String,
     $bookingConfirmation: String,
@@ -178,6 +188,8 @@ export const updateFlightBooking = gql`
       returnDate: $returnDate,
       departureIATA: $departureIATA,
       arrivalIATA: $arrivalIATA,
+      departureName: $departureName,
+      arrivalName: $arrivalName,
       bookingStatus: $bookingStatus,
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
@@ -197,7 +209,86 @@ export const deleteFlightBooking = gql`
 
 export const findFlightInstance = gql`
   query findFlightInstance($id: ID!) {
-    findFlightInstance(id: $id)
+    findFlightInstance(id: $id) {
+      id
+      FlightBookingId
+      flightNumber
+      airlineName
+      airlineCode
+      departureIATA
+      arrivalIATA
+      departureCityCountry
+      arrivalCityCountry
+      departureLocation {
+        id
+        placeId
+        country {
+          id
+          name
+        }
+        name
+        telephone
+        address
+        latitude
+        longitude
+        utcOffset
+        openingHours {
+          open {
+            day
+            time
+          }
+          close {
+            day
+            time
+          }
+        }
+        openingHoursText
+      }
+      arrivalLocation {
+        id
+        placeId
+        country {
+          id
+          name
+        }
+        name
+        telephone
+        address
+        latitude
+        longitude
+        utcOffset
+        openingHours {
+          open {
+            day
+            time
+          }
+          close {
+            day
+            time
+          }
+        }
+        openingHoursText
+      }
+      departureTerminal
+      arrivalTerminal
+      startDay
+      endDay
+      startTime
+      endTime
+      durationMins
+      startLoadSequence
+      endLoadSequence
+      departureNotes
+      arrivalNotes
+      attachments {
+        id
+        fileName
+        fileAlias
+        fileType
+        fileSize
+        arrivalDeparture
+      }
+    }
   }
 `
 
@@ -210,6 +301,8 @@ export const updateFlightInstance = gql`
     $airlineCode: String,
     $departureIATA: String,
     $arrivalIATA: String,
+    $departureAirport: String,
+    $arrivalAirport: String,
     $departureCityCountry: String,
     $arrivalCityCountry: String,
     $departureTerminal: String,
@@ -234,6 +327,8 @@ export const updateFlightInstance = gql`
       airlineCode: $airlineCode,
       departureIATA: $departureIATA,
       arrivalIATA: $arrivalIATA,
+      departureAirport: $departureAirport,
+      arrivalAirport: $arrivalAirport,
       departureCityCountry: $departureCityCountry,
       arrivalCityCountry: $arrivalCityCountry,
       departureTerminal: $departureTerminal,
