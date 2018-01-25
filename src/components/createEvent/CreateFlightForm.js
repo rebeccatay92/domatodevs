@@ -12,10 +12,11 @@ import FlightSearchParameters from '../eventFormComponents/FlightSearchParameter
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
 import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
-import Notes from '../eventFormComponents/Notes'
+import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
+// import Notes from '../eventFormComponents/Notes'
 
 // import Attachments from '../eventFormComponents/Attachments'
-import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
+// import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -48,7 +49,6 @@ class CreateFlightForm extends Component {
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
-      attachments: [],
       flightInstances: [],
       // ARR OF FLIGHTINSTANCE INPUT
       // input createFlightInstanceInput {
@@ -67,7 +67,9 @@ class CreateFlightForm extends Component {
       //   endTime: Int
       //   startLoadSequence: Int
       //   endLoadSequence: Int
-      //   notes: String
+      //   departureNotes: String
+      //   arrivalNotes: String,
+      //   attachments: [attachmentInput]
       // }
       flights: [],
       searching: false,
@@ -75,7 +77,9 @@ class CreateFlightForm extends Component {
       selected: 0,
       tripType: '',
       flightDetailsPage: 1,
-      searchClicked: 1
+      searchClicked: 1,
+      instanceTabIndex: 0,
+      instance: {}
     }
   }
 
@@ -122,7 +126,7 @@ class CreateFlightForm extends Component {
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
       backgroundImage: this.state.backgroundImage,
-      attachments: this.state.attachments,
+      // attachments: this.state.attachments,
       flightInstances: this.state.flightInstances
     }
 
@@ -177,6 +181,7 @@ class CreateFlightForm extends Component {
   }
 
   closeForm () {
+    // REMOVE ALL ATTACHMENTS FROM FLIGHT INSTANCES
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
     this.props.toggleCreateEventType()
@@ -193,7 +198,7 @@ class CreateFlightForm extends Component {
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
-      attachments: [],
+      // attachments: [],
       flightInstances: [],
       flights: [] // clear flight search results
     })
@@ -217,7 +222,6 @@ class CreateFlightForm extends Component {
   }
 
   setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
@@ -225,7 +229,7 @@ class CreateFlightForm extends Component {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    console.log(datesUnix)
+    // console.log(datesUnix)
     this.setState({
       selected: index,
       cost: this.state.flights[index].cost,
@@ -252,12 +256,16 @@ class CreateFlightForm extends Component {
           startTime: startTime,
           endTime: endTime,
           durationMins: flight.duration,
-          notes: '',
+          departureNotes: '',
+          arrivalNotes: '',
+          attachments: [],
           firstFlight: i === 0
         }
       })
     })
     console.log('HANDLE SELECT FLIGHT', this.state)
+    // on flight confirm, initialize first tab immediately
+    this.setState({instanceTabIndex: 0, instance: this.state.flights[index].flights[0]})
   }
 
   handleChange (e, field, subfield, index) {
@@ -273,6 +281,19 @@ class CreateFlightForm extends Component {
         [field]: e.target.value
       })
     }
+  }
+
+  handleFlightInstanceChange (updatedInstance) {
+    // NEED TO CHANGE TO GRAPHQL DATA STRUCTURE. LIKE HANDLESELECTFLIGHT
+    console.log('handleFlightInstanceChange', this.state.instanceTabIndex, updatedInstance)
+  }
+
+  switchInstanceTab (i) {
+    this.setState({instanceTabIndex: i})
+    var selectedFlight = this.state.flights[this.state.selected]
+    // console.log('selected flight', selectedFlight)
+    // console.log('instance', selectedFlight.flights[i])
+    this.setState({instance: selectedFlight.flights[i]})
   }
 
   componentDidMount () {
@@ -312,8 +333,8 @@ class CreateFlightForm extends Component {
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-                  {/* MAP FLIGHT INSTANCES WITH NOTES AND ATTACHMENTS */}
-                  {this.state.flights[this.state.selected].flights.map((flight, i) => {
+                  {/* TAB FLIGHT INSTANCES WITH NOTES AND ATTACHMENTS */}
+                  {/* {this.state.flights[this.state.selected].flights.map((flight, i) => {
                     return (
                       <div key={i}>
                         <h4 style={{fontSize: '24px'}} key={i}>{flight.departureAirportCode} to {flight.arrivalAirportCode}</h4>
@@ -332,7 +353,13 @@ class CreateFlightForm extends Component {
                         </div>
                       </div>
                     )
+                  })} */}
+                  {this.state.flights[this.state.selected].flights.map((flight, i) => {
+                    return (
+                      <h3 onClick={() => this.switchInstanceTab(i)} style={{display: 'inline-block', marginRight: '20px'}} key={'instance' + i}>{flight.departureAirportCode} to {flight.arrivalAirportCode}</h3>
+                    )
                   })}
+                  <FlightInstanceNotesAttachments instance={this.state.instance} handleChange={(updatedInstance) => this.handleFlightInstanceChange(updatedInstance)} />
                 </div>
               )}
               <div style={{width: '100%', height: '91%', margin: '2% 0 6% 0', overflowY: 'auto'}}>
