@@ -54,7 +54,7 @@ class CreateLandTransportForm extends Component {
       currencyList: [],
       bookedThrough: '',
       bookingConfirmation: '',
-      attachments: [],
+      attachments: [], // all attachments
       backgroundImage: defaultBackground,
       departureLocationDetails: {
         address: null,
@@ -181,7 +181,9 @@ class CreateLandTransportForm extends Component {
       arrivalGooglePlaceData: {},
       departureLocationAlias: '',
       arrivalLocationAlias: '',
-      notes: '',
+      // notes: '',
+      departureNotes: '',
+      arrivalNotes: '',
       startTime: null, // should be Int
       endTime: null, // should be Int
       cost: 0,
@@ -209,7 +211,9 @@ class CreateLandTransportForm extends Component {
     })
   }
 
-  handleFileUpload (attachmentInfo) {
+  handleFileUpload (attachmentInfo, arrivalDeparture) {
+    // SET EXTRA PROPERTY ARRIVALDEPARTURE IN ATTACHMENT OBJ
+    attachmentInfo.arrivalDeparture = arrivalDeparture
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
   }
 
@@ -291,7 +295,7 @@ class CreateLandTransportForm extends Component {
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
-            <div style={bookingNotesContainerStyle}>
+            <div style={{...bookingNotesContainerStyle, ...{overflow: 'scroll'}}}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
               <h4 style={{fontSize: '24px', marginTop: '50px'}}>
@@ -301,15 +305,16 @@ class CreateLandTransportForm extends Component {
               <LocationAlias handleChange={(e) => this.handleChange(e, 'departureLocationAlias')} placeholder={'Detailed Location (Departure)'} />
 
               <LocationAlias handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
-              {/* SPLIT INTO ARRIVAL, DEPARTURE NOTES, ATTACHMENTS */}
-              {/* <Notes handleChange={(e, field) => this.handleChange(e, field)} /> */}
+
+              {/* ATTACHMENT COMPONENT RECEIVES SEPARATE DEPARTURE, ARRIVAL ATTACHMENTS. BUT BOTH UPDATE THE SAME THIS.STATE.ATTACHMENTS */}
+
               <Notes handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Departure Notes'} />
 
-              {/* <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} /> */}
+              <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
 
               <Notes handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
 
-              {/* <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} /> */}
+              <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
 
               <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
