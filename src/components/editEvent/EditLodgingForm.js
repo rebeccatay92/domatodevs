@@ -11,7 +11,8 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-import Attachments from '../eventFormComponents/Attachments'
+// import Attachments from '../eventFormComponents/Attachments'
+import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { updateLodging, deleteLodging } from '../../apollo/lodging'
@@ -331,7 +332,6 @@ class EditLodgingForm extends Component {
   }
 
   setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
@@ -341,7 +341,6 @@ class EditLodgingForm extends Component {
         var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
         this.setState({locationDetails: locationDetails})
       }
-      // LODGING DOESNT NEED TO VALIDATE OPENING HOURS
     }
   }
 
@@ -420,16 +419,19 @@ class EditLodgingForm extends Component {
 
               <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
-              <Notes notes={this.state.notes} handleChange={(e, field) => this.handleChange(e, field)} />
+              <Notes notes={this.state.notes} handleChange={(e) => this.handleChange(e, 'notes')} />
+
+              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
+
               <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
 
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} formType={'edit'} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }
