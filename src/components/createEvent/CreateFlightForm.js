@@ -323,7 +323,13 @@ class CreateFlightForm extends Component {
             <div style={greyTintStyle} />
             <div style={eventDescContainerStyle}>
               <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} closeForm={() => this.closeForm()} />
+
               {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) && <FlightSearchDetailsContainer searching={this.state.searching} flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />}
+
+              {/* TRYING REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER */}
+              {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) &&
+                <FlightDetailsContainerRework />
+              }
             </div>
           </div>
           {/* RESULTS PANEL(CHILD OF SEARCH PARAMS) */}

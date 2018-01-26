@@ -296,7 +296,7 @@ class EditFlightForm extends Component {
     console.log('current instances', this.state.flightInstances, 'new instances', this.state.searchFlightInstances)
     // compare one way vs return
     console.log('current', this.state.returnDate, 'updating', this.state.searchParams.returnDate)
-    
+
     var params = this.state.searchParams
     this.setState({
       paxAdults: params.paxAdults,
@@ -478,7 +478,7 @@ class EditFlightForm extends Component {
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
 
                   {/* flight instances. gate and notes */}
-                  {this.state.flightInstances.map((instance, i) => {
+                  {/* {this.state.flightInstances.map((instance, i) => {
                     return (
                       <div key={i}>
                         <h4 style={{fontSize: '24px'}} key={i}>{instance.departureIATA} to {instance.arrivalIATA}</h4>
@@ -497,7 +497,7 @@ class EditFlightForm extends Component {
                         </div>
                       </div>
                     )
-                  })}
+                  })} */}
                 </div>
               }
               {this.state.searching &&
@@ -530,9 +530,9 @@ class EditFlightForm extends Component {
 
         </div>
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }
