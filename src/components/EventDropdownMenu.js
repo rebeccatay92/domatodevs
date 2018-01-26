@@ -41,6 +41,7 @@ class EventDropdownMenu extends Component {
       }
       return inputObj
     }
+
     // console.log('all events', this.props.events)
     var loadSequenceInputArr = []
     var eventsArr = this.props.events
