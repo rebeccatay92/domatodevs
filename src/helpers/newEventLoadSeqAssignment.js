@@ -116,14 +116,7 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
       dayEvents.push('placeholder')
     } else {
       var index = dayEvents.indexOf(displacedRow)
-      // if time is equal, it goes after an ending row. if time is before, or if not an ending row, event goes before
-      // if (checkIfEndingRow(displacedRow) && displacedRow.time === newEvent.startTime) {
-      //   dayEvents.splice(index + 1, 0, 'placeholder')
-      // } else if (displacedRow.time === newEvent.startTime && displacedRow.type === 'Lodging') {
-      //   dayEvents.splice(index + 1, 0, 'placeholder')
-      // } else {
-      //   dayEvents.splice(index, 0, 'placeholder')
-      // }
+
       if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === newEvent.startTimeUtcZero) {
         dayEvents.splice(index + 1, 0, 'placeholder')
       } else if (displacedRow.timeUtcZero === newEvent.startTimeUtcZero && displacedRow.type === 'Lodging') {
@@ -164,18 +157,7 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
         })
 
         console.log('type', type, 'displacedRow', displacedRow)
-        // if (!displacedRow) {
-        //   dayEvents.push({start: isStart})
-        // } else {
-        //   index = dayEvents.indexOf(displacedRow)
-        //   if (checkIfEndingRow(displacedRow) && displacedRow.time === newEvent[`${type}Time`]) {
-        //     dayEvents.splice(index + 1, 0, {start: isStart})
-        //   } else if (displacedRow.time === newEvent[`${type}Time`] && displacedRow.type === 'Lodging') {
-        //     dayEvents.splice(index + 1, 0, {start: isStart})
-        //   } else {
-        //     dayEvents.splice(index, 0, {start: isStart})
-        //   }
-        // }
+
         if (!displacedRow) {
           dayEvents.push({start: isStart})
         } else {
@@ -220,18 +202,6 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
           }
         })
 
-        // if (!displacedRow) {
-        //   dayEvents.push({start: isStart})
-        // } else {
-        //   index = dayEvents.indexOf(displacedRow)
-        //   if (checkIfEndingRow(displacedRow) && displacedRow.time === newEvent[`${type}Time`]) {
-        //     dayEvents.splice(index + 1, 0, {start: isStart})
-        //   } else if (displacedRow.time === newEvent[`${type}Time`] && displacedRow.type === 'Lodging') {
-        //     dayEvents.splice(index + 1, 0, {start: isStart})
-        //   } else {
-        //     dayEvents.splice(index, 0, {start: isStart})
-        //   }
-        // }
         if (!displacedRow) {
           dayEvents.push({start: isStart})
         } else {
@@ -302,14 +272,12 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
 
       // inserting each instance individually
       dayInstanceRows.forEach(instanceRow => {
-        console.log('inserting for 1 instanceRow', instanceRow)
         var displacedRow = dayEvents.find(e => {
           return (e.timeUtcZero >= instanceRow.timeUtcZero)
         })
         if (!displacedRow) {
           dayEvents.push(instanceRow)
         } else {
-          console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
           var index = dayEvents.indexOf(displacedRow)
           if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === instanceRow.timeUtcZero) {
             dayEvents.splice(index + 1, 0, instanceRow)
