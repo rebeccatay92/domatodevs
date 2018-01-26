@@ -11,6 +11,8 @@ import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, cr
 import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
 import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
+import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
+
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
@@ -230,7 +232,8 @@ class CreateFlightForm extends Component {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    // console.log(datesUnix)
+    console.log('dates unix arr', datesUnix)
+
     this.setState({
       selected: index,
       cost: this.state.flights[index].cost,
@@ -239,9 +242,13 @@ class CreateFlightForm extends Component {
       flightInstances: this.state.flights[index].flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
+
+        var startDayInt = (startDayUnix - datesUnix[0]) / 86400 + 1
+        var endDayInt = (endDayUnix - datesUnix[0]) / 86400 + 1
+
         const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
-        console.log(startTime, endTime)
+
         return {
           flightNumber: flight.flightNum,
           airlineCode: flight.carrierCode,
@@ -254,8 +261,8 @@ class CreateFlightForm extends Component {
           arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
           arrivalTerminal: flight.arrivalTerminal,
-          startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
-          endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
+          startDay: startDayInt,
+          endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
           durationMins: flight.duration,
@@ -324,11 +331,11 @@ class CreateFlightForm extends Component {
             <div style={eventDescContainerStyle}>
               <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} closeForm={() => this.closeForm()} />
 
-              {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) && <FlightSearchDetailsContainer searching={this.state.searching} flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />}
+              {/* {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) && <FlightSearchDetailsContainer searching={this.state.searching} flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />} */}
 
-              {/* TRYING REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER */}
+              {/* TRYING REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
               {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) &&
-                <FlightDetailsContainerRework />
+                <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
               }
             </div>
           </div>
