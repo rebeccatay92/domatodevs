@@ -261,17 +261,12 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
     var flightInstanceRows = []
     var days = []
     newEvent.forEach(instance => {
-      // 2 rows for start/end
-      // flightInstanceRows.push(
-      //   {day: instance.startDay, time: instance.startTime},
-      //   {day: instance.endDay, time: instance.endTime}
-      // )
       // flight instance rows replace with start, end time
+      // give instance placeholder timeUtcZero so it can be inserted 1 by 1
       flightInstanceRows.push(
-        {day: instance.startDay, time: instance.startTimeUtcZero},
-        {day: instance.endDay, time: instance.endTimeUtcZero}
+        {day: instance.startDay, timeUtcZero: instance.startTimeUtcZero},
+        {day: instance.endDay, timeUtcZero: instance.endTimeUtcZero}
       )
-
       if (!days.includes(instance.startDay)) {
         days.push(instance.startDay)
       } else if (!days.includes(instance.endDay)) {
@@ -289,52 +284,42 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
       })
 
       // inserting entire day's instances as a group,
-      var displacedRow = dayEvents.find(e => {
-        // return (e.time >= dayInstanceRows[0].time)
-        return (e.timeUtcZero >= dayInstanceRows[0].time)
-      })
+      // var displacedRow = dayEvents.find(e => {
+      //   return (e.timeUtcZero >= dayInstanceRows[0].timeUtcZero)
+      // })
       // if (!displacedRow) {
       //   dayEvents.push(...dayInstanceRows)
       // } else if (displacedRow) {
       //   var index = dayEvents.indexOf(displacedRow)
-      //   if (checkIfEndingRow(displacedRow) && displacedRow.time === dayInstanceRows[0].time) {
+      //   if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === dayInstanceRows[0].timeUtcZero) {
       //     dayEvents.splice(index + 1, 0, ...dayInstanceRows)
-      //   } else if (displacedRow.time === newEvent.startTime && displacedRow.type === 'Lodging') {
-      //     dayEvents.splice(index + 1, 0, 'placeholder')
+      //   } else if (displacedRow.timeUtcZero === dayInstanceRows[0].timeUtcZero && displacedRow.type === 'Lodging') {
+      //     dayEvents.splice(index + 1, 0, ...dayInstanceRows)
       //   } else {
       //     dayEvents.splice(index, 0, ...dayInstanceRows)
       //   }
       // }
-      if (!displacedRow) {
-        dayEvents.push(...dayInstanceRows)
-      } else if (displacedRow) {
-        var index = dayEvents.indexOf(displacedRow)
-        if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === dayInstanceRows[0].time) {
-          dayEvents.splice(index + 1, 0, ...dayInstanceRows)
-        } else if (displacedRow.timeUtcZero === dayInstanceRows[0].time && displacedRow.type === 'Lodging') {
-          dayEvents.splice(index + 1, 0, ...dayInstanceRows)
-        } else {
-          dayEvents.splice(index, 0, ...dayInstanceRows)
-        }
-      }
+
       // inserting each instance individually
-      // dayInstanceRows.forEach(instanceRow => {
-      //   console.log('inserting for instanceRow', instanceRow)
-      //   var displacedRow = dayEvents.find(e => {
-      //     return (e.time >= instanceRow.time)
-      //   })
-      //   if (!displacedRow) {
-      //     dayEvents.push(instanceRow)
-      //   } else {
-      //     console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
-      //     var index = dayEvents.indexOf(displacedRow)
-      //     if (checkIfEndingRow(displacedRow) && displacedRow.time === instanceRow.time) {
-      //       dayEvents.splice(index + 1, 0, instanceRow)
-      //     } else {
-      //       dayEvents.splice(index, 0, instanceRow)
-      //     }
-      //   }
-      // })
+      dayInstanceRows.forEach(instanceRow => {
+        console.log('inserting for 1 instanceRow', instanceRow)
+        var displacedRow = dayEvents.find(e => {
+          return (e.timeUtcZero >= instanceRow.timeUtcZero)
+        })
+        if (!displacedRow) {
+          dayEvents.push(instanceRow)
+        } else {
+          console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
+          var index = dayEvents.indexOf(displacedRow)
+          if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === instanceRow.timeUtcZero) {
+            dayEvents.splice(index + 1, 0, instanceRow)
+          } else if (displacedRow.timeUtcZero === instanceRow.timeUtcZero && displacedRow.type === 'Lodging') {
+            dayEvents.splice(index + 1, 0, instanceRow)
+          } else {
+            dayEvents.splice(index, 0, instanceRow)
+          }
+        }
+      })
 
       dayEvents.forEach(event => {
         var correctLoadSeq = dayEvents.indexOf(event) + 1
