@@ -1,9 +1,11 @@
 import airports from '../data/airports.json'
 
 function findUtcOffsetAirports (iata) {
+  console.log('iata to find', iata)
   var airportRow = airports.find(row => {
     return row.iata === iata
   })
+  console.log('findUtcOffsetAirports row', airportRow)
   var utcInMinutes = airportRow.timezone * 60
   return utcInMinutes
 }
@@ -157,8 +159,8 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
       var flightInstance = eventObj[j]
       var departureUtcOffset = findUtcOffsetAirports(eventObj.departureIATA)
       var arrivalUtcOffset = findUtcOffsetAirports(eventObj.arrivalIATA)
-      var incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime - (departureUtcOffset * 60)
-      var incomingEndUnix = (flightInstance.endDay - 1) * 86400 + flightInstance.endTime - (arrivalUtcOffset * 60)
+      incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime - (departureUtcOffset * 60)
+      incomingEndUnix = (flightInstance.endDay - 1) * 86400 + flightInstance.endTime - (arrivalUtcOffset * 60)
       // incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime
       // incomingEndUnix = (flightInstance.endDay - 1) * 86400 + flightInstance.endTime
       incomingIsPoint = incomingStartUnix === incomingEndUnix ? 'point' : 'duration'

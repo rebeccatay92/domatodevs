@@ -114,6 +114,7 @@ class FlightSearchParameters extends Component {
       // extract departure, arrival name (airport or city name)
       var departureName = this.state.departureLocation.name
       var arrivalName = this.state.arrivalLocation.name
+      console.log('SEARCH COMPONENT', this.state)
       this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, departureName, arrivalName, this.state.departureDate, this.state.returnDate)
     })
   }
