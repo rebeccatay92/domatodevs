@@ -13,10 +13,6 @@ import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
 import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
-// import Notes from '../eventFormComponents/Notes'
-
-// import Attachments from '../eventFormComponents/Attachments'
-// import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -28,8 +24,6 @@ import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from
  '../../helpers/newEventLoadSeqAssignment'
-// import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
-
 import { validateIntervals } from '../../helpers/intervalValidationTesting'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`

@@ -843,7 +843,8 @@
     "countryCode": "AO",
     "iata": "NDD",
     "latitude": -11.167900085449219,
-    "longitude": 13.84749984741211
+    "longitude": 13.84749984741211,
+    "timezone": 1
   },
   {
     "id": 95,
@@ -1607,7 +1608,8 @@
     "countryCode": "AR",
     "iata": "VMR",
     "latitude": -32.3201,
-    "longitude": -63.22663
+    "longitude": -63.22663,
+    "timezone": -3
   },
   {
     "id": 202,
@@ -4103,7 +4105,8 @@
     "countryCode": "AU",
     "iata": "ABH",
     "latitude": -23.646099,
-    "longitude": 146.584
+    "longitude": 146.584,
+    "timezone": 10
   },
   {
     "id": 469,
@@ -4113,7 +4116,8 @@
     "countryCode": "AU",
     "iata": "ARY",
     "latitude": -37.30939865112305,
-    "longitude": 142.98899841308594
+    "longitude": 142.98899841308594,
+    "timezone": 11
   },
   {
     "id": 470,
@@ -4123,7 +4127,8 @@
     "countryCode": "AU",
     "iata": "BLN",
     "latitude": -36.55189895629883,
-    "longitude": 146.0070037841797
+    "longitude": 146.0070037841797,
+    "timezone": 11
   },
   {
     "id": 471,
@@ -4133,7 +4138,8 @@
     "countryCode": "AU",
     "iata": "BZD",
     "latitude": -34.623600006103516,
-    "longitude": 143.5780029296875
+    "longitude": 143.5780029296875,
+    "timezone": 11
   },
   {
     "id": 472,
@@ -4143,7 +4149,8 @@
     "countryCode": "AU",
     "iata": "BWQ",
     "latitude": -29.973899841308594,
-    "longitude": 146.81700134277344
+    "longitude": 146.81700134277344,
+    "timezone": 11
   },
   {
     "id": 474,
@@ -4153,7 +4160,8 @@
     "countryCode": "AU",
     "iata": "CVC",
     "latitude": -33.70970153808594,
-    "longitude": 136.5050048828125
+    "longitude": 136.5050048828125,
+    "timezone": 10.5
   },
   {
     "id": 475,
@@ -4163,7 +4171,8 @@
     "countryCode": "AU",
     "iata": "CWW",
     "latitude": -35.99470138549805,
-    "longitude": 146.35699462890625
+    "longitude": 146.35699462890625,
+    "timezone": 10
   },
   {
     "id": 476,
@@ -4173,7 +4182,8 @@
     "countryCode": "AU",
     "iata": "CYG",
     "latitude": -36.18280029296875,
-    "longitude": 147.88800048828125
+    "longitude": 147.88800048828125,
+    "timezone": 11
   },
   {
     "id": 477,
@@ -4183,7 +4193,8 @@
     "countryCode": "AU",
     "iata": "CMD",
     "latitude": -34.6239013671875,
-    "longitude": 148.0279998779297
+    "longitude": 148.0279998779297,
+    "timezone": 11
   },
   {
     "id": 478,
@@ -4193,7 +4204,8 @@
     "countryCode": "AU",
     "iata": "DRN",
     "latitude": -28.591699600219727,
-    "longitude": 148.2169952392578
+    "longitude": 148.2169952392578,
+    "timezone": 10
   },
   {
     "id": 479,
@@ -4203,7 +4215,8 @@
     "countryCode": "AU",
     "iata": "DNQ",
     "latitude": -35.5593986511,
-    "longitude": 144.945999146
+    "longitude": 144.945999146,
+    "timezone": 11
   },
   {
     "id": 480,
@@ -4213,7 +4226,8 @@
     "countryCode": "AU",
     "iata": "DYA",
     "latitude": -22.62220001220703,
-    "longitude": 148.36399841308594
+    "longitude": 148.36399841308594,
+    "timezone": 10
   },
   {
     "id": 481,
@@ -4223,7 +4237,8 @@
     "countryCode": "AU",
     "iata": "ECH",
     "latitude": -36.15719985961914,
-    "longitude": 144.76199340820312
+    "longitude": 144.76199340820312,
+    "timezone": 11
   },
   {
     "id": 482,
@@ -4233,7 +4248,8 @@
     "countryCode": "AU",
     "iata": "FRB",
     "latitude": -33.363602,
-    "longitude": 147.934998
+    "longitude": 147.934998,
+    "timezone": 11
   },
   {
     "id": 483,
@@ -4243,7 +4259,8 @@
     "countryCode": "AU",
     "iata": "GUH",
     "latitude": -30.96109962463379,
-    "longitude": 150.25100708007812
+    "longitude": 150.25100708007812,
+    "timezone": 11
   },
   {
     "id": 484,
@@ -4253,7 +4270,8 @@
     "countryCode": "AU",
     "iata": "HXX",
     "latitude": -34.53139877319336,
-    "longitude": 144.8300018310547
+    "longitude": 144.8300018310547,
+    "timezone": 11
   },
   {
     "id": 485,
@@ -4263,7 +4281,8 @@
     "countryCode": "AU",
     "iata": "HTU",
     "latitude": -35.715301513671875,
-    "longitude": 142.36000061035156
+    "longitude": 142.36000061035156,
+    "timezone": 8
   },
   {
     "id": 486,
@@ -4273,7 +4292,8 @@
     "countryCode": "AU",
     "iata": "KRA",
     "latitude": -35.751399993896484,
-    "longitude": 143.93899536132812
+    "longitude": 143.93899536132812,
+    "timezone": 11
   },
   {
     "id": 487,
@@ -4283,7 +4303,8 @@
     "countryCode": "AU",
     "iata": "KPS",
     "latitude": -31.074399948120117,
-    "longitude": 152.77000427246094
+    "longitude": 152.77000427246094,
+    "timezone": 11
   },
   {
     "id": 488,
@@ -4293,7 +4314,8 @@
     "countryCode": "AU",
     "iata": "KGY",
     "latitude": -26.580799102783203,
-    "longitude": 151.84100341796875
+    "longitude": 151.84100341796875,
+    "timezone": 10
   },
   {
     "id": 489,
@@ -4303,7 +4325,8 @@
     "countryCode": "AU",
     "iata": "TGN",
     "latitude": -38.207199,
-    "longitude": 146.470001
+    "longitude": 146.470001,
+    "timezone": 11
   },
   {
     "id": 490,
@@ -4313,7 +4336,8 @@
     "countryCode": "AU",
     "iata": "MRG",
     "latitude": -17.06920051574707,
-    "longitude": 145.41900634765625
+    "longitude": 145.41900634765625,
+    "timezone": 10
   },
   {
     "id": 491,
@@ -4323,7 +4347,8 @@
     "countryCode": "AU",
     "iata": "RPM",
     "latitude": -14.722800254821777,
-    "longitude": 134.7469940185547
+    "longitude": 134.7469940185547,
+    "timezone": 9.5
   },
   {
     "id": 492,
@@ -4333,7 +4358,8 @@
     "countryCode": "AU",
     "iata": "QRM",
     "latitude": -32.214698791503906,
-    "longitude": 148.22500610351562
+    "longitude": 148.22500610351562,
+    "timezone": 11
   },
   {
     "id": 493,
@@ -4343,7 +4369,8 @@
     "countryCode": "AU",
     "iata": "PPI",
     "latitude": -33.23889923095703,
-    "longitude": 137.9949951171875
+    "longitude": 137.9949951171875,
+    "timezone": 10.5
   },
   {
     "id": 494,
@@ -4353,7 +4380,8 @@
     "countryCode": "AU",
     "iata": "SIO",
     "latitude": -40.834999084472656,
-    "longitude": 145.08399963378906
+    "longitude": 145.08399963378906,
+    "timezone": 11
   },
   {
     "id": 495,
@@ -4363,7 +4391,8 @@
     "countryCode": "AU",
     "iata": "SNB",
     "latitude": -11.422800064086914,
-    "longitude": 130.6540069580078
+    "longitude": 130.6540069580078,
+    "timezone": 9.5
   },
   {
     "id": 496,
@@ -4373,7 +4402,8 @@
     "countryCode": "AU",
     "iata": "SWC",
     "latitude": -37.07170104980469,
-    "longitude": 142.74099731445312
+    "longitude": 142.74099731445312,
+    "timezone": 11
   },
   {
     "id": 497,
@@ -4383,7 +4413,8 @@
     "countryCode": "AU",
     "iata": "TYB",
     "latitude": -29.451099395751953,
-    "longitude": 142.05799865722656
+    "longitude": 142.05799865722656,
+    "timezone": 11
   },
   {
     "id": 498,
@@ -4393,7 +4424,8 @@
     "countryCode": "AU",
     "iata": "TUM",
     "latitude": -35.26279830932617,
-    "longitude": 148.24099731445312
+    "longitude": 148.24099731445312,
+    "timezone": 11
   },
   {
     "id": 499,
@@ -4403,7 +4435,8 @@
     "countryCode": "AU",
     "iata": "WGT",
     "latitude": -36.41579818725586,
-    "longitude": 146.3070068359375
+    "longitude": 146.3070068359375,
+    "timezone": 11
   },
   {
     "id": 500,
@@ -4413,7 +4446,8 @@
     "countryCode": "AU",
     "iata": "WKB",
     "latitude": -36.32109832763672,
-    "longitude": 142.41900634765625
+    "longitude": 142.41900634765625,
+    "timezone": 11
   },
   {
     "id": 501,
@@ -4423,7 +4457,8 @@
     "countryCode": "AU",
     "iata": "QRR",
     "latitude": -31.733299255371094,
-    "longitude": 147.80299377441406
+    "longitude": 147.80299377441406,
+    "timezone": 11
   },
   {
     "id": 502,
@@ -4433,7 +4468,8 @@
     "countryCode": "AU",
     "iata": "SXE",
     "latitude": -38.090827,
-    "longitude": 146.965335
+    "longitude": 146.965335,
+    "timezone": 11
   },
   {
     "id": 503,
@@ -4443,7 +4479,8 @@
     "countryCode": "AU",
     "iata": "WWY",
     "latitude": -33.9371986389,
-    "longitude": 147.190994263
+    "longitude": 147.190994263,
+    "timezone": 11
   },
   {
     "id": 504,
@@ -4453,7 +4490,8 @@
     "countryCode": "AU",
     "iata": "NGA",
     "latitude": -34.25559997558594,
-    "longitude": 148.2480010986328
+    "longitude": 148.2480010986328,
+    "timezone": 11
   },
   {
     "id": 507,
@@ -5563,7 +5601,8 @@
     "countryCode": "BW",
     "iata": "SXN",
     "latitude": -20.5534,
-    "longitude": 26.115801
+    "longitude": 26.115801,
+    "timezone": 2
   },
   {
     "id": 663,
@@ -7623,7 +7662,8 @@
     "countryCode": "BR",
     "iata": "BAT",
     "latitude": -20.584499359131,
-    "longitude": -48.594100952148
+    "longitude": -48.594100952148,
+    "timezone": -2
   },
   {
     "id": 908,
@@ -12073,7 +12113,8 @@
     "countryCode": "CA",
     "iata": "YAH",
     "latitude": 53.754699707,
-    "longitude": -73.6753005981
+    "longitude": -73.6753005981,
+    "timezone": 5
   },
   {
     "id": 1382,
@@ -12083,7 +12124,8 @@
     "countryCode": "CA",
     "iata": "YAL",
     "latitude": 50.58219909667969,
-    "longitude": -126.91600036621094
+    "longitude": -126.91600036621094,
+    "timezone": -8
   },
   {
     "id": 1384,
@@ -12093,7 +12135,8 @@
     "countryCode": "CA",
     "iata": "YBU",
     "latitude": 53.33250045776367,
-    "longitude": -104.00800323486328
+    "longitude": -104.00800323486328,
+    "timezone": -6
   },
   {
     "id": 1385,
@@ -12103,7 +12146,8 @@
     "countryCode": "CA",
     "iata": "YCE",
     "latitude": 43.285599,
-    "longitude": -81.508301
+    "longitude": -81.508301,
+    "timezone": -5
   },
   {
     "id": 1386,
@@ -12113,7 +12157,8 @@
     "countryCode": "CA",
     "iata": "YCP",
     "latitude": 52.11669921875,
-    "longitude": -119.28299713134766
+    "longitude": -119.28299713134766,
+    "timezone": -8
   },
   {
     "id": 1387,
@@ -12123,7 +12168,8 @@
     "countryCode": "CA",
     "iata": "YCQ",
     "latitude": 55.687198638916016,
-    "longitude": -121.62699890136719
+    "longitude": -121.62699890136719,
+    "timezone": -7
   },
   {
     "id": 1388,
@@ -12133,7 +12179,8 @@
     "countryCode": "CA",
     "iata": "XRR",
     "latitude": 61.9706001282,
-    "longitude": -132.42300415
+    "longitude": -132.42300415,
+    "timezone": -8
   },
   {
     "id": 1389,
@@ -12143,7 +12190,8 @@
     "countryCode": "CA",
     "iata": "YDO",
     "latitude": 48.778499603271,
-    "longitude": -72.375
+    "longitude": -72.375,
+    "timezone": -5
   },
   {
     "id": 1390,
@@ -12153,7 +12201,8 @@
     "countryCode": "CA",
     "iata": "YEY",
     "latitude": 48.563899993896484,
-    "longitude": -78.24970245361328
+    "longitude": -78.24970245361328,
+    "timezone": -5
   },
   {
     "id": 1391,
@@ -12163,7 +12212,8 @@
     "countryCode": "CA",
     "iata": "YGD",
     "latitude": 43.7668991089,
-    "longitude": -81.7106018066
+    "longitude": -81.7106018066,
+    "timezone": -5
   },
   {
     "id": 1392,
@@ -12173,7 +12223,8 @@
     "countryCode": "CA",
     "iata": "YHE",
     "latitude": 49.3683013916,
-    "longitude": -121.498001099
+    "longitude": -121.498001099,
+    "timezone": -8
   },
   {
     "id": 1393,
@@ -12183,7 +12234,8 @@
     "countryCode": "CA",
     "iata": "YHT",
     "latitude": 60.78919982910156,
-    "longitude": -137.54600524902344
+    "longitude": -137.54600524902344,
+    "timezone": -8
   },
   {
     "id": 1394,
@@ -12193,7 +12245,8 @@
     "countryCode": "CA",
     "iata": "YDG",
     "latitude": 44.5458450365,
-    "longitude": -65.7854247093
+    "longitude": -65.7854247093,
+    "timezone": -4
   },
   {
     "id": 1395,
@@ -12203,7 +12256,8 @@
     "countryCode": "CA",
     "iata": "YJF",
     "latitude": 60.235801696799996,
-    "longitude": -123.46900177
+    "longitude": -123.46900177,
+    "timezone": -7
   },
   {
     "id": 1396,
@@ -12213,7 +12267,8 @@
     "countryCode": "CA",
     "iata": "YKJ",
     "latitude": 57.256099700927734,
-    "longitude": -105.61799621582031
+    "longitude": -105.61799621582031,
+    "timezone": -6
   },
   {
     "id": 1397,
@@ -12223,7 +12278,8 @@
     "countryCode": "CA",
     "iata": "YLR",
     "latitude": 56.513301849365234,
-    "longitude": -99.98529815673828
+    "longitude": -99.98529815673828,
+    "timezone": -6
   },
   {
     "id": 1398,
@@ -12233,7 +12289,8 @@
     "countryCode": "CA",
     "iata": "YME",
     "latitude": 48.85689926147461,
-    "longitude": -67.45330047607422
+    "longitude": -67.45330047607422,
+    "timezone": -5
   },
   {
     "id": 1399,
@@ -12243,7 +12300,8 @@
     "countryCode": "CA",
     "iata": "YML",
     "latitude": 47.59749984741211,
-    "longitude": -70.2238998413086
+    "longitude": -70.2238998413086,
+    "timezone": -5
   },
   {
     "id": 1401,
@@ -12253,7 +12311,8 @@
     "countryCode": "CA",
     "iata": "YOS",
     "latitude": 44.5903015137,
-    "longitude": -80.8375015259
+    "longitude": -80.8375015259,
+    "timezone": -5
   },
   {
     "id": 1402,
@@ -12263,7 +12322,8 @@
     "countryCode": "CA",
     "iata": "YPS",
     "latitude": 45.6567001343,
-    "longitude": -61.3680992126
+    "longitude": -61.3680992126,
+    "timezone": -4
   },
   {
     "id": 1403,
@@ -12273,7 +12333,8 @@
     "countryCode": "CA",
     "iata": "YQS",
     "latitude": 42.77000045776367,
-    "longitude": -81.11080169677734
+    "longitude": -81.11080169677734,
+    "timezone": -5
   },
   {
     "id": 1404,
@@ -12283,7 +12344,8 @@
     "countryCode": "CA",
     "iata": "YRO",
     "latitude": 45.4603004456,
-    "longitude": -75.64610290530001
+    "longitude": -75.64610290530001,
+    "timezone": -5
   },
   {
     "id": 1405,
@@ -12293,7 +12355,8 @@
     "countryCode": "CA",
     "iata": "YRP",
     "latitude": 45.3191986084,
-    "longitude": -76.0222015381
+    "longitude": -76.0222015381,
+    "timezone": -5
   },
   {
     "id": 1406,
@@ -12303,7 +12366,8 @@
     "countryCode": "CA",
     "iata": "YSH",
     "latitude": 44.94580078125,
-    "longitude": -75.94059753417969
+    "longitude": -75.94059753417969,
+    "timezone": -5
   },
   {
     "id": 1407,
@@ -12313,7 +12377,8 @@
     "countryCode": "CA",
     "iata": "YSL",
     "latitude": 47.157501220703125,
-    "longitude": -67.83470153808594
+    "longitude": -67.83470153808594,
+    "timezone": -5
   },
   {
     "id": 1408,
@@ -12323,7 +12388,8 @@
     "countryCode": "CA",
     "iata": "YVD",
     "latitude": 49.8782997131,
-    "longitude": -100.917999268
+    "longitude": -100.917999268,
+    "timezone": -6
   },
   {
     "id": 1409,
@@ -12333,7 +12399,8 @@
     "countryCode": "CA",
     "iata": "YVE",
     "latitude": 50.24810028076172,
-    "longitude": -119.33100128173828
+    "longitude": -119.33100128173828,
+    "timezone": -8
   },
   {
     "id": 1410,
@@ -12343,7 +12410,8 @@
     "countryCode": "CA",
     "iata": "YXQ",
     "latitude": 62.410301208496094,
-    "longitude": -140.86700439453125
+    "longitude": -140.86700439453125,
+    "timezone": -8
   },
   {
     "id": 1411,
@@ -12353,7 +12421,8 @@
     "countryCode": "CA",
     "iata": "YSN",
     "latitude": 50.682802,
-    "longitude": -119.228996
+    "longitude": -119.228996,
+    "timezone": -8
   },
   {
     "id": 1412,
@@ -12363,7 +12432,8 @@
     "countryCode": "CA",
     "iata": "KES",
     "latitude": 56.0374984741,
-    "longitude": -96.50969696039999
+    "longitude": -96.50969696039999,
+    "timezone": -6
   },
   {
     "id": 1413,
@@ -12373,7 +12443,8 @@
     "countryCode": "CA",
     "iata": "XPK",
     "latitude": 55.7491989136,
-    "longitude": -101.26599884
+    "longitude": -101.26599884,
+    "timezone": -6
   },
   {
     "id": 1414,
@@ -12383,7 +12454,8 @@
     "countryCode": "CA",
     "iata": "ZGF",
     "latitude": 49.01559829711914,
-    "longitude": -118.43099975585938
+    "longitude": -118.43099975585938,
+    "timezone": -8
   },
   {
     "id": 1415,
@@ -12393,7 +12465,8 @@
     "countryCode": "CA",
     "iata": "ZJG",
     "latitude": 54.51890182495117,
-    "longitude": -98.04609680175781
+    "longitude": -98.04609680175781,
+    "timezone": -6
   },
   {
     "id": 1416,
@@ -12403,7 +12476,8 @@
     "countryCode": "CA",
     "iata": "YTD",
     "latitude": 55.31890106201172,
-    "longitude": -97.70780181884766
+    "longitude": -97.70780181884766,
+    "timezone": -6
   },
   {
     "id": 1417,
@@ -12413,7 +12487,8 @@
     "countryCode": "CA",
     "iata": "PIW",
     "latitude": 55.58890151977539,
-    "longitude": -97.16419982910156
+    "longitude": -97.16419982910156,
+    "timezone": -6
   },
   {
     "id": 1418,
@@ -12423,7 +12498,8 @@
     "countryCode": "CA",
     "iata": "XPP",
     "latitude": 52.9965258788,
-    "longitude": -97.2741937637
+    "longitude": -97.2741937637,
+    "timezone": -6
   },
   {
     "id": 1419,
@@ -12433,7 +12509,8 @@
     "countryCode": "CA",
     "iata": "WPC",
     "latitude": 49.520599365200006,
-    "longitude": -113.997001648
+    "longitude": -113.997001648,
+    "timezone": -7
   },
   {
     "id": 1420,
@@ -12443,7 +12520,8 @@
     "countryCode": "CA",
     "iata": "ZST",
     "latitude": 55.935410448,
-    "longitude": -129.982434511
+    "longitude": -129.982434511,
+    "timezone": -8
   },
   {
     "id": 1421,
@@ -12453,7 +12531,8 @@
     "countryCode": "CA",
     "iata": "ZUC",
     "latitude": 49.4296989440918,
-    "longitude": -91.7177963256836
+    "longitude": -91.7177963256836,
+    "timezone": -6
   },
   {
     "id": 1422,
@@ -12936,7 +13015,8 @@
     "countryCode": "CL",
     "iata": "TOQ",
     "latitude": -22.14109992980957,
-    "longitude": -70.06289672851562
+    "longitude": -70.06289672851562,
+    "timezone": -3
   },
   {
     "id": 1480,
@@ -12946,7 +13026,8 @@
     "countryCode": "CL",
     "iata": "LGR",
     "latitude": -47.24380111694336,
-    "longitude": -72.5884017944336
+    "longitude": -72.5884017944336,
+    "timezone": -3
   },
   {
     "id": 1481,
@@ -12956,7 +13037,8 @@
     "countryCode": "CL",
     "iata": "CNR",
     "latitude": -26.332500457763672,
-    "longitude": -70.6072998046875
+    "longitude": -70.6072998046875,
+    "timezone": -3
   },
   {
     "id": 1482,
@@ -12966,7 +13048,8 @@
     "countryCode": "CL",
     "iata": "TLX",
     "latitude": -35.37779998779297,
-    "longitude": -71.60169982910156
+    "longitude": -71.60169982910156,
+    "timezone": -3
   },
   {
     "id": 1483,
@@ -12976,7 +13059,8 @@
     "countryCode": "CL",
     "iata": "ZIC",
     "latitude": -38.245601654052734,
-    "longitude": -72.34860229492188
+    "longitude": -72.34860229492188,
+    "timezone": -3
   },
   {
     "id": 1484,
@@ -12986,7 +13070,8 @@
     "countryCode": "CL",
     "iata": "TTC",
     "latitude": -25.564300537109375,
-    "longitude": -70.37590026855469
+    "longitude": -70.37590026855469,
+    "timezone": -3
   },
   {
     "id": 1485,
@@ -14867,7 +14952,8 @@
     "countryCode": "CN",
     "iata": "WDS",
     "latitude": 32.591667,
-    "longitude": 110.907778
+    "longitude": 110.907778,
+    "timezone": 8
   },
   {
     "id": 1665,
@@ -14877,7 +14963,8 @@
     "countryCode": "CN",
     "iata": "HTT",
     "latitude": 38.201984,
-    "longitude": 90.841495
+    "longitude": 90.841495,
+    "timezone": 8
   },
   {
     "id": 1666,
@@ -14887,7 +14974,8 @@
     "countryCode": "CN",
     "iata": "BFU",
     "latitude": 32.8477333333,
-    "longitude": 117.320244444
+    "longitude": 117.320244444,
+    "timezone": 8
   },
   {
     "id": 1669,
@@ -14897,7 +14985,8 @@
     "countryCode": "CN",
     "iata": "SXJ",
     "latitude": 42.91170120239258,
-    "longitude": 90.24749755859375
+    "longitude": 90.24749755859375,
+    "timezone": 6
   },
   {
     "id": 1670,
@@ -14907,7 +14996,8 @@
     "countryCode": "CN",
     "iata": "YKH",
     "latitude": 40.542524,
-    "longitude": 122.3586
+    "longitude": 122.3586,
+    "timezone": 8.5
   },
   {
     "id": 1672,
@@ -15605,7 +15695,8 @@
     "countryCode": "CO",
     "iata": "CVE",
     "latitude": 9.40092,
-    "longitude": -75.6913
+    "longitude": -75.6913,
+    "timezone": -5
   },
   {
     "id": 1755,
@@ -15615,7 +15706,8 @@
     "countryCode": "CO",
     "iata": "PZA",
     "latitude": 5.87615,
-    "longitude": -71.8866
+    "longitude": -71.8866,
+    "timezone": -5
   },
   {
     "id": 1759,
@@ -16417,7 +16509,8 @@
     "countryCode": "CR",
     "iata": "UPL",
     "latitude": 10.8922,
-    "longitude": -85.016197
+    "longitude": -85.016197,
+    "timezone": -6
   },
   {
     "id": 1851,
@@ -16834,7 +16927,8 @@
     "countryCode": "CU",
     "iata": "QSN",
     "latitude": 22.756099700927734,
-    "longitude": -81.9208984375
+    "longitude": -81.9208984375,
+    "timezone": -5
   },
   {
     "id": 1907,
@@ -21383,7 +21477,8 @@
     "countryCode": "DE",
     "iata": "FNB",
     "latitude": 53.6022,
-    "longitude": 13.306
+    "longitude": 13.306,
+    "timezone": 1
   },
   {
     "id": 2755,
@@ -22306,7 +22401,8 @@
     "countryCode": "GT",
     "iata": "RUV",
     "latitude": 15.991999626159668,
-    "longitude": -90.44529724121094
+    "longitude": -90.44529724121094,
+    "timezone": -6
   },
   {
     "id": 2866,
@@ -24032,7 +24128,8 @@
     "countryCode": "IN",
     "iata": "RTC",
     "latitude": 17.013599395751953,
-    "longitude": 73.32779693603516
+    "longitude": 73.32779693603516,
+    "timezone": 5.5
   },
   {
     "id": 3089,
@@ -24042,7 +24139,8 @@
     "countryCode": "IN",
     "iata": "RDP",
     "latitude": 23.6225,
-    "longitude": 87.243
+    "longitude": 87.243,
+    "timezone": 5.5
   },
   {
     "id": 3091,
@@ -24052,7 +24150,8 @@
     "countryCode": "IN",
     "iata": "PUT",
     "latitude": 14.1492996216,
-    "longitude": 77.7910995483
+    "longitude": 77.7910995483,
+    "timezone": 5.5
   },
   {
     "id": 3092,
@@ -25680,7 +25779,8 @@
     "countryCode": "IR",
     "iata": "KNR",
     "latitude": 27.820499420166016,
-    "longitude": 52.35219955444336
+    "longitude": 52.35219955444336,
+    "timezone": 3.5
   },
   {
     "id": 3333,
@@ -25690,7 +25790,8 @@
     "countryCode": "IR",
     "iata": "PYK",
     "latitude": 35.776100158691,
-    "longitude": 50.826698303223
+    "longitude": 50.826698303223,
+    "timezone": -3
   },
   {
     "id": 3334,
@@ -25766,7 +25867,8 @@
     "countryCode": "IQ",
     "iata": "RQW",
     "latitude": 35.76720047,
-    "longitude": 43.125099182099994
+    "longitude": 43.125099182099994,
+    "timezone": 3
   },
   {
     "id": 3351,
@@ -26572,7 +26674,8 @@
     "countryCode": "IT",
     "iata": "TN0",
     "latitude": 46.0214,
-    "longitude": 11.1242
+    "longitude": 11.1242,
+    "timezone": 1
   },
   {
     "id": 3473,
@@ -27574,7 +27677,8 @@
     "countryCode": "JP",
     "iata": "IEJ",
     "latitude": 26.7220001221,
-    "longitude": 127.785003662
+    "longitude": 127.785003662,
+    "timezone": 9
   },
   {
     "id": 3601,
@@ -28343,7 +28447,8 @@
     "countryCode": "KG",
     "iata": "IKU",
     "latitude": 42.58792,
-    "longitude": 76.713046
+    "longitude": 76.713046,
+    "timezone": 6
   },
   {
     "id": 3693,
@@ -28496,7 +28601,8 @@
     "countryCode": "LV",
     "iata": "DGP",
     "latitude": 55.944721221900004,
-    "longitude": 26.6650009155
+    "longitude": 26.6650009155,
+    "timezone": 2
   },
   {
     "id": 3712,
@@ -29298,7 +29404,8 @@
     "countryCode": "MW",
     "iata": "MAI",
     "latitude": -14.482999801635742,
-    "longitude": 35.266998291015625
+    "longitude": 35.266998291015625,
+    "timezone": 2
   },
   {
     "id": 3804,
@@ -31173,7 +31280,8 @@
     "countryCode": "MN",
     "iata": "UUN",
     "latitude": 46.660301208496094,
-    "longitude": 113.28500366210938
+    "longitude": 113.28500366210938,
+    "timezone": 8
   },
   {
     "id": 4011,
@@ -31711,7 +31819,8 @@
     "countryCode": "NA",
     "iata": "ADI",
     "latitude": -22.462200164794922,
-    "longitude": 14.979999542236328
+    "longitude": 14.979999542236328,
+    "timezone": 2
   },
   {
     "id": 4080,
@@ -32150,7 +32259,8 @@
     "countryCode": "CW",
     "iata": "CUR",
     "latitude": 12.1889,
-    "longitude": -68.959801
+    "longitude": -68.959801,
+    "timezone": -4
   },
   {
     "id": 4148,
@@ -35042,7 +35152,8 @@
     "countryCode": "PE",
     "iata": "RIJ",
     "latitude": -6.067860126495361,
-    "longitude": -77.16000366210938
+    "longitude": -77.16000366210938,
+    "timezone": -5
   },
   {
     "id": 5542,
@@ -35052,7 +35163,8 @@
     "countryCode": "PE",
     "iata": "JAE",
     "latitude": -5.59248,
-    "longitude": -78.774002
+    "longitude": -78.774002,
+    "timezone": -5
   },
   {
     "id": 5543,
@@ -35601,7 +35713,8 @@
     "countryCode": "PH",
     "iata": "AAV",
     "latitude": 6.366819858551025,
-    "longitude": 124.7509994506836
+    "longitude": 124.7509994506836,
+    "timezone": 8
   },
   {
     "id": 5608,
@@ -35611,7 +35724,8 @@
     "countryCode": "PH",
     "iata": "BPH",
     "latitude": 8.19594955444336,
-    "longitude": 126.3219985961914
+    "longitude": 126.3219985961914,
+    "timezone": 8
   },
   {
     "id": 5609,
@@ -35621,7 +35735,8 @@
     "countryCode": "PH",
     "iata": "MXI",
     "latitude": 6.94936990737915,
-    "longitude": 126.27300262451172
+    "longitude": 126.27300262451172,
+    "timezone": 8
   },
   {
     "id": 5611,
@@ -35785,7 +35900,8 @@
     "countryCode": "PL",
     "iata": "BXP",
     "latitude": 52.00078,
-    "longitude": 23.1325278
+    "longitude": 23.1325278,
+    "timezone": 1
   },
   {
     "id": 5650,
@@ -37856,7 +37972,8 @@
     "countryCode": "RU",
     "iata": "VYI",
     "latitude": 63.75666809082,
-    "longitude": 121.69333648682
+    "longitude": 121.69333648682,
+    "timezone": 9
   },
   {
     "id": 5952,
@@ -37866,7 +37983,8 @@
     "countryCode": "RU",
     "iata": "GVN",
     "latitude": 48.926998138399995,
-    "longitude": 140.033996582
+    "longitude": 140.033996582,
+    "timezone": 10
   },
   {
     "id": 5961,
@@ -37876,7 +37994,8 @@
     "countryCode": "RU",
     "iata": "NLI",
     "latitude": 53.154998779297,
-    "longitude": 140.64999389648
+    "longitude": 140.64999389648,
+    "timezone": 10
   },
   {
     "id": 5996,
@@ -37886,7 +38005,8 @@
     "countryCode": "RU",
     "iata": "VLK",
     "latitude": 47.682098388671875,
-    "longitude": 42.07279968261719
+    "longitude": 42.07279968261719,
+    "timezone": 3
   },
   {
     "id": 6000,
@@ -37896,7 +38016,8 @@
     "countryCode": "RU",
     "iata": "INA",
     "latitude": 66.0548324584961,
-    "longitude": 60.110321044921875
+    "longitude": 60.110321044921875,
+    "timezone": 3
   },
   {
     "id": 6003,
@@ -37906,7 +38027,8 @@
     "countryCode": "RU",
     "iata": "ZIX",
     "latitude": 66.7965011597,
-    "longitude": 123.361000061
+    "longitude": 123.361000061,
+    "timezone": 9
   },
   {
     "id": 6013,
@@ -39627,7 +39749,8 @@
     "countryCode": "ZA",
     "iata": "LMR",
     "latitude": -28.36009979248047,
-    "longitude": 23.43910026550293
+    "longitude": 23.43910026550293,
+    "timezone": 2
   },
   {
     "id": 6265,
@@ -40358,7 +40481,8 @@
     "countryCode": "ES",
     "iata": "ECV",
     "latitude": 40.370700836199994,
-    "longitude": -3.7851400375399997
+    "longitude": -3.7851400375399997,
+    "timezone": 1
   },
   {
     "id": 6356,
@@ -40368,7 +40492,8 @@
     "countryCode": "ES",
     "iata": "CDT",
     "latitude": 40.213889,
-    "longitude": 0.073333
+    "longitude": 0.073333,
+    "timezone": 1
   },
   {
     "id": 6357,
@@ -40378,7 +40503,8 @@
     "countryCode": "ES",
     "iata": "TEV",
     "latitude": 40.403,
-    "longitude": -1.2183
+    "longitude": -1.2183,
+    "timezone": 1
   },
   {
     "id": 6358,
@@ -40619,7 +40745,8 @@
     "countryCode": "SD",
     "iata": "MWE",
     "latitude": 18.4433333333,
-    "longitude": 31.8433333333
+    "longitude": 31.8433333333,
+    "timezone": 2
   },
   {
     "id": 6388,
@@ -44890,7 +45017,8 @@
     "countryCode": "GB",
     "iata": "FSS",
     "latitude": 57.6493988037,
-    "longitude": -3.56064009666
+    "longitude": -3.56064009666,
+    "timezone": "0"
   },
   {
     "id": 7480,
@@ -58025,7 +58153,8 @@
     "countryCode": "US",
     "iata": "ALN",
     "latitude": 38.89030075069999,
-    "longitude": -90.0459976196
+    "longitude": -90.0459976196,
+    "timezone": -6
   },
   {
     "id": 11816,
@@ -58035,7 +58164,8 @@
     "countryCode": "US",
     "iata": "AXN",
     "latitude": 45.8662986755,
-    "longitude": -95.39469909670001
+    "longitude": -95.39469909670001,
+    "timezone": -6
   },
   {
     "id": 11817,
@@ -58045,7 +58175,8 @@
     "countryCode": "US",
     "iata": "CLU",
     "latitude": 39.2619018555,
-    "longitude": -85.8963012695
+    "longitude": -85.8963012695,
+    "timezone": -5
   },
   {
     "id": 11818,
@@ -58055,7 +58186,8 @@
     "countryCode": "US",
     "iata": "BBD",
     "latitude": 31.1793003082,
-    "longitude": -99.3238983154
+    "longitude": -99.3238983154,
+    "timezone": -6
   },
   {
     "id": 11819,
@@ -58065,7 +58197,8 @@
     "countryCode": "US",
     "iata": "BIH",
     "latitude": 37.3731002808,
-    "longitude": -118.363998413
+    "longitude": -118.363998413,
+    "timezone": -8
   },
   {
     "id": 11820,
@@ -58075,7 +58208,8 @@
     "countryCode": "US",
     "iata": "BKE",
     "latitude": 44.837299346900004,
-    "longitude": -117.808998108
+    "longitude": -117.808998108,
+    "timezone": -8
   },
   {
     "id": 11821,
@@ -58085,7 +58219,8 @@
     "countryCode": "US",
     "iata": "BPI",
     "latitude": 42.58509827,
-    "longitude": -110.1110001
+    "longitude": -110.1110001,
+    "timezone": -7
   },
   {
     "id": 11822,
@@ -58095,7 +58230,8 @@
     "countryCode": "US",
     "iata": "WMH",
     "latitude": 36.3689002991,
-    "longitude": -92.47049713130001
+    "longitude": -92.47049713130001,
+    "timezone": -6
   },
   {
     "id": 11823,
@@ -58105,7 +58241,8 @@
     "countryCode": "US",
     "iata": "BTL",
     "latitude": 42.307300567599995,
-    "longitude": -85.2515029907
+    "longitude": -85.2515029907,
+    "timezone": -5
   },
   {
     "id": 11824,
@@ -58115,7 +58252,8 @@
     "countryCode": "US",
     "iata": "BYI",
     "latitude": 42.542598724399994,
-    "longitude": -113.772003174
+    "longitude": -113.772003174,
+    "timezone": -7
   },
   {
     "id": 11825,
@@ -58125,7 +58263,8 @@
     "countryCode": "US",
     "iata": "CCY",
     "latitude": 43.0726013184,
-    "longitude": -92.6108016968
+    "longitude": -92.6108016968,
+    "timezone": -6
   },
   {
     "id": 11826,
@@ -58135,7 +58274,8 @@
     "countryCode": "US",
     "iata": "CNU",
     "latitude": 37.668800354,
-    "longitude": -95.4850997925
+    "longitude": -95.4850997925,
+    "timezone": -6
   },
   {
     "id": 11827,
@@ -58145,7 +58285,8 @@
     "countryCode": "US",
     "iata": "CRG",
     "latitude": 30.3362998962,
-    "longitude": -81.51439666750001
+    "longitude": -81.51439666750001,
+    "timezone": -5
   },
   {
     "id": 11828,
@@ -58155,7 +58296,8 @@
     "countryCode": "US",
     "iata": "CSV",
     "latitude": 35.9513015747,
-    "longitude": -85.08499908450001
+    "longitude": -85.08499908450001,
+    "timezone": -6
   },
   {
     "id": 11830,
@@ -58165,7 +58307,8 @@
     "countryCode": "US",
     "iata": "DAG",
     "latitude": 34.85369873,
-    "longitude": -116.7870026
+    "longitude": -116.7870026,
+    "timezone": -8
   },
   {
     "id": 11831,
@@ -58175,7 +58318,8 @@
     "countryCode": "US",
     "iata": "DMN",
     "latitude": 32.262298584,
-    "longitude": -107.721000671
+    "longitude": -107.721000671,
+    "timezone": -7
   },
   {
     "id": 11832,
@@ -58185,7 +58329,8 @@
     "countryCode": "US",
     "iata": "DRA",
     "latitude": 36.6194,
-    "longitude": -116.032997
+    "longitude": -116.032997,
+    "timezone": -8
   },
   {
     "id": 11833,
@@ -58195,7 +58340,8 @@
     "countryCode": "US",
     "iata": "EED",
     "latitude": 34.7663002014,
-    "longitude": -114.623001099
+    "longitude": -114.623001099,
+    "timezone": -8
   },
   {
     "id": 11834,
@@ -58205,7 +58351,8 @@
     "countryCode": "US",
     "iata": "EGI",
     "latitude": 30.65040016,
-    "longitude": -86.52290344
+    "longitude": -86.52290344,
+    "timezone": -6
   },
   {
     "id": 11835,
@@ -58215,7 +58362,8 @@
     "countryCode": "US",
     "iata": "EKA",
     "latitude": 40.803398132299996,
-    "longitude": -124.112998962
+    "longitude": -124.112998962,
+    "timezone": -8
   },
   {
     "id": 11836,
@@ -58225,7 +58373,8 @@
     "countryCode": "US",
     "iata": "HYI",
     "latitude": 29.8927001953125,
-    "longitude": -97.86299896240234
+    "longitude": -97.86299896240234,
+    "timezone": -6
   },
   {
     "id": 11837,
@@ -58235,7 +58384,8 @@
     "countryCode": "US",
     "iata": "HYR",
     "latitude": 46.025199890100005,
-    "longitude": -91.44429779050002
+    "longitude": -91.44429779050002,
+    "timezone": -6
   },
   {
     "id": 11838,
@@ -58245,7 +58395,8 @@
     "countryCode": "US",
     "iata": "JCT",
     "latitude": 30.5112991333,
-    "longitude": -99.7634963989
+    "longitude": -99.7634963989,
+    "timezone": -6
   },
   {
     "id": 11839,
@@ -58255,7 +58406,8 @@
     "countryCode": "US",
     "iata": "LLQ",
     "latitude": 33.6385994,
-    "longitude": -91.75099945
+    "longitude": -91.75099945,
+    "timezone": -6
   },
   {
     "id": 11840,
@@ -58265,7 +58417,8 @@
     "countryCode": "US",
     "iata": "LOL",
     "latitude": 40.0663986206,
-    "longitude": -118.565002441
+    "longitude": -118.565002441,
+    "timezone": -8
   },
   {
     "id": 11841,
@@ -58275,7 +58428,8 @@
     "countryCode": "US",
     "iata": "MBG",
     "latitude": 45.54650116,
-    "longitude": -100.4079971
+    "longitude": -100.4079971,
+    "timezone": -6
   },
   {
     "id": 11842,
@@ -58285,7 +58439,8 @@
     "countryCode": "US",
     "iata": "MCB",
     "latitude": 31.17849922,
-    "longitude": -90.47190094
+    "longitude": -90.47190094,
+    "timezone": -6
   },
   {
     "id": 11843,
@@ -58295,7 +58450,8 @@
     "countryCode": "US",
     "iata": "MDH",
     "latitude": 37.778099060058594,
-    "longitude": -89.25199890136719
+    "longitude": -89.25199890136719,
+    "timezone": -6
   },
   {
     "id": 11845,
@@ -58305,7 +58461,8 @@
     "countryCode": "US",
     "iata": "NHZ",
     "latitude": 43.89220047,
-    "longitude": -69.93859863
+    "longitude": -69.93859863,
+    "timezone": -5
   },
   {
     "id": 11846,
@@ -58315,7 +58472,8 @@
     "countryCode": "US",
     "iata": "NRB",
     "latitude": 30.39109993,
-    "longitude": -81.42469788
+    "longitude": -81.42469788,
+    "timezone": -5
   },
   {
     "id": 11847,
@@ -58325,7 +58483,8 @@
     "countryCode": "US",
     "iata": "OGB",
     "latitude": 33.456798553467,
-    "longitude": -80.859497070312
+    "longitude": -80.859497070312,
+    "timezone": -5
   },
   {
     "id": 11848,
@@ -58335,7 +58494,8 @@
     "countryCode": "US",
     "iata": "OLU",
     "latitude": 41.44800186,
-    "longitude": -97.34259796
+    "longitude": -97.34259796,
+    "timezone": -5
   },
   {
     "id": 11849,
@@ -58345,7 +58505,8 @@
     "countryCode": "US",
     "iata": "OTM",
     "latitude": 41.10660172,
-    "longitude": -92.44789886
+    "longitude": -92.44789886,
+    "timezone": -6
   },
   {
     "id": 11850,
@@ -58355,7 +58516,8 @@
     "countryCode": "US",
     "iata": "OZR",
     "latitude": 31.27569962,
-    "longitude": -85.71340179
+    "longitude": -85.71340179,
+    "timezone": -6
   },
   {
     "id": 11851,
@@ -58365,7 +58527,8 @@
     "countryCode": "US",
     "iata": "PWY",
     "latitude": 42.79550171,
-    "longitude": -109.8069992
+    "longitude": -109.8069992,
+    "timezone": -7
   },
   {
     "id": 11852,
@@ -58375,7 +58538,8 @@
     "countryCode": "US",
     "iata": "POU",
     "latitude": 41.6265983581543,
-    "longitude": -73.88420104980469
+    "longitude": -73.88420104980469,
+    "timezone": -5
   },
   {
     "id": 11853,
@@ -58385,7 +58549,8 @@
     "countryCode": "US",
     "iata": "RNH",
     "latitude": 45.14830017,
-    "longitude": -92.5381012
+    "longitude": -92.5381012,
+    "timezone": -6
   },
   {
     "id": 11854,
@@ -58395,7 +58560,8 @@
     "countryCode": "US",
     "iata": "RSL",
     "latitude": 38.872100830078,
-    "longitude": -98.811798095703
+    "longitude": -98.811798095703,
+    "timezone": -6
   },
   {
     "id": 11855,
@@ -58405,7 +58571,8 @@
     "countryCode": "US",
     "iata": "RWF",
     "latitude": 44.54719925,
-    "longitude": -95.08229828
+    "longitude": -95.08229828,
+    "timezone": -6
   },
   {
     "id": 11856,
@@ -58415,7 +58582,8 @@
     "countryCode": "US",
     "iata": "SNS",
     "latitude": 36.662799835205,
-    "longitude": -121.60600280762
+    "longitude": -121.60600280762,
+    "timezone": -8
   },
   {
     "id": 11857,
@@ -58425,7 +58593,8 @@
     "countryCode": "US",
     "iata": "SOA",
     "latitude": 30.585699081421,
-    "longitude": -100.6490020752
+    "longitude": -100.6490020752,
+    "timezone": -6
   },
   {
     "id": 11858,
@@ -58435,7 +58604,8 @@
     "countryCode": "US",
     "iata": "SUZ",
     "latitude": 34.59059906,
-    "longitude": -92.47940063
+    "longitude": -92.47940063,
+    "timezone": -6
   },
   {
     "id": 11859,
@@ -58445,7 +58615,8 @@
     "countryCode": "US",
     "iata": "TPH",
     "latitude": 38.06019974,
-    "longitude": -117.086998
+    "longitude": -117.086998,
+    "timezone": -8
   },
   {
     "id": 11860,
@@ -58455,7 +58626,8 @@
     "countryCode": "US",
     "iata": "UAO",
     "latitude": 45.247100830078125,
-    "longitude": -122.7699966430664
+    "longitude": -122.7699966430664,
+    "timezone": -8
   },
   {
     "id": 11861,
@@ -58465,7 +58637,8 @@
     "countryCode": "US",
     "iata": "UKI",
     "latitude": 39.125999450684,
-    "longitude": -123.20099639893
+    "longitude": -123.20099639893,
+    "timezone": -8
   },
   {
     "id": 11862,
@@ -58475,7 +58648,8 @@
     "countryCode": "US",
     "iata": "UOX",
     "latitude": 34.384300231934,
-    "longitude": -89.536796569824
+    "longitude": -89.536796569824,
+    "timezone": -6
   },
   {
     "id": 11863,
@@ -58485,7 +58659,8 @@
     "countryCode": "US",
     "iata": "HTV",
     "latitude": 30.7469005585,
-    "longitude": -95.5871963501
+    "longitude": -95.5871963501,
+    "timezone": -6
   },
   {
     "id": 11864,
@@ -58495,7 +58670,8 @@
     "countryCode": "US",
     "iata": "VTN",
     "latitude": 42.85779953,
-    "longitude": -100.5479965
+    "longitude": -100.5479965,
+    "timezone": -6
   },
   {
     "id": 11865,
@@ -58505,7 +58681,8 @@
     "countryCode": "US",
     "iata": "WMC",
     "latitude": 40.8965988159,
-    "longitude": -117.805999756
+    "longitude": -117.805999756,
+    "timezone": -8
   },
   {
     "id": 11866,
@@ -58515,7 +58692,8 @@
     "countryCode": "US",
     "iata": "WWR",
     "latitude": 36.438,
-    "longitude": -99.5226667
+    "longitude": -99.5226667,
+    "timezone": -6
   },
   {
     "id": 11867,
@@ -58525,7 +58703,8 @@
     "countryCode": "US",
     "iata": "XMR",
     "latitude": 28.4675998688,
-    "longitude": -80.56659698490002
+    "longitude": -80.56659698490002,
+    "timezone": -5
   },
   {
     "id": 11869,
@@ -58535,7 +58714,8 @@
     "countryCode": "US",
     "iata": "ZZV",
     "latitude": 39.9444007874,
-    "longitude": -81.89209747310001
+    "longitude": -81.89209747310001,
+    "timezone": -5
   },
   {
     "id": 11870,
@@ -58545,7 +58725,8 @@
     "countryCode": "US",
     "iata": "ENN",
     "latitude": 64.54730224609375,
-    "longitude": -149.07400512695312
+    "longitude": -149.07400512695312,
+    "timezone": -9
   },
   {
     "id": 11871,
@@ -58555,7 +58736,8 @@
     "countryCode": "US",
     "iata": "WWA",
     "latitude": 61.5717010498,
-    "longitude": -149.539993286
+    "longitude": -149.539993286,
+    "timezone": -9
   },
   {
     "id": 11874,

@@ -31,7 +31,7 @@ class FlightSearchParameters extends Component {
 
   handleFlightSearch () {
     // console.log(moment(this.state.departureDate).format('MM/DD/YYYY'));
-    console.log(this.state);
+    console.log(this.state)
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
@@ -114,7 +114,6 @@ class FlightSearchParameters extends Component {
       // extract departure, arrival name (airport or city name)
       var departureName = this.state.departureLocation.name
       var arrivalName = this.state.arrivalLocation.name
-      console.log('SEARCH COMPONENT', this.state)
       this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, departureName, arrivalName, this.state.departureDate, this.state.returnDate)
     })
   }
