@@ -95,6 +95,7 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
   console.log('eventsAlreadyAdded', eventsAlreadyAdded)
   console.log('intervalArr', intervalArr)
   console.log('modelType', modelType)
+  console.log('EVENTOBJ', eventObj)
 
   if (modelType !== 'Flight') {
     // CORRECT INCOMING EVENT TO UTC0
@@ -157,8 +158,8 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
   } else if (modelType === 'Flight') {
     for (var j = 0; j < eventObj.length; j++) {
       var flightInstance = eventObj[j]
-      var departureUtcOffset = findUtcOffsetAirports(eventObj.departureIATA)
-      var arrivalUtcOffset = findUtcOffsetAirports(eventObj.arrivalIATA)
+      var departureUtcOffset = findUtcOffsetAirports(flightInstance.departureIATA)
+      var arrivalUtcOffset = findUtcOffsetAirports(flightInstance.arrivalIATA)
       incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime - (departureUtcOffset * 60)
       incomingEndUnix = (flightInstance.endDay - 1) * 86400 + flightInstance.endTime - (arrivalUtcOffset * 60)
       // incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime

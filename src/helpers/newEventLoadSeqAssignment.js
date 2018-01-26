@@ -312,7 +312,7 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
         if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === dayInstanceRows[0].time) {
           dayEvents.splice(index + 1, 0, ...dayInstanceRows)
         } else if (displacedRow.timeUtcZero === dayInstanceRows[0].time && displacedRow.type === 'Lodging') {
-          dayEvents.splice(index + 1, 0, 'placeholder')
+          dayEvents.splice(index + 1, 0, ...dayInstanceRows)
         } else {
           dayEvents.splice(index, 0, ...dayInstanceRows)
         }
