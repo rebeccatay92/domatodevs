@@ -71,7 +71,6 @@ class CreateLandTransportForm extends Component {
   }
 
   switchTab (arrivalDeparture) {
-    console.log('tab clicked', arrivalDeparture)
     this.setState({selectedTab: arrivalDeparture})
   }
 
@@ -175,8 +174,8 @@ class CreateLandTransportForm extends Component {
 
   resetState () {
     this.setState({
-      startDay: this.props.startDay,
-      endDay: this.props.endDay,
+      startDay: 0,
+      endDay: 0,
       departureGooglePlaceData: {},
       arrivalGooglePlaceData: {},
       departureLocationAlias: '',
@@ -186,7 +185,8 @@ class CreateLandTransportForm extends Component {
       startTime: null, // should be Int
       endTime: null, // should be Int
       cost: 0,
-      currency: this.state.currencyList[0],
+      currency: '',
+      currencyList: [],
       bookedThrough: '',
       bookingConfirmation: '',
       attachments: [],
@@ -222,7 +222,6 @@ class CreateLandTransportForm extends Component {
   }
 
   handleFileUpload (attachmentInfo, arrivalDeparture) {
-    // SET EXTRA PROPERTY ARRIVALDEPARTURE IN ATTACHMENT OBJ
     attachmentInfo.arrivalDeparture = arrivalDeparture
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
   }
@@ -285,7 +284,6 @@ class CreateLandTransportForm extends Component {
   }
 
   render () {
-    console.log('this.state', this.state)
     return (
       <div style={createEventFormContainerStyle}>
 
