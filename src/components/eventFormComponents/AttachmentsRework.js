@@ -142,6 +142,7 @@ class AttachmentsRework extends Component {
 
   // NO CLICK TO OPEN PREVIEW YET. THUMBNAIL FLASHES
   render () {
+    // console.log('attachments props', this.props)
     return (
       <div>
         {/* LIST OF ATTACHMENTS */}

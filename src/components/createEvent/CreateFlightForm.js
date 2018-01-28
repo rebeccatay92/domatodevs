@@ -80,7 +80,6 @@ class CreateFlightForm extends Component {
       bookingDetails: false,
       selected: 0,
       tripType: '',
-      flightDetailsPage: 1,
       searchClicked: 1,
       instanceTabIndex: 0
     }
@@ -99,6 +98,8 @@ class CreateFlightForm extends Component {
       arrivalIATA: arrivalIATA,
       departureName: departureName,
       arrivalName: arrivalName
+    }, () => {
+      this.handleSelectFlight(0)
     })
     if (departureDate) {
       this.setState({departureDate: departureDate.utc().unix()})
@@ -217,7 +218,6 @@ class CreateFlightForm extends Component {
       bookingDetails: false,
       selected: 0,
       tripType: '',
-      flightDetailsPage: 1,
       searchClicked: 1,
       instanceTabIndex: 0
     })
@@ -237,7 +237,6 @@ class CreateFlightForm extends Component {
       selected: index,
       cost: this.state.flights[index].cost,
       currency: this.state.flights[index].currency,
-      flightDetailsPage: 1,
       flightInstances: this.state.flights[index].flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
@@ -272,7 +271,7 @@ class CreateFlightForm extends Component {
         }
       })
     }, () => {
-      this.setState({instanceTabIndex: 0, instance: this.state.flightInstances[0]}, () => console.log('handle select flight', this.state))
+      this.setState({instanceTabIndex: 0}, () => console.log('handle select flight', this.state))
     })
     // on flight confirm, initialize first tab immediately. but only after flightInstances hv been set (callback)
   }
@@ -284,7 +283,7 @@ class CreateFlightForm extends Component {
       this.setState({
         [field]: newState
       })
-      console.log(this.state)
+      // console.log(this.state)
     } else {
       this.setState({
         [field]: e.target.value
@@ -302,7 +301,6 @@ class CreateFlightForm extends Component {
 
   switchInstanceTab (i) {
     this.setState({instanceTabIndex: i})
-    this.setState({instance: this.state.flightInstances[i]})
   }
 
   componentDidMount () {
@@ -330,9 +328,7 @@ class CreateFlightForm extends Component {
             <div style={eventDescContainerStyle}>
               <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} closeForm={() => this.closeForm()} />
 
-              {/* {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) && <FlightSearchDetailsContainer searching={this.state.searching} flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />} */}
-
-              {/* TRYING REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
+              {/* REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
               {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) &&
                 <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
               }

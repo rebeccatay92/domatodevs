@@ -18,6 +18,7 @@ class FlightDetailsPage extends Component {
     var hasLayover = (this.props.instances.length === 2 && ((this.props.totalInstances === 2 && !this.props.isReturn) || (this.props.totalInstances === 4)))
     let layoverHours, layoverMins
     if (hasLayover) {
+      // console.log('has layover')
       // console.log('instances', this.props.instances)
       var firstInstance = this.props.instances[0]
       var secondInstance = this.props.instances[1]

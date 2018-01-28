@@ -76,6 +76,7 @@ class FlightDetailsContainerRework extends Component {
   }
 
   render () {
+    // console.log('container', this.props)
     return (
       <div style={{position: 'relative'}}>
         {/* DEPART/RETURN HEADER */}

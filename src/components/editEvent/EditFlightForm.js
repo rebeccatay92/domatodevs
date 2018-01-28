@@ -15,8 +15,9 @@ import EditFormAirhobSearchParams from '../eventFormComponents/EditFormAirhobSea
 
 // import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
-import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
+// import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
+import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
 // import Notes from '../eventFormComponents/Notes'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 // import Attachments from '../eventFormComponents/Attachments'
@@ -55,8 +56,8 @@ class EditFlightForm extends Component {
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       flightInstances: [],
-      // if searching is true, search component, flight details component, results component are swapped out. search params are passed down as props, but changes in search component do not update state here. if confirm select flight is clicked, replaced all of these with the new flight. if cancel is clicked, close form and dont send db req.
-      // if changedFlight, notes get copied over, attachments remain
+      instanceTabIndex: 0,
+      // for search state
       changedFlight: false,
       searching: false,
       flights: [], // flight search results from airhob
@@ -79,7 +80,6 @@ class EditFlightForm extends Component {
   // UPDATE TO INCLUDE NEW FIELDS
   handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) {
     console.log('details are hoisted up to editFlightForm')
-    this.setState({flights: flights, tripType: tripType})
     var searchParams = {
       paxAdults: adults,
       paxChildren: children,
@@ -97,8 +97,10 @@ class EditFlightForm extends Component {
       searchParams.returnDate = returnDate.utc().unix()
     }
     this.setState({
+      flights: flights,
+      tripType: tripType,
       searchParams: searchParams
-    })
+    }, () => this.handleSelectFlight(0))
   }
 
   handleSubmit () {
@@ -127,7 +129,14 @@ class EditFlightForm extends Component {
   }
 
   closeForm () {
-    removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    // remove attachments depending on whether flight has changed
+    this.state.flightInstances.forEach(instance => {
+      if (this.state.changedFlight) {
+        removeAllAttachments(instance.attachments, this.apiToken)
+      } else {
+        removeAllAttachments(instance.holderNewAttachments, this.apiToken)
+      }
+    })
     this.resetState()
     this.props.toggleEditEventType()
   }
@@ -219,6 +228,8 @@ class EditFlightForm extends Component {
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       flightInstances: [],
+      instanceTabIndex: 0,
+      instance: {},
       // for searching
       changedFlight: false,
       searching: false,
@@ -232,59 +243,6 @@ class EditFlightForm extends Component {
     })
   }
 
-  handleFileUpload (attachmentInfo) {
-    this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
-    this.setState({holderNewAttachments: this.state.holderNewAttachments.concat([attachmentInfo])})
-  }
-
-  removeUpload (index) {
-    var files = this.state.attachments
-    var holderNew = this.state.holderNewAttachments
-
-    var fileToDelete = files[index]
-    var fileNameToRemove = fileToDelete.fileName
-    if (this.state.backgroundImage.indexOf(fileNameToRemove) > -1) {
-      this.setState({backgroundImage: defaultBackground})
-    }
-
-    var isRecentUpload = holderNew.includes(fileToDelete)
-
-    // removing from attachments arr
-    var newFilesArr = (files.slice(0, index)).concat(files.slice(index + 1))
-    this.setState({attachments: newFilesArr})
-
-    var uriBase = process.env.REACT_APP_CLOUD_DELETE_URI
-    var objectName = fileToDelete.fileName
-    objectName = objectName.replace('/', '%2F')
-    var uriFull = uriBase + objectName
-
-    if (isRecentUpload) {
-      console.log('isRecentUpload')
-      // remove from holding area, send delete http req
-      var holdingIndex = holderNew.indexOf(fileToDelete)
-      var newArr = (holderNew.slice(0, holdingIndex)).concat(holderNew.slice(holdingIndex + 1))
-      this.setState({holderNewAttachments: newArr})
-
-      fetch(uriFull, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${this.apiToken}`
-        }
-      })
-      .then(response => {
-        if (response.status === 204) {
-          console.log('delete from cloud storage succeeded')
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
-    } else {
-      // add to holderDeleteAttachments. dont send req
-      this.setState({holderDeleteAttachments: this.state.holderDeleteAttachments.concat([fileToDelete])})
-    }
-  }
-
   setBackground (previewUrl) {
     this.setState({backgroundImage: `${previewUrl}`})
   }
@@ -293,12 +251,8 @@ class EditFlightForm extends Component {
     this.setState({searching: false})
   }
 
-  // dont touch attachments
+  // COPY NOTES OVER, CLEAR ATTACHMENTS
   changeFlight () {
-    console.log('current instances', this.state.flightInstances, 'new instances', this.state.searchFlightInstances)
-    // compare one way vs return
-    console.log('current', this.state.returnDate, 'updating', this.state.searchParams.returnDate)
-
     var params = this.state.searchParams
     this.setState({
       paxAdults: params.paxAdults,
@@ -307,22 +261,28 @@ class EditFlightForm extends Component {
       classCode: params.classCode,
       departureIATA: params.departureIATA,
       arrivalIATA: params.arrivalIATA,
+      departureName: params.departureName,
+      arrivalName: params.arrivalName,
       departureDate: params.departureDate,
       returnDate: params.returnDate,
       bookedThrough: '',
       bookingConfirmation: '',
       cost: this.state.searchedCostCurrency.cost,
       currency: this.state.searchedCostCurrency.currency,
-      flightInstances: this.state.searchFlightInstances
-    }, () => console.log('after change flight', this.state))
-    this.setState({searching: false, changedFlight: true})
+      flightInstances: this.state.searchFlightInstances,
+      searching: false,
+      changedFlight: true
+    }, () => {
+      this.setState({instanceTabIndex: 0})
+    })
   }
 
   handleSelectFlight (index) {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    // console.log(datesUnix)
+    // console.log('dates unix arr', datesUnix)
+
     this.setState({
       selected: index,
       flightDetailsPage: 1,
@@ -333,6 +293,10 @@ class EditFlightForm extends Component {
       searchFlightInstances: this.state.flights[index].flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
+
+        var startDayInt = (startDayUnix - datesUnix[0]) / 86400 + 1
+        var endDayInt = (endDayUnix - datesUnix[0]) / 86400 + 1
+
         const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
         // console.log(startTime, endTime)
@@ -342,18 +306,26 @@ class EditFlightForm extends Component {
           airlineName: flight.airlineName,
           departureIATA: flight.departureAirportCode,
           arrivalIATA: flight.arrivalAirportCode,
+          departureAirport: flight.departureLocation,
+          arrivalAirport: flight.arrivalLocation,
+          departureCityCountry: flight.departureCityCountry,
+          arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
           arrivalTerminal: flight.arrivalTerminal,
-          startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
-          endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
+          startDay: startDayInt,
+          endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
-          notes: '',
-          firstFlight: i === 0
+          durationMins: flight.duration,
+          departureNotes: '',
+          arrivalNotes: '',
+          firstFlight: i === 0,
+          attachments: [],
+          holderNewAttachments: [],
+          holderDeleteAttachments: []
         }
       })
-    })
-    console.log(this.state)
+    }, () => console.log('handleselectflight', this.state))
   }
 
   handleChange (e, field, subfield, index) {
@@ -369,6 +341,18 @@ class EditFlightForm extends Component {
         [field]: e.target.value
       }, () => console.log('state', this.state))
     }
+  }
+
+  handleFlightInstanceChange (updatedInstance) {
+    // reconstruct flight instance arr
+    var index = this.state.instanceTabIndex
+    var flightInstancesClone = JSON.parse(JSON.stringify(this.state.flightInstances))
+    var updatedArr = flightInstancesClone.slice(0, index).concat(updatedInstance).concat(flightInstancesClone.slice(index + 1))
+    this.setState({flightInstances: updatedArr}, () => console.log('after set state', this.state.flightInstances))
+  }
+
+  switchInstanceTab (i) {
+    this.setState({instanceTabIndex: i})
   }
 
   componentDidMount () {
@@ -408,6 +392,11 @@ class EditFlightForm extends Component {
       var sortedInstances = flightInstances.sort(function (a, b) {
         return a.startDay - b.startDay || a.startTime - b.startTime
       })
+      sortedInstances = sortedInstances.map(instance => {
+        instance.holderNewAttachments = []
+        instance.holderDeleteAttachments = []
+        return instance
+      })
       console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
       this.setState({flightInstances: sortedInstances})
     }
@@ -443,6 +432,11 @@ class EditFlightForm extends Component {
       var sortedInstances = flightInstances.sort(function (a, b) {
         return a.startDay - b.startDay || a.startTime - b.startTime
       })
+      sortedInstances = sortedInstances.map(instance => {
+        instance.holderNewAttachments = []
+        instance.holderDeleteAttachments = []
+        return instance
+      })
       // console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
       this.setState({flightInstances: sortedInstances})
     }
@@ -465,18 +459,12 @@ class EditFlightForm extends Component {
             {!this.state.searching &&
               <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
             }
-            {/* {!this.state.searching && !this.state.changedFlight &&
-              <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
-            } */}
-            {!this.state.searching &&
+            {!this.state.searching && !this.state.changedFlight &&
               <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
             {this.state.searching &&
               <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} />
             }
-            {/* {(this.state.searching || this.state.changedFlight) &&
-              <FlightSearchDetailsContainer flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />
-            } */}
             {(this.state.searching || this.state.changedFlight) &&
               <FlightDetailsContainerRework flightInstances={this.state.searchFlightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
@@ -490,26 +478,12 @@ class EditFlightForm extends Component {
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
 
                   {/* flight instances. gate and notes */}
-                  {/* {this.state.flightInstances.map((instance, i) => {
+                  {this.state.flightInstances.map((instance, i) => {
                     return (
-                      <div key={i}>
-                        <h4 style={{fontSize: '24px'}} key={i}>{instance.departureIATA} to {instance.arrivalIATA}</h4>
-                        <div style={{display: 'inline-block', width: '40%'}}>
-                          <label style={labelStyle}>
-                            Departure Gate
-                          </label>
-                          <input style={{width: '90%'}} type='text' name='departureGate' value={instance.departureGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'departureGate', i)} />
-                          <label style={labelStyle}>
-                            Arrival Gate
-                          </label>
-                          <input style={{width: '90%'}} type='text' name='arrivalGate' value={instance.arrivalGate || ''} onChange={(e) => this.handleChange(e, 'flightInstances', 'arrivalGate', i)} />
-                        </div>
-                        <div style={{display: 'inline-block', width: '50%', verticalAlign: 'top'}}>
-                          <Notes flight index={i} notes={instance.notes} handleChange={(e, field, subfield, index) => this.handleChange(e, field, subfield, index)} />
-                        </div>
-                      </div>
+                      <h3 onClick={() => this.switchInstanceTab(i)} style={{display: 'inline-block', marginRight: '20px'}} key={'instance' + i}>{instance.departureIATA} to {instance.arrivalIATA}</h3>
                     )
-                  })} */}
+                  })}
+                  <FlightInstanceNotesAttachments ItineraryId={this.props.ItineraryId} instance={this.state.flightInstances[this.state.instanceTabIndex]} formType={'edit'} changedFlight={this.state.changedFlight} handleFlightInstanceChange={(updatedInstance) => this.handleFlightInstanceChange(updatedInstance)} setBackground={url => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
                 </div>
               }
               {this.state.searching &&
