@@ -64,12 +64,9 @@ class EditFlightForm extends Component {
       tripType: '', // 'O' or 'R'
       selected: 0,
       searchFlightInstances: [],
-      searchParams: {}, // for storing search params without affected editForm state
-      searchedCostCurrency: {
-        cost: 0,
-        currency: ''
-      },
-      flightDetailsPage: 1
+      // for storing search params classCode pax etc without affecting editForm state
+      searchParams: {},
+      searchedCostCurrency: {cost: 0, currency: ''}
     }
   }
 
@@ -238,8 +235,7 @@ class EditFlightForm extends Component {
       selected: 0,
       searchFlightInstances: [],
       searchParams: {},
-      searchedCostCurrency: {cost: 0, currency: ''},
-      flightDetailsPage: 1
+      searchedCostCurrency: {cost: 0, currency: ''}
     })
   }
 
@@ -251,7 +247,7 @@ class EditFlightForm extends Component {
     this.setState({searching: false})
   }
 
-  // COPY NOTES OVER, CLEAR ATTACHMENTS
+  // COPY NOTES OVER. COMPARE FLIGHT INSTANCES VS SEARCH FLIGHTINSTANCES
   changeFlight () {
     var params = this.state.searchParams
     this.setState({
@@ -285,7 +281,6 @@ class EditFlightForm extends Component {
 
     this.setState({
       selected: index,
-      flightDetailsPage: 1,
       searchedCostCurrency: {
         cost: this.state.flights[index].cost,
         currency: this.state.flights[index].currency
