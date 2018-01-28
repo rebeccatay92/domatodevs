@@ -376,6 +376,8 @@ export const queryItinerary = gql`
             airlineName
             departureIATA
             arrivalIATA
+            departureAirport
+            arrivalAirport
             departureCityCountry
             arrivalCityCountry
             durationMins
@@ -451,6 +453,8 @@ export const queryItinerary = gql`
             classCode
             departureIATA
             arrivalIATA
+            departureName
+            arrivalName
             departureDate
             returnDate
             bookingStatus

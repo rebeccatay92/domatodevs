@@ -39,8 +39,9 @@ class FlightInstanceNotesAttachments extends Component {
 
     var fileToDelete = files[index]
     var fileNameToRemove = fileToDelete.fileName
-    if (this.state.backgroundImage.indexOf(fileNameToRemove) > -1) {
-      this.setState({backgroundImage: defaultBackground})
+    if (this.props.backgroundImage.indexOf(fileNameToRemove) > -1) {
+      this.props.setBackground(defaultBackground)
+      // this.setState({backgroundImage: defaultBackground})
     }
 
     var uriBase = process.env.REACT_APP_CLOUD_DELETE_URI

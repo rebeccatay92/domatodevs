@@ -23,7 +23,6 @@ export const findFlightBooking = gql`
       backgroundImage
       flightInstances {
         id
-        FlightBookingId
         flightNumber
         airlineCode
         airlineName

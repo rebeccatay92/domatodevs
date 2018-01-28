@@ -154,13 +154,27 @@ class EditFlightForm extends Component {
         }
       })
     }
-    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Flight', this.state.id, updatesObj.flightInstances)
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Flight', this.state.id, JSON.parse(JSON.stringify(updatesObj.flightInstances)))
     // console.log('helperOutput', helperOutput)
+
     updatesObj.flightInstances.forEach((instance, i) => {
       instance.startLoadSequence = helperOutput.updateEvent[i].startLoadSequence
       instance.endLoadSequence = helperOutput.updateEvent[i].endLoadSequence
     })
     console.log('after load seq assign', updatesObj)
+
+    // remove properties that graphql cant accept
+    var reconstructedInstancesArr = updatesObj.flightInstances.map((instance, i) => {
+      var reconstruct = {}
+      Object.keys(instance).forEach(key => {
+        if (key !== 'departureLocation' && key !== 'arrivalLocation' & key !== '__typename') {
+          reconstruct[key] = instance[key]
+        }
+      })
+      return reconstruct
+    })
+    updatesObj.flightInstances = reconstructedInstancesArr
+    console.log('scrubbing out instance properties', updatesObj)
 
     this.props.changingLoadSequence({
       variables: {
@@ -425,6 +439,7 @@ class EditFlightForm extends Component {
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
         // console.log(startTime, endTime)
         return {
+          FlightBookingId: this.state.id,
           flightNumber: flight.flightNum,
           airlineCode: flight.carrierCode,
           airlineName: flight.airlineName,

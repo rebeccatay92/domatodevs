@@ -133,11 +133,13 @@ class EditFormAirhobSearchParams extends Component {
   componentDidMount () {
     this.setState({
       departureDate: moment(this.props.departureDate * 1000),
-      returnDate: moment(this.props.returnDate * 1000),
       departureIATA: this.props.departureIATA,
       arrivalIATA: this.props.arrivalIATA
     })
-      // find the departure/arrival location from airports.json
+    if (this.props.returnDate) {
+      this.setState({returnDate: moment(this.props.returnDate * 1000)})
+    }
+    // find the departure/arrival location from airports.json
     var departureRow = airports.find(e => {
       return e.iata === this.props.departureIATA
     })
