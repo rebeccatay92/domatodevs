@@ -9,16 +9,17 @@ import { Button } from 'react-bootstrap'
 import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
 
 import EditFormAirhobParams from '../eventFormComponents/EditFormAirhobParams'
-import EditFormFlightDetailsContainer from '../eventFormComponents/EditFormFlightDetailsContainer'
+// import EditFormFlightDetailsContainer from '../eventFormComponents/EditFormFlightDetailsContainer'
+import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
 import EditFormAirhobSearchParams from '../eventFormComponents/EditFormAirhobSearchParams'
 
 // import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
 import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
-import Notes from '../eventFormComponents/Notes'
+// import Notes from '../eventFormComponents/Notes'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
-import Attachments from '../eventFormComponents/Attachments'
+// import Attachments from '../eventFormComponents/Attachments'
 
 import { findFlightBooking, updateFlightBooking, deleteFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -72,11 +73,11 @@ class EditFlightForm extends Component {
   }
 
   searchFlight () {
-    console.log('clicked')
     this.setState({searching: true})
   }
 
-  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) {
+  // UPDATE TO INCLUDE NEW FIELDS
+  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) {
     console.log('details are hoisted up to editFlightForm')
     this.setState({flights: flights, tripType: tripType})
     var searchParams = {
@@ -85,7 +86,9 @@ class EditFlightForm extends Component {
       paxInfants: infants,
       classCode: classCode,
       departureIATA: departureIATA,
-      arrivalIATA: arrivalIATA
+      arrivalIATA: arrivalIATA,
+      departureName: departureName,
+      arrivalName: arrivalName
     }
     if (departureDate) {
       searchParams.departureDate = departureDate.utc().unix()
@@ -283,7 +286,6 @@ class EditFlightForm extends Component {
   }
 
   setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
@@ -316,7 +318,6 @@ class EditFlightForm extends Component {
     this.setState({searching: false, changedFlight: true})
   }
 
-  // WHEN CLICKING ON A FLIGHT, SEARCH FLIGHT INSTANCES ARR CHANGES TO GRAPHQL STRUCTURE
   handleSelectFlight (index) {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
@@ -382,6 +383,7 @@ class EditFlightForm extends Component {
     if (this.props.data.findFlightBooking) {
       console.log('initialize to db data')
       var booking = this.props.data.findFlightBooking
+      console.log('db data', booking)
       // INITIALIZE DATA FROM DB
       this.setState({
         id: booking.id,
@@ -394,12 +396,13 @@ class EditFlightForm extends Component {
         returnDate: booking.returnDate,
         departureIATA: booking.departureIATA,
         arrivalIATA: booking.arrivalIATA,
+        departureName: booking.departureName,
+        arrivalName: booking.arrivalName,
         classCode: booking.classCode,
         bookingStatus: booking.bookingStatus,
         bookedThrough: booking.bookedThrough || '',
         bookingConfirmation: booking.bookingConfirmation || '',
-        backgroundImage: booking.backgroundImage,
-        attachments: booking.attachments
+        backgroundImage: booking.backgroundImage
       })
       var flightInstances = JSON.parse(JSON.stringify(booking.flightInstances))
       var sortedInstances = flightInstances.sort(function (a, b) {
@@ -412,8 +415,9 @@ class EditFlightForm extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.data.findFlightBooking && nextProps.data.findFlightBooking !== this.props.data.findFlightBooking) {
-      console.log('initialize to db data')
+      // console.log('initialize to db data')
       var booking = nextProps.data.findFlightBooking
+      console.log('initialize db booking', booking)
       // INITIALIZE DATA FROM DB
       this.setState({
         id: booking.id,
@@ -426,6 +430,8 @@ class EditFlightForm extends Component {
         returnDate: booking.returnDate,
         departureIATA: booking.departureIATA,
         arrivalIATA: booking.arrivalIATA,
+        departureName: booking.departureName,
+        arrivalName: booking.arrivalName,
         classCode: booking.classCode,
         bookingStatus: booking.bookingStatus,
         bookedThrough: booking.bookedThrough || '',
@@ -437,7 +443,7 @@ class EditFlightForm extends Component {
       var sortedInstances = flightInstances.sort(function (a, b) {
         return a.startDay - b.startDay || a.startTime - b.startTime
       })
-      console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
+      // console.log('FLIGHT INSTANCES FROM DB', sortedInstances)
       this.setState({flightInstances: sortedInstances})
     }
   }
@@ -459,14 +465,20 @@ class EditFlightForm extends Component {
             {!this.state.searching &&
               <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
             }
-            {!this.state.searching && !this.state.changedFlight &&
+            {/* {!this.state.searching && !this.state.changedFlight &&
               <EditFormFlightDetailsContainer flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+            } */}
+            {!this.state.searching &&
+              <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
             {this.state.searching &&
-              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate)} />
+              <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} />
             }
-            {(this.state.searching || this.state.changedFlight) &&
+            {/* {(this.state.searching || this.state.changedFlight) &&
               <FlightSearchDetailsContainer flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />
+            } */}
+            {(this.state.searching || this.state.changedFlight) &&
+              <FlightDetailsContainerRework flightInstances={this.state.searchFlightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
           </div>
 

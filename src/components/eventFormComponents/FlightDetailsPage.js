@@ -13,7 +13,7 @@ const infoStyle = {...pStyle,
 class FlightDetailsPage extends Component {
 
   render () {
-    console.log('PAGE', this.props.instances)
+    // console.log('PAGE', this.props.instances)
 
     var hasLayover = (this.props.instances.length === 2 && ((this.props.totalInstances === 2 && !this.props.isReturn) || (this.props.totalInstances === 4)))
     let layoverHours, layoverMins

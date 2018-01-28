@@ -20,17 +20,13 @@ const cityCountryStyle = {...pStyle,
 }
 
 class EditFormFlightDetailsInstance extends Component {
-  constructor (props) {
-    super(props)
-  }
-
   render () {
     if (!this.props.instance) return null
     // console.log('instance', this.props.instance)
 
     var instance = this.props.instance
     // START AND END DAY MAY BE OUTSIDE OF DATES ARR.
-    console.log('props dates arr', this.props.dates)
+    // console.log('props dates arr', this.props.dates)
     // dates arr props is date obj
     var departureDateUnix = moment(this.props.dates[0]).unix() + (instance.startDay - 1) * 86400
     var arrivalDateUnix = moment(this.props.dates[0]).unix() + (instance.endDay - 1) * 86400

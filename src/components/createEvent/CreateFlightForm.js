@@ -100,7 +100,6 @@ class CreateFlightForm extends Component {
       departureName: departureName,
       arrivalName: arrivalName
     })
-    console.log('HANDLE SEARCH ARGUMENTS', departureDate, returnDate)
     if (departureDate) {
       this.setState({departureDate: departureDate.utc().unix()})
     }

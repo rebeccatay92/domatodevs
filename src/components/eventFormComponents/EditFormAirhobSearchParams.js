@@ -71,7 +71,7 @@ class EditFormAirhobSearchParams extends Component {
       })
     }).then(response => {
       const json = response.json()
-      console.log('json returned, pending')
+      console.log(json)
       return json
     }).then(results => {
       if (!results.OneWayAvailabilityResponse.ItinearyDetails.length) {
@@ -108,7 +108,9 @@ class EditFormAirhobSearchParams extends Component {
       })
       console.log('DONE DETAILS OF ALL FLIGHTS', details)
       // HOIST PARAMS UP TO EDIT FORM. SAVED SEPARATELY FROM THE EDIT STATE
-      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, this.state.departureDate, this.state.returnDate)
+      var departureName = this.state.departureLocation.name
+      var arrivalName = this.state.arrivalLocation.name
+      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, departureName, arrivalName, this.state.departureDate, this.state.returnDate)
     })
   }
 
