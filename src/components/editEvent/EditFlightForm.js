@@ -48,13 +48,12 @@ class EditFlightForm extends Component {
       returnDate: null,
       departureIATA: '',
       arrivalIATA: '',
+      departureName: '',
+      arrivalName: '',
       currencyList: [],
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
-      attachments: [],
-      holderNewAttachments: [],
-      holderDeleteAttachments: [],
       flightInstances: [],
       instanceTabIndex: 0,
       // for search state
@@ -66,7 +65,9 @@ class EditFlightForm extends Component {
       searchFlightInstances: [],
       // for storing search params classCode pax etc without affecting editForm state
       searchParams: {},
-      searchedCostCurrency: {cost: 0, currency: ''}
+      searchedCostCurrency: {cost: 0, currency: ''},
+      // if flight has changed, old instances hv attachments in the cloud. dump if changed flight is submitted to backend
+      attachmentsToDumpIfFlightChange: []
     }
   }
 
@@ -104,25 +105,79 @@ class EditFlightForm extends Component {
     var updatesObj = {
       id: this.state.id
     }
-    var bookingFieldsToCheck = ['paxAdults', 'paxChildren', 'paxInfants', 'cost', 'currency', 'classCode', 'bookedThrough', 'bookingConfirmation', 'backgroundImage']
+    var bookingFieldsToCheck = ['paxAdults', 'paxChildren', 'paxInfants', 'cost', 'currency', 'classCode', 'departureIATA', 'arrivalIATA', 'departureDate', 'returnDate', 'departureName', 'arrivalName', 'bookedThrough', 'bookingConfirmation', 'backgroundImage']
+    bookingFieldsToCheck.forEach(field => {
+      if (this.state[field] !== this.props.data.findFlightBooking[field]) {
+        updatesObj[field] = this.state[field]
+      }
+    })
     // check booking status
     var bookingStatus = this.state.bookingConfirmation ? true : false
     if (bookingStatus !== this.props.data.findFlightBooking.bookingStatus) {
       updatesObj.bookingStatus = bookingStatus
     }
 
-    // deal with attachments
-    // if (this.state.holderNewAttachments.length) {
-    //   updatesObj.addAttachments = this.state.holderNewAttachments
-    // }
-    // if (this.state.holderDeleteAttachments.length) {
-    //   removeAllAttachments(this.state.holderDeleteAttachments, this.apiToken)
-    //   updatesObj.removeAttachments = this.state.holderDeleteAttachments.map(e => {
-    //     return e.id
-    //   })
-    // }
+    // if flight instances not changed, rename holderNewAttachments to addAttachments, extract IDs only for removeAttachments
+    if (!this.state.changedFlight) {
+      var reconstructedInstanceArr = this.state.flightInstances.map(instance => {
+        var reconstructed = {}
+        Object.keys(instance).forEach(key => {
+          if (key !== 'attachments' && key !== 'holderNewAttachments' && key !== 'holderDeleteAttachments') {
+            reconstructed[key] = instance[key]
+          }
+          if (instance.holderNewAttachments.length) {
+            reconstructed.addAttachments = instance.holderNewAttachments
+          }
+          if (instance.holderDeleteAttachments.length) {
+            reconstructed.removeAttachments = instance.holderDeleteAttachments.map(e => {
+              return e.id
+            })
+          }
+        })
+        return reconstructed
+      })
+      updatesObj.flightInstances = reconstructedInstanceArr
+    } else {
+      // if flight changed, dump attachments from old instances out of cloud
+      removeAllAttachments(this.state.attachmentsToDumpIfFlightChange, this.apiToken)
+      // no need to touch attachments. holder arrs not in search flight instances
+      updatesObj.flightInstances = this.state.flightInstances
+      updatesObj.changedFlight = true
+    }
+    console.log('updatesObj', updatesObj)
 
-    // check for updates to flight instances
+    if (updatesObj.flightInstances[updatesObj.flightInstances.length - 1].endDay > this.props.dates.length) {
+      this.props.updateItineraryDetails({
+        variables: {
+          id: this.props.ItineraryId,
+          days: updatesObj.flightInstances[updatesObj.flightInstances.length - 1].endDay
+        }
+      })
+    }
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Flight', this.state.id, updatesObj.flightInstances)
+    // console.log('helperOutput', helperOutput)
+    updatesObj.flightInstances.forEach((instance, i) => {
+      instance.startLoadSequence = helperOutput.updateEvent[i].startLoadSequence
+      instance.endLoadSequence = helperOutput.updateEvent[i].endLoadSequence
+    })
+    console.log('after load seq assign', updatesObj)
+
+    this.props.changingLoadSequence({
+      variables: {
+        input: helperOutput.loadSequenceInput
+      }
+    })
+
+    this.props.updateFlightBooking({
+      variables: updatesObj,
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: { id: this.props.ItineraryId }
+      }]
+    })
+
+    this.resetState()
+    this.props.toggleEditEventType()
   }
 
   closeForm () {
@@ -218,12 +273,11 @@ class EditFlightForm extends Component {
       returnDate: null,
       departureIATA: '',
       arrivalIATA: '',
+      departureName: '',
+      arrivalName: '',
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
-      attachments: [],
-      holderNewAttachments: [],
-      holderDeleteAttachments: [],
       flightInstances: [],
       instanceTabIndex: 0,
       instance: {},
@@ -249,6 +303,14 @@ class EditFlightForm extends Component {
 
   // COPY NOTES OVER. COMPARE FLIGHT INSTANCES VS SEARCH FLIGHTINSTANCES
   changeFlight () {
+    // move old attachments from previous instances into dump arr. await submit, cancel to handle.
+    this.state.flightInstances.forEach(instance => {
+      var dump = this.state.attachmentsToDumpIfFlightChange
+      this.setState({attachmentsToDumpIfFlightChange: dump.concat(instance.attachments)})
+    })
+
+    // copy old instance notes into search flight instances, and replace current flight instance arr
+    var instancesWithCopiedNotes = this.copyNotes()
     var params = this.state.searchParams
     this.setState({
       paxAdults: params.paxAdults,
@@ -265,12 +327,79 @@ class EditFlightForm extends Component {
       bookingConfirmation: '',
       cost: this.state.searchedCostCurrency.cost,
       currency: this.state.searchedCostCurrency.currency,
-      flightInstances: this.state.searchFlightInstances,
+      // flightInstances: this.state.searchFlightInstances,
+      flightInstances: instancesWithCopiedNotes,
       searching: false,
       changedFlight: true
     }, () => {
       this.setState({instanceTabIndex: 0})
     })
+  }
+
+  // returns new flight instance arr
+  copyNotes () {
+    var oldInstances = JSON.parse(JSON.stringify(this.state.flightInstances))
+    var newInstances = JSON.parse(JSON.stringify(this.state.searchFlightInstances))
+    var oldTripType = this.state.returnDate ? 'return' : 'oneway'
+    var newTripType = this.state.searchParams.returnDate ? 'return' : 'oneway'
+    var previousLength = oldInstances.length
+    var nextLength = newInstances.length
+    if (oldTripType === 'oneway' && newTripType === 'oneway') {
+      if (previousLength === 2 && nextLength === 1) {
+        // merge
+        newInstances[0].departureNotes = oldInstances[0].departureNotes + '\n-----\n' + oldInstances[1].departureNotes
+        newInstances[0].arrivalNotes = oldInstances[0].arrivalNotes + '\n-----\n' + oldInstances[1].arrivalNotes
+      } else {
+        // else just copy over
+        oldInstances.forEach((instance, i) => {
+          newInstances[i].departureNotes = instance.departureNotes
+          newInstances[i].arrivalNotes = instance.arrivalNotes
+        })
+      }
+    } else if (oldTripType === 'oneway' && newTripType === 'return') {
+      // one way to return
+      if (previousLength < nextLength) {
+        // just copy over. 1 -> 2, 1 -> 4, 2-> 4
+        oldInstances.forEach((instance, i) => {
+          newInstances[i].departureNotes = instance.departureNotes
+          newInstances[i].arrivalNotes = instance.arrivalNotes
+        })
+      } else if (previousLength === 2 && nextLength === 2) {
+        // merge
+        newInstances[0].departureNotes = oldInstances[0].departureNotes + '\n-----\n' + oldInstances[1].departureNotes
+        newInstances[0].arrivalNotes = oldInstances[0].arrivalNotes + '\n-----\n' + oldInstances[1].arrivalNotes
+      }
+    } else if (oldTripType === 'return' && newTripType === 'one way') {
+      // return to oneway. merge everything into first instance
+      var mergedDepartureNotes = ''
+      var mergedArrivalNotes = ''
+      oldInstances.forEach(instance => {
+        mergedDepartureNotes += instance.departureNotes + '\n-----\n'
+        mergedArrivalNotes += instance.arrivalNotes + '\n-----\n'
+      })
+      newInstances[0].departureNotes = mergedDepartureNotes
+      newInstances[0].arrivalNotes = mergedArrivalNotes
+    } else {
+      // both return
+      if (previousLength === nextLength) {
+        oldInstances.forEach((instance, i) => {
+          newInstances[i].departureNotes = instance.departureNotes
+          newInstances[i].arrivalNotes = instance.arrivalNotes
+        })
+      } else if (previousLength === 2 && nextLength === 4) {
+        newInstances[0].departureNotes = oldInstances[0].departureNotes
+        newInstances[0].arrivalNotes = oldInstances[0].arrivalNotes
+        newInstances[2].departureNotes = oldInstances[1].departureNotes
+        newInstances[2].arrivalNotes = oldInstances[1].arrivalNotes
+      } else if (previousLength === 4 && nextLength === 2) {
+        // merge
+        newInstances[0].departureNotes = oldInstances[0].departureNotes + '\n-----\n' + oldInstances[1].departureNotes
+        newInstances[0].arrivalNotes = oldInstances[0].arrivalNotes + '\n-----\n' + oldInstances[1].arrivalNotes
+        newInstances[1].departureNotes = oldInstances[2].departureNotes + '\n-----\n' + oldInstances[3].departureNotes
+        newInstances[1].arrivalNotes = oldInstances[2].arrivalNotes + '\n-----\n' + oldInstances[3].arrivalNotes
+      }
+    }
+    return newInstances
   }
 
   handleSelectFlight (index) {
@@ -315,27 +444,16 @@ class EditFlightForm extends Component {
           departureNotes: '',
           arrivalNotes: '',
           firstFlight: i === 0,
-          attachments: [],
-          holderNewAttachments: [],
-          holderDeleteAttachments: []
+          attachments: []
         }
       })
     }, () => console.log('handleselectflight', this.state))
   }
 
-  handleChange (e, field, subfield, index) {
-    if (subfield) {
-      var instanceClone = JSON.parse(JSON.stringify(this.state.flightInstances[index]))
-      instanceClone[subfield] = e.target.value
-      var newState = (this.state.flightInstances.slice(0, index)).concat(instanceClone).concat(this.state.flightInstances.slice(index + 1))
-      this.setState({
-        flightInstances: newState
-      }, () => console.log('state', this.state))
-    } else {
-      this.setState({
-        [field]: e.target.value
-      }, () => console.log('state', this.state))
-    }
+  handleChange (e, field) {
+    this.setState({
+      [field]: e.target.value
+    })
   }
 
   handleFlightInstanceChange (updatedInstance) {

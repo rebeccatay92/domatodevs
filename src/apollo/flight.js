@@ -174,6 +174,7 @@ export const updateFlightBooking = gql`
     $bookedThrough: String,
     $bookingConfirmation: String,
     $backgroundImage: String,
+    $changedFlight: Boolean,
     $flightInstances: [updateFlightInstanceInput]
   ) {
     updateFlightBooking(
@@ -194,6 +195,7 @@ export const updateFlightBooking = gql`
       bookedThrough: $bookedThrough,
       bookingConfirmation: $bookingConfirmation,
       backgroundImage: $backgroundImage,
+      changedFlight: $changedFlight,
       flightInstances: $flightInstances
     ) {
       id
@@ -217,6 +219,8 @@ export const findFlightInstance = gql`
       airlineCode
       departureIATA
       arrivalIATA
+      departureAirport
+      arrivalAirport
       departureCityCountry
       arrivalCityCountry
       departureLocation {
