@@ -26,13 +26,6 @@ class EditFormAirhobParams extends Component {
     }
   }
 
-  selectLocation () {
-    console.log('LOCATION CHANGE')
-  }
-  handleChange () {
-    console.log('HANDLE CHANGE')
-  }
-
   // if back button is clicked in search, repopulate fields with db data
   componentDidMount () {
     if (!this.props.departureDate) return
@@ -150,10 +143,10 @@ class EditFormAirhobParams extends Component {
         arrivalLocation: arrivalLocation
       })
       this.setState({
-        classCode: this.props.classCode,
-        paxAdults: this.props.paxAdults,
-        paxChildren: this.props.paxChildren,
-        paxInfants: this.props.paxInfants
+        classCode: nextProps.classCode,
+        paxAdults: nextProps.paxAdults,
+        paxChildren: nextProps.paxChildren,
+        paxInfants: nextProps.paxInfants
       })
     }
   }

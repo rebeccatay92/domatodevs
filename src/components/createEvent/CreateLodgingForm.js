@@ -11,7 +11,8 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-import Attachments from '../eventFormComponents/Attachments'
+// import Attachments from '../eventFormComponents/Attachments'
+import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { createLodging } from '../../apollo/lodging'
@@ -201,9 +202,8 @@ class CreateLodgingForm extends Component {
     this.setState({attachments: newFilesArr})
   }
 
-  setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
-    this.setState({backgroundImage: `${previewUrl}`})
+  setBackground (url) {
+    this.setState({backgroundImage: `${url}`})
   }
 
   componentDidMount () {
@@ -230,7 +230,6 @@ class CreateLodgingForm extends Component {
         this.setState({locationDetails: locationDetails})
       }
     }
-    // lodging doesnt need opening hours validation. google almost always gives null data
   }
 
   render () {
@@ -262,16 +261,20 @@ class CreateLodgingForm extends Component {
                   Additional Notes
               </h4>
               <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
-              <Notes handleChange={(e, field) => this.handleChange(e, field)} />
+              {/* <Notes handleChange={(e, field) => this.handleChange(e, field)} /> */}
+              <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
+
+              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
+
               <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
         </div>
 
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }

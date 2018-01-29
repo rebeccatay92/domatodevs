@@ -11,7 +11,7 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-import Attachments from '../eventFormComponents/Attachments'
+import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
 import { updateActivity, deleteActivity } from '../../apollo/activity'
@@ -26,6 +26,7 @@ import { constructGooglePlaceDataObj, constructLocationDetails } from '../../hel
 import { validateOpeningHours } from '../../helpers/openingHoursValidation'
 import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
+import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}activityDefaultBackground.jpg`
 
@@ -47,7 +48,7 @@ class EditActivityForm extends Component {
       currencyList: [],
       bookedThrough: '',
       bookingConfirmation: '',
-      attachments: [], // entire arr user sees. not sent to backend.
+      attachments: [],
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       backgroundImage: defaultBackground,
@@ -71,10 +72,8 @@ class EditActivityForm extends Component {
   handleChange (e, field) {
     this.setState({
       [field]: e.target.value
-    }, () => console.log('after handle change', this.state))
+    })
   }
-
-  // ONLY SEND UPDATED FIELDS. delete all in holderDeleteAttachments. send holderNewAttachments to backend
 
   handleSubmit () {
     var updatesObj = {
@@ -105,9 +104,7 @@ class EditActivityForm extends Component {
     }
     // removeAttachments obj only takes id
     if (this.state.holderDeleteAttachments.length) {
-      // removing holderDeleteAttachments from cloud
       removeAllAttachments(this.state.holderDeleteAttachments, this.apiToken)
-      // set up removeAttachments[ID] arr for backend
       updatesObj.removeAttachments = this.state.holderDeleteAttachments.map(e => {
         return e.id
       })
@@ -155,16 +152,20 @@ class EditActivityForm extends Component {
       this.props.toggleEditEventType()
     }
 
-    // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime) {
+    // if time or day changes, reassign load seq. if googlePlaceData changes, run anyway (utcOffset might change)
+    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+      // add utcOffset into obj
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
-        endTime: this.state.endTime
+        endTime: this.state.endTime,
+        utcOffset: this.state.googlePlaceData.utcOffset
       }
+      console.log('updateEvent before helper', updateEvent)
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, updateEvent)
       console.log('helperOutput', helperOutput)
+
       updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
       var loadSequenceInput = helperOutput.loadSequenceInput
       if (loadSequenceInput.length) {
@@ -185,15 +186,6 @@ class EditActivityForm extends Component {
 
     this.resetState()
     this.props.toggleEditEventType()
-
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Activity', newActivity)
-    // console.log('output', output)
-    //
-    // if (!output.isValid) {
-    //   window.alert(`time ${newActivity.startTime} --- ${newActivity.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
   }
 
   // changes are not saved. remove all holderNewAttachments. ignore holderDeleteAttachments
@@ -204,53 +196,8 @@ class EditActivityForm extends Component {
   }
 
   deleteEvent () {
-    var eventType = 'Activity'
-    var modelId = this.state.id
+    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, 'Activity', this.state.id)
 
-    // REASSIGN LOAD SEQ AFTER DELETING
-    function constructLoadSeqInputObj (event, correctLoadSeq) {
-      var inputObj = {
-        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
-        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
-        loadSequence: correctLoadSeq,
-        day: event.day
-      }
-      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
-        inputObj.start = event.start
-      }
-      return inputObj
-    }
-    // console.log('all events', this.props.events)
-    var loadSequenceInputArr = []
-    var eventsArr = this.props.events
-    // remove deleted rows from eventsArr
-    var newEventsArr = eventsArr.filter(e => {
-      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
-      return (!isDeletedEvent)
-    })
-    // console.log('newEventsArr', newEventsArr)
-    // find how many days with events exist in eventsArr, split by day
-    var daysArr = []
-    newEventsArr.forEach(e => {
-      if (!daysArr.includes(e.day)) {
-        daysArr.push(e.day)
-      }
-    })
-    // console.log('daysArr', daysArr)
-    // check load seq and reassign
-    daysArr.forEach(day => {
-      var dayEvents = newEventsArr.filter(e => {
-        return e.day === day
-      })
-      dayEvents.forEach(event => {
-        var correctLoadSeq = dayEvents.indexOf(event) + 1
-        if (event.loadSequence !== correctLoadSeq) {
-          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
-          loadSequenceInputArr.push(loadSequenceInputObj)
-        }
-      })
-    })
-    console.log('loadSequenceInputArr', loadSequenceInputArr)
     this.props.changingLoadSequence({
       variables: {
         input: loadSequenceInputArr
@@ -258,7 +205,7 @@ class EditActivityForm extends Component {
     })
     this.props.deleteActivity({
       variables: {
-        id: modelId
+        id: this.state.id
       },
       refetchQueries: [{
         query: queryItinerary,
@@ -266,8 +213,7 @@ class EditActivityForm extends Component {
       }]
     })
 
-    this.resetState()
-    this.props.toggleEditEventType()
+    this.closeForm()
   }
 
   resetState () {
@@ -310,7 +256,6 @@ class EditActivityForm extends Component {
 
   handleFileUpload (attachmentInfo) {
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
-    // new attachment that are not in db go into holding area
     this.setState({holderNewAttachments: this.state.holderNewAttachments.concat([attachmentInfo])})
   }
 
@@ -362,9 +307,8 @@ class EditActivityForm extends Component {
     }
   }
 
-  setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
-    this.setState({backgroundImage: `${previewUrl}`})
+  setBackground (url) {
+    this.setState({backgroundImage: `${url}`})
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -469,16 +413,19 @@ class EditActivityForm extends Component {
 
               <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
-              <Notes notes={this.state.notes} handleChange={(e, field) => this.handleChange(e, field)} />
+              <Notes notes={this.state.notes} handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
+
+              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
+
               <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
 
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} formType={'edit'} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }

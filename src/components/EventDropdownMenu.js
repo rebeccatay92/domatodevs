@@ -10,6 +10,7 @@ import { deleteLandTransport } from '../apollo/landtransport'
 import { deleteLodging } from '../apollo/lodging'
 import { queryItinerary } from '../apollo/itinerary'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
+import { deleteEventReassignSequence } from '../helpers/deleteEventReassignSequence'
 
 class EventDropdownMenu extends Component {
   handleClickOutside (event) {
@@ -28,51 +29,8 @@ class EventDropdownMenu extends Component {
     var deleteMutationNaming = apolloNaming[eventType]
     var modelId = this.props.event.modelId
 
-    // REASSIGN LOAD SEQ AFTER DELETING
-    function constructLoadSeqInputObj (event, correctLoadSeq) {
-      var inputObj = {
-        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
-        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
-        loadSequence: correctLoadSeq,
-        day: event.day
-      }
-      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
-        inputObj.start = event.start
-      }
-      return inputObj
-    }
-    // console.log('all events', this.props.events)
-    var loadSequenceInputArr = []
-    var eventsArr = this.props.events
-    // remove deleted rows from eventsArr
-    var newEventsArr = eventsArr.filter(e => {
-      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
-      return (!isDeletedEvent)
-    })
-    // console.log('newEventsArr', newEventsArr)
-    // find how many days with events exist in eventsArr, split by day
-    var daysArr = []
-    newEventsArr.forEach(e => {
-      if (!daysArr.includes(e.day)) {
-        daysArr.push(e.day)
-      }
-    })
-    // console.log('daysArr', daysArr)
-    // check load seq and reassign
-    daysArr.forEach(day => {
-      var dayEvents = newEventsArr.filter(e => {
-        return e.day === day
-      })
-      dayEvents.forEach(event => {
-        var correctLoadSeq = dayEvents.indexOf(event) + 1
-        if (event.loadSequence !== correctLoadSeq) {
-          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
-          loadSequenceInputArr.push(loadSequenceInputObj)
-        }
-      })
-    })
-    this.props.toggleEventDropdown()
-    console.log('loadSequenceInputArr', loadSequenceInputArr)
+    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, eventType, modelId)
+
     this.props.changingLoadSequence({
       variables: {
         input: loadSequenceInputArr
@@ -87,6 +45,7 @@ class EventDropdownMenu extends Component {
         variables: { id: this.props.itineraryId }
       }]
     })
+    this.props.toggleEventDropdown()
   }
 
   render () {
