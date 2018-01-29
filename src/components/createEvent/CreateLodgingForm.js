@@ -105,14 +105,6 @@ class CreateLodgingForm extends Component {
       return
     }
 
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Lodging', newLodging)
-    // console.log('output', output)
-    // if (!output.isValid) {
-    //   window.alert(`time ${newLodging.startTime} // ${newLodging.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
-
     // REWRITTEN FUNCTION TO VALIDATE
     var eventObj = {
       startDay: newLodging.startDay,
@@ -261,7 +253,6 @@ class CreateLodgingForm extends Component {
                   Additional Notes
               </h4>
               <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
-              {/* <Notes handleChange={(e, field) => this.handleChange(e, field)} /> */}
               <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 
               <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
