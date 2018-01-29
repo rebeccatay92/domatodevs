@@ -9,18 +9,13 @@ import { Button } from 'react-bootstrap'
 import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
 
 import EditFormAirhobParams from '../eventFormComponents/EditFormAirhobParams'
-// import EditFormFlightDetailsContainer from '../eventFormComponents/EditFormFlightDetailsContainer'
 import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
 import EditFormAirhobSearchParams from '../eventFormComponents/EditFormAirhobSearchParams'
 
-// import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
-// import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
-// import Notes from '../eventFormComponents/Notes'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
-// import Attachments from '../eventFormComponents/Attachments'
 
 import { findFlightBooking, updateFlightBooking, deleteFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -30,6 +25,7 @@ import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import updateEventLoadSeqAssignment from
  '../../helpers/updateEventLoadSeqAssignment'
+import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
@@ -195,7 +191,7 @@ class EditFlightForm extends Component {
   }
 
   closeForm () {
-    // remove attachments depending on whether flight has changed
+    // remove from cloud stuff which has not yet been passed to backend. depending on whether flight has changed
     this.state.flightInstances.forEach(instance => {
       if (this.state.changedFlight) {
         removeAllAttachments(instance.attachments, this.apiToken)
@@ -208,53 +204,8 @@ class EditFlightForm extends Component {
   }
 
   deleteEvent () {
-    var eventType = 'Flight'
-    var modelId = this.state.id
+    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, 'Flight', this.state.id)
 
-    // REASSIGN LOAD SEQ AFTER DELETING
-    function constructLoadSeqInputObj (event, correctLoadSeq) {
-      var inputObj = {
-        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
-        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
-        loadSequence: correctLoadSeq,
-        day: event.day
-      }
-      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
-        inputObj.start = event.start
-      }
-      return inputObj
-    }
-    // console.log('all events', this.props.events)
-    var loadSequenceInputArr = []
-    var eventsArr = this.props.events
-    // remove deleted rows from eventsArr
-    var newEventsArr = eventsArr.filter(e => {
-      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
-      return (!isDeletedEvent)
-    })
-    // console.log('newEventsArr', newEventsArr)
-    // find how many days with events exist in eventsArr, split by day
-    var daysArr = []
-    newEventsArr.forEach(e => {
-      if (!daysArr.includes(e.day)) {
-        daysArr.push(e.day)
-      }
-    })
-    // console.log('daysArr', daysArr)
-    // check load seq and reassign
-    daysArr.forEach(day => {
-      var dayEvents = newEventsArr.filter(e => {
-        return e.day === day
-      })
-      dayEvents.forEach(event => {
-        var correctLoadSeq = dayEvents.indexOf(event) + 1
-        if (event.loadSequence !== correctLoadSeq) {
-          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
-          loadSequenceInputArr.push(loadSequenceInputObj)
-        }
-      })
-    })
-    console.log('loadSequenceInputArr', loadSequenceInputArr)
     this.props.changingLoadSequence({
       variables: {
         input: loadSequenceInputArr
@@ -262,16 +213,15 @@ class EditFlightForm extends Component {
     })
     this.props.deleteFlightBooking({
       variables: {
-        id: modelId
+        id: this.state.id
       },
       refetchQueries: [{
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
+    this.closeForm()
+    // close form will remove cloud attachments that are not yet passed to db
   }
 
   resetState () {
@@ -323,7 +273,6 @@ class EditFlightForm extends Component {
       this.setState({attachmentsToDumpIfFlightChange: dump.concat(instance.attachments)})
     })
 
-    // copy old instance notes into search flight instances, and replace current flight instance arr
     var instancesWithCopiedNotes = this.copyNotes()
     var params = this.state.searchParams
     this.setState({
@@ -341,7 +290,6 @@ class EditFlightForm extends Component {
       bookingConfirmation: '',
       cost: this.state.searchedCostCurrency.cost,
       currency: this.state.searchedCostCurrency.currency,
-      // flightInstances: this.state.searchFlightInstances,
       flightInstances: instancesWithCopiedNotes,
       searching: false,
       changedFlight: true
@@ -420,8 +368,6 @@ class EditFlightForm extends Component {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    // console.log('dates unix arr', datesUnix)
-
     this.setState({
       selected: index,
       searchedCostCurrency: {
@@ -462,7 +408,7 @@ class EditFlightForm extends Component {
           attachments: []
         }
       })
-    }, () => console.log('handleselectflight', this.state))
+    })
   }
 
   handleChange (e, field) {
@@ -476,7 +422,7 @@ class EditFlightForm extends Component {
     var index = this.state.instanceTabIndex
     var flightInstancesClone = JSON.parse(JSON.stringify(this.state.flightInstances))
     var updatedArr = flightInstancesClone.slice(0, index).concat(updatedInstance).concat(flightInstancesClone.slice(index + 1))
-    this.setState({flightInstances: updatedArr}, () => console.log('after set state', this.state.flightInstances))
+    this.setState({flightInstances: updatedArr})
   }
 
   switchInstanceTab (i) {
@@ -493,9 +439,8 @@ class EditFlightForm extends Component {
 
     // if cancel and reopen, reinitialize state
     if (this.props.data.findFlightBooking) {
-      console.log('initialize to db data')
       var booking = this.props.data.findFlightBooking
-      console.log('db data', booking)
+      console.log('initialize to db data', booking)
       // INITIALIZE DATA FROM DB
       this.setState({
         id: booking.id,
@@ -587,11 +532,11 @@ class EditFlightForm extends Component {
             {!this.state.searching &&
               <EditFormAirhobParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} />
             }
-            {!this.state.searching && !this.state.changedFlight &&
-              <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
-            }
             {this.state.searching &&
               <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} />
+            }
+            {!this.state.searching && !this.state.changedFlight &&
+              <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
             {(this.state.searching || this.state.changedFlight) &&
               <FlightDetailsContainerRework flightInstances={this.state.searchFlightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />

@@ -11,7 +11,6 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-// import Attachments from '../eventFormComponents/Attachments'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -24,7 +23,7 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
 import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
-import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
+import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}lodgingDefaultBackground.jpg`
 
@@ -157,15 +156,6 @@ class EditLodgingForm extends Component {
 
     this.resetState()
     this.props.toggleEditEventType()
-
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Activity', newActivity)
-    // console.log('output', output)
-    //
-    // if (!output.isValid) {
-    //   window.alert(`time ${newActivity.startTime} --- ${newActivity.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
   }
 
   closeForm () {
@@ -175,53 +165,7 @@ class EditLodgingForm extends Component {
   }
 
   deleteEvent () {
-    var eventType = 'Lodging'
-    var modelId = this.state.id
-
-    // REASSIGN LOAD SEQ AFTER DELETING
-    function constructLoadSeqInputObj (event, correctLoadSeq) {
-      var inputObj = {
-        type: event.type === 'Flight' ? 'FlightInstance' : event.type,
-        id: event.type === 'Flight' ? event.Flight.FlightInstance.id : event.modelId,
-        loadSequence: correctLoadSeq,
-        day: event.day
-      }
-      if (event.type === 'Flight' || event.type === 'LandTransport' || event.type === 'SeaTransport' || event.type === 'Train' || event.type === 'Lodging') {
-        inputObj.start = event.start
-      }
-      return inputObj
-    }
-    // console.log('all events', this.props.events)
-    var loadSequenceInputArr = []
-    var eventsArr = this.props.events
-    // remove deleted rows from eventsArr
-    var newEventsArr = eventsArr.filter(e => {
-      var isDeletedEvent = (e.type === eventType && e.modelId === modelId)
-      return (!isDeletedEvent)
-    })
-    // console.log('newEventsArr', newEventsArr)
-    // find how many days with events exist in eventsArr, split by day
-    var daysArr = []
-    newEventsArr.forEach(e => {
-      if (!daysArr.includes(e.day)) {
-        daysArr.push(e.day)
-      }
-    })
-    // console.log('daysArr', daysArr)
-    // check load seq and reassign
-    daysArr.forEach(day => {
-      var dayEvents = newEventsArr.filter(e => {
-        return e.day === day
-      })
-      dayEvents.forEach(event => {
-        var correctLoadSeq = dayEvents.indexOf(event) + 1
-        if (event.loadSequence !== correctLoadSeq) {
-          var loadSequenceInputObj = constructLoadSeqInputObj(event, correctLoadSeq)
-          loadSequenceInputArr.push(loadSequenceInputObj)
-        }
-      })
-    })
-    console.log('loadSequenceInputArr', loadSequenceInputArr)
+    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, 'Lodging', this.state.id)
     this.props.changingLoadSequence({
       variables: {
         input: loadSequenceInputArr
@@ -229,16 +173,14 @@ class EditLodgingForm extends Component {
     })
     this.props.deleteLodging({
       variables: {
-        id: modelId
+        id: this.state.id
       },
       refetchQueries: [{
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
+    this.closeForm()
   }
 
   resetState () {
