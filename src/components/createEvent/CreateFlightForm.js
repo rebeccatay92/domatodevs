@@ -231,7 +231,7 @@ class CreateFlightForm extends Component {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    console.log('dates unix arr', datesUnix)
+    // console.log('dates unix arr', datesUnix)
 
     this.setState({
       selected: index,

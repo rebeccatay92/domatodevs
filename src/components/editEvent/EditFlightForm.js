@@ -267,6 +267,9 @@ class EditFlightForm extends Component {
 
   // COPY NOTES OVER. COMPARE FLIGHT INSTANCES VS SEARCH FLIGHTINSTANCES
   changeFlight () {
+    var confirm = window.confirm('Are you sure? Changing flights will not preserve attachments.')
+    console.log('confirm', confirm)
+    if (!confirm) return
     // move old attachments from previous instances into dump arr. await submit, cancel to handle.
     this.state.flightInstances.forEach(instance => {
       var dump = this.state.attachmentsToDumpIfFlightChange
