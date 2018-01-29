@@ -47,7 +47,7 @@ const plannerActivitySource = {
 const plannerActivityTarget = {
   hover (props, monitor, component) {
     let day = props.activity.day
-    // if (props.activity.dropzone) return
+    if (props.activity.dropzone) return
     // if (monitor.getItemType() === 'activity') props.hoverOverActivity(props.index, day)
     if (monitor.getItemType() === 'plannerActivity') props.plannerActivityHoverOverActivity(props.index, monitor.getItem(), day)
   },
@@ -139,10 +139,10 @@ class PlannerActivity extends Component {
           {this.state.editEventType &&
             <EditEventFormHOC eventType={this.state.editEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} event={this.props.activity[`${this.state.editEventType}`]} toggleEditEventType={() => this.handleEditEventClick()} />
           }
-          <div style={eventBoxFirstColumnStyle(this.props.activity.modelId, minHeight)} key={this.props.activity.modelId}>
-            {this.state.hover && !this.state.expanded && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-24px', cursor: 'move', ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
+          {connectDragPreview(<div style={eventBoxFirstColumnStyle(this.props.activity, minHeight, getItem || {})} key={this.props.activity.modelId}>
+            {this.state.hover && !this.state.expanded && this.props.activity.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
             {this.renderInfo(this.props.activity.type, this.state.expanded)}
-          </div>
+          </div>)}
         </td>
         {this.state.editEventType && <td style={plannerBlurredBackgroundStyle} />}
         {
@@ -229,7 +229,7 @@ class PlannerActivity extends Component {
     // if (this.state.draggable && !this.state.expanded) {
     //   return connectDragSource(connectDropTarget(activityBox))
     // } else {
-    return connectDragPreview(connectDropTarget(activityBox))
+    return connectDropTarget(activityBox)
     // }
   }
 
@@ -327,6 +327,9 @@ class PlannerActivity extends Component {
     let endTime = new Date(this.props.activity[type].endTime * 1000).toGMTString().substring(17, 22)
     if (type === 'Flight') endTime = new Date(this.props.activity[type].FlightInstance.endTime * 1000).toGMTString().substring(17, 22)
 
+    let suggestedStartTime = this.props.activity.suggestedStartTime && new Date(this.props.activity.suggestedStartTime * 1000).toGMTString().substring(17, 22)
+    let suggestedEndTime = this.props.activity.suggestedEndTime && new Date(this.props.activity.suggestedEndTime * 1000).toGMTString().substring(17, 22)
+
     if (!expanded) {
       switch (type) {
         case 'Activity':
@@ -340,7 +343,7 @@ class PlannerActivity extends Component {
                 {expandButton}
                 {expandMenu}
               </div>
-              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} />
+              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime} newDay={this.props.activity.newDay} />
             </div>
           )
         case 'Flight':
@@ -385,7 +388,8 @@ class PlannerActivity extends Component {
                 {expandButton}
                 {expandMenu}
               </div>
-              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} />
+              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
+              newDay={this.props.activity.newDay} />
             </div>
           )
         case 'LandTransport':
@@ -437,7 +441,8 @@ class PlannerActivity extends Component {
                   {expandButton}
                   {expandMenu}
                 </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} />{errorIcon}{errorBox}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
+                newDay={this.props.activity.newDay} />{errorIcon}{errorBox}</p>
               </div>
             </div>
           )

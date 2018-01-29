@@ -22,14 +22,14 @@ class ActivityInfo extends Component {
     super(props)
 
     this.state = {
-      editing: false,
-      value: this.props.value,
-      newValue: this.props.value,
-      startTime: this.props.startTime,
-      newStartTime: this.props.startTime,
-      endTime: this.props.endTime,
-      newEndTime: this.props.endTime,
-      googlePlaceData: this.props.googlePlaceData
+      editing: this.props.editing || false,
+      value: this.props.suggestedStartTime || this.props.suggestedEndTime || this.props.value,
+      newValue: this.props.suggestedStartTime || this.props.suggestedEndTime || this.props.value,
+      startTime: this.props.suggestedStartTime || this.props.startTime,
+      newStartTime: this.props.suggestedStartTime || this.props.startTime,
+      endTime: this.props.suggestedEndTime || this.props.endTime,
+      newEndTime: this.props.suggestedEndTime || this.props.endTime,
+      googlePlaceData: this.props.googlePlaceData || {}
     }
 
     this.toggleDraggable = this.props.toggleDraggable
@@ -68,7 +68,7 @@ class ActivityInfo extends Component {
       }
       return (
         <p onKeyDown={(e) => this.handleKeyDown(e)} style={{...this.props.timeStyle, ...{width: '220px'}}}>
-          <input type='time' value={this.state.newStartTime} onChange={(e) => this.setState({ newStartTime: e.target.value })} />
+          <input autoFocus type='time' value={this.state.newStartTime} onChange={(e) => this.setState({ newStartTime: e.target.value })} />
           <span> - </span>
           <input type='time' value={this.state.newEndTime} onChange={(e) => this.setState({ newEndTime: e.target.value })} />
         </p>
@@ -77,7 +77,7 @@ class ActivityInfo extends Component {
     if (this.state.editing) {
       if (this.props.name === 'startTime' || this.props.name === 'endTime') {
         return (
-          <input onKeyDown={(e) => this.handleKeyDown(e)} type='time' value={this.state.newValue} onChange={(e) => this.setState({ newValue: e.target.value })} />
+          <input autoFocus onKeyDown={(e) => this.handleKeyDown(e)} type='time' value={this.state.newValue} onChange={(e) => this.setState({ newValue: e.target.value })} />
         )
       }
       if (this.props.name === 'googlePlaceData' || this.props.name === 'departureGooglePlaceData' || this.props.name === 'arrivalGooglePlaceData') {
@@ -155,7 +155,7 @@ class ActivityInfo extends Component {
       editing: false
     })
 
-    if (this.state.newValue === this.props.value && this.state.newStartTime === this.props.startTime && this.state.newEndTime === this.props.endTime && this.state.googlePlaceData.placeId === this.props.googlePlaceData.placeId) {
+    if (this.state.newValue === this.props.value && this.state.newStartTime === this.props.startTime && this.state.newEndTime === this.props.endTime && (this.props.googlePlaceData && this.state.googlePlaceData.placeId === this.props.googlePlaceData.placeId)) {
       return
     }
 
@@ -190,11 +190,18 @@ class ActivityInfo extends Component {
       if (this.props.name !== 'time') {
         let helperOutput
         if (this.props.name === 'startTime' || this.props.name === 'endTime') {
-          helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {
+          helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {...{
             startDay: this.props.event.startDay,
             endDay: this.props.event.endDay,
             startTime: this.props.name === 'startTime' ? unix : this.props.event.startTime,
             endTime: this.props.name === 'endTime' ? unix : this.props.event.endTime
+          },
+            ...this.props.newDay && this.props.name === 'startTime' && {
+              startDay: this.props.newDay
+            },
+            ...this.props.newDay && this.props.name === 'endTime' && {
+              endDay: this.props.newDay
+            }
           })
 
           this.props.changingLoadSequence({
@@ -214,6 +221,12 @@ class ActivityInfo extends Component {
             },
             ...this.props.name === 'endTime' && {
               endLoadSequence: helperOutput.updateEvent.endLoadSequence
+            },
+            ...this.props.newDay && this.props.name === 'startTime' && {
+              startDay: this.props.newDay
+            },
+            ...this.props.newDay && this.props.name === 'endTime' && {
+              endDay: this.props.newDay
             }
           },
           refetchQueries: [{
@@ -228,13 +241,13 @@ class ActivityInfo extends Component {
         else if (!this.state.newEndTime) timeObj = checkStartAndEndTime(this.props.events, {startTime: startUnix}, 'endTimeMissing')
 
         const helperOutput = updateEventLoadSeqAssignment(this.props.events, this.props.type, this.props.activityId, {
-          startDay: this.props.event.startDay,
-          endDay: this.props.event.endDay,
+          startDay: this.props.newDay || this.props.event.startDay,
+          endDay: this.props.newDay + this.props.event.endDay - this.props.event.startDay || this.props.event.endDay,
           startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
           endTime: this.state.newEndTime ? endUnix : timeObj.endTime
         })
 
-        console.log(helperOutput)
+        console.log('helper output', helperOutput)
 
         this.props.changingLoadSequence({
           variables: {
@@ -243,12 +256,17 @@ class ActivityInfo extends Component {
         })
 
         update[this.props.type]({
-          variables: {
+          variables: {...{
             id: this.props.activityId,
             startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
             endTime: this.state.newEndTime ? endUnix : timeObj.endTime,
             allDayEvent: timeObj.allDayEvent,
             loadSequence: helperOutput.updateEvent.loadSequence
+          },
+            ...this.props.newDay && {
+              startDay: this.props.newDay,
+              endDay: this.props.newDay + this.props.event.endDay - this.props.event.startDay
+            }
           },
           refetchQueries: [{
             query: queryItinerary,

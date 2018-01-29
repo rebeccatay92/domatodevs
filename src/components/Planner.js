@@ -21,13 +21,13 @@ class Planner extends Component {
   }
 
   shouldComponentUpdate (nextProps) {
-    if (_.isEqual(nextProps.activities, this.props.activities)) return false
+    if (_.isEqual(nextProps.activities, this.props.activities) && _.isEqual(nextProps.data.findItinerary, this.props.data.findItinerary)) return false
     else return true
   }
 
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
-    console.log('rendering');
+    console.log('rendering')
     console.log(this.props.activities)
     // console.log('apollo', this.props.data.findItinerary)
 
@@ -48,14 +48,14 @@ class Planner extends Component {
     })
     return (
       <div style={plannerContainerStyle}>
-        <Scrollbars renderThumbVertical={({ style }) =>
+        {/* <Scrollbars renderThumbVertical={({ style }) =>
           <div style={{ ...style, backgroundColor: primaryColor, right: '-4px' }} />
         } renderThumbHorizontal={({ style }) =>
           <div style={{ ...style, display: 'none' }} />
         }
           renderTrackVertical={({style}) =>
             <div style={{ ...style, top: 0, right: 0, width: '10px', height: '100%' }} />
-        } thumbSize={60} onScroll={(e) => this.handleScroll(e)}>
+        } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
           <div style={{
             paddingRight: '44px',
             paddingLeft: '10px'
@@ -76,16 +76,24 @@ class Planner extends Component {
               })}
             </div>
           </div>
-        </Scrollbars>
+        {/* </Scrollbars> */}
       </div>
     )
+  }
+
+  componentDidMount () {
+    document.addEventListener('scroll', (e) => this.handleScroll(e))
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('scroll', (e) => this.handleScroll(e))
   }
 
   handleScroll (e) {
     function offset (el) {
       const rect = el.getBoundingClientRect(),
       scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      return { top: rect.top + scrollTop - 76 }
+      return { top: rect.top }
     }
 
     var div = document.querySelector('#timeline-top')

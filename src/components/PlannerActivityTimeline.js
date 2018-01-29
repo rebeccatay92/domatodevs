@@ -88,7 +88,7 @@ class PlannerActivityTimeline extends Component {
 
       utcDiff = (offset - nextOffset) * 60
 
-      if (nextActivity.timelineClash || nextActivity.inBetweenStartEndRow || nextActivity[nextActivity.type].allDayEvent) {
+      if (nextActivity.isDropped || this.props.activity.isDropped || nextActivity.timelineClash || nextActivity.inBetweenStartEndRow || nextActivity[nextActivity.type].allDayEvent) {
         doNotShowTime = true
       } else {
         doNotShowTime = false

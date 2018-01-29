@@ -27,7 +27,6 @@ export const bucketTitleStyle = {textAlign: 'left', fontSize: '24px'}
 
 // Planner.js styles
 export const plannerContainerStyle = {
-  height: '90vh',
   width: '100%',
   borderRight: '1px solid rgba(159, 172, 188, 0.5)'
 }
@@ -72,17 +71,17 @@ export const timelineColumnStyle = (clash, allDay) => {
   return {width: '89px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
 }
 export const timelineTitleStyle = headerSticky => {
-  return {position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '60px' : '0px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}
+  return {position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '0px' : '0px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}
 }
 export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color: primaryColor}
 export const dayTimelineStyle = sticky => {
-  return {position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '120px' : '60px', zIndex: 1, padding: '20px 0'}
+  return {position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '60px' : '60px', zIndex: 1, padding: '20px 0'}
 }
 export const dayTimelineContainerStyle = isDateOnScreen => {
-  return {padding: '2px', display: 'inline-block', backgroundColor: isDateOnScreen ? primaryColor : backgroundColor, borderRadius: isDateOnScreen ? '5px' : 0}
+  return {paddingLeft: '5px', display: 'inline-block', borderLeft: isDateOnScreen ? '5px solid ' + primaryColor : 0, marginLeft: isDateOnScreen ? '-10px' : '-5px'}
 }
 export const dayTimelineWordStyle = isDateOnScreen => {
-  return {fontSize: '16px', color: isDateOnScreen ? backgroundColor : primaryColor, display: 'inline-block'}
+  return {fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer'}
 }
 export const addDayButtonStyle = {padding: '1px 3px', backgroundColor: 'white', border: '1px solid #EDB5BF', display: 'inline-block', marginTop: '20px', cursor: 'pointer'}
 export const addDayWordStyle = {fontSize: '16px', color: primaryColor, display: 'inline-block'}
@@ -102,8 +101,8 @@ export const eventBoxStyle = (draggable, activityId, clash, allDay) => {
     position: 'relative'
   }
 }
-export const eventBoxFirstColumnStyle = (activityId, minHeight) => {
-  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh', position: 'relative' }
+export const eventBoxFirstColumnStyle = (activity, minHeight, draggedItem) => {
+  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? '1px solid black' : 'none') }
 }
 export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}

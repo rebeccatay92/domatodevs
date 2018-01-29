@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Radium from 'radium'
+import Scroll from 'react-scroll'
 import PlannerActivity from './PlannerActivity'
 import PlannerTimelineHeader from './PlannerTimelineHeader'
 import { graphql, compose } from 'react-apollo'
@@ -14,6 +15,7 @@ import PlannerColumnHeader from './PlannerColumnHeader'
 import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, addDayButtonStyle, addDayWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
 
 // import CreateActivityForm from './CreateActivityForm'
+const Element = Scroll.Element
 
 const dateTarget = {
   drop (props, monitor) {
@@ -48,12 +50,14 @@ class DateBox extends Component {
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              <PlannerTimelineHeader firstDay={this.props.firstDay} getItem={this.props.getItem} dates={this.props.dates} />
+              <PlannerTimelineHeader firstDay={this.props.firstDay} getItem={this.props.getItem} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} />
               <th style={dateTableFirstHeaderStyle}>
-                <div id={'day-' + this.props.day}>
-                  <h3 style={headerDayStyle}>Day {this.props.day} </h3>
-                  <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
-                </div>
+                <Element name={'day-' + this.props.day}>
+                  <div id={'day-' + this.props.day}>
+                    <h3 style={headerDayStyle}>Day {this.props.day} </h3>
+                    <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                  </div>
+                </Element>
               </th>
               {[1, 2, 3].map(i => {
                 return !this.props.firstDay && (
@@ -149,7 +153,7 @@ class DateBox extends Component {
         const loadSequenceArr = nextProps.activities.map((activity, i) => {
           const day = activity.day
           const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
-          // console.log(diff);
+          // console.log(diff, activity[activity.type].location.name)
           return {...{
             id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
             type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
@@ -173,7 +177,7 @@ class DateBox extends Component {
           this.props.data.refetch()
           .then(response => this.props.initializePlanner(response.data.findItinerary.events))
         }
-        if (event.keyCode === 13) changeLoadSeq()
+        // if (event.keyCode === 13) changeLoadSeq()
       }
       if (nextProps.activities.length !== 1) document.addEventListener('keydown', event => handleKeydown(event))
       if (nextProps.activities.length === 1) {

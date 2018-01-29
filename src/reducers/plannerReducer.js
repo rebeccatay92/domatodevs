@@ -15,20 +15,50 @@ export const plannerReducer = (state = [], action) => {
       } else {
         let stateWithoutActivitiesWithThatDate = state.filter(activity => {
           return activity.modelId && activity.day !== action.activity.day
+        }).sort((a, b) => {
+          return a.loadSequence - b.loadSequence
         })
         let newStateWithActivitiesWithThatDate = state.filter(activity => {
           return activity.modelId && activity.day === action.activity.day
+        }).sort((a, b) => {
+          return a.loadSequence - b.loadSequence
         })
-        return checkForTimelineErrorsInPlanner([
+        const lastEventBeforeDroppedEvent = newStateWithActivitiesWithThatDate.slice(0, action.index)[action.index - 1]
+        const nextEventAfterDroppedEvent = newStateWithActivitiesWithThatDate.slice(action.index, newStateWithActivitiesWithThatDate.length)[0]
+        const nextEventType = nextEventAfterDroppedEvent && nextEventAfterDroppedEvent.type
+        const lastEventType = lastEventBeforeDroppedEvent && lastEventBeforeDroppedEvent.type
+        let lastEventEndTime, nextEventStartTime
+        if (lastEventBeforeDroppedEvent) {
+          lastEventEndTime = (lastEventBeforeDroppedEvent.start) ? (lastEventBeforeDroppedEvent[lastEventType].startTime || lastEventBeforeDroppedEvent[lastEventType].FlightInstance.startTime) : (lastEventBeforeDroppedEvent[lastEventType].endTime || lastEventBeforeDroppedEvent[lastEventType].FlightInstance.endTime)
+        }
+        if (nextEventAfterDroppedEvent) {
+          nextEventStartTime = (typeof nextEventAfterDroppedEvent.start !== 'boolean' || nextEventAfterDroppedEvent.start) ? (nextEventAfterDroppedEvent[nextEventType].startTime || nextEventAfterDroppedEvent[nextEventType].FlightInstance.startTime) : (nextEventAfterDroppedEvent[nextEventType].endTime || nextEventAfterDroppedEvent[nextEventType].FlightInstance.endTime)
+        }
+        const duration = action.activity[action.activity.type].endTime - action.activity[action.activity.type].startTime
+        let suggestedStartTime, suggestedEndTime
+        if (action.activity.type === 'Activity' || action.activity.type === 'Food') {
+          suggestedStartTime = lastEventBeforeDroppedEvent ? lastEventEndTime : nextEventStartTime - duration
+          suggestedEndTime = nextEventAfterDroppedEvent ? (suggestedStartTime + duration <= nextEventStartTime ? suggestedStartTime + duration : nextEventStartTime) : suggestedStartTime + duration
+        } else if (action.activity.type === 'Lodging') {
+          suggestedStartTime = nextEventStartTime || lastEventEndTime
+          suggestedEndTime = nextEventStartTime || lastEventEndTime
+        }
+        return [
           ...stateWithoutActivitiesWithThatDate,
           ...[
             ...newStateWithActivitiesWithThatDate.slice(0, action.index),
-            ...[action.activity],
+            ...[{...action.activity,
+              ...newStateWithActivitiesWithThatDate.length > 0 && {
+                isDropped: true,
+                suggestedStartTime: suggestedStartTime,
+                suggestedEndTime: suggestedEndTime,
+                newDay: action.activity.day
+              }}],
             ...newStateWithActivitiesWithThatDate.slice(action.index, newStateWithActivitiesWithThatDate.length)
           ]
         ].sort((a, b) => {
           return a.day - b.day
-        }))
+        })
       }
     case 'DELETE_ACTIVITY':
       return state.filter((activity) => {
