@@ -20,20 +20,19 @@ const cityCountryStyle = {...pStyle,
 }
 
 class EditFormFlightDetailsInstance extends Component {
-  constructor (props) {
-    super(props)
-  }
-
   render () {
     if (!this.props.instance) return null
     // console.log('instance', this.props.instance)
 
     var instance = this.props.instance
-    var departureDate = this.props.dates[instance.startDay - 1]
-    var arrivalDate = this.props.dates[instance.endDay - 1]
-    var departureMoment = moment(departureDate).format('DD/MM/YYYY')
-    var arrivalMoment = moment(arrivalDate).format('DD/MM/YYYY')
-
+    // START AND END DAY MAY BE OUTSIDE OF DATES ARR.
+    // console.log('props dates arr', this.props.dates)
+    // dates arr props is date obj
+    var departureDateUnix = moment(this.props.dates[0]).unix() + (instance.startDay - 1) * 86400
+    var arrivalDateUnix = moment(this.props.dates[0]).unix() + (instance.endDay - 1) * 86400
+    var departureMoment = moment.unix(departureDateUnix).utc().format('DD/MM/YYYY')
+    var arrivalMoment = moment.unix(arrivalDateUnix).utc().format('DD/MM/YYYY')
+    // console.log('departureMoment', departureMoment, 'arrivalMoment', arrivalMoment)
     var startTime = instance.startTime
     var startMoment = moment.unix(startTime).utc().format('HH:mm')
     var endTime = instance.endTime
@@ -48,8 +47,7 @@ class EditFormFlightDetailsInstance extends Component {
       <tr>
         <td style={{width: '40%', textAlign: 'right', verticalAlign: 'top'}}>
           <p style={pStyle}>{instance.departureIATA}</p>
-          {/* DEPARTURE LOCATION NEED TO BE {NAME, IATA, TYPE} OBJ HERE */}
-          <p style={infoStyle}>{instance.departureLocation.name}</p>
+          <p style={infoStyle}>{instance.departureAirport}</p>
           <p style={cityCountryStyle}>{instance.departureCityCountry}</p>
           <p style={infoStyle}>{instance.departureTerminal}</p>
           <p style={infoStyle}>{departureMoment} {startMoment}</p>
@@ -63,7 +61,7 @@ class EditFormFlightDetailsInstance extends Component {
 
         <td style={{width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
           <p style={pStyle}>{instance.arrivalIATA}</p>
-          <p style={infoStyle}>{instance.arrivalLocation.name}</p>
+          <p style={infoStyle}>{instance.arrivalAirport}</p>
           <p style={cityCountryStyle}>{instance.arrivalCityCountry}</p>
           <p style={infoStyle}>{instance.arrivalTerminal}</p>
           <p style={infoStyle}>{arrivalMoment} {endMoment}</p>

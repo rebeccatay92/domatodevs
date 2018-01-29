@@ -11,10 +11,10 @@ import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, cr
 import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
 import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
-import BookingDetails from '../eventFormComponents/BookingDetails'
-import Notes from '../eventFormComponents/Notes'
+import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
 
-import Attachments from '../eventFormComponents/Attachments'
+import BookingDetails from '../eventFormComponents/BookingDetails'
+import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -26,8 +26,6 @@ import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from
  '../../helpers/newEventLoadSeqAssignment'
-// import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
-
 import { validateIntervals } from '../../helpers/intervalValidationTesting'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
@@ -44,10 +42,15 @@ class CreateFlightForm extends Component {
       cost: 0,
       currency: '',
       classCode: '',
+      departureIATA: '',
+      arrivalIATA: '',
+      departureName: '',
+      arrivalName: '',
+      departureDate: null,
+      returnDate: null,
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
-      attachments: [],
       flightInstances: [],
       // ARR OF FLIGHTINSTANCE INPUT
       // input createFlightInstanceInput {
@@ -56,6 +59,8 @@ class CreateFlightForm extends Component {
       //   airlineName: String
       //   departureIATA: String
       //   arrivalIATA: String
+      //   departureAirport: String
+      //   arrivalAirport: String
       //   departureTerminal: String
       //   arrivalTerminal: String
       //   departureGate: String
@@ -66,19 +71,21 @@ class CreateFlightForm extends Component {
       //   endTime: Int
       //   startLoadSequence: Int
       //   endLoadSequence: Int
-      //   notes: String
+      //   departureNotes: String
+      //   arrivalNotes: String,
+      //   attachments: [attachmentInput]
       // }
       flights: [],
       searching: false,
       bookingDetails: false,
       selected: 0,
       tripType: '',
-      flightDetailsPage: 1,
-      searchClicked: 1
+      searchClicked: 1,
+      instanceTabIndex: 0
     }
   }
 
-  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) {
+  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) {
     this.setState({
       flights,
       tripType: tripType,
@@ -88,7 +95,11 @@ class CreateFlightForm extends Component {
       classCode: classCode,
       searching: true,
       departureIATA: departureIATA,
-      arrivalIATA: arrivalIATA
+      arrivalIATA: arrivalIATA,
+      departureName: departureName,
+      arrivalName: arrivalName
+    }, () => {
+      this.handleSelectFlight(0)
     })
     if (departureDate) {
       this.setState({departureDate: departureDate.utc().unix()})
@@ -100,9 +111,6 @@ class CreateFlightForm extends Component {
   }
 
   handleSubmit () {
-    console.log('handle submit flight')
-    // NEEDS TESTING AGAINST CREATEFLIGHTBOOKING MUTATION
-
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newFlight = {
@@ -115,13 +123,14 @@ class CreateFlightForm extends Component {
       classCode: this.state.classCode,
       departureIATA: this.state.departureIATA,
       arrivalIATA: this.state.arrivalIATA,
+      departureName: this.state.departureName,
+      arrivalName: this.state.arrivalName,
       departureDate: this.state.departureDate,
       returnDate: this.state.returnDate,
       bookingStatus: bookingStatus,
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
       backgroundImage: this.state.backgroundImage,
-      attachments: this.state.attachments,
       flightInstances: this.state.flightInstances
     }
 
@@ -133,7 +142,7 @@ class CreateFlightForm extends Component {
         }
       })
     }
-    // console.log('newFlight', newFlight)
+    console.log('newFlight', newFlight)
 
     // REWRITTEN FUNCTION TO VALIDATE
     var eventObjArr = newFlight.flightInstances.map(e => {
@@ -141,10 +150,12 @@ class CreateFlightForm extends Component {
         startDay: e.startDay,
         endDay: e.endDay,
         startTime: e.startTime,
-        endTime: e.endTime
+        endTime: e.endTime,
+        departureIATA: e.departureIATA,
+        arrivalIATA: e.arrivalIATA
       }
     })
-    var isError = validateIntervals(this.props.events, eventObjArr)
+    var isError = validateIntervals(this.props.events, eventObjArr, 'Flight')
     console.log('isError', isError)
 
     if (isError) {
@@ -176,7 +187,10 @@ class CreateFlightForm extends Component {
   }
 
   closeForm () {
-    removeAllAttachments(this.state.attachments, this.apiToken)
+    // REMOVE ALL ATTACHMENTS FROM FLIGHT INSTANCES
+    this.state.flightInstances.forEach(instance => {
+      removeAllAttachments(instance.attachments, this.apiToken)
+    })
     this.resetState()
     this.props.toggleCreateEventType()
   }
@@ -189,34 +203,27 @@ class CreateFlightForm extends Component {
       cost: 0,
       currency: '',
       classCode: '',
+      departureIATA: '',
+      arrivalIATA: '',
+      departureName: '',
+      arrivalName: '',
+      departureDate: null,
+      returnDate: null,
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
-      attachments: [],
       flightInstances: [],
-      flights: [] // clear flight search results
+      flights: [], // clear flight search results
+      searching: false,
+      bookingDetails: false,
+      selected: 0,
+      tripType: '',
+      searchClicked: 1,
+      instanceTabIndex: 0
     })
   }
 
-  handleFileUpload (attachmentInfo) {
-    this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
-  }
-
-  removeUpload (index) {
-    var fileToRemove = this.state.attachments[index]
-    var fileNameToRemove = fileToRemove.fileName
-    if (this.state.backgroundImage.indexOf(fileNameToRemove) > -1) {
-      this.setState({backgroundImage: defaultBackground})
-    }
-
-    var files = this.state.attachments
-    var newFilesArr = (files.slice(0, index)).concat(files.slice(index + 1))
-
-    this.setState({attachments: newFilesArr})
-  }
-
   setBackground (previewUrl) {
-    previewUrl = previewUrl.replace(/ /gi, '%20')
     this.setState({backgroundImage: `${previewUrl}`})
   }
 
@@ -224,39 +231,49 @@ class CreateFlightForm extends Component {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    console.log(datesUnix)
+    console.log('dates unix arr', datesUnix)
+
     this.setState({
       selected: index,
       cost: this.state.flights[index].cost,
       currency: this.state.flights[index].currency,
-      flightDetailsPage: 1,
       flightInstances: this.state.flights[index].flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
+
+        var startDayInt = (startDayUnix - datesUnix[0]) / 86400 + 1
+        var endDayInt = (endDayUnix - datesUnix[0]) / 86400 + 1
+
         const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
-        console.log(startTime, endTime)
+
         return {
           flightNumber: flight.flightNum,
           airlineCode: flight.carrierCode,
           airlineName: flight.airlineName,
           departureIATA: flight.departureAirportCode,
           arrivalIATA: flight.arrivalAirportCode,
+          departureAirport: flight.departureLocation,
+          arrivalAirport: flight.arrivalLocation,
           departureCityCountry: flight.departureCityCountry,
           arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
           arrivalTerminal: flight.arrivalTerminal,
-          startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
-          endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
+          startDay: startDayInt,
+          endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
           durationMins: flight.duration,
-          notes: '',
+          departureNotes: '',
+          arrivalNotes: '',
+          attachments: [],
           firstFlight: i === 0
         }
       })
+    }, () => {
+      this.setState({instanceTabIndex: 0}, () => console.log('handle select flight', this.state))
     })
-    console.log('HANDLE SELECT FLIGHT', this.state)
+    // on flight confirm, initialize first tab immediately. but only after flightInstances hv been set (callback)
   }
 
   handleChange (e, field, subfield, index) {
@@ -266,12 +283,24 @@ class CreateFlightForm extends Component {
       this.setState({
         [field]: newState
       })
-      console.log(this.state)
+      // console.log(this.state)
     } else {
       this.setState({
         [field]: e.target.value
       })
     }
+  }
+
+  handleFlightInstanceChange (updatedInstance) {
+    // reconstruct flight instance arr
+    var index = this.state.instanceTabIndex
+    var flightInstancesClone = JSON.parse(JSON.stringify(this.state.flightInstances))
+    var updatedArr = flightInstancesClone.slice(0, index).concat(updatedInstance).concat(flightInstancesClone.slice(index + 1))
+    this.setState({flightInstances: updatedArr}, () => console.log('after set state', this.state.flightInstances))
+  }
+
+  switchInstanceTab (i) {
+    this.setState({instanceTabIndex: i})
   }
 
   componentDidMount () {
@@ -297,8 +326,12 @@ class CreateFlightForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
             <div style={eventDescContainerStyle}>
-              <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureDate, returnDate)} closeForm={() => this.closeForm()} />
-              {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) && <FlightSearchDetailsContainer searching={this.state.searching} flights={this.state.flights} selected={this.state.selected} tripType={this.state.tripType} page={this.state.flightDetailsPage} />}
+              <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} closeForm={() => this.closeForm()} />
+
+              {/* REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
+              {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) &&
+                <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+              }
             </div>
           </div>
           {/* RESULTS PANEL(CHILD OF SEARCH PARAMS) */}
@@ -311,26 +344,13 @@ class CreateFlightForm extends Component {
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-                  {this.state.flights[this.state.selected].flights.map((flight, i) => {
+                  {/* TAB FLIGHT INSTANCES WITH NOTES AND ATTACHMENTS */}
+                  {this.state.flightInstances.map((instance, i) => {
                     return (
-                      <div key={i}>
-                        <h4 style={{fontSize: '24px'}} key={i}>{flight.departureAirportCode} to {flight.arrivalAirportCode}</h4>
-                        <div style={{display: 'inline-block', width: '40%'}}>
-                          <label style={labelStyle}>
-                            Departure Gate
-                          </label>
-                          <input style={{width: '90%'}} type='text' name='departureGate' onChange={(e) => this.handleChange(e, 'flightInstances', 'departureGate', i)} />
-                          <label style={labelStyle}>
-                            Arrival Gate
-                          </label>
-                          <input style={{width: '90%'}} type='text' name='arrivalGate' onChange={(e) => this.handleChange(e, 'flightInstances', 'arrivalGate', i)} />
-                        </div>
-                        <div style={{display: 'inline-block', width: '50%', verticalAlign: 'top'}}>
-                          <Notes flight index={i} handleChange={(e, field, subfield, index) => this.handleChange(e, field, subfield, index)} />
-                        </div>
-                      </div>
+                      <h3 onClick={() => this.switchInstanceTab(i)} style={{display: 'inline-block', marginRight: '20px'}} key={'instance' + i}>{instance.departureIATA} to {instance.arrivalIATA}</h3>
                     )
                   })}
+                  <FlightInstanceNotesAttachments ItineraryId={this.props.ItineraryId} instance={this.state.flightInstances[this.state.instanceTabIndex]} handleFlightInstanceChange={(updatedInstance) => this.handleFlightInstanceChange(updatedInstance)} setBackground={url => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
                 </div>
               )}
               <div style={{width: '100%', height: '91%', margin: '2% 0 6% 0', overflowY: 'auto'}}>
@@ -357,9 +377,9 @@ class CreateFlightForm extends Component {
 
         </div>
         {/* BOTTOM PANEL --- ATTACHMENTS */}
-        <div style={attachmentsStyle}>
+        {/* <div style={attachmentsStyle}>
           <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div>
+        </div> */}
       </div>
     )
   }

@@ -217,13 +217,15 @@ export const queryItinerary = gql`
           bookedThrough
           bookingConfirmation
           bookingStatus
-          notes
+          departureNotes
+          arrivalNotes
           attachments {
             id
             fileName
             fileAlias
             fileType
             fileSize
+            arrivalDeparture
           }
           backgroundImage
         }
@@ -284,13 +286,15 @@ export const queryItinerary = gql`
           bookedThrough
           bookingConfirmation
           bookingStatus
-          notes
+          departureNotes
+          arrivalNotes
           attachments {
             id
             fileName
             fileAlias
             fileType
             fileSize
+            arrivalDeparture
           }
           backgroundImage
         }
@@ -351,13 +355,15 @@ export const queryItinerary = gql`
           bookedThrough
           bookingConfirmation
           bookingStatus
-          notes
+          departureNotes
+          arrivalNotes
           attachments {
             id
             fileName
             fileAlias
             fileType
             fileSize
+            arrivalDeparture
           }
           backgroundImage
         }
@@ -368,6 +374,13 @@ export const queryItinerary = gql`
             flightNumber
             airlineCode
             airlineName
+            departureIATA
+            arrivalIATA
+            departureAirport
+            arrivalAirport
+            departureCityCountry
+            arrivalCityCountry
+            durationMins
             departureLocation {
               id
               placeId
@@ -411,16 +424,23 @@ export const queryItinerary = gql`
             }
             departureTerminal
             arrivalTerminal
-            departureGate
-            arrivalGate
             startDay
             endDay
             startTime
             endTime
             startLoadSequence
             endLoadSequence
-            notes
+            departureNotes
+            arrivalNotes
             firstFlight
+            attachments {
+              id
+              fileName
+              fileAlias
+              fileType
+              fileSize
+              arrivalDeparture
+            }
           }
           FlightBooking {
             id
@@ -431,17 +451,16 @@ export const queryItinerary = gql`
             cost
             currency
             classCode
+            departureIATA
+            arrivalIATA
+            departureName
+            arrivalName
+            departureDate
+            returnDate
             bookingStatus
             bookedThrough
             bookingConfirmation
             backgroundImage
-            attachments {
-              id
-              fileName
-              fileAlias
-              fileType
-              fileSize
-            }
           }
         }
       }
