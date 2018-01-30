@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
 import { DropTarget, DragSource } from 'react-dnd'
-import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity } from '../actions/plannerActions'
+import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity, initializePlanner } from '../actions/plannerActions'
 import { deleteActivityFromBucket, addActivityToBucket } from '../actions/bucketActions'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
@@ -35,7 +35,7 @@ const plannerActivitySource = {
   },
   endDrag (props, monitor) {
     if (!monitor.didDrop()) {
-      props.addActivityToBucket(props.activity)
+      props.initializePlanner(props.data.findItinerary.events)
     }
   },
   canDrag (props) {
@@ -633,6 +633,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     addActivityToBucket: (activity) => {
       dispatch(addActivityToBucket(activity))
+    },
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
     }
   }
 }
@@ -643,7 +646,16 @@ const mapStateToProps = (state) => {
   }
 }
 
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
 // REMOVE DELETE ACTIVITY
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
   graphql(createActivity, { name: 'createActivity' })
 )(DragSource('plannerActivity', plannerActivitySource, collectSource)(DropTarget(['activity', 'plannerActivity'], plannerActivityTarget, collectTarget)(onClickOutside(Radium(PlannerActivity))))))

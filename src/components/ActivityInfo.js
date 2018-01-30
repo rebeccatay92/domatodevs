@@ -164,7 +164,7 @@ class ActivityInfo extends Component {
       endTime: this.state.newEndTime,
       startTime: this.state.newStartTime
     }, () => {
-      let unix, startUnix, endUnix
+      let unix, startUnix, endUnix, endLessThanStart
       if (isTime) {
         if (this.props.name !== 'time') {
           var hours = this.state.newValue.split(':')[0]
@@ -177,6 +177,7 @@ class ActivityInfo extends Component {
           var endHours = this.state.newEndTime.split(':')[0]
           var endMins = this.state.newEndTime.split(':')[1]
           endUnix = (endHours * 60 * 60) + (endMins * 60)
+          if (endUnix < startUnix) endLessThanStart = true
         }
       }
 
@@ -244,7 +245,8 @@ class ActivityInfo extends Component {
           startDay: this.props.newDay || this.props.event.startDay,
           endDay: this.props.newDay + this.props.event.endDay - this.props.event.startDay || this.props.event.endDay,
           startTime: this.state.newStartTime ? startUnix : timeObj.startTime,
-          endTime: this.state.newEndTime ? endUnix : timeObj.endTime
+          endTime: this.state.newEndTime ? endUnix : timeObj.endTime,
+          utcOffset: this.props.event.location.utcOffset
         })
 
         console.log('helper output', helperOutput)
@@ -266,6 +268,12 @@ class ActivityInfo extends Component {
             ...this.props.newDay && {
               startDay: this.props.newDay,
               endDay: this.props.newDay + this.props.event.endDay - this.props.event.startDay
+            },
+            ...!this.props.newDay && endLessThanStart && this.props.event.endDay === this.props.event.startDay && {
+              endDay: this.props.event.startDay + 1
+            },
+            ...!this.props.newDay && !endLessThanStart && this.props.event.endDay !== this.props.event.startDay && {
+              endDay: this.props.event.startDay
             }
           },
           refetchQueries: [{

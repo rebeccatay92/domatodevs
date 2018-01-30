@@ -102,17 +102,17 @@ class Planner extends Component {
     let obj = {}
     for (var i = 1; i <= days; i++) {
       var dateDiv = document.querySelector(`#day-${i}`)
-      if (i === 1 || offset(dateDiv).top < 50) {
+      if (i === 1 || offset(dateDiv).top < 100) {
         Object.keys(obj).forEach(key => {
           obj[key] = false
         })
-        obj[`day ${i}`] = i === 1 ? true : offset(dateDiv).top < 50
+        obj[`day ${i}`] = i === 1 ? true : offset(dateDiv).top < 100
       }
     }
     // console.log(_.isEqual(obj, this.state.dateOffsets))
     // if ((divOffset.top < 0) === this.props.timelineDay.timelineAtTop && _.isEqual(obj, this.props.timelineDay.dateOffsets)) return
     this.props.toggleTimelineDay({
-      timelineAtTop: divOffset.top < 0,
+      timelineAtTop: divOffset.top < 50,
       dateOffsets: obj
     })
   }
@@ -123,6 +123,7 @@ class Planner extends Component {
       // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
       // console.log(activitiesWithTimelineErrors)
       // this.props.initializePlanner(activitiesWithTimelineErrors)
+      console.log(allEvents)
       this.props.initializePlanner(allEvents)
     }
   }

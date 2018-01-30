@@ -12,7 +12,7 @@ const _ = require('lodash')
 
 class PlannerTimelineHeader extends Component {
   shouldComponentUpdate (nextProps) {
-    if (this.props.getItem) return true
+    // if (this.props.getItem) return true
     if (nextProps.timeline.events && this.props.timeline.events && nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop) return false
     if (!nextProps.timeline.events && !this.props.timeline.events && !this.props.firstDay) return false
     if (nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop && _.isEqual(nextProps.timelineDay.dateOffsets, this.props.timelineDay.dateOffsets) && nextProps.timeline.events === this.props.timeline.events && nextProps.dates.length === this.props.dates.length) return false
@@ -41,13 +41,13 @@ class PlannerTimelineHeader extends Component {
             <span style={timelineTitleWordStyle}>{this.props.timeline.events ? 'Duration' : 'Days'}</span>
           </div>
         )}
-        {this.props.firstDay && this.props.timeline.days && !this.props.getItem && (
+        {this.props.firstDay && this.props.timeline.days && (
           <div style={dayTimelineStyle(sticky)}>
             {this.props.dates.map((date, i) => {
               const isDateOnScreen = this.props.timelineDay.dateOffsets[`day ${i + 1}`]
               return (
                 <div key={i}>
-                  <Link to={'day-' + (i + 1)} smooth={true} duration={300} offset={0}>
+                  <Link to={'day-' + (i + 1)} smooth={true} duration={300} offset={-60}>
                     {/* <a href={'#day-' + (i + 1)}> */}
                       <div style={dayTimelineContainerStyle(isDateOnScreen)}>
                         <span style={dayTimelineWordStyle(isDateOnScreen)}>Day {i + 1}</span>
@@ -60,7 +60,7 @@ class PlannerTimelineHeader extends Component {
               )
             })}
             <div onClick={() => this.addDay()} style={addDayButtonStyle}>
-              <span style={addDayWordStyle}>+ Day</span>
+              <span style={addDayWordStyle}>+</span>
             </div>
           </div>
         )}

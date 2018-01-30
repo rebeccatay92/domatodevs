@@ -12,7 +12,7 @@ import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOu
 import { addActivityToBucket, deleteActivityFromBucket } from '../actions/bucketActions'
 import { toggleTimeline } from '../actions/plannerTimelineActions'
 import PlannerColumnHeader from './PlannerColumnHeader'
-import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, addDayButtonStyle, addDayWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
+import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
 
 // import CreateActivityForm from './CreateActivityForm'
 const Element = Scroll.Element
@@ -50,7 +50,7 @@ class DateBox extends Component {
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              <PlannerTimelineHeader firstDay={this.props.firstDay} getItem={this.props.getItem} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} />
+              <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} />
               <th style={dateTableFirstHeaderStyle}>
                 <Element name={'day-' + this.props.day}>
                   <div id={'day-' + this.props.day}>
@@ -111,19 +111,6 @@ class DateBox extends Component {
     this.props.toggleTimeline({
       events: !this.props.timeline.events,
       days: !this.props.timeline.days
-    })
-  }
-
-  addDay () {
-    this.props.updateItineraryDetails({
-      variables: {
-        id: this.props.itineraryId,
-        days: this.props.days + 1
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: { id: this.props.itineraryId }
-      }]
     })
   }
 

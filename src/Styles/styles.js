@@ -16,7 +16,7 @@ const rightPanelWidth = totalWidth - leftPanelWidth
 export const plannerPageStyles = {
   fontFamily: '\'Roboto\', sans-serif',
   color: mainFontColor,
-  margin: '0 auto',
+  margin: '50px auto 0 auto',
   width: '1300px',
   fontWeight: '300'
 }
@@ -71,11 +71,11 @@ export const timelineColumnStyle = (clash, allDay) => {
   return {width: '89px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
 }
 export const timelineTitleStyle = headerSticky => {
-  return {position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '0px' : '0px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}
+  return {...{position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '55px' : '0px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}, ...headerSticky && {backfaceVisibility: 'hidden'}}
 }
 export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color: primaryColor}
 export const dayTimelineStyle = sticky => {
-  return {position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '60px' : '60px', zIndex: 1, padding: '20px 0'}
+  return {...{position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '110px' : '60px', zIndex: 1, padding: '20px 0'}, ...sticky && {backfaceVisibility: 'hidden'}}
 }
 export const dayTimelineContainerStyle = isDateOnScreen => {
   return {paddingLeft: '5px', display: 'inline-block', borderLeft: isDateOnScreen ? '5px solid ' + primaryColor : 0, marginLeft: isDateOnScreen ? '-10px' : '-5px'}
@@ -83,8 +83,8 @@ export const dayTimelineContainerStyle = isDateOnScreen => {
 export const dayTimelineWordStyle = isDateOnScreen => {
   return {fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer'}
 }
-export const addDayButtonStyle = {padding: '1px 3px', backgroundColor: 'white', border: '1px solid #EDB5BF', display: 'inline-block', marginTop: '20px', cursor: 'pointer'}
-export const addDayWordStyle = {fontSize: '16px', color: primaryColor, display: 'inline-block'}
+export const addDayButtonStyle = {padding: '1px 3px', display: 'inline-block', marginTop: '10px', cursor: 'pointer'}
+export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block'}
 export const dateTableFirstHeaderStyle = {width: `${0.4 * tableWidth}px`}
 export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 1vw', fontSize: '24px', fontWeight: '300'}
 export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '0.5vw', fontWeight: '300'}

@@ -17,7 +17,11 @@ const columnValues = {
   'Booking Status': 'bookingStatus',
   'Booking Platform': 'bookedThrough',
   'Booking Number': 'bookingConfirmation',
-  'Notes': 'notes'
+  'Notes': {
+    single: 'notes',
+    departure: 'departureNotes',
+    arrival: 'arrivalNotes'
+  }
 }
 
 const flightBookingOrInstance = {
@@ -34,9 +38,26 @@ class PlannerColumnValue extends Component {
 
     let value
 
-    if (!props.expandedEvent) value = props.activity[props.activity.type][columnValues[props.column]]
+    if (!props.expandedEvent && props.column !== 'Notes') value = props.activity[props.activity.type][columnValues[props.column]]
+    if (!props.expandedEvent && props.column === 'Notes') {
+      if (props.activity.type === 'Flight') {
+        if (props.activity.start) {
+          value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column].departure]
+        } else {
+          value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column].arrival]
+        }
+      } else if (props.activity.type === 'LandTransport') {
+        if (props.activity.start) {
+          value = props.activity[props.activity.type][columnValues[props.column].departure]
+        } else {
+          value = props.activity[props.activity.type][columnValues[props.column].arrival]
+        }
+      } else {
+        value = props.activity[props.activity.type][columnValues[props.column].single]
+      }
+    }
 
-    if (!props.expandedEvent && props.activity.type === 'Flight') value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column]]
+    if (!props.expandedEvent && props.activity.type === 'Flight' && props.column !== 'Notes') value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column]]
 
     this.state = {
       editing: false,
@@ -49,7 +70,24 @@ class PlannerColumnValue extends Component {
     if (this.props.expandedEvent) return
     let value
     value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column]]
-    if (nextProps.activity.type === 'Flight') value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column]]
+    if (!nextProps.expandedEvent && nextProps.column === 'Notes') {
+      if (nextProps.activity.type === 'Flight') {
+        if (nextProps.activity.start) {
+          value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column].departure]
+        } else {
+          value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column].arrival]
+        }
+      } else if (nextProps.activity.type === 'LandTransport') {
+        if (nextProps.activity.start) {
+          value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].departure]
+        } else {
+          value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].arrival]
+        }
+      } else {
+        value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].single]
+      }
+    }
+    if (nextProps.activity.type === 'Flight' && nextProps.column !== 'Notes') value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column]]
 
     if (this.state.value !== value) {
       this.setState({
@@ -83,6 +121,17 @@ class PlannerColumnValue extends Component {
       value: this.state.newValue
     })
 
+    let noteType
+    if (this.props.activity.type === 'Flight' || this.props.activity.type === 'Transport') {
+      if (this.props.activity.start) {
+        noteType = 'departure'
+      } else {
+        noteType = 'arrival'
+      }
+    } else {
+      noteType = 'single'
+    }
+
     const update = {
       Activity: this.props.updateActivity,
       Flight: flightBookingOrInstance[this.props.column] === 'FlightBooking' ? this.props.updateFlightBooking : this.props.updateFlightInstance,
@@ -94,12 +143,17 @@ class PlannerColumnValue extends Component {
     update[this.props.activity.type]({
       variables: {
         ...{
-          id: flightBookingOrInstance[this.props.column] === 'FlightInstance' ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
-          [columnValues[this.props.column]]: this.state.newValue,
+          id: flightBookingOrInstance[this.props.column] === 'FlightInstance' && this.props.activity.Flight ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
           flightInstances: []
         },
         ...this.props.column === 'Booking Number' && {
           bookingStatus: this.state.newValue
+        },
+        ...this.props.column === 'Notes' && {
+          [columnValues[this.props.column].noteType]: this.state.newValue
+        },
+        ...this.props.column !== 'Notes' && {
+          [columnValues[this.props.column]]: this.state.newValue
         }
       },
       refetchQueries: [{
@@ -154,10 +208,7 @@ class PlannerColumnValue extends Component {
     let value = this.state.value
     switch (this.props.column) {
       case 'Notes':
-        if (start) return {value: value || '', display: true}
-        else {
-          return {value: '', display: false}
-        }
+        return {value: value || '', display: true}
       case 'Price':
         if (this.props.activity.type === 'Flight' && this.props.firstInFlightBooking && start) {
           return {value: value || '', display: true}
