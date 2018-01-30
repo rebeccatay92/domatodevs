@@ -10,7 +10,7 @@ import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, cr
 
 import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
-import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
+// import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
 
 import BookingDetails from '../eventFormComponents/BookingDetails'
@@ -27,7 +27,6 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from
  '../../helpers/newEventLoadSeqAssignment'
 import { validateIntervals } from '../../helpers/intervalValidationTesting'
-import findUtcOffsetAirports from '../../helpers/findUtcOffsetAirports'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 

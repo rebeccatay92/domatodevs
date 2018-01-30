@@ -19,7 +19,7 @@ const cityCountryStyle = {...pStyle,
   }
 }
 
-class EditFormFlightDetailsInstance extends Component {
+class FlightDetailsInstance extends Component {
   render () {
     if (!this.props.instance) return null
     // console.log('instance', this.props.instance)
@@ -71,4 +71,4 @@ class EditFormFlightDetailsInstance extends Component {
   }
 }
 
-export default EditFormFlightDetailsInstance
+export default FlightDetailsInstance
