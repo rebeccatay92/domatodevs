@@ -95,7 +95,7 @@ class LocationSearch extends Component {
   // }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.currentLocation !== this.props.currentLocation) {
+    if (nextProps.currentLocation && nextProps.currentLocation !== this.props.currentLocation) {
       this.setState({search: nextProps.currentLocation.name})
     }
   }
