@@ -95,10 +95,12 @@ class EditActivityForm extends Component {
     if (bookingStatus !== this.props.event.bookingStatus) {
       updatesObj.bookingStatus = bookingStatus
     }
-    // if location changed, it doesnt contain the id field
+    // if location changed, it doesnt contain the id field, updatesObj will hv googlePlaceData and the utc offset
     if (!this.state.googlePlaceData.id) {
       updatesObj.googlePlaceData = this.state.googlePlaceData
+      updatesObj.utcOffset = this.state.googlePlaceData.utcOffset
     }
+
     if (this.state.holderNewAttachments.length) {
       updatesObj.addAttachments = this.state.holderNewAttachments
     }
@@ -154,13 +156,20 @@ class EditActivityForm extends Component {
 
     // if time or day changes, reassign load seq. if googlePlaceData changes, run anyway (utcOffset might change)
     if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
-      // add utcOffset into obj
+      // if googlePlaceData was changed, utc comes from there, else stay the same as what was in db
+      var utcOffset = null
+      if (updatesObj.googlePlaceData) {
+        utcOffset = updatesObj.googlePlaceData.utcOffset
+      } else {
+        utcOffset = this.props.event.utcOffset
+      }
+
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
         endTime: this.state.endTime,
-        utcOffset: this.state.googlePlaceData.utcOffset
+        utcOffset: utcOffset
       }
       console.log('updateEvent before helper', updateEvent)
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, updateEvent)
@@ -358,6 +367,7 @@ class EditActivityForm extends Component {
       endDay: this.props.event.endDay,
       startTime: startTime, // unix or null for all day
       endTime: endTime,
+      utcOffset: this.props.event.utcOffset,
       defaultStartTime: defaultStartTime, // 'HH:mm' string
       defaultEndTime: defaultEndTime,
       description: this.props.event.description,

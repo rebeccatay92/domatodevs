@@ -26,6 +26,7 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import updateEventLoadSeqAssignment from
  '../../helpers/updateEventLoadSeqAssignment'
 import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
+import findUtcOffsetAirports from '../../helpers/findUtcOffsetAirports'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
@@ -409,6 +410,8 @@ class EditFlightForm extends Component {
           endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
+          departureUtcOffset: findUtcOffsetAirports(flight.departureAirportCode),
+          arrivalUtcOffset: findUtcOffsetAirports(flight.arrivalAirportCode),
           durationMins: flight.duration,
           departureNotes: '',
           arrivalNotes: '',

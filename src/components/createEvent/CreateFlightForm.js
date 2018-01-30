@@ -27,6 +27,7 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from
  '../../helpers/newEventLoadSeqAssignment'
 import { validateIntervals } from '../../helpers/intervalValidationTesting'
+import findUtcOffsetAirports from '../../helpers/findUtcOffsetAirports'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
@@ -69,6 +70,8 @@ class CreateFlightForm extends Component {
       //   endDay: Int
       //   startTime: Int
       //   endTime: Int
+      //   departureUtcOffset: Int
+      //   arrivalUtcOffset: Int
       //   startLoadSequence: Int
       //   endLoadSequence: Int
       //   departureNotes: String
@@ -151,8 +154,10 @@ class CreateFlightForm extends Component {
         endDay: e.endDay,
         startTime: e.startTime,
         endTime: e.endTime,
-        departureIATA: e.departureIATA,
-        arrivalIATA: e.arrivalIATA
+        departureUtcOffset: e.departureUtcOffset,
+        arrivalUtcOffset: e.arrivalUtcOffset
+        // departureIATA: e.departureIATA,
+        // arrivalIATA: e.arrivalIATA
       }
     })
     var isError = validateIntervals(this.props.events, eventObjArr, 'Flight')
@@ -263,6 +268,8 @@ class CreateFlightForm extends Component {
           endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
+          departureUtcOffset: findUtcOffsetAirports(flight.departureAirportCode),
+          arrivalUtcOffset: findUtcOffsetAirports(flight.arrivalAirportCode),
           durationMins: flight.duration,
           departureNotes: '',
           arrivalNotes: '',

@@ -20,11 +20,14 @@ export const queryItinerary = gql`
         start
         day
         time
+        utcOffset
+        timeUtcZero
         Activity {
           id
           description
           startTime
           endTime
+          utcOffset
           location {
             id
             placeId
@@ -96,6 +99,7 @@ export const queryItinerary = gql`
           endDay
           startTime
           endTime
+          utcOffset
           loadSequence
           currency
           cost
@@ -143,6 +147,7 @@ export const queryItinerary = gql`
           endDay
           startTime
           endTime
+          utcOffset
           startLoadSequence
           endLoadSequence
           currency
@@ -210,6 +215,8 @@ export const queryItinerary = gql`
           startTime
           endDay
           endTime
+          departureUtcOffset
+          arrivalUtcOffset
           startLoadSequence
           endLoadSequence
           currency
@@ -279,6 +286,8 @@ export const queryItinerary = gql`
           startTime
           endDay
           endTime
+          departureUtcOffset
+          arrivalUtcOffset
           startLoadSequence
           endLoadSequence
           currency
@@ -348,6 +357,8 @@ export const queryItinerary = gql`
           startTime
           endDay
           endTime
+          departureUtcOffset
+          arrivalUtcOffset
           startLoadSequence
           endLoadSequence
           currency
@@ -428,6 +439,8 @@ export const queryItinerary = gql`
             endDay
             startTime
             endTime
+            departureUtcOffset
+            arrivalUtcOffset
             startLoadSequence
             endLoadSequence
             departureNotes

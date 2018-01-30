@@ -11,7 +11,6 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-// import Attachments from '../eventFormComponents/Attachments'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -26,7 +25,6 @@ import latestTime from '../../helpers/latestTime'
 import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
 import { validateOpeningHours } from '../../helpers/openingHoursValidation'
-import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
 
 import { validateIntervals } from '../../helpers/intervalValidationTesting'
@@ -96,7 +94,33 @@ class CreateFoodForm extends Component {
       backgroundImage: this.state.backgroundImage,
       openingHoursValidation: this.state.openingHoursValidation
     }
-    if (this.state.googlePlaceData.placeId) newFood.googlePlaceData = this.state.googlePlaceData
+    if (this.state.googlePlaceData.placeId) {
+      newFood.googlePlaceData = this.state.googlePlaceData
+      newFood.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+
+    // ASSIGN UTC OFFSET IF PLACE IS MISSING
+    if (!this.state.googlePlaceData.placeId) {
+      var daysEvents = this.props.events.filter(e => {
+        return e.day === newFood.startDay
+      })
+      if (!daysEvents.length) {
+        newFood.utcOffset = 0
+      } else {
+        var utcOffsetHolder = daysEvents[0].utcOffset
+        var isDifferent = false
+        daysEvents.forEach(event => {
+          if (event.utcOffset !== utcOffsetHolder) {
+            isDifferent = true
+          }
+        })
+        if (isDifferent) {
+          newFood.utcOffset = 0
+        } else {
+          newFood.utcOffset = utcOffsetHolder
+        }
+      }
+    }
 
     // VALIDATE AND ASSIGN MISSING TIMINGS
     if (typeof (newFood.startTime) !== 'number' && typeof (newFood.endTime) !== 'number') {
@@ -114,11 +138,9 @@ class CreateFoodForm extends Component {
       endDay: newFood.endDay,
       startTime: newFood.startTime,
       endTime: newFood.endTime,
-      utcOffset: this.state.googlePlaceData.utcOffset
+      utcOffset: newFood.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
-    console.log('isError', isError)
-
     if (isError) {
       window.alert('timing clashes detected')
     }

@@ -105,9 +105,11 @@ class EditLandTransportForm extends Component {
     // if location changed, it doesnt contain the id field
     if (!this.state.departureGooglePlaceData.id) {
       updatesObj.departureGooglePlaceData = this.state.departureGooglePlaceData
+      updatesObj.departureUtcOffset = this.state.departureGooglePlaceData.utcOffset
     }
     if (!this.state.arrivalGooglePlaceData.id) {
       updatesObj.arrivalGooglePlaceData = this.state.arrivalGooglePlaceData
+      updatesObj.arrivalUtcOffset = this.state.arrivalGooglePlaceData.utcOffset
     }
 
     if (this.state.holderNewAttachments.length) {

@@ -1,4 +1,6 @@
-import airports from '../data/airports.json'
+// import airports from '../data/airports.json'
+// import findUtcOffsetAirports from './findUtcOffsetAirports'
+
 // GIVEN EVENTS ARR, EVENTMODEL, MODELID AND UPDATEEVENTOBJ WITH STARTDAY,ENDDAY,STARTTIME,ENDTIME, RETURN CHANGINGLOADSEQUENCE ARR AND UPDATEEVENTOBJ WITH LOAD SEQ.
 
 // updateEventObj = {
@@ -7,10 +9,8 @@ import airports from '../data/airports.json'
 //   startTime,
 //   endTime,
 //   utcOffset, // for activity, food, lodging
-//   departureUtcOffset, // transport
-//   arrivalUtcOffset,
-//   departureIATA, // flight instances
-//   arrivalIATA
+//   departureUtcOffset, // transport, flights
+//   arrivalUtcOffset
 // }
 
 function constructLoadSeqInputObj (event, correctLoadSeq) {
@@ -30,14 +30,6 @@ function checkIfEndingRow (event) {
   return (typeof (event.start) === 'boolean' && !event.start && event.type !== 'Lodging')
 }
 
-function findUtcOffsetAirports (iata) {
-  var airportRow = airports.find(row => {
-    return row.iata === iata
-  })
-  var utcInMinutes = airportRow.timezone * 60
-  return utcInMinutes
-}
-
 function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEvent) {
   var loadSequenceInput = []
 
@@ -55,28 +47,28 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     }
   })
 
-  // TACK ON LOCATION UTCOFFSET FOR EVENTS ARR
-  allEvents = allEvents.map(eventRow => {
-    var type = eventRow.type
-    var eventRowWithUtc = null
-    if (type === 'Activity' || type === 'Food' || type === 'Lodging') {
-      eventRow.utcOffset = eventRow[`${type}`].location.utcOffset
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-      eventRowWithUtc = eventRow
-    }
-    if (type === 'LandTransport' || type === 'SeaTransport' || type === 'Train') {
-      eventRow.utcOffset = eventRow.start ? eventRow[`${type}`].departureLocation.utcOffset : eventRow[`${type}`].arrivalLocation.utcOffset
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-      eventRowWithUtc = eventRow
-    }
-    if (type === 'Flight') {
-      eventRow.utcOffset = eventRow.start ? eventRow.Flight.FlightInstance.departureLocation.utcOffset : eventRow.Flight.FlightInstance.arrivalLocation.utcOffset
-      eventRowWithUtc = eventRow
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-    }
-    return eventRowWithUtc
-  })
-  console.log('after adding utc offset and utcTimeZero to eventsArr', allEvents)
+  // // TACK ON LOCATION UTCOFFSET FOR EVENTS ARR
+  // allEvents = allEvents.map(eventRow => {
+  //   var type = eventRow.type
+  //   var eventRowWithUtc = null
+  //   if (type === 'Activity' || type === 'Food' || type === 'Lodging') {
+  //     eventRow.utcOffset = eventRow[`${type}`].location.utcOffset
+  //     eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
+  //     eventRowWithUtc = eventRow
+  //   }
+  //   if (type === 'LandTransport' || type === 'SeaTransport' || type === 'Train') {
+  //     eventRow.utcOffset = eventRow.start ? eventRow[`${type}`].departureLocation.utcOffset : eventRow[`${type}`].arrivalLocation.utcOffset
+  //     eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
+  //     eventRowWithUtc = eventRow
+  //   }
+  //   if (type === 'Flight') {
+  //     eventRow.utcOffset = eventRow.start ? eventRow.Flight.FlightInstance.departureLocation.utcOffset : eventRow.Flight.FlightInstance.arrivalLocation.utcOffset
+  //     eventRowWithUtc = eventRow
+  //     eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
+  //   }
+  //   return eventRowWithUtc
+  // })
+  // console.log('after adding utc offset and utcTimeZero to eventsArr', allEvents)
 
   // add timeUtcZero to updateEvent
   // console.log('before calculating utcTimeZero', updateEvent)
@@ -90,8 +82,10 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
   }
   if (eventModel === 'Flight') {
     updateEvent = updateEvent.map(instance => {
-      var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
-      var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
+      // var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
+      // var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
+      var startUtcOffset = instance.departureUtcOffset
+      var endUtcOffset = instance.arrivalUtcOffset
       instance.startTimeUtcZero = instance.startTime - (startUtcOffset * 60)
       instance.endTimeUtcZero = instance.endTime - (endUtcOffset * 60)
       var instanceWithUtc = instance

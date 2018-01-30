@@ -97,6 +97,30 @@ class CreateActivityForm extends Component {
     }
     if (this.state.googlePlaceData.placeId) {
       newActivity.googlePlaceData = this.state.googlePlaceData
+      newActivity.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+    // IF LOCATION MISSING, CHECK DAY'S EVENTS AND ASSIGN A UTC OFFSET.
+    if (!this.state.googlePlaceData.placeId) {
+      var daysEvents = this.props.events.filter(e => {
+        return e.day === newActivity.startDay
+      })
+      console.log('daysEvents', daysEvents)
+      if (!daysEvents.length) {
+        newActivity.utcOffset = 0
+      } else {
+        var utcOffsetHolder = daysEvents[0].utcOffset
+        var isDifferent = false
+        daysEvents.forEach(event => {
+          if (event.utcOffset !== utcOffsetHolder) {
+            isDifferent = true
+          }
+        })
+        if (isDifferent) {
+          newActivity.utcOffset = 0
+        } else {
+          newActivity.utcOffset = utcOffsetHolder
+        }
+      }
     }
 
     // VALIDATE AND ASSIGN MISSING TIMINGS.
@@ -115,8 +139,9 @@ class CreateActivityForm extends Component {
       endDay: newActivity.endDay,
       startTime: newActivity.startTime,
       endTime: newActivity.endTime,
-      utcOffset: this.state.googlePlaceData.utcOffset
+      utcOffset: newActivity.utcOffset
     }
+
     var isError = validateIntervals(this.props.events, eventObj, 'Activity')
     console.log('isError', isError)
     if (isError) {

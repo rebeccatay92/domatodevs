@@ -1,14 +1,5 @@
 import airports from '../data/airports.json'
-
-function findUtcOffsetAirports (iata) {
-  console.log('iata to find', iata)
-  var airportRow = airports.find(row => {
-    return row.iata === iata
-  })
-  console.log('findUtcOffsetAirports row', airportRow)
-  var utcInMinutes = airportRow.timezone * 60
-  return utcInMinutes
-}
+import findUtcOffsetAirports from './findUtcOffsetAirports'
 
 // eventObj = {
 //   startDay,
@@ -16,10 +7,8 @@ function findUtcOffsetAirports (iata) {
 //   startTime,
 //   endTime,
 //   utcOffset, // activity, food, lodging
-//   departureUtcOffset, // transport
+//   departureUtcOffset, // transport, flights
 //   arrivalUtcOffset,
-//   departureIATA, //flights
-//   arrivalIATA,
 // }
 
 // for each event, construct interval [startTime, endTime]. if day > 1, add days*86400
@@ -30,7 +19,9 @@ function findUtcOffsetAirports (iata) {
 export function validateIntervals (eventsArr, eventObj, modelType) {
   var eventsAlreadyAdded = [] // 'Activity1'
   var intervalArr = []
+
   eventsArr.forEach(e => {
+    // console.log('events row', e)
     if (e.type !== 'Flight') {
       var eventId = `${e.type}${e.modelId}`
     } else {
@@ -49,10 +40,8 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
         var endDay = instance.endDay
         var endTime = instance.endTime
         // CORRECT FOR UTC IN PREEXISTING ROW HERE
-        // absoluteStartUnix = (startDay - 1) * (86400) + startTime
-        // absoluteEndUnix = (endDay - 1) * 86400 + endTime
-        absoluteStartUnix = (startDay - 1) * (86400) + startTime - (instance.departureLocation.utcOffset * 60)
-        absoluteEndUnix = (endDay - 1) * 86400 + endTime - (instance.arrivalLocation.utcOffset * 60)
+        absoluteStartUnix = (startDay - 1) * (86400) + startTime - (instance.departureUtcOffset * 60)
+        absoluteEndUnix = (endDay - 1) * 86400 + endTime - (instance.arrivalUtcOffset * 60)
         var isPoint = absoluteStartUnix === absoluteEndUnix ? 'point' : 'duration'
         intervalArr.push([absoluteStartUnix, absoluteEndUnix, isPoint])
       } else if (e.type === 'Lodging') {
@@ -64,10 +53,8 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
         endDay = e[`${e.type}`].endDay
         endTime = e[`${e.type}`].endTime
         // CORRECT FOR UTC
-        // absoluteStartUnix = (startDay - 1) * (86400) + startTime
-        // absoluteEndUnix = (endDay - 1) * 86400 + endTime
-        absoluteStartUnix = (startDay - 1) * (86400) + startTime - (e[`${e.type}`].location.utcOffset * 60)
-        absoluteEndUnix = (endDay - 1) * 86400 + endTime - (e[`${e.type}`].location.utcOffset * 60)
+        absoluteStartUnix = (startDay - 1) * (86400) + startTime - (e[`${e.type}`].utcOffset * 60)
+        absoluteEndUnix = (endDay - 1) * 86400 + endTime - (e[`${e.type}`].utcOffset * 60)
         intervalArr.push([absoluteStartUnix, absoluteStartUnix, 'point'])
         intervalArr.push([absoluteEndUnix, absoluteEndUnix, 'point'])
       } else {
@@ -78,14 +65,12 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
         endDay = e[`${e.type}`].endDay
         endTime = e[`${e.type}`].endTime
 
-        // absoluteStartUnix = (startDay - 1) * (86400) + startTime
-        // absoluteEndUnix = (endDay - 1) * 86400 + endTime
         if (e.type === 'Activity' || e.type === 'Food') {
-          absoluteStartUnix = (startDay - 1) * (86400) + startTime - (e[`${e.type}`].location.utcOffset * 60)
-          absoluteEndUnix = (endDay - 1) * 86400 + endTime - (e[`${e.type}`].location.utcOffset * 60)
+          absoluteStartUnix = (startDay - 1) * (86400) + startTime - (e[`${e.type}`].utcOffset * 60)
+          absoluteEndUnix = (endDay - 1) * 86400 + endTime - (e[`${e.type}`].utcOffset * 60)
         } else if (e.type === 'LandTransport' || e.type === 'SeaTransport' || e.type === 'Train') {
-          absoluteStartUnix = (startDay - 1) * (86400) + startTime - (e[`${e.type}`].departureLocation.utcOffset * 60)
-          absoluteEndUnix = (endDay - 1) * 86400 + endTime - (e[`${e.type}`].arrivalLocation.utcOffset * 60)
+          absoluteStartUnix = (startDay - 1) * (86400) + startTime - (e[`${e.type}`].utcOffset * 60)
+          absoluteEndUnix = (endDay - 1) * 86400 + endTime - (e[`${e.type}`].utcOffset * 60)
         }
         isPoint = absoluteStartUnix === absoluteEndUnix ? 'point' : 'duration'
         intervalArr.push([absoluteStartUnix, absoluteEndUnix, isPoint])
@@ -99,8 +84,6 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
 
   if (modelType !== 'Flight') {
     // CORRECT INCOMING EVENT TO UTC0
-    // var incomingStartUnix = (eventObj.startDay - 1) * 86400 + eventObj.startTime
-    // var incomingEndUnix = (eventObj.endDay - 1) * 86400 + eventObj.endTime
     if (modelType === 'Activity' || modelType === 'Food' || modelType === 'Lodging') {
       var incomingStartUnix = (eventObj.startDay - 1) * 86400 + eventObj.startTime - (eventObj.utcOffset * 60)
       var incomingEndUnix = (eventObj.endDay - 1) * 86400 + eventObj.endTime - (eventObj.utcOffset * 60)
@@ -158,12 +141,12 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
   } else if (modelType === 'Flight') {
     for (var j = 0; j < eventObj.length; j++) {
       var flightInstance = eventObj[j]
-      var departureUtcOffset = findUtcOffsetAirports(flightInstance.departureIATA)
-      var arrivalUtcOffset = findUtcOffsetAirports(flightInstance.arrivalIATA)
+      // var departureUtcOffset = findUtcOffsetAirports(flightInstance.departureIATA)
+      // var arrivalUtcOffset = findUtcOffsetAirports(flightInstance.arrivalIATA)
+      var departureUtcOffset = flightInstance.departureUtcOffset
+      var arrivalUtcOffset = flightInstance.arrivalUtcOffset
       incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime - (departureUtcOffset * 60)
       incomingEndUnix = (flightInstance.endDay - 1) * 86400 + flightInstance.endTime - (arrivalUtcOffset * 60)
-      // incomingStartUnix = (flightInstance.startDay - 1) * 86400 + flightInstance.startTime
-      // incomingEndUnix = (flightInstance.endDay - 1) * 86400 + flightInstance.endTime
       incomingIsPoint = incomingStartUnix === incomingEndUnix ? 'point' : 'duration'
       incomingInterval = [incomingStartUnix, incomingEndUnix, incomingIsPoint]
       console.log('incomingInterval', incomingInterval)
@@ -213,14 +196,14 @@ export function validateIntervals (eventsArr, eventObj, modelType) {
       }
     }
   }
-  // IN BETWEEN, EXCLUDING ENDPOINTS
-  // clash if incomingInterval start is between preexisting interval, or incomingInterval end is between preexisting interval (not equals)
-  // clash if either prexisting start/end is in between incoming start/end. exactly not counted
-  // INCOMING STARTPOINT COINCIDE EXACTLY WITH PREEXISTING START
-  // IF INCOMING IS A POINT DURATION, PREXISTING CAN HV A DURATION. NO OVERLAP
-  // IF INCOMING HAS A DURATION, PREEXISTING MUST NOT HV A DURATION.
-
-  // INCOMING ENDPOINT COINCIDE EXACTLY WITH PREEXISTING END POINT
-  // IF INCOMING IS A POINT DURATION, PREXISTING CAN HV DURATION. NO OVERLAP.
-  // IF INCOMING HAS DURATION, PREEXISTING MUST NOT HV A DURATION.
 }
+// IN BETWEEN, EXCLUDING ENDPOINTS
+// clash if incomingInterval start is between preexisting interval, or incomingInterval end is between preexisting interval (not equals)
+// clash if either prexisting start/end is in between incoming start/end. exactly not counted
+// INCOMING STARTPOINT COINCIDE EXACTLY WITH PREEXISTING START
+// IF INCOMING IS A POINT DURATION, PREXISTING CAN HV A DURATION. NO OVERLAP
+// IF INCOMING HAS A DURATION, PREEXISTING MUST NOT HV A DURATION.
+
+// INCOMING ENDPOINT COINCIDE EXACTLY WITH PREEXISTING END POINT
+// IF INCOMING IS A POINT DURATION, PREXISTING CAN HV DURATION. NO OVERLAP.
+// IF INCOMING HAS DURATION, PREEXISTING MUST NOT HV A DURATION.

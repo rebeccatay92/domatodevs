@@ -153,12 +153,18 @@ class EditFoodForm extends Component {
 
     // if time or day changes, reassign load seq
     if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+      var utcOffset = null
+      if (updatesObj.googlePlaceData) {
+        utcOffset = updatesObj.googlePlaceData.utcOffset
+      } else {
+        utcOffset = this.props.event.utcOffset
+      }
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
         endTime: this.state.endTime,
-        utcOffset: this.state.googlePlaceData.utcOffset
+        utcOffset: utcOffset
       }
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Food', this.state.id, updateEvent)
       console.log('helperOutput', helperOutput)

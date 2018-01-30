@@ -11,7 +11,6 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-// import Attachments from '../eventFormComponents/Attachments'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -94,6 +93,7 @@ class CreateLodgingForm extends Component {
     }
     if (this.state.googlePlaceData.placeId) {
       newLodging.googlePlaceData = this.state.googlePlaceData
+      newLodging.utcOffset = this.state.googlePlaceData.utcOffset
     } else {
       window.alert('location is missing!')
       return
@@ -111,11 +111,9 @@ class CreateLodgingForm extends Component {
       endDay: newLodging.endDay,
       startTime: newLodging.startTime,
       endTime: newLodging.endTime,
-      utcOffset: this.state.googlePlaceData.utcOffset
+      utcOffset: newLodging.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
-    console.log('isError', isError)
-
     if (isError) {
       window.alert('timing clashes detected')
     }

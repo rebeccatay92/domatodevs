@@ -107,12 +107,14 @@ class CreateLandTransportForm extends Component {
 
     if (this.state.departureGooglePlaceData.placeId) {
       newLandTransport.departureGooglePlaceData = this.state.departureGooglePlaceData
+      newLandTransport.departureUtcOffset = this.state.departureGooglePlaceData.utcOffset
     } else {
       window.alert('location is missing')
       return
     }
     if (this.state.arrivalGooglePlaceData.placeId) {
       newLandTransport.arrivalGooglePlaceData = this.state.arrivalGooglePlaceData
+      newLandTransport.arrivalUtcOffset = this.state.arrivalGooglePlaceData.utcOffset
     } else {
       window.alert('location is missing')
       return
@@ -130,8 +132,8 @@ class CreateLandTransportForm extends Component {
       endDay: newLandTransport.endDay,
       startTime: newLandTransport.startTime,
       endTime: newLandTransport.endTime,
-      departureUtcOffset: newLandTransport.departureGooglePlaceData.utcOffset,
-      arrivalUtcOffset: newLandTransport.arrivalGooglePlaceData.utcOffset
+      departureUtcOffset: newLandTransport.departureUtcOffset,
+      arrivalUtcOffset: newLandTransport.arrivalUtcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
     console.log('isError', isError)
