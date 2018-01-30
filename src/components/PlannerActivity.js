@@ -53,6 +53,10 @@ const plannerActivityTarget = {
   },
   drop (props, monitor) {
     let day = props.activity.day
+    if (props.activity.day === monitor.getItem().day && monitor.getItem().loadSequence === props.index + 1) {
+      props.initializePlanner(props.data.findItinerary.events)
+      return
+    }
     // const typeOfDays = {
     //   Activity: 'startDay',
     //   Food: 'startDay',
