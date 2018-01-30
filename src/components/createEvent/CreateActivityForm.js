@@ -119,7 +119,6 @@ class CreateActivityForm extends Component {
     }
     var isError = validateIntervals(this.props.events, eventObj, 'Activity')
     console.log('isError', isError)
-
     if (isError) {
       window.alert('timing clashes detected')
     }

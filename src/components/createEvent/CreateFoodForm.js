@@ -108,21 +108,13 @@ class CreateFoodForm extends Component {
       newFood = checkStartAndEndTime(this.props.events, newFood, 'endTimeMissing')
     }
 
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Food', newFood)
-    // console.log('output', output)
-    //
-    // if (!output.isValid) {
-    //   window.alert(`time ${newFood.startTime} --- ${newFood.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
-
     // REWRITTEN FUNCTION TO VALIDATE
     var eventObj = {
       startDay: newFood.startDay,
       endDay: newFood.endDay,
       startTime: newFood.startTime,
-      endTime: newFood.endTime
+      endTime: newFood.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
     console.log('isError', isError)

@@ -52,6 +52,7 @@ class EditFlightForm extends Component {
       backgroundImage: defaultBackground,
       flightInstances: [],
       instanceTabIndex: 0,
+      editingFlightDetails: false, // needs to know whether departing, returning.
       // for search state
       changedFlight: false,
       searching: false,
@@ -265,10 +266,14 @@ class EditFlightForm extends Component {
     this.setState({searching: false})
   }
 
+  // toggleEditingFlightDetails () {
+  //   this.setState({editingFlightDetails: !this.state.editingFlightDetails})
+  // }
+
   // COPY NOTES OVER. COMPARE FLIGHT INSTANCES VS SEARCH FLIGHTINSTANCES
   changeFlight () {
     var confirm = window.confirm('Are you sure? Changing flights will not preserve attachments.')
-    console.log('confirm', confirm)
+    // console.log('confirm', confirm)
     if (!confirm) return
     // move old attachments from previous instances into dump arr. await submit, cancel to handle.
     this.state.flightInstances.forEach(instance => {
@@ -567,6 +572,9 @@ class EditFlightForm extends Component {
                   <FlightSearchResults flights={this.state.flights} searching={this.state.searching} selected={this.state.selected} handleSelectFlight={(index) => this.handleSelectFlight(index)} tripType={this.state.tripType} />
                 </div>
               }
+              {/* {this.state.editingFlightDetails &&
+                <EditingFlightDetails />
+              } */}
             </div>
             <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
               {/* {this.state.searching && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({searchClicked: this.state.searchClicked + 1})}>Search</Button>}
@@ -577,14 +585,18 @@ class EditFlightForm extends Component {
                 })
               }}>Confirm</Button>} */}
               {this.state.searching &&
-                <Button bsStyle='danger' onClick={() => this.returnToForm()} style={{marginRight: '5px'}}>Back</Button>
+                <div>
+                  <Button bsStyle='danger' onClick={() => this.returnToForm()} style={{marginRight: '5px'}}>Back</Button>
+                  <Button bsStyle='danger' onClick={() => this.changeFlight()}>Change flight</Button>
+                </div>
               }
-              {this.state.searching &&
-                <Button bsStyle='danger' onClick={() => this.changeFlight()}>Change flight</Button>
-              }
-              {/* <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
-              <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button> */}
-              {!this.state.searching &&
+              {/* {this.state.editingFlightDetails &&
+                <div>
+                  <Button bsStyle='danger' onClick={() => this.toggleEditingFlightDetails()} style={{marginRight: '5px'}}>Cancel</Button>
+                  <Button bsStyle='danger' onClick={() => this.changeFlightDetails()} style={{marginRight: '5px'}}>Edit</Button>
+                </div>
+              } */}
+              {!this.state.searching && !this.state.editingFlightDetails &&
                 <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
               }
             </div>

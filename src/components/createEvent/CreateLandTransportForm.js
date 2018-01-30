@@ -130,8 +130,7 @@ class CreateLandTransportForm extends Component {
       endDay: newLandTransport.endDay,
       startTime: newLandTransport.startTime,
       endTime: newLandTransport.endTime,
-      departureUtcOffset: newLandTransport.departureGoo
-      .utcOffset,
+      departureUtcOffset: newLandTransport.departureGooglePlaceData.utcOffset,
       arrivalUtcOffset: newLandTransport.arrivalGooglePlaceData.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)

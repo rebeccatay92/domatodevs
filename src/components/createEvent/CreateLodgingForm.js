@@ -110,7 +110,8 @@ class CreateLodgingForm extends Component {
       startDay: newLodging.startDay,
       endDay: newLodging.endDay,
       startTime: newLodging.startTime,
-      endTime: newLodging.endTime
+      endTime: newLodging.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
     console.log('isError', isError)
