@@ -88,8 +88,6 @@ export const findFlightBooking = gql`
         endDay
         startTime
         endTime
-        departureUtcOffset
-        arrivalUtcOffset
         durationMins
         startLoadSequence
         endLoadSequence
@@ -280,8 +278,6 @@ export const findFlightInstance = gql`
       endDay
       startTime
       endTime
-      departureUtcOffset
-      arrivalUtcOffset
       durationMins
       startLoadSequence
       endLoadSequence
@@ -318,8 +314,6 @@ export const updateFlightInstance = gql`
     $endDay: Int,
     $startTime: Int,
     $endTime: Int,
-    $departureUtcOffset: Int,
-    $arrivalUtcOffset: Int,
     $durationMins: Int,
     $startLoadSequence: Int,
     $endLoadSequence: Int,
@@ -346,8 +340,6 @@ export const updateFlightInstance = gql`
       endDay: $endDay,
       startTime: $startTime,
       endTime: $endTime,
-      departureUtcOffset: $departureUtcOffset,
-      arrivalUtcOffset: $arrivalUtcOffset,
       durationMins: $durationMins,
       startLoadSequence: $startLoadSequence,
       endLoadSequence: $endLoadSequence,

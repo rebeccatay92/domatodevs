@@ -92,7 +92,6 @@ class EditLodgingForm extends Component {
     // if location changed, it doesnt contain the id field
     if (!this.state.googlePlaceData.id) {
       updatesObj.googlePlaceData = this.state.googlePlaceData
-      updatesObj.utcOffset = this.state.googlePlaceData.utcOffset
     }
     if (this.state.holderNewAttachments.length) {
       updatesObj.addAttachments = this.state.holderNewAttachments

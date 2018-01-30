@@ -93,7 +93,6 @@ class CreateLodgingForm extends Component {
     }
     if (this.state.googlePlaceData.placeId) {
       newLodging.googlePlaceData = this.state.googlePlaceData
-      newLodging.utcOffset = this.state.googlePlaceData.utcOffset
     } else {
       window.alert('location is missing!')
       return
@@ -111,7 +110,7 @@ class CreateLodgingForm extends Component {
       endDay: newLodging.endDay,
       startTime: newLodging.startTime,
       endTime: newLodging.endTime,
-      utcOffset: newLodging.utcOffset
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
     if (isError) {

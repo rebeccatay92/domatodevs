@@ -1,3 +1,4 @@
+import findUtcOffsetAirports from './findUtcOffsetAirports'
 /*
 WHAT THIS DOES:
 Returns newEventObjs with loadseq assigned, also returns changingLoadSequence input array
@@ -53,8 +54,8 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
   }
   if (eventModel === 'Flight') {
     newEvent = newEvent.map(instance => {
-      var startUtcOffset = instance.departureUtcOffset
-      var endUtcOffset = instance.arrivalUtcOffset
+      var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
+      var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
       instance.startTimeUtcZero = instance.startTime - (startUtcOffset * 60)
       instance.endTimeUtcZero = instance.endTime - (endUtcOffset * 60)
       var instanceWithUtc = instance

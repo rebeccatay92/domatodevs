@@ -70,8 +70,6 @@ class CreateFlightForm extends Component {
       //   endDay: Int
       //   startTime: Int
       //   endTime: Int
-      //   departureUtcOffset: Int
-      //   arrivalUtcOffset: Int
       //   startLoadSequence: Int
       //   endLoadSequence: Int
       //   departureNotes: String
@@ -154,10 +152,8 @@ class CreateFlightForm extends Component {
         endDay: e.endDay,
         startTime: e.startTime,
         endTime: e.endTime,
-        departureUtcOffset: e.departureUtcOffset,
-        arrivalUtcOffset: e.arrivalUtcOffset
-        // departureIATA: e.departureIATA,
-        // arrivalIATA: e.arrivalIATA
+        departureIATA: e.departureIATA,
+        arrivalIATA: e.arrivalIATA
       }
     })
     var isError = validateIntervals(this.props.events, eventObjArr, 'Flight')
@@ -268,8 +264,6 @@ class CreateFlightForm extends Component {
           endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
-          departureUtcOffset: findUtcOffsetAirports(flight.departureAirportCode),
-          arrivalUtcOffset: findUtcOffsetAirports(flight.arrivalAirportCode),
           durationMins: flight.duration,
           departureNotes: '',
           arrivalNotes: '',

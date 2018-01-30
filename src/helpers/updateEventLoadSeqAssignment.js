@@ -1,3 +1,4 @@
+import findUtcOffsetAirports from './findUtcOffsetAirports'
 // import airports from '../data/airports.json'
 // import findUtcOffsetAirports from './findUtcOffsetAirports'
 
@@ -9,8 +10,8 @@
 //   startTime,
 //   endTime,
 //   utcOffset, // for activity, food, lodging
-//   departureUtcOffset, // transport, flights
-//   arrivalUtcOffset
+//   departureUtcOffset, arrivalUtcOffset // transport
+//   departureIATA, arrivalIATA // flights
 // }
 
 function constructLoadSeqInputObj (event, correctLoadSeq) {
@@ -47,29 +48,6 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     }
   })
 
-  // // TACK ON LOCATION UTCOFFSET FOR EVENTS ARR
-  // allEvents = allEvents.map(eventRow => {
-  //   var type = eventRow.type
-  //   var eventRowWithUtc = null
-  //   if (type === 'Activity' || type === 'Food' || type === 'Lodging') {
-  //     eventRow.utcOffset = eventRow[`${type}`].location.utcOffset
-  //     eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-  //     eventRowWithUtc = eventRow
-  //   }
-  //   if (type === 'LandTransport' || type === 'SeaTransport' || type === 'Train') {
-  //     eventRow.utcOffset = eventRow.start ? eventRow[`${type}`].departureLocation.utcOffset : eventRow[`${type}`].arrivalLocation.utcOffset
-  //     eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-  //     eventRowWithUtc = eventRow
-  //   }
-  //   if (type === 'Flight') {
-  //     eventRow.utcOffset = eventRow.start ? eventRow.Flight.FlightInstance.departureLocation.utcOffset : eventRow.Flight.FlightInstance.arrivalLocation.utcOffset
-  //     eventRowWithUtc = eventRow
-  //     eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-  //   }
-  //   return eventRowWithUtc
-  // })
-  // console.log('after adding utc offset and utcTimeZero to eventsArr', allEvents)
-
   // add timeUtcZero to updateEvent
   // console.log('before calculating utcTimeZero', updateEvent)
   if (eventModel === 'Activity' || eventModel === 'Food' || eventModel === 'Lodging') {
@@ -82,10 +60,8 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
   }
   if (eventModel === 'Flight') {
     updateEvent = updateEvent.map(instance => {
-      // var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
-      // var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
-      var startUtcOffset = instance.departureUtcOffset
-      var endUtcOffset = instance.arrivalUtcOffset
+      var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
+      var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
       instance.startTimeUtcZero = instance.startTime - (startUtcOffset * 60)
       instance.endTimeUtcZero = instance.endTime - (endUtcOffset * 60)
       var instanceWithUtc = instance
