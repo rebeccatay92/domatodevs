@@ -42,13 +42,13 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
 
   // add utc corrected times to newEvent
   if (eventModel === 'Activity' || eventModel === 'Food' || eventModel === 'Lodging') {
-    var utcOffset = newEvent.utcOffset
+    var utcOffset = newEvent.googlePlaceData ? newEvent.googlePlaceData.utcOffset : newEvent.utcOffset
     newEvent.startTimeUtcZero = newEvent.startTime - (utcOffset * 60)
     newEvent.endTimeUtcZero = newEvent.endTime - (utcOffset * 60)
   }
   if (eventModel === 'LandTransport' || eventModel === 'SeaTransport' || eventModel === 'Train') {
-    var startUtcOffset = newEvent.departureUtcOffset
-    var endUtcOffset = newEvent.arrivalUtcOffset
+    var startUtcOffset = newEvent.departureGooglePlaceData.utcOffset
+    var endUtcOffset = newEvent.arrivalGooglePlaceData.utcOffset
     newEvent.startTimeUtcZero = newEvent.startTime - (startUtcOffset * 60)
     newEvent.endTimeUtcZero = newEvent.endTime - (endUtcOffset * 60)
   }
