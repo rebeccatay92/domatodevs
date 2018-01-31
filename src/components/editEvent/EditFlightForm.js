@@ -548,7 +548,7 @@ class EditFlightForm extends Component {
             {this.state.searching &&
               <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} />
             }
-            {!this.state.editingFlightDetails &&
+            {!this.state.searching && !this.state.editingFlightDetails &&
               <div style={{...eventDescContainerStyle}}>
                 <button style={{color: 'black', position: 'relative'}} onClick={() => this.toggleEditingFlightDetails()}>EDIT FLIGHT DETAILS</button>
               </div>

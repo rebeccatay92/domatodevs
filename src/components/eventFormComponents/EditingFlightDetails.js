@@ -26,6 +26,7 @@ class EditingFlightDetails extends Component {
     // hoist flight instances up
     console.log('edit flight details confirmed')
     this.props.editFlightDetailsConfirm(this.state.flightInstances)
+    this.props.toggleEditingFlightDetails()
   }
 
   handleChange (e, i, field) {
@@ -125,6 +126,7 @@ class EditingFlightDetails extends Component {
               <div key={'instance' + i}>
                 <h3>{instance.departureIATA} to {instance.arrivalIATA}</h3>
                 <div>
+                  Departure Airport
                   <AirportOnlyAutocomplete iata={instance.departureIATA} handleAirportChange={(details) => this.handleAirportChange(details, i, 'departure')} />
                   <label>
                     Departure Terminal:
@@ -134,6 +136,7 @@ class EditingFlightDetails extends Component {
                   <DatePicker selected={startDateTimeMoment} showTimeSelect timeFormat={'HH:mm'} dateFormat={'ddd DD MMM YYYY, HH:mm'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onChange={(e) => this.handleDateTimeChange(e, i, 'start')} />
                 </div>
                 <div>
+                  Arrival Airport
                   <AirportOnlyAutocomplete iata={instance.arrivalIATA} handleAirportChange={(details) => this.handleAirportChange(details, i, 'arrival')} />
                   <label>
                     Arrival Terminal:
