@@ -122,7 +122,7 @@ class PlannerColumnValue extends Component {
     })
 
     let noteType
-    if (this.props.activity.type === 'Flight' || this.props.activity.type === 'Transport') {
+    if (this.props.activity.type === 'Flight' || this.props.activity.type === 'LandTransport') {
       if (this.props.activity.start) {
         noteType = 'departure'
       } else {
@@ -150,7 +150,7 @@ class PlannerColumnValue extends Component {
           bookingStatus: this.state.newValue
         },
         ...this.props.column === 'Notes' && {
-          [columnValues[this.props.column].noteType]: this.state.newValue
+          [columnValues[this.props.column][noteType]]: this.state.newValue
         },
         ...this.props.column !== 'Notes' && {
           [columnValues[this.props.column]]: this.state.newValue
