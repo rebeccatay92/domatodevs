@@ -16,6 +16,7 @@ import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanceNotesAttachments'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
+import EditingFlightDetails from '../eventFormComponents/EditingFlightDetails'
 
 import { findFlightBooking, updateFlightBooking, deleteFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -26,7 +27,6 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import updateEventLoadSeqAssignment from
  '../../helpers/updateEventLoadSeqAssignment'
 import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
-import findUtcOffsetAirports from '../../helpers/findUtcOffsetAirports'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
@@ -267,9 +267,9 @@ class EditFlightForm extends Component {
     this.setState({searching: false})
   }
 
-  // toggleEditingFlightDetails () {
-  //   this.setState({editingFlightDetails: !this.state.editingFlightDetails})
-  // }
+  toggleEditingFlightDetails () {
+    this.setState({editingFlightDetails: !this.state.editingFlightDetails})
+  }
 
   // COPY NOTES OVER. COMPARE FLIGHT INSTANCES VS SEARCH FLIGHTINSTANCES
   changeFlight () {
@@ -410,8 +410,6 @@ class EditFlightForm extends Component {
           endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
-          departureUtcOffset: findUtcOffsetAirports(flight.departureAirportCode),
-          arrivalUtcOffset: findUtcOffsetAirports(flight.arrivalAirportCode),
           durationMins: flight.duration,
           departureNotes: '',
           arrivalNotes: '',
@@ -546,6 +544,9 @@ class EditFlightForm extends Component {
             {this.state.searching &&
               <EditFormAirhobSearchParams paxAdults={this.state.paxAdults} paxChildren={this.state.paxChildren} paxInfants={this.state.paxInfants} classCode={this.state.classCode} departureDate={this.state.departureDate} returnDate={this.state.returnDate} dates={this.props.dates} departureIATA={this.state.departureIATA} arrivalIATA={this.state.arrivalIATA} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} />
             }
+            <div style={{...eventDescContainerStyle}}>
+              <button style={{color: 'black', position: 'relative'}} onClick={() => this.toggleEditingFlightDetails()}>EDIT FLIGHT DETAILS</button>
+            </div>
             {!this.state.searching && !this.state.changedFlight &&
               <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
             }
@@ -556,7 +557,7 @@ class EditFlightForm extends Component {
 
           <div style={createEventFormRightPanelStyle('flight')}>
             <div style={bookingNotesContainerStyle}>
-              {!this.state.searching &&
+              {!this.state.searching && !this.state.editingFlightDetails &&
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
@@ -575,9 +576,9 @@ class EditFlightForm extends Component {
                   <FlightSearchResults flights={this.state.flights} searching={this.state.searching} selected={this.state.selected} handleSelectFlight={(index) => this.handleSelectFlight(index)} tripType={this.state.tripType} />
                 </div>
               }
-              {/* {this.state.editingFlightDetails &&
-                <EditingFlightDetails />
-              } */}
+              {this.state.editingFlightDetails &&
+                <EditingFlightDetails flightInstances={this.state.flightInstances} toggleEditingFlightDetails={() => this.toggleEditingFlightDetails()} returnDate={this.state.returnDate} />
+              }
             </div>
             <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
               {/* {this.state.searching && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({searchClicked: this.state.searchClicked + 1})}>Search</Button>}
@@ -593,12 +594,6 @@ class EditFlightForm extends Component {
                   <Button bsStyle='danger' onClick={() => this.changeFlight()}>Change flight</Button>
                 </div>
               }
-              {/* {this.state.editingFlightDetails &&
-                <div>
-                  <Button bsStyle='danger' onClick={() => this.toggleEditingFlightDetails()} style={{marginRight: '5px'}}>Cancel</Button>
-                  <Button bsStyle='danger' onClick={() => this.changeFlightDetails()} style={{marginRight: '5px'}}>Edit</Button>
-                </div>
-              } */}
               {!this.state.searching && !this.state.editingFlightDetails &&
                 <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
               }
