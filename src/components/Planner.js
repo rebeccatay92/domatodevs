@@ -9,6 +9,8 @@ import { primaryColor, plannerContainerStyle } from '../Styles/styles'
 import DateBox from './Date'
 import PlannerHeader from './PlannerHeader'
 
+const _ = require('lodash')
+
 class Planner extends Component {
   constructor (props) {
     super(props)
@@ -18,10 +20,15 @@ class Planner extends Component {
     }
   }
 
+  shouldComponentUpdate (nextProps) {
+    if (_.isEqual(nextProps.activities, this.props.activities) && _.isEqual(nextProps.data.findItinerary, this.props.data.findItinerary)) return false
+    else return true
+  }
+
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
+    console.log('rendering')
     console.log(this.props.activities)
-    // console.log('rerender')
     // console.log('apollo', this.props.data.findItinerary)
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
@@ -41,14 +48,14 @@ class Planner extends Component {
     })
     return (
       <div style={plannerContainerStyle}>
-        <Scrollbars renderThumbVertical={({ style }) =>
+        {/* <Scrollbars renderThumbVertical={({ style }) =>
           <div style={{ ...style, backgroundColor: primaryColor, right: '-4px' }} />
         } renderThumbHorizontal={({ style }) =>
           <div style={{ ...style, display: 'none' }} />
         }
           renderTrackVertical={({style}) =>
             <div style={{ ...style, top: 0, right: 0, width: '10px', height: '100%' }} />
-        } thumbSize={60} onScroll={(e) => this.handleScroll(e)}>
+        } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
           <div style={{
             paddingRight: '44px',
             paddingLeft: '10px'
@@ -69,16 +76,24 @@ class Planner extends Component {
               })}
             </div>
           </div>
-        </Scrollbars>
+        {/* </Scrollbars> */}
       </div>
     )
+  }
+
+  componentDidMount () {
+    document.addEventListener('scroll', (e) => this.handleScroll(e))
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('scroll', (e) => this.handleScroll(e))
   }
 
   handleScroll (e) {
     function offset (el) {
       const rect = el.getBoundingClientRect(),
       scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      return { top: rect.top + scrollTop - 76 }
+      return { top: rect.top }
     }
 
     var div = document.querySelector('#timeline-top')
@@ -87,17 +102,17 @@ class Planner extends Component {
     let obj = {}
     for (var i = 1; i <= days; i++) {
       var dateDiv = document.querySelector(`#day-${i}`)
-      if (i === 1 || offset(dateDiv).top < 50) {
+      if (i === 1 || offset(dateDiv).top < 100) {
         Object.keys(obj).forEach(key => {
           obj[key] = false
         })
-        obj[`day ${i}`] = i === 1 ? true : offset(dateDiv).top < 50
+        obj[`day ${i}`] = i === 1 ? true : offset(dateDiv).top < 100
       }
     }
     // console.log(_.isEqual(obj, this.state.dateOffsets))
     // if ((divOffset.top < 0) === this.props.timelineDay.timelineAtTop && _.isEqual(obj, this.props.timelineDay.dateOffsets)) return
     this.props.toggleTimelineDay({
-      timelineAtTop: divOffset.top < 0,
+      timelineAtTop: divOffset.top < 50,
       dateOffsets: obj
     })
   }
@@ -108,6 +123,7 @@ class Planner extends Component {
       // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
       // console.log(activitiesWithTimelineErrors)
       // this.props.initializePlanner(activitiesWithTimelineErrors)
+      console.log(allEvents)
       this.props.initializePlanner(allEvents)
     }
   }

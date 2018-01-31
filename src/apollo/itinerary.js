@@ -562,7 +562,6 @@ export const updateItineraryDetails = gql`
       name
       days
       startDate
-      days
       description
     }
   }`

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
 import { DropTarget, DragSource } from 'react-dnd'
-import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity } from '../actions/plannerActions'
+import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity, initializePlanner } from '../actions/plannerActions'
 import { deleteActivityFromBucket, addActivityToBucket } from '../actions/bucketActions'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
@@ -20,7 +20,7 @@ import EventDropdownMenu from './EventDropdownMenu'
 import IntuitiveFlightInput from './intuitiveInput/IntuitiveFlightInput'
 import IntuitiveActivityInput from './intuitiveInput/IntuitiveActivityInput'
 import IntuitiveFoodInput from './intuitiveInput/IntuitiveFoodInput'
-import IntuitiveLandTransportInput from './intuitiveInput/IntuitiveLandTransportInput'
+import IntuitiveTransportInput from './intuitiveInput/IntuitiveTransportInput'
 import IntuitiveLodgingInput from './intuitiveInput/IntuitiveLodgingInput'
 
 import CreateEventFormHOC from './createEvent/CreateEventFormHOC'
@@ -35,7 +35,7 @@ const plannerActivitySource = {
   },
   endDrag (props, monitor) {
     if (!monitor.didDrop()) {
-      props.addActivityToBucket(props.activity)
+      props.initializePlanner(props.data.findItinerary.events)
     }
   },
   canDrag (props) {
@@ -48,11 +48,15 @@ const plannerActivityTarget = {
   hover (props, monitor, component) {
     let day = props.activity.day
     if (props.activity.dropzone) return
-    if (monitor.getItemType() === 'activity') props.hoverOverActivity(props.index, day)
-    else if (monitor.getItemType() === 'plannerActivity') props.plannerActivityHoverOverActivity(props.index, monitor.getItem(), day)
+    // if (monitor.getItemType() === 'activity') props.hoverOverActivity(props.index, day)
+    if (monitor.getItemType() === 'plannerActivity') props.plannerActivityHoverOverActivity(props.index, monitor.getItem(), day)
   },
   drop (props, monitor) {
     let day = props.activity.day
+    if (props.activity.day === monitor.getItem().day && monitor.getItem().loadSequence === props.index + 1) {
+      props.initializePlanner(props.data.findItinerary.events)
+      return
+    }
     // const typeOfDays = {
     //   Activity: 'startDay',
     //   Food: 'startDay',
@@ -139,10 +143,10 @@ class PlannerActivity extends Component {
           {this.state.editEventType &&
             <EditEventFormHOC eventType={this.state.editEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} event={this.props.activity[`${this.state.editEventType}`]} toggleEditEventType={() => this.handleEditEventClick()} />
           }
-          <div style={eventBoxFirstColumnStyle(this.props.activity.modelId, minHeight)} key={this.props.activity.modelId}>
-            {this.state.hover && !this.state.expanded && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-24px', cursor: 'move', ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
+          {connectDragPreview(<div style={eventBoxFirstColumnStyle(this.props.activity, minHeight, getItem || {})} key={this.props.activity.modelId}>
+            {this.state.hover && !this.state.expanded && this.props.activity.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
             {this.renderInfo(this.props.activity.type, this.state.expanded)}
-          </div>
+          </div>)}
         </td>
         {this.state.editEventType && <td style={plannerBlurredBackgroundStyle} />}
         {
@@ -171,7 +175,7 @@ class PlannerActivity extends Component {
         <span className='createEventBox'>
           {iconTypes.map((type, i) => {
             return (
-              <i title={eventTypes[i]} key={i} onClick={() => type === 'flight' || type === 'directions_run' || type === 'restaurant' || type === 'local_car_wash' || type === 'hotel' ? this.handleIntuitiveInput(eventTypes[i]) : this.handleCreateEventClick(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>
+              <i title={eventTypes[i]} key={i} onClick={() => this.handleIntuitiveInput(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>
             )
           })}
           <span style={createEventPickOneStyle}>Pick One</span>
@@ -192,7 +196,13 @@ class PlannerActivity extends Component {
           <IntuitiveFoodInput itineraryId={this.props.itineraryId} dates={this.props.dates} foodDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
         ),
         LandTransport: (
-          <IntuitiveLandTransportInput itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
+          <IntuitiveTransportInput type='LandTransport' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
+        ),
+        SeaTransport: (
+          <IntuitiveTransportInput type='SeaTransport' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
+        ),
+        Train: (
+          <IntuitiveTransportInput type='Train' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
         ),
         Lodging: (
           <IntuitiveLodgingInput countries={this.props.countries} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} lodgingDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
@@ -229,7 +239,7 @@ class PlannerActivity extends Component {
     // if (this.state.draggable && !this.state.expanded) {
     //   return connectDragSource(connectDropTarget(activityBox))
     // } else {
-    return connectDragPreview(connectDropTarget(activityBox))
+    return connectDropTarget(activityBox)
     // }
   }
 
@@ -327,6 +337,9 @@ class PlannerActivity extends Component {
     let endTime = new Date(this.props.activity[type].endTime * 1000).toGMTString().substring(17, 22)
     if (type === 'Flight') endTime = new Date(this.props.activity[type].FlightInstance.endTime * 1000).toGMTString().substring(17, 22)
 
+    let suggestedStartTime = this.props.activity.suggestedStartTime && new Date(this.props.activity.suggestedStartTime * 1000).toGMTString().substring(17, 22)
+    let suggestedEndTime = this.props.activity.suggestedEndTime && new Date(this.props.activity.suggestedEndTime * 1000).toGMTString().substring(17, 22)
+
     if (!expanded) {
       switch (type) {
         case 'Activity':
@@ -340,7 +353,7 @@ class PlannerActivity extends Component {
                 {expandButton}
                 {expandMenu}
               </div>
-              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} />
+              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime} newDay={this.props.activity.newDay} />
             </div>
           )
         case 'Flight':
@@ -385,7 +398,8 @@ class PlannerActivity extends Component {
                 {expandButton}
                 {expandMenu}
               </div>
-              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} />
+              <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
+              newDay={this.props.activity.newDay} />
             </div>
           )
         case 'LandTransport':
@@ -399,7 +413,7 @@ class PlannerActivity extends Component {
               {expandButton}
               {expandMenu}
             </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} />{errorIcon}{errorBox}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} />{errorIcon}{errorBox}</p>
               </div>
             )
           } else if (!this.props.activity.start) {
@@ -412,7 +426,7 @@ class PlannerActivity extends Component {
               {expandButton}
               {expandMenu}
             </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} />{errorIcon}{errorBox}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedEndTime={suggestedEndTime} />{errorIcon}{errorBox}</p>
               </div>
             )
           }
@@ -437,7 +451,8 @@ class PlannerActivity extends Component {
                   {expandButton}
                   {expandMenu}
                 </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} />{errorIcon}{errorBox}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
+                newDay={this.props.activity.newDay} />{errorIcon}{errorBox}</p>
               </div>
             </div>
           )
@@ -628,6 +643,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     addActivityToBucket: (activity) => {
       dispatch(addActivityToBucket(activity))
+    },
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
     }
   }
 }
@@ -638,7 +656,16 @@ const mapStateToProps = (state) => {
   }
 }
 
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
 // REMOVE DELETE ACTIVITY
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
   graphql(createActivity, { name: 'createActivity' })
 )(DragSource('plannerActivity', plannerActivitySource, collectSource)(DropTarget(['activity', 'plannerActivity'], plannerActivityTarget, collectTarget)(onClickOutside(Radium(PlannerActivity))))))
