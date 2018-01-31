@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Radium from 'radium'
+import Scroll from 'react-scroll'
 import PlannerActivity from './PlannerActivity'
 import PlannerTimelineHeader from './PlannerTimelineHeader'
 import { graphql, compose } from 'react-apollo'
@@ -7,13 +8,14 @@ import { changingLoadSequence } from '../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
-import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner } from '../actions/plannerActions'
+import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../actions/plannerActions'
 import { addActivityToBucket, deleteActivityFromBucket } from '../actions/bucketActions'
 import { toggleTimeline } from '../actions/plannerTimelineActions'
 import PlannerColumnHeader from './PlannerColumnHeader'
-import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, addDayButtonStyle, addDayWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
+import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
 
 // import CreateActivityForm from './CreateActivityForm'
+const Element = Scroll.Element
 
 const dateTarget = {
   drop (props, monitor) {
@@ -44,16 +46,18 @@ class DateBox extends Component {
       <div style={timelineStyle} />
     )
     return (
-      <div>
+      <div ref={elem => { this.elem = elem }}>
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              <PlannerTimelineHeader firstDay={this.props.firstDay} getItem={this.props.getItem} dates={this.props.dates} />
+              <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} />
               <th style={dateTableFirstHeaderStyle}>
-                <div id={'day-' + this.props.day}>
-                  <h3 style={headerDayStyle}>Day {this.props.day} </h3>
-                  <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
-                </div>
+                <Element name={'day-' + this.props.day}>
+                  <div id={'day-' + this.props.day}>
+                    <h3 style={headerDayStyle}>Day {this.props.day} </h3>
+                    <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                  </div>
+                </Element>
               </th>
               {[1, 2, 3].map(i => {
                 return !this.props.firstDay && (
@@ -110,19 +114,6 @@ class DateBox extends Component {
     })
   }
 
-  addDay () {
-    this.props.updateItineraryDetails({
-      variables: {
-        id: this.props.itineraryId,
-        days: this.props.days + 1
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: { id: this.props.itineraryId }
-      }]
-    })
-  }
-
   // scrollToDate (date) {
   //   const div = document.querySelector(date)
   //   console.log(div)
@@ -144,26 +135,41 @@ class DateBox extends Component {
     if (!checkIfNoBlankBoxes(this.props.activities) && checkIfNoBlankBoxes(nextProps.activities) && nextProps.isOver) {
       // console.log(nextProps.activities)
       // let loadSequenceArr = []
-      const loadSequenceArr = nextProps.activities.map((activity, i) => {
-        const day = activity.day
-        const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
-        // console.log(diff);
-        return {...{
-          id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
-          type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
-          loadSequence: i + 1,
-          day: day,
-          start: activity.start
-        },
-          ...diff && {diff: diff}
-        }
-      })
+      // console.log(this.elem);
+      const changeLoadSeq = () => {
+        const loadSequenceArr = nextProps.activities.map((activity, i) => {
+          const day = activity.day
+          const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
+          // console.log(diff, activity[activity.type].location.name)
+          return {...{
+            id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
+            type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
+            loadSequence: i + 1,
+            day: day,
+            start: activity.start
+          },
+            ...diff && {diff: diff}
+          }
+        })
       // console.log(loadSequenceArr)
-      this.props.changingLoadSequence({
-        variables: {
-          input: loadSequenceArr
+        this.props.changingLoadSequence({
+          variables: {
+            input: loadSequenceArr
+          }
+        })
+      }
+      const handleKeydown = (event) => {
+        if (event.keyCode === 27) {
+          // console.log(this.props.data);
+          this.props.data.refetch()
+          .then(response => this.props.initializePlanner(response.data.findItinerary.events))
         }
-      })
+        // if (event.keyCode === 13) changeLoadSeq()
+      }
+      if (nextProps.activities.length !== 1) document.addEventListener('keydown', event => handleKeydown(event))
+      if (nextProps.activities.length === 1) {
+        changeLoadSeq()
+      }
     }
   }
 }
@@ -190,6 +196,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleTimeline: (options) => {
       dispatch(toggleTimeline(options))
+    },
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
     }
   }
 }
@@ -202,7 +211,16 @@ const mapStateToProps = (state) => {
   }
 }
 
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
   graphql(changingLoadSequence, { name: 'changingLoadSequence' }),
   graphql(updateItineraryDetails, { name: 'updateItineraryDetails' })
 )(DropTarget(['activity', 'plannerActivity'], dateTarget, collect)(Radium(DateBox))))
