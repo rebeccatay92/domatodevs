@@ -187,6 +187,9 @@ class EditFlightForm extends Component {
         variables: { id: this.props.ItineraryId }
       }]
     })
+    .then(returning => {
+      console.log('returning', returning)
+    })
 
     this.resetState()
     this.props.toggleEditEventType()

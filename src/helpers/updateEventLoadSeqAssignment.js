@@ -64,7 +64,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     updateEvent = updateEvent.map(instance => {
       var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
       var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
-      console.log('utc offsets', startUtcOffset, endUtcOffset)
+      // console.log('utc offsets', startUtcOffset, endUtcOffset)
       instance.startTimeUtcZero = instance.startTime - (startUtcOffset * 60)
       instance.endTimeUtcZero = instance.endTime - (endUtcOffset * 60)
       var instanceWithUtc = instance
@@ -243,7 +243,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     var days = []
 
     // reassign seq
-    console.log('updates arr', updateEvent)
+    // console.log('updates arr', updateEvent)
 
     updateEvent.forEach(instance => {
       // console.log('instance', instance)
@@ -280,7 +280,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
       })
       // console.log('dayInstanceRows', dayInstanceRows)
       dayInstanceRows.forEach(instanceRow => {
-        console.log('inserting for 1 instanceRow', instanceRow)
+        // console.log('inserting for 1 instanceRow', instanceRow)
         var displacedRow = dayEvents.find(e => {
           return (e.timeUtcZero >= instanceRow.timeUtcZero)
         })
