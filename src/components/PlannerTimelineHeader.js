@@ -5,6 +5,8 @@ import { toggleTimeline } from '../actions/plannerTimelineActions'
 import Scroll from 'react-scroll'
 import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
 
+import PlannerTimelineDayButton from './PlannerTimelineDayButton'
+
 import { primaryColor, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, addDayButtonStyle, addDayWordStyle, timelineStyle } from '../Styles/styles'
 
 const Link = Scroll.Link
@@ -49,9 +51,10 @@ class PlannerTimelineHeader extends Component {
                 <div key={i}>
                   <Link to={'day-' + (i + 1)} smooth={true} duration={300} offset={-60}>
                     {/* <a href={'#day-' + (i + 1)}> */}
-                      <div style={dayTimelineContainerStyle(isDateOnScreen)}>
+                    <PlannerTimelineDayButton isDateOnScreen={isDateOnScreen} day={i + 1} itineraryId={this.props.itineraryId} days={this.props.dates.length} />
+                      {/* <div style={dayTimelineContainerStyle(isDateOnScreen)}>
                         <span style={dayTimelineWordStyle(isDateOnScreen)}>Day {i + 1}</span>
-                      </div>
+                      </div> */}
                     {/* </a> */}
                   </Link>
                   {i < this.props.dates.length - 1 && <div style={{height: '10px', position: 'relative'}}>

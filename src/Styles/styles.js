@@ -77,8 +77,8 @@ export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color
 export const dayTimelineStyle = sticky => {
   return {...{position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '110px' : '60px', zIndex: 1, padding: '20px 0'}, ...sticky && {backfaceVisibility: 'hidden'}}
 }
-export const dayTimelineContainerStyle = isDateOnScreen => {
-  return {paddingLeft: '5px', display: 'inline-block', borderLeft: isDateOnScreen ? '5px solid ' + primaryColor : 0, marginLeft: isDateOnScreen ? '-10px' : '-5px'}
+export const dayTimelineContainerStyle = (isDateOnScreen, isOver) => {
+  return {paddingLeft: '5px', display: 'inline-block', borderLeft: isDateOnScreen ? '5px solid ' + primaryColor : 0, marginLeft: isDateOnScreen ? '-10px' : '-5px', outline: isOver ? '1px solid ' + primaryColor : 'none'}
 }
 export const dayTimelineWordStyle = isDateOnScreen => {
   return {fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer'}
