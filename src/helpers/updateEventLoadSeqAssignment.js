@@ -47,6 +47,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
       return e
     }
   })
+  // console.log('updateEventObj', updateEvent)
 
   // add timeUtcZero to updateEvent
   // console.log('before calculating utcTimeZero', updateEvent)
@@ -59,9 +60,11 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     updateEvent.endTimeUtcZero = updateEvent.endTime - (updateEvent.arrivalUtcOffset * 60)
   }
   if (eventModel === 'Flight') {
+    console.log('is flight')
     updateEvent = updateEvent.map(instance => {
       var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
       var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
+      console.log('utc offsets', startUtcOffset, endUtcOffset)
       instance.startTimeUtcZero = instance.startTime - (startUtcOffset * 60)
       instance.endTimeUtcZero = instance.endTime - (endUtcOffset * 60)
       var instanceWithUtc = instance
@@ -243,16 +246,20 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     console.log('updates arr', updateEvent)
 
     updateEvent.forEach(instance => {
+      // console.log('instance', instance)
       flightInstanceRows.push(
         {day: instance.startDay, timeUtcZero: instance.startTimeUtcZero},
         {day: instance.endDay, timeUtcZero: instance.endTimeUtcZero}
       )
       if (!days.includes(instance.startDay)) {
         days.push(instance.startDay)
-      } else if (!days.includes(instance.endDay)) {
+      }
+      if (!days.includes(instance.endDay)) {
         days.push(instance.endDay)
       }
     })
+    // console.log('flightinstance rows', flightInstanceRows)
+    // console.log('days', days)
     // if reinsertion, remove days from affectedDays array.
     days.forEach(day => {
       if (affectedDays.includes(day)) {
@@ -271,7 +278,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
       var dayInstanceRows = flightInstanceRows.filter(e => {
         return e.day === day
       })
-
+      // console.log('dayInstanceRows', dayInstanceRows)
       dayInstanceRows.forEach(instanceRow => {
         console.log('inserting for 1 instanceRow', instanceRow)
         var displacedRow = dayEvents.find(e => {
@@ -280,7 +287,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
         if (!displacedRow) {
           dayEvents.push(instanceRow)
         } else {
-          console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
+          // console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
           var index = dayEvents.indexOf(displacedRow)
           if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === instanceRow.timeUtcZero) {
             dayEvents.splice(index + 1, 0, instanceRow)
