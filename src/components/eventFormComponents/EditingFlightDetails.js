@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Button } from 'react-bootstrap'
+import AirportOnlyAutocomplete from './AirportOnlyAutoComplete'
 
 class EditingFlightDetails extends Component {
   constructor(props) {
@@ -22,6 +23,33 @@ class EditingFlightDetails extends Component {
   changeFlightDetails () {
     // hoist flight instances up
     console.log('edit flight details confirmed')
+  }
+
+  handleChange (e, i, field) {
+    var instanceClone = JSON.parse(JSON.stringify(this.state.flightInstances[i]))
+    if (field === 'departureTerminal' || field === 'arrivalTerminal') {
+      // console.log('value', e.target.value)
+      instanceClone[field] = e.target.value
+      // console.log('instanceClone', instanceClone)
+      this.setState({flightInstances: this.state.flightInstances.slice(0, i).concat(instanceClone).concat(this.state.flightInstances.slice(i + 1))}, () => {
+        console.log('updated instances', this.state.flightInstances)
+      })
+    }
+  }
+
+  handleAirportChange (airportDetails, i, field) {
+    // edit flight details, handle airport change
+    console.log('airportDetails', airportDetails)
+    var instanceClone = JSON.parse(JSON.stringify(this.state.flightInstances[i]))
+    // change departureAirport, departureIATA, departureCityCountry
+    instanceClone[`${field}IATA`] = airportDetails.iata
+    instanceClone[`${field}Airport`] = airportDetails.name
+    instanceClone[`${field}CityCountry`] = airportDetails.city + ', ' + airportDetails.country
+
+    this.setState({flightInstances: this.state.flightInstances.slice(0, i).concat(instanceClone).concat(this.state.flightInstances.slice(i + 1))}, () => {
+      console.log('updated instances', this.state.flightInstances)
+    })
+    // durationMins?
   }
 
   componentDidMount () {
@@ -50,13 +78,19 @@ class EditingFlightDetails extends Component {
               <div key={'instance' + i}>
                 <h3>{instance.departureIATA} to {instance.arrivalIATA}</h3>
                 <div>
-                  <h5>Departure Airport: {instance.departureAirport}</h5>
-                  <h5>Departure Terminal: {instance.departureTerminal}</h5>
+                  <AirportOnlyAutocomplete iata={instance.departureIATA} handleAirportChange={(details) => this.handleAirportChange(details, i, 'departure')} />
+                  <label>
+                    Departure Terminal:
+                    <input type='text' name='departureTerminal' value={instance.departureTerminal} onChange={(e) => this.handleChange(e, i, 'departureTerminal')} />
+                  </label>
                   <h5>Departure DateTime:</h5>
                 </div>
                 <div>
-                  <h5>Arrival Airport: {instance.arrivalAirport}</h5>
-                  <h5>Arrival Terminal: {instance.arrivalTerminal}</h5>
+                  <AirportOnlyAutocomplete iata={instance.arrivalIATA} handleAirportChange={(details) => this.handleAirportChange(details, i, 'arrival')} />
+                  <label>
+                    Arrival Terminal:
+                    <input type='text' name='arrivalTerminal' value={instance.arrivalTerminal} onChange={(e) => this.handleChange(e, i, 'arrivalTerminal')} />
+                  </label>
                   <h5>Arrival DateTime:</h5>
                 </div>
               </div>

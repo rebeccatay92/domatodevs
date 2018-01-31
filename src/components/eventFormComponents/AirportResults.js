@@ -4,10 +4,6 @@ import airports from '../../data/airports.json'
 import { locationDropdownStyle, intuitiveDropdownStyle } from '../../Styles/styles'
 
 class AirportResults extends Component {
-  // constructor (props) {
-  //   super(props)
-  // }
-
   handleClick (cityOrAirport) {
     if (cityOrAirport.id) {
       cityOrAirport.type = 'airport'

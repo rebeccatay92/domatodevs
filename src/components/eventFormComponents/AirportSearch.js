@@ -34,18 +34,6 @@ class AirportSearch extends Component {
       return
     }
 
-    // var regexArr = queryStr.trim().split(' ')
-    // console.log('params', regexArr)
-    //
-    // var regex = ''
-    // regexArr.forEach(term => {
-    //   regex += `(${term})|`
-    // })
-    // regex = regex.slice(0, regex.length - 1)
-    // regex = new RegExp(regex, 'gi')
-
-    // partial `[${term}]{3,}|` matches 3 chars or more?
-
     var regex = new RegExp(queryStr.trim(), 'gi')
     // console.log('regex', regex)
 
@@ -54,12 +42,6 @@ class AirportSearch extends Component {
       // max 10 results to prevent hanging
       if (results.length > 9) return
       e.matchCount = 0
-      // if (!e.city) {
-      //   console.log(e)
-      // }
-      // if (e.country.match(regex)) {
-      //   e.matchCount ++
-      // }
       if (e.city && e.city.match(regex)) {
         e.matchCount ++
       }
