@@ -39,8 +39,8 @@ export const plannerReducer = (state = [], action) => {
         if (action.activity.type === 'Activity' || action.activity.type === 'Food') {
           suggestedStartTime = lastEventBeforeDroppedEvent ? lastEventEndTime : nextEventStartTime - duration
           suggestedEndTime = nextEventAfterDroppedEvent ? (suggestedStartTime + duration <= nextEventStartTime ? suggestedStartTime + duration : nextEventStartTime) : suggestedStartTime + duration
-        } else if (action.activity.type === 'Lodging') {
-          suggestedStartTime = nextEventStartTime || lastEventEndTime
+        } else if (action.activity.type === 'Lodging' || action.activity.type === 'LandTransport') {
+          suggestedStartTime = lastEventEndTime || nextEventStartTime
           suggestedEndTime = nextEventStartTime || lastEventEndTime
         }
         return [

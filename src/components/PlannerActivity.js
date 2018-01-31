@@ -20,7 +20,7 @@ import EventDropdownMenu from './EventDropdownMenu'
 import IntuitiveFlightInput from './intuitiveInput/IntuitiveFlightInput'
 import IntuitiveActivityInput from './intuitiveInput/IntuitiveActivityInput'
 import IntuitiveFoodInput from './intuitiveInput/IntuitiveFoodInput'
-import IntuitiveLandTransportInput from './intuitiveInput/IntuitiveLandTransportInput'
+import IntuitiveTransportInput from './intuitiveInput/IntuitiveTransportInput'
 import IntuitiveLodgingInput from './intuitiveInput/IntuitiveLodgingInput'
 
 import CreateEventFormHOC from './createEvent/CreateEventFormHOC'
@@ -175,7 +175,7 @@ class PlannerActivity extends Component {
         <span className='createEventBox'>
           {iconTypes.map((type, i) => {
             return (
-              <i title={eventTypes[i]} key={i} onClick={() => type === 'flight' || type === 'directions_run' || type === 'restaurant' || type === 'local_car_wash' || type === 'hotel' ? this.handleIntuitiveInput(eventTypes[i]) : this.handleCreateEventClick(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>
+              <i title={eventTypes[i]} key={i} onClick={() => this.handleIntuitiveInput(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>
             )
           })}
           <span style={createEventPickOneStyle}>Pick One</span>
@@ -196,7 +196,13 @@ class PlannerActivity extends Component {
           <IntuitiveFoodInput itineraryId={this.props.itineraryId} dates={this.props.dates} foodDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
         ),
         LandTransport: (
-          <IntuitiveLandTransportInput itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
+          <IntuitiveTransportInput type='LandTransport' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
+        ),
+        SeaTransport: (
+          <IntuitiveTransportInput type='SeaTransport' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
+        ),
+        Train: (
+          <IntuitiveTransportInput type='Train' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
         ),
         Lodging: (
           <IntuitiveLodgingInput countries={this.props.countries} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} lodgingDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
@@ -407,7 +413,7 @@ class PlannerActivity extends Component {
               {expandButton}
               {expandMenu}
             </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} />{errorIcon}{errorBox}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} />{errorIcon}{errorBox}</p>
               </div>
             )
           } else if (!this.props.activity.start) {
@@ -420,7 +426,7 @@ class PlannerActivity extends Component {
               {expandButton}
               {expandMenu}
             </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} />{errorIcon}{errorBox}</p>
+                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedEndTime={suggestedEndTime} />{errorIcon}{errorBox}</p>
               </div>
             )
           }

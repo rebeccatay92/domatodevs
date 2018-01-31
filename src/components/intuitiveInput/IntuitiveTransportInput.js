@@ -11,12 +11,14 @@ import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle, primaryColor } from '../../Styles/styles'
 
 import { createLandTransport } from '../../apollo/landtransport'
+import { createTrain } from '../../apollo/train'
+import { createSeaTransport } from '../../apollo/seatransport'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}landTransportDefaultBackground.jpg`
 
-class IntuitiveLandTransportInput extends Component {
+class IntuitiveTransportInput extends Component {
   constructor (props) {
     super(props)
 
@@ -91,7 +93,7 @@ class IntuitiveLandTransportInput extends Component {
     const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.departureDate) + 1
     console.log(startDay);
 
-    const newLandTransport = {
+    const newTransport = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
       startDay: startDay,
       endDay: endUnix < startUnix ? startDay + 1 : startDay,
@@ -104,14 +106,14 @@ class IntuitiveLandTransportInput extends Component {
     }
 
     if (this.state.departureGooglePlaceData.placeId && this.state.arrivalGooglePlaceData.placeId) {
-      newLandTransport.departureGooglePlaceData = this.state.departureGooglePlaceData
-      newLandTransport.arrivalGooglePlaceData = this.state.arrivalGooglePlaceData
+      newTransport.departureGooglePlaceData = this.state.departureGooglePlaceData
+      newTransport.arrivalGooglePlaceData = this.state.arrivalGooglePlaceData
     } else {
       return
     }
 
     // TESTING LOAD SEQUENCE ASSIGNMENT (ASSUMING ALL START/END TIMES ARE PRESENT)
-    var helperOutput = newEventLoadSeqAssignment(this.props.events, 'LandTransport', newLandTransport)
+    var helperOutput = newEventLoadSeqAssignment(this.props.events, this.props.type, newTransport)
     // console.log('helper output', helperOutput)
 
     this.props.changingLoadSequence({
@@ -120,7 +122,18 @@ class IntuitiveLandTransportInput extends Component {
       }
     })
 
-    this.props.createLandTransport({
+    if (newTransport.endDay > this.props.dates.length) {
+      this.props.updateItineraryDetails({
+        variables: {
+          id: this.props.itineraryId,
+          days: this.props.dates.length + 1
+        }
+      })
+    }
+
+    const mutation = `create${this.props.type}`
+
+    this.props[mutation]({
       variables: helperOutput.newEvent,
       refetchQueries: [{
         query: queryItinerary,
@@ -164,7 +177,7 @@ class IntuitiveLandTransportInput extends Component {
         <div style={{display: 'inline-block', width: '30%'}}>
           {(this.state.startTimeRequired || this.state.endTimeRequired) && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Both Fields Required)</span>}
           <div style={{position: 'relative'}}>
-            <i key='more' onClick={() => this.props.handleCreateEventClick('LandTransport')} className='material-icons' style={{position: 'absolute', right: '0%', color: '#ed685a', cursor: 'pointer'}}>more_horiz</i>
+            <i key='more' onClick={() => this.props.handleCreateEventClick(this.props.type)} className='material-icons' style={{position: 'absolute', right: '0%', color: '#ed685a', cursor: 'pointer'}}>more_horiz</i>
             <input type='time' style={{width: '40%'}} onChange={(e) => this.handleChange(e, 'startTime')} />
             <span>{' '}to{' '}</span>
             <input type='time' style={{width: '40%'}} onChange={(e) => this.handleChange(e, 'endTime')} />
@@ -187,6 +200,8 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(compose(
   graphql(createLandTransport, {name: 'createLandTransport'}),
+  graphql(createSeaTransport, {name: 'createSeaTransport'}),
+  graphql(createTrain, {name: 'createTrain'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
-)(Radium(IntuitiveLandTransportInput)))
+)(Radium(IntuitiveTransportInput)))
