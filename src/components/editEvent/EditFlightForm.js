@@ -271,6 +271,10 @@ class EditFlightForm extends Component {
     this.setState({editingFlightDetails: !this.state.editingFlightDetails})
   }
 
+  editFlightDetailsConfirm (instances) {
+    // replace flight instances with edited ones
+    this.setState({flightInstances: instances})
+  }
   // COPY NOTES OVER. COMPARE FLIGHT INSTANCES VS SEARCH FLIGHTINSTANCES
   changeFlight () {
     var confirm = window.confirm('Are you sure? Changing flights will not preserve attachments.')
@@ -579,17 +583,10 @@ class EditFlightForm extends Component {
                 </div>
               }
               {this.state.editingFlightDetails &&
-                <EditingFlightDetails flightInstances={this.state.flightInstances} toggleEditingFlightDetails={() => this.toggleEditingFlightDetails()} returnDate={this.state.returnDate} />
+                <EditingFlightDetails flightInstances={this.state.flightInstances} returnDate={this.state.returnDate} dates={this.props.dates} toggleEditingFlightDetails={() => this.toggleEditingFlightDetails()} editFlightDetailsConfirm={(instances) => this.editFlightDetailsConfirm(instances)} />
               }
             </div>
             <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
-              {/* {this.state.searching && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({searchClicked: this.state.searchClicked + 1})}>Search</Button>}
-              {this.state.searching && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => {
-                this.setState({
-                  searching: false,
-                  bookingDetails: true
-                })
-              }}>Confirm</Button>} */}
               {this.state.searching &&
                 <div>
                   <Button bsStyle='danger' onClick={() => this.returnToForm()} style={{marginRight: '5px'}}>Back</Button>
