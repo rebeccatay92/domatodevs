@@ -6,6 +6,7 @@ import Radium from 'radium'
 import ImagePreview from './ImagePreview'
 import Thumbnail from './Thumbnail'
 // import { addAttachmentBtnStyle } from '../../Styles/styles'
+import AttachmentOptionsDropdown from './AttachmentOptionsDropdown'
 
 class AttachmentsRework extends Component {
   constructor (props) {
@@ -15,7 +16,9 @@ class AttachmentsRework extends Component {
       thumbnailUrl: null,
       // hoveringOver: null, // determining which file's X icon to display
       preview: false,
-      previewUrl: null
+      previewUrl: null,
+      dropdown: false,
+      dropdownIndex: null
     }
   }
 
@@ -140,6 +143,11 @@ class AttachmentsRework extends Component {
     })
   }
 
+  toggleDropdown (i) {
+    console.log('toggle dropdown', i)
+    this.setState({dropdown: !this.state.dropdown, dropdownIndex: i})
+  }
+
   // NO CLICK TO OPEN PREVIEW YET. THUMBNAIL FLASHES
   render () {
     // console.log('attachments props', this.props)
@@ -157,11 +165,12 @@ class AttachmentsRework extends Component {
                 <h5 style={{display: 'inline-block'}}>{info.fileAlias}</h5>
               </div>
 
-              <div style={{display: 'inline-block'}}>
-                <i className='material-icons' onClick={() => this.setBackground(i)} style={{cursor: 'pointer'}}>mood</i>
+              <div style={{display: 'inline-block', position: 'relative', float: 'right'}}>
                 <i className='material-icons'>file_download</i>
-                <i className='material-icons' onClick={() => this.removeUpload(i, this.props.formType)} style={{cursor: 'pointer'}}>clear</i>
-                <i className='material-icons'>more_vert</i>
+                <i className='material-icons ignoreMoreVert' style={{cursor: 'pointer'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
+                {this.state.dropdown && this.state.dropdownIndex === i &&
+                  <AttachmentOptionsDropdown toggleDropdown={() => this.toggleDropdown()} index={i} outsideClickIgnoreClass={'ignoreMoreVert'} setBackground={() => this.setBackground(i)} removeUpload={() => this.removeUpload(i, this.props.formType)} file={info} />
+                }
               </div>
             </div>
           )
@@ -169,8 +178,8 @@ class AttachmentsRework extends Component {
         {/* ADD ATTACHMENT ICON */}
         {this.props.attachments.length <= 5 &&
           <label style={{display: 'inline-block', color: 'black', cursor: 'pointer'}}>
-            <i key='attachmentAdd' className='material-icons'>add</i>
-            Upload a file
+            <i key='attachmentAdd' className='material-icons'>file_upload</i>
+            Click here to upload files
             <input type='file' name='file' accept='.jpeg, .jpg, .png, .pdf' onChange={(e) => {
               this.handleFileUpload(e)
             }} style={{display: 'none'}} />
@@ -183,7 +192,7 @@ class AttachmentsRework extends Component {
         }
 
         {/* THUMBNAIL ON HOVER */}
-        {this.state.thumbnail &&
+        {this.state.thumbnail && !this.state.dropdown &&
           <Thumbnail thumbnailUrl={this.state.thumbnailUrl} />
         }
       </div>
