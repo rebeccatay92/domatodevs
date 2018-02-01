@@ -28,9 +28,9 @@ class AttachmentOptionsDropdown extends Component {
     var fileName = this.props.file.fileName
     var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
     url = url.replace(/ /gi, '%20')
-    console.log('url', url)
     this.setState({downloadUrl: url})
   }
+
   render () {
     return (
       <div style={{width: '145px', position: 'absolute', left: '50px', top: '0px', backgroundColor: 'white', zIndex: 1, cursor: 'default', boxShadow: '0px 1px 5px 2px rgba(0, 0, 0, .2)'}}>

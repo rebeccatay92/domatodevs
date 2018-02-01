@@ -150,11 +150,13 @@ class AttachmentsRework extends Component {
 
   // NO CLICK TO OPEN PREVIEW YET. THUMBNAIL FLASHES
   render () {
-    console.log('attachments props', this.props)
     return (
       <div>
         {/* LIST OF ATTACHMENTS */}
         {!this.state.preview && this.props.attachments.map((info, i) => {
+          var fileName = info.fileName
+          var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
+          url = url.replace(/ /gi, '%20')
           return (
             <div key={'thumbnail' + i} style={{width: '100%'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
               <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview()}>
@@ -169,6 +171,7 @@ class AttachmentsRework extends Component {
                 {(this.props.backgroundImage.indexOf(info.fileName) > -1) &&
                   <i className='material-icons'>mood</i>
                 }
+                <a href={url} download='testing.png'><i className='material-icons'>file_download</i></a>
                 <i className='material-icons ignoreMoreVert' style={{cursor: 'pointer'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
                 {this.state.dropdown && this.state.dropdownIndex === i &&
                   <AttachmentOptionsDropdown toggleDropdown={() => this.toggleDropdown()} index={i} outsideClickIgnoreClass={'ignoreMoreVert'} setBackground={() => this.setBackground(i)} removeUpload={() => this.removeUpload(i, this.props.formType)} file={info} />
