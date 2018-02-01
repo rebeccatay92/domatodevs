@@ -115,7 +115,7 @@ class FlightInstanceNotesAttachments extends Component {
       <div style={{overflow: 'scroll'}}>
         <div>
           <Notes notes={this.props.instance.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={`Departure: ${this.props.instance.departureAirport}`} />
-          <AttachmentsRework ItineraryId={this.props.ItineraryId} attachments={this.props.instance.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={url => this.props.setBackground(url)} formType={this.props.formType} />
+          <AttachmentsRework ItineraryId={this.props.ItineraryId} attachments={this.props.instance.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={url => this.props.setBackground(url)} formType={this.props.formType} backgroundImage={this.props.backgroundImage} />
         </div>
         <div>
           <Notes notes={this.props.instance.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={`Arrival: ${this.props.instance.arrivalAirport}`} />
