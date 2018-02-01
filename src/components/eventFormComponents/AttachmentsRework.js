@@ -168,7 +168,7 @@ class AttachmentsRework extends Component {
               </div>
 
               <div style={{display: 'inline-block', position: 'relative', float: 'right'}}>
-                {(this.props.backgroundImage.indexOf(info.fileName) > -1) &&
+                {this.props.backgroundImage && (this.props.backgroundImage.indexOf(info.fileName) > -1) &&
                   <i className='material-icons'>mood</i>
                 }
                 <a href={url} download='testing.png'><i className='material-icons'>file_download</i></a>
