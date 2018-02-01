@@ -150,7 +150,7 @@ class AttachmentsRework extends Component {
 
   // NO CLICK TO OPEN PREVIEW YET. THUMBNAIL FLASHES
   render () {
-    // console.log('attachments props', this.props)
+    console.log('attachments props', this.props)
     return (
       <div>
         {/* LIST OF ATTACHMENTS */}
@@ -166,7 +166,9 @@ class AttachmentsRework extends Component {
               </div>
 
               <div style={{display: 'inline-block', position: 'relative', float: 'right'}}>
-                <i className='material-icons'>file_download</i>
+                {(this.props.backgroundImage.indexOf(info.fileName) > -1) &&
+                  <i className='material-icons'>mood</i>
+                }
                 <i className='material-icons ignoreMoreVert' style={{cursor: 'pointer'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
                 {this.state.dropdown && this.state.dropdownIndex === i &&
                   <AttachmentOptionsDropdown toggleDropdown={() => this.toggleDropdown()} index={i} outsideClickIgnoreClass={'ignoreMoreVert'} setBackground={() => this.setBackground(i)} removeUpload={() => this.removeUpload(i, this.props.formType)} file={info} />
