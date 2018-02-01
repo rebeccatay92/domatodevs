@@ -10,7 +10,6 @@ import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, cr
 
 import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
-// import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
 
 import BookingDetails from '../eventFormComponents/BookingDetails'

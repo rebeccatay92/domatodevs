@@ -172,7 +172,7 @@ class EditFlightForm extends Component {
       return reconstruct
     })
     updatesObj.flightInstances = reconstructedInstancesArr
-    console.log('scrubbing out instance properties', updatesObj)
+    // console.log('scrubbing out instance properties', updatesObj)
 
     this.props.changingLoadSequence({
       variables: {
@@ -186,9 +186,6 @@ class EditFlightForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
-    })
-    .then(returning => {
-      console.log('returning', returning)
     })
 
     this.resetState()
