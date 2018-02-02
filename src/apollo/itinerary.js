@@ -154,13 +154,15 @@ export const queryItinerary = gql`
           bookedThrough
           bookingConfirmation
           bookingStatus
-          notes
+          arrivalNotes
+          departureNotes
           attachments {
             id
             fileName
             fileAlias
             fileType
             fileSize
+            arrivalDeparture
           }
           backgroundImage
         }
