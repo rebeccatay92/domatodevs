@@ -586,9 +586,9 @@ class EditFlightForm extends Component {
                 <EditingFlightDetails flightInstances={this.state.flightInstances} returnDate={this.state.returnDate} dates={this.props.dates} toggleEditingFlightDetails={() => this.toggleEditingFlightDetails()} editFlightDetailsConfirm={(instances) => this.editFlightDetailsConfirm(instances)} />
               }
             </div>
-            <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
+            <div>
               {this.state.searching &&
-                <div>
+                <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
                   <Button bsStyle='danger' onClick={() => this.returnToForm()} style={{marginRight: '5px'}}>Back</Button>
                   <Button bsStyle='danger' onClick={() => this.changeFlight()}>Change flight</Button>
                 </div>

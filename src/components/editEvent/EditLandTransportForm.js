@@ -355,7 +355,6 @@ class EditLandTransportForm extends Component {
       cost: this.props.event.cost,
       bookedThrough: this.props.event.bookedThrough || '',
       bookingConfirmation: this.props.event.bookingConfirmation || '',
-      // notes: this.props.event.notes || '',
       departureNotes: this.props.event.departureNotes || '',
       arrivalNotes: this.props.event.arrivalNotes || '',
       backgroundImage: this.props.event.backgroundImage,
@@ -386,7 +385,7 @@ class EditLandTransportForm extends Component {
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
-            <div style={{...bookingNotesContainerStyle, ...{overflow: 'scroll'}}}>
+            <div style={bookingNotesContainerStyle}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
               {/* <h4 style={{fontSize: '24px', marginTop: '50px'}}>
@@ -429,7 +428,7 @@ class EditLandTransportForm extends Component {
                     <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
                   }
                   <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
-                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} backgroundImage={this.state.backgroundImage} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} backgroundImage={this.state.backgroundImage} />
                 </div>
               }
 
