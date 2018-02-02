@@ -293,9 +293,12 @@ class CreateActivityForm extends Component {
             <div style={bookingNotesContainerStyle}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-
-              <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
-
+              {this.state.googlePlaceData.name &&
+                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Detailed Location (${this.state.googlePlaceData.name})`} />
+              }
+              {!this.state.googlePlaceData.name &&
+                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={'Detailed Location'} />
+              }
               <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 
               <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />

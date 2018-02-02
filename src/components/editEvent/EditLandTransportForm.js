@@ -406,10 +406,10 @@ class EditLandTransportForm extends Component {
               </div>
               {this.state.selectedTab === 'departure' &&
                 <div>
-                  {this.state.departureGooglePlaceData &&
+                  {this.state.departureGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.departureLocationAlias} handleChange={(e) => this.handleChange(e, 'departureLocationAlias')} placeholder={`Detailed Location (${this.state.departureGooglePlaceData.name})`} />
                   }
-                  {!this.state.departureGooglePlaceData &&
+                  {!this.state.departureGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.departureLocationAlias} handleChange={(e) => this.handleChange(e, 'departureLocationAlias')} placeholder={'Detailed Location (Departure)'} />
                   }
                   <Notes notes={this.state.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Departure Notes'} />
@@ -418,10 +418,10 @@ class EditLandTransportForm extends Component {
               }
               {this.state.selectedTab === 'arrival' &&
                 <div>
-                  {this.state.arrivalGooglePlaceData &&
+                  {this.state.arrivalGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={`Detailed Location (${this.state.arrivalGooglePlaceData.name})`} />
                   }
-                  {!this.state.arrivalGooglePlaceData &&
+                  {!this.state.arrivalGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
                   }
                   <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
