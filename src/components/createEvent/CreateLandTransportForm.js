@@ -33,7 +33,7 @@ class CreateLandTransportForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      ItineraryId: this.props.ItineraryId,
+      // ItineraryId: this.props.ItineraryId,
       startDay: this.props.day,
       endDay: this.props.day,
       departureGooglePlaceData: {},
@@ -87,7 +87,7 @@ class CreateLandTransportForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newLandTransport = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       departureLocationAlias: this.state.departureLocationAlias,
       arrivalLocationAlias: this.state.arrivalLocationAlias,
       startDay: this.state.startDay,
@@ -305,9 +305,6 @@ class CreateLandTransportForm extends Component {
             <div style={bookingNotesContainerStyle}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-              {/* <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4> */}
 
               {/* TABS FOR DEPARTURE/ARRIVAL */}
               <div>
@@ -347,7 +344,7 @@ class CreateLandTransportForm extends Component {
                     <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
                   }
                   <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
-                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
                 </div>
               }
 

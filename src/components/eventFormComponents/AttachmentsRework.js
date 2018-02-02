@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import Radium from 'radium'
-import ImagePreview from './ImagePreview'
+// import ImagePreview from './ImagePreview'
 import Thumbnail from './Thumbnail'
 // import { addAttachmentBtnStyle } from '../../Styles/styles'
 import AttachmentOptionsDropdown from './AttachmentOptionsDropdown'
@@ -154,7 +154,7 @@ class AttachmentsRework extends Component {
       <div>
         {/* LIST OF ATTACHMENTS */}
         {!this.state.preview && this.props.attachments.map((info, i) => {
-          console.log('length', this.props.attachments.length, 'i+1', i + 1, 'info', info)
+          // console.log('length', this.props.attachments.length, 'i+1', i + 1)
           var fileName = info.fileName
           var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
           url = url.replace(/ /gi, '%20')
@@ -183,7 +183,7 @@ class AttachmentsRework extends Component {
               {this.state.hoveringOverIndex === i && this.state.thumbnail && !this.state.dropdown &&
                 <Thumbnail thumbnailUrl={url} />
               }
-              {this.props.attachments.length !== i + 1 &&
+              {(this.props.attachments.length !== i + 1) &&
                 <hr style={{margin: 0}} />
               }
             </div>
@@ -192,18 +192,18 @@ class AttachmentsRework extends Component {
         {/* ADD ATTACHMENT ICON */}
         {this.props.attachments.length <= 5 &&
           <label style={{display: 'inline-block', color: 'black', cursor: 'pointer'}}>
-            <i key='attachmentAdd' className='material-icons'>file_upload</i>
+            <i key='attachmentAdd' className='material-icons' style={{verticalAlign: 'middle'}}>file_upload</i>
             Click here to upload files
             <input type='file' name='file' accept='.jpeg, .jpg, .png, .pdf' onChange={(e) => {
               this.handleFileUpload(e)
             }} style={{display: 'none'}} />
           </label>
         }
-        {this.props.attachments.length > 5 &&
-          <div style={{width: '50px'}}>
+        {/* {this.props.attachments.length > 5 &&
+          <div>
             <span style={{color: 'black'}}>Upload maxed</span>
           </div>
-        }
+        } */}
       </div>
     )
   }

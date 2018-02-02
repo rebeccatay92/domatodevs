@@ -221,6 +221,7 @@ export const labelStyle = {
 
 // Attachments.js styles
 export const attachmentStyle = {margin: '1px 6px 0 0', verticalAlign: 'top', display: 'inline-block', position: 'relative', ':hover': {color: primaryColor}, border: '1px solid ' + secondaryFontColor, height: '50px', cursor: 'pointer', borderRadius: '5px', width: '15%', backgroundColor: backgroundColor}
+// export const addAttachmentBtnStyle = {color: secondaryFontColor, margin: '10px 5px 0 0', cursor: 'pointer', fontSize: '30px', ':hover': {color: primaryColor}}
 export const addAttachmentBtnStyle = {color: secondaryFontColor, margin: '10px 5px 0 0', cursor: 'pointer', fontSize: '30px', ':hover': {color: primaryColor}}
 export const attachmentNameStyle = {fontSize: '13px', color: secondaryFontColor, fontWeight: 'bold', position: 'relative', top: '-6px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}
 export const attachmentSizeStyle = {fontSize: '13px', color: secondaryFontColor, fontWeight: 'bold', position: 'relative', top: '-10px'}

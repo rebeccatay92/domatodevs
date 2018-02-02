@@ -36,8 +36,7 @@ class CreateActivityForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      ItineraryId: this.props.ItineraryId,
-      startDay: this.props.day, // int
+      startDay: this.props.day,
       endDay: this.props.day,
       googlePlaceData: {},
       locationAlias: '',
@@ -78,7 +77,7 @@ class CreateActivityForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newActivity = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       locationAlias: this.state.locationAlias,
       startDay: this.state.startDay,
       endDay: this.state.endDay,
@@ -267,10 +266,8 @@ class CreateActivityForm extends Component {
   render () {
     return (
       <div style={createEventFormContainerStyle}>
-
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>
-
           {/* LEFT PANEL --- BACKGROUND, LOCATION, DATETIME */}
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
@@ -296,15 +293,12 @@ class CreateActivityForm extends Component {
             <div style={bookingNotesContainerStyle}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-              <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4>
 
               <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
               <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 
-              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
+              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
 
               <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>

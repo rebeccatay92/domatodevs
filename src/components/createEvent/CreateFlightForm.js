@@ -34,7 +34,7 @@ class CreateFlightForm extends Component {
     super(props)
     this.state = {
       currencyList: [], // not submitted
-      ItineraryId: this.props.ItineraryId,
+      // ItineraryId: this.props.ItineraryId,
       paxAdults: null,
       paxChildren: null,
       paxInfants: null,
@@ -113,7 +113,7 @@ class CreateFlightForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newFlight = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       paxAdults: this.state.paxAdults,
       paxChildren: this.state.paxChildren,
       paxInfants: this.state.paxInfants,
