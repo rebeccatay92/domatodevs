@@ -3,7 +3,6 @@ import { Button } from 'react-bootstrap'
 
 class SaveCancelDelete extends Component {
   deleteEvent () {
-    console.log('delete')
     this.props.deleteEvent()
   }
 
