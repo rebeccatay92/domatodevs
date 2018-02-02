@@ -34,6 +34,7 @@ const plannerActivitySource = {
     return props.activity
   },
   endDrag (props, monitor) {
+    console.log(monitor.didDrop());
     if (!monitor.didDrop()) {
       props.initializePlanner(props.data.findItinerary.events)
     }
