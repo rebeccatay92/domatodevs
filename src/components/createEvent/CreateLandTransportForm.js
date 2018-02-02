@@ -33,7 +33,7 @@ class CreateLandTransportForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      ItineraryId: this.props.ItineraryId,
+      // ItineraryId: this.props.ItineraryId,
       startDay: this.props.day,
       endDay: this.props.day,
       departureGooglePlaceData: {},
@@ -87,7 +87,7 @@ class CreateLandTransportForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newLandTransport = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       departureLocationAlias: this.state.departureLocationAlias,
       arrivalLocationAlias: this.state.arrivalLocationAlias,
       startDay: this.state.startDay,
@@ -302,12 +302,9 @@ class CreateLandTransportForm extends Component {
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
-            <div style={{...bookingNotesContainerStyle, ...{overflow: 'scroll'}}}>
+            <div style={bookingNotesContainerStyle}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-              {/* <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4> */}
 
               {/* TABS FOR DEPARTURE/ARRIVAL */}
               <div>
@@ -328,26 +325,26 @@ class CreateLandTransportForm extends Component {
               {/* ATTACHMENT COMPONENT RECEIVES SEPARATE DEPARTURE, ARRIVAL ATTACHMENTS. BUT BOTH UPDATE THE SAME THIS.STATE.ATTACHMENTS */}
               {this.state.selectedTab === 'departure' &&
                 <div>
-                  {this.state.departureGooglePlaceData &&
+                  {this.state.departureGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.departureLocationAlias} handleChange={(e) => this.handleChange(e, 'departureLocationAlias')} placeholder={`Detailed Location (${this.state.departureGooglePlaceData.name})`} />
                   }
-                  {!this.state.departureGooglePlaceData &&
+                  {!this.state.departureGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.departureLocationAlias} handleChange={(e) => this.handleChange(e, 'departureLocationAlias')} placeholder={'Detailed Location (Departure)'} />
                   }
                   <Notes notes={this.state.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Departure Notes'} />
-                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
                 </div>
               }
               {this.state.selectedTab === 'arrival' &&
                 <div>
-                  {this.state.arrivalGooglePlaceData &&
+                  {this.state.arrivalGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={`Detailed Location (${this.state.arrivalGooglePlaceData.name})`} />
                   }
-                  {!this.state.arrivalGooglePlaceData &&
+                  {!this.state.arrivalGooglePlaceData.name &&
                     <LocationAlias locationAlias={this.state.arrivalLocationAlias} handleChange={(e) => this.handleChange(e, 'arrivalLocationAlias')} placeholder={'Detailed Location (Arrival)'} />
                   }
                   <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Arrival Notes'} />
-                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
                 </div>
               }
 
@@ -355,11 +352,6 @@ class CreateLandTransportForm extends Component {
             </div>
           </div>
         </div>
-
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

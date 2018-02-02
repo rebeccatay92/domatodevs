@@ -172,7 +172,7 @@ class EditFlightForm extends Component {
       return reconstruct
     })
     updatesObj.flightInstances = reconstructedInstancesArr
-    console.log('scrubbing out instance properties', updatesObj)
+    // console.log('scrubbing out instance properties', updatesObj)
 
     this.props.changingLoadSequence({
       variables: {
@@ -186,9 +186,6 @@ class EditFlightForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
-    })
-    .then(returning => {
-      console.log('returning', returning)
     })
 
     this.resetState()
@@ -589,9 +586,9 @@ class EditFlightForm extends Component {
                 <EditingFlightDetails flightInstances={this.state.flightInstances} returnDate={this.state.returnDate} dates={this.props.dates} toggleEditingFlightDetails={() => this.toggleEditingFlightDetails()} editFlightDetailsConfirm={(instances) => this.editFlightDetailsConfirm(instances)} />
               }
             </div>
-            <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
+            <div>
               {this.state.searching &&
-                <div>
+                <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
                   <Button bsStyle='danger' onClick={() => this.returnToForm()} style={{marginRight: '5px'}}>Back</Button>
                   <Button bsStyle='danger' onClick={() => this.changeFlight()}>Change flight</Button>
                 </div>
@@ -603,10 +600,6 @@ class EditFlightForm extends Component {
           </div>
 
         </div>
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

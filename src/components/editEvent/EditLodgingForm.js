@@ -54,8 +54,13 @@ class EditLodgingForm extends Component {
         address: null,
         telephone: null,
         openingHours: null // text for selected day
-      }
+      },
+      selectedTab: 'arrival'
     }
+  }
+
+  switchTab (arrivalDeparture) {
+    this.setState({selectedTab: arrivalDeparture})
   }
 
   updateDayTime (field, value) {
@@ -206,7 +211,8 @@ class EditLodgingForm extends Component {
         address: null,
         telephone: null,
         openingHours: null // text for selected day
-      }
+      },
+      selectedTab: 'arrival'
     })
     this.apiToken = null
   }
@@ -219,7 +225,8 @@ class EditLodgingForm extends Component {
     })
   }
 
-  handleFileUpload (attachmentInfo) {
+  handleFileUpload (attachmentInfo, arrivalDeparture) {
+    attachmentInfo.arrivalDeparture = arrivalDeparture
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
     // new attachment that are not in db go into holding area
     this.setState({holderNewAttachments: this.state.holderNewAttachments.concat([attachmentInfo])})
@@ -355,25 +362,32 @@ class EditLodgingForm extends Component {
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
 
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
-              <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4>
 
               <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
 
-              <Notes notes={this.state.notes} handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
+              {/* TABS FOR CHECKIN/CHECKOUT */}
+              <div>
+                <h4 style={{display: 'inline-block', marginRight: '20px'}} onClick={() => this.switchTab('arrival')}>CHECK-IN</h4>
+                <h4 style={{display: 'inline-block', marginRight: '20px'}} onClick={() => this.switchTab('departure')}>CHECK-OUT</h4>
+              </div>
 
-              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
+              {this.state.selectedTab === 'arrival' &&
+                <div>
+                  <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Check-In Notes'} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} backgroundImage={this.state.backgroundImage} />
+                </div>
+              }
+              {this.state.selectedTab === 'departure' &&
+                <div>
+                  <Notes notes={this.state.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Check-Out Notes'} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} backgroundImage={this.state.backgroundImage} />
+                </div>
+              }
 
               <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
-
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} formType={'edit'} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

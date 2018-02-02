@@ -375,13 +375,13 @@ class PlannerActivity extends Component {
             return (
               <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalLocation' value={this.props.activity[type].FlightInstance.arrivalLocation.name} />
-                <span style={typeStyle}> - </span>
-                <span style={typeStyle}>Flight Arrival</span>
-              </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
+                  <span style={typeStyle}> - </span>
+                  <span style={typeStyle}>Flight Arrival</span>
+                </p>
+                <div style={{position: 'relative', display: 'inline'}}>
+                  {expandButton}
+                  {expandMenu}
+                </div>
                 <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalTime' value={endTime} />{errorIcon}{errorBox}</p>
               </div>
             )
@@ -399,7 +399,7 @@ class PlannerActivity extends Component {
                 {expandMenu}
               </div>
               <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
-              newDay={this.props.activity.newDay} />
+                newDay={this.props.activity.newDay} />
             </div>
           )
         case 'LandTransport':
@@ -407,12 +407,12 @@ class PlannerActivity extends Component {
             return (
               <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='departureGooglePlaceData' value={this.props.activity[type].departureLocation.name} googlePlaceData={this.props.activity[type].departureLocation} /><span style={typeStyle}> - </span>
-                <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value='Departure' />
+                  <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value='Departure' />
                 </p>
-            <div style={{position: 'relative', display: 'inline'}}>
-              {expandButton}
-              {expandMenu}
-            </div>
+                <div style={{position: 'relative', display: 'inline'}}>
+                  {expandButton}
+                  {expandMenu}
+                </div>
                 <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} />{errorIcon}{errorBox}</p>
               </div>
             )
@@ -420,12 +420,12 @@ class PlannerActivity extends Component {
             return (
               <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalGooglePlaceData' value={this.props.activity[type].arrivalLocation.name} googlePlaceData={this.props.activity[type].arrivalLocation} /><span style={typeStyle}> - </span>
-                <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value='Arrival' />
-            </p>
-            <div style={{position: 'relative', display: 'inline'}}>
-              {expandButton}
-              {expandMenu}
-            </div>
+                  <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value='Arrival' />
+                </p>
+                <div style={{position: 'relative', display: 'inline'}}>
+                  {expandButton}
+                  {expandMenu}
+                </div>
                 <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedEndTime={suggestedEndTime} />{errorIcon}{errorBox}</p>
               </div>
             )
@@ -452,7 +452,7 @@ class PlannerActivity extends Component {
                   {expandMenu}
                 </div>
                 <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
-                newDay={this.props.activity.newDay} />{errorIcon}{errorBox}</p>
+                  newDay={this.props.activity.newDay} />{errorIcon}{errorBox}</p>
               </div>
             </div>
           )

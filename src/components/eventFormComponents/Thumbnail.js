@@ -2,18 +2,11 @@ import React, {Component} from 'react'
 
 class Thumbnail extends Component {
   render () {
-    // const style = {
-    //   display: 'block',
-    //   position: 'absolute',
-    //   left: 0,
-    //   bottom: '50px',
-    //   zIndex: 1
-    // }
     const style = {
       display: 'block',
-      position: 'relative',
-      left: '-200px',
-      top: '-200px',
+      position: 'absolute',
+      left: 0,
+      bottom: '50px',
       zIndex: 1
     }
     return (

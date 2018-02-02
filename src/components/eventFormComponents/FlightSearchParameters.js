@@ -206,6 +206,11 @@ class FlightSearchParameters extends Component {
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>2-11y</span>
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>{'<2y'}</span>
         </div>
+        {this.props.searching &&
+          <div style={{textAlign: 'right', marginRight: '20px'}} onClick={() => this.handleFlightSearch()}>
+            <h5>Search again</h5>
+          </div>
+        }
         <div style={{textAlign: 'center'}}>
           <hr style={{opacity: 0.5}} />
           {!this.props.searching && !this.props.bookingDetails && <Button style={{...createFlightButtonStyle, ...{marginRight: '20px'}}} bsStyle='danger' onClick={() => this.handleFlightSearch()}>SEARCH</Button>}
