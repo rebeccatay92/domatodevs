@@ -19,7 +19,7 @@ const cityCountryStyle = {...pStyle,
   }
 }
 
-class EditFormFlightDetailsInstance extends Component {
+class FlightDetailsInstance extends Component {
   render () {
     if (!this.props.instance) return null
     // console.log('instance', this.props.instance)
@@ -49,7 +49,7 @@ class EditFormFlightDetailsInstance extends Component {
           <p style={pStyle}>{instance.departureIATA}</p>
           <p style={infoStyle}>{instance.departureAirport}</p>
           <p style={cityCountryStyle}>{instance.departureCityCountry}</p>
-          <p style={infoStyle}>{instance.departureTerminal}</p>
+          <p style={infoStyle}>Terminal {instance.departureTerminal}</p>
           <p style={infoStyle}>{departureMoment} {startMoment}</p>
         </td>
 
@@ -63,7 +63,7 @@ class EditFormFlightDetailsInstance extends Component {
           <p style={pStyle}>{instance.arrivalIATA}</p>
           <p style={infoStyle}>{instance.arrivalAirport}</p>
           <p style={cityCountryStyle}>{instance.arrivalCityCountry}</p>
-          <p style={infoStyle}>{instance.arrivalTerminal}</p>
+          <p style={infoStyle}>Terminal {instance.arrivalTerminal}</p>
           <p style={infoStyle}>{arrivalMoment} {endMoment}</p>
         </td>
       </tr>
@@ -71,4 +71,4 @@ class EditFormFlightDetailsInstance extends Component {
   }
 }
 
-export default EditFormFlightDetailsInstance
+export default FlightDetailsInstance

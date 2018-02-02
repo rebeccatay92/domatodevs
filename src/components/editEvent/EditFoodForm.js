@@ -153,12 +153,18 @@ class EditFoodForm extends Component {
 
     // if time or day changes, reassign load seq
     if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+      var utcOffset = null
+      if (updatesObj.googlePlaceData) {
+        utcOffset = updatesObj.googlePlaceData.utcOffset
+      } else {
+        utcOffset = this.props.event.utcOffset
+      }
       var updateEvent = {
         startDay: this.state.startDay,
         endDay: this.state.endDay,
         startTime: this.state.startTime,
         endTime: this.state.endTime,
-        utcOffset: this.state.googlePlaceData.utcOffset
+        utcOffset: utcOffset
       }
       var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Food', this.state.id, updateEvent)
       console.log('helperOutput', helperOutput)
@@ -401,25 +407,22 @@ class EditFoodForm extends Component {
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
 
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
-              <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4>
 
-              <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} />
+              {this.state.googlePlaceData.name &&
+                <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Detailed Location (${this.state.googlePlaceData.name})`} />
+              }
+              {!this.state.googlePlaceData.name &&
+                <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Detailed Location`} />
+              }
 
               <Notes notes={this.state.notes} handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 
-              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} />
+              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} formType={'edit'} backgroundImage={this.state.backgroundImage} />
 
               <SaveCancelDelete delete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} deleteEvent={() => this.deleteEvent()} />
             </div>
           </div>
         </div>
-
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} formType={'edit'} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

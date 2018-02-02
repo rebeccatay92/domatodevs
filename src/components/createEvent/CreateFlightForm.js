@@ -10,7 +10,6 @@ import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, cr
 
 import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
-import FlightSearchDetailsContainer from '../eventFormComponents/FlightSearchDetailsContainer'
 import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
 
 import BookingDetails from '../eventFormComponents/BookingDetails'
@@ -35,7 +34,7 @@ class CreateFlightForm extends Component {
     super(props)
     this.state = {
       currencyList: [], // not submitted
-      ItineraryId: this.props.ItineraryId,
+      // ItineraryId: this.props.ItineraryId,
       paxAdults: null,
       paxChildren: null,
       paxInfants: null,
@@ -114,7 +113,7 @@ class CreateFlightForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newFlight = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       paxAdults: this.state.paxAdults,
       paxChildren: this.state.paxChildren,
       paxInfants: this.state.paxInfants,
@@ -231,7 +230,7 @@ class CreateFlightForm extends Component {
     const datesUnix = this.props.dates.map(e => {
       return moment(e).unix()
     })
-    console.log('dates unix arr', datesUnix)
+    // console.log('dates unix arr', datesUnix)
 
     this.setState({
       selected: index,
@@ -339,7 +338,6 @@ class CreateFlightForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGS, MULTIPLE DETAILS/NOTES */}
           <div style={createEventFormRightPanelStyle('flight')}>
             <div style={bookingNotesContainerStyle}>
-              <SubmitCancelForm flight handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
               {this.state.bookingDetails && (
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
@@ -358,15 +356,22 @@ class CreateFlightForm extends Component {
               </div>
             </div>
             <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
-              {this.state.searching && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({searchClicked: this.state.searchClicked + 1})}>Search</Button>}
-              {this.state.searching && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => {
-                this.setState({
-                  searching: false,
-                  bookingDetails: true
-                })
-              }}>Confirm</Button>}
+              {this.state.searching &&
+                <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
+              }
+              {this.state.searching &&
+                <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => {
+                  this.setState({
+                    searching: false,
+                    bookingDetails: true
+                  })
+                }}>Confirm</Button>
+              }
 
               {this.state.bookingDetails && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({bookingDetails: false, searching: true})}>Back</Button>}
+              {this.state.bookingDetails &&
+                <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
+              }
               {this.state.bookingDetails && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>}
 
               {/* {this.state.bookingDetails &&
@@ -376,10 +381,6 @@ class CreateFlightForm extends Component {
           </div>
 
         </div>
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

@@ -11,7 +11,6 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-// import Attachments from '../eventFormComponents/Attachments'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -56,8 +55,13 @@ class CreateLodgingForm extends Component {
         address: null,
         telephone: null,
         openingHours: null
-      }
+      },
+      selectedTab: 'arrival'
     }
+  }
+
+  switchTab (arrivalDeparture) {
+    this.setState({selectedTab: arrivalDeparture})
   }
 
   updateDayTime (field, value) {
@@ -76,7 +80,7 @@ class CreateLodgingForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newLodging = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       locationAlias: this.state.locationAlias,
       startDay: this.state.startDay,
       endDay: this.state.endDay,
@@ -105,24 +109,15 @@ class CreateLodgingForm extends Component {
       return
     }
 
-    // VALIDATE PLANNER TIMINGS
-    // var output = newEventTimelineValidation(this.props.events, 'Lodging', newLodging)
-    // console.log('output', output)
-    // if (!output.isValid) {
-    //   window.alert(`time ${newLodging.startTime} // ${newLodging.endTime} clashes with pre existing events.`)
-    //   console.log('ERROR ROWS', output.errorRows)
-    // }
-
     // REWRITTEN FUNCTION TO VALIDATE
     var eventObj = {
       startDay: newLodging.startDay,
       endDay: newLodging.endDay,
       startTime: newLodging.startTime,
-      endTime: newLodging.endTime
+      endTime: newLodging.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
     var isError = validateIntervals(this.props.events, eventObj)
-    console.log('isError', isError)
-
     if (isError) {
       window.alert('timing clashes detected')
     }
@@ -172,7 +167,13 @@ class CreateLodgingForm extends Component {
       bookedThrough: '',
       bookingConfirmation: '',
       attachments: [],
-      backgroundImage: defaultBackground
+      backgroundImage: defaultBackground,
+      locationDetails: {
+        address: null,
+        telephone: null,
+        openingHours: null
+      },
+      selectedTab: 'arrival'
     })
     this.apiToken = null
   }
@@ -185,7 +186,8 @@ class CreateLodgingForm extends Component {
     })
   }
 
-  handleFileUpload (attachmentInfo) {
+  handleFileUpload (attachmentInfo, arrivalDeparture) {
+    attachmentInfo.arrivalDeparture = arrivalDeparture
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
   }
 
@@ -235,14 +237,12 @@ class CreateLodgingForm extends Component {
   render () {
     return (
       <div style={createEventFormContainerStyle}>
-
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>
-
           {/* LEFT PANEL --- BACKGROUND, LOCATION, DATETIME */}
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
-            <div style={{...eventDescContainerStyle, ...{marginTop: '240px'}}}>
+            <div style={{...eventDescContainerStyle, ...{marginTop: '120px'}}}>
               <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} />
             </div>
             <div style={eventDescContainerStyle}>
@@ -257,24 +257,31 @@ class CreateLodgingForm extends Component {
             <div style={bookingNotesContainerStyle}>
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-              <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4>
               <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
-              {/* <Notes handleChange={(e, field) => this.handleChange(e, field)} /> */}
-              <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 
-              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
+              {/* TABS FOR CHECKIN/CHECKOUT */}
+              <div>
+                <h4 style={{display: 'inline-block', marginRight: '20px'}} onClick={() => this.switchTab('arrival')}>CHECK-IN</h4>
+                <h4 style={{display: 'inline-block', marginRight: '20px'}} onClick={() => this.switchTab('departure')}>CHECK-OUT</h4>
+              </div>
+
+              {this.state.selectedTab === 'arrival' &&
+                <div>
+                  <Notes notes={this.state.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} label={'Check-In Notes'} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
+                </div>
+              }
+              {this.state.selectedTab === 'departure' &&
+                <div>
+                  <Notes notes={this.state.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} label={'Check-Out Notes'} />
+                  <AttachmentsRework attachments={this.state.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
+                </div>
+              }
 
               <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
         </div>
-
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

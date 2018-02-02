@@ -20,11 +20,14 @@ export const queryItinerary = gql`
         start
         day
         time
+        utcOffset
+        timeUtcZero
         Activity {
           id
           description
           startTime
           endTime
+          utcOffset
           location {
             id
             placeId
@@ -96,6 +99,7 @@ export const queryItinerary = gql`
           endDay
           startTime
           endTime
+          utcOffset
           loadSequence
           currency
           cost
@@ -150,13 +154,15 @@ export const queryItinerary = gql`
           bookedThrough
           bookingConfirmation
           bookingStatus
-          notes
+          arrivalNotes
+          departureNotes
           attachments {
             id
             fileName
             fileAlias
             fileType
             fileSize
+            arrivalDeparture
           }
           backgroundImage
         }

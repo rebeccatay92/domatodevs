@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import EditFormFlightDetailsInstance from './EditFormFlightDetailsInstance'
+import FlightDetailsInstance from './FlightDetailsInstance'
 
 const pStyle = {
   margin: '0'
@@ -36,7 +36,7 @@ class FlightDetailsPage extends Component {
         {this.props.instances.length === 1 &&
           <table style={{width: '100%', tableLayout: 'fixed'}}>
             <tbody>
-              <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
+              <FlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
             </tbody>
           </table>
         }
@@ -44,13 +44,13 @@ class FlightDetailsPage extends Component {
         {hasLayover &&
           <table style={{width: '100%', tableLayout: 'fixed', position: 'relative'}}>
             <tbody>
-              <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
+              <FlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
               <tr>
                 <td style={{width: '100%', height: '90px'}}>
                   <p style={infoStyle}>layover {layoverHours}h {layoverMins}m</p>
                 </td>
               </tr>
-              <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[1]} />
+              <FlightDetailsInstance dates={this.props.dates} instance={this.props.instances[1]} />
             </tbody>
           </table>
         }
@@ -58,13 +58,13 @@ class FlightDetailsPage extends Component {
         {this.props.instances.length === 2 && this.props.totalInstances === 2 && this.props.isReturn &&
           <table style={{width: '100%', tableLayout: 'fixed'}}>
             <tbody>
-              <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
+              <FlightDetailsInstance dates={this.props.dates} instance={this.props.instances[0]} />
               <tr>
                 <td style={{width: '100%', height: '90px'}}>
                   <p style={infoStyle}>Return Flight</p>
                 </td>
               </tr>
-              <EditFormFlightDetailsInstance dates={this.props.dates} instance={this.props.instances[1]} />
+              <FlightDetailsInstance dates={this.props.dates} instance={this.props.instances[1]} />
             </tbody>
           </table>
         }

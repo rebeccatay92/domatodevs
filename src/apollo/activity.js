@@ -8,6 +8,7 @@ export const createActivity = gql`
     $endDay: Int,
     $startTime: Int,
     $endTime: Int,
+    $utcOffset: Int,
     $googlePlaceData: googlePlaceData,
     $LocationId: ID,
     $locationAlias: String,
@@ -30,6 +31,7 @@ export const createActivity = gql`
       endDay: $endDay,
       startTime: $startTime,
       endTime: $endTime,
+      utcOffset: $utcOffset,
       googlePlaceData: $googlePlaceData,
       LocationId: $LocationId,
       locationAlias: $locationAlias
@@ -57,6 +59,7 @@ export const updateActivity = gql`
     $endDay: Int,
     $startTime: Int,
     $endTime: Int,
+    $utcOffset: Int,
     $loadSequence: Int,
     $googlePlaceData: googlePlaceData,
     $locationAlias: String,
@@ -79,6 +82,7 @@ export const updateActivity = gql`
       endDay: $endDay,
       startTime: $startTime,
       endTime: $endTime,
+      utcOffset: $utcOffset,
       loadSequence: $loadSequence,
       googlePlaceData: $googlePlaceData,
       locationAlias: $locationAlias

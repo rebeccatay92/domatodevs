@@ -120,9 +120,17 @@ class FlightSearchParameters extends Component {
 
   handleChange (e, field) {
     if (field === 'departureDate' || field === 'returnDate') {
-      this.setState({
-        [field]: moment(e._d)
-      })
+      // might be cleared to null
+      console.log('e', e)
+      if (e) {
+        this.setState({
+          [field]: moment(e._d)
+        }, () => console.log('state', this.state))
+      } else {
+        this.setState({
+          [field]: null
+        }, () => console.log('e null', this.state))
+      }
     } else {
       this.setState({
         [field]: e.target.value
@@ -161,10 +169,10 @@ class FlightSearchParameters extends Component {
         {/* DATEBOX */}
         <div style={{textAlign: 'center'}}>
           <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.departureDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'departureDate')} />
+            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.departureDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onChange={(e) => this.handleChange(e, 'departureDate')} />
           </div>
           <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'returnDate')} />
+            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onChange={(e) => this.handleChange(e, 'returnDate')} isClearable />
           </div>
 
           <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}}>
@@ -198,6 +206,11 @@ class FlightSearchParameters extends Component {
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>2-11y</span>
           <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>{'<2y'}</span>
         </div>
+        {this.props.searching &&
+          <div style={{textAlign: 'right', marginRight: '20px'}} onClick={() => this.handleFlightSearch()}>
+            <h5>Search again</h5>
+          </div>
+        }
         <div style={{textAlign: 'center'}}>
           <hr style={{opacity: 0.5}} />
           {!this.props.searching && !this.props.bookingDetails && <Button style={{...createFlightButtonStyle, ...{marginRight: '20px'}}} bsStyle='danger' onClick={() => this.handleFlightSearch()}>SEARCH</Button>}

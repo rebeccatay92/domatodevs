@@ -1,4 +1,4 @@
-import airports from '../data/airports.json'
+import findUtcOffsetAirports from './findUtcOffsetAirports'
 /*
 WHAT THIS DOES:
 Returns newEventObjs with loadseq assigned, also returns changingLoadSequence input array
@@ -6,7 +6,8 @@ Returns newEventObjs with loadseq assigned, also returns changingLoadSequence in
 REQUIRED ARGUMENTS:
 1) eventsArr from queryItinerary
 2) eventModel ('Activity', 'Food', 'Lodging', 'Transport', 'FlightInstance')
-3) new obj / array of new objs containing the newEvents that need to be assigned start/end load sequences (day/time required. null value ok)
+3) new obj / array of new objs containing the newEvents that need to be assigned start/end load sequences
+REQUIRED STARTDAY, ENDDAY, STARTTIME, ENDTIME, UTCOFFSET (MAY BE DEPARTURE/ARRIVAL)
 eg: newActivity {startDay: 1, startTime: 32000}
 eg: [{newFLightInstance}, {newFLightInstance}]
 */
@@ -33,50 +34,15 @@ function checkIfEndingRow (event) {
   return (typeof (event.start) === 'boolean' && !event.start && event.type !== 'Lodging')
 }
 
-// given an airport IATA code, find the number of minutes utcOffset. airports.json has a timezone column in hours
-function findUtcOffsetAirports (iata) {
-  var airportRow = airports.find(row => {
-    return row.iata === iata
-  })
-  var utcInMinutes = airportRow.timezone * 60
-  return utcInMinutes
-}
-
 function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
   var allEvents = JSON.parse(JSON.stringify(eventsArr))
   // for changing load seq of existing events
   var loadSequenceInput = []
-
-  // console.log('allEvents', allEvents, 'newEvent', newEvent)
-
-  // tack on location utcOffset for each event row (location may be departure/arrival depending on start:true or start:false)
-  var allEvents = allEvents.map(eventRow => {
-    var type = eventRow.type
-    var eventRowWithUtc = null
-    if (type === 'Activity' || type === 'Food' || type === 'Lodging') {
-      eventRow.utcOffset = eventRow[`${type}`].location.utcOffset
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-      eventRowWithUtc = eventRow
-    }
-    if (type === 'LandTransport' || type === 'SeaTransport' || type === 'Train') {
-      eventRow.utcOffset = eventRow.start ? eventRow[`${type}`].departureLocation.utcOffset : eventRow[`${type}`].arrivalLocation.utcOffset
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-      eventRowWithUtc = eventRow
-    }
-    if (type === 'Flight') {
-      eventRow.utcOffset = eventRow.start ? eventRow.Flight.FlightInstance.departureLocation.utcOffset : eventRow.Flight.FlightInstance.arrivalLocation.utcOffset
-      eventRowWithUtc = eventRow
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-    }
-    return eventRowWithUtc
-  })
-
-  console.log('allEvents', allEvents)
-  console.log('newEvent', newEvent)
+  console.log('allEvents', allEvents, 'newEvent', newEvent)
 
   // add utc corrected times to newEvent
   if (eventModel === 'Activity' || eventModel === 'Food' || eventModel === 'Lodging') {
-    var utcOffset = newEvent.googlePlaceData.utcOffset
+    var utcOffset = newEvent.googlePlaceData ? newEvent.googlePlaceData.utcOffset : newEvent.utcOffset
     newEvent.startTimeUtcZero = newEvent.startTime - (utcOffset * 60)
     newEvent.endTimeUtcZero = newEvent.endTime - (utcOffset * 60)
   }
@@ -105,7 +71,6 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
 
     var displacedRow = dayEvents.find(e => {
       if (typeof (newEvent.startTime) === 'number') {
-        // return (e.time >= newEvent.startTime)
         return (e.timeUtcZero >= newEvent.startTimeUtcZero)
       } else {
         return null
@@ -149,7 +114,6 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
 
         var displacedRow = dayEvents.find(event => {
           if (typeof (newEvent[`${type}Time`]) === 'number') {
-            // return (event.time >= newEvent[`${type}Time`])
             return (event.timeUtcZero >= newEvent[`${type}TimeUtcZero`])
           } else {
             return null
@@ -195,7 +159,6 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
 
         var displacedRow = dayEvents.find(event => {
           if (typeof (newEvent[`${type}Time`]) === 'number') {
-            // return (event.time >= newEvent[`${type}Time`])
             return (event.timeUtcZero >= newEvent[`${type}TimeUtcZero`])
           } else {
             return null
@@ -252,23 +215,6 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
       var dayInstanceRows = flightInstanceRows.filter(e => {
         return e.day === day
       })
-
-      // inserting entire day's instances as a group,
-      // var displacedRow = dayEvents.find(e => {
-      //   return (e.timeUtcZero >= dayInstanceRows[0].timeUtcZero)
-      // })
-      // if (!displacedRow) {
-      //   dayEvents.push(...dayInstanceRows)
-      // } else if (displacedRow) {
-      //   var index = dayEvents.indexOf(displacedRow)
-      //   if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === dayInstanceRows[0].timeUtcZero) {
-      //     dayEvents.splice(index + 1, 0, ...dayInstanceRows)
-      //   } else if (displacedRow.timeUtcZero === dayInstanceRows[0].timeUtcZero && displacedRow.type === 'Lodging') {
-      //     dayEvents.splice(index + 1, 0, ...dayInstanceRows)
-      //   } else {
-      //     dayEvents.splice(index, 0, ...dayInstanceRows)
-      //   }
-      // }
 
       // inserting each instance individually
       dayInstanceRows.forEach(instanceRow => {
@@ -327,8 +273,8 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
       return removedUtcInstance
     })
   }
-  console.log('newEvent after removing utc properties', newEvent)
-  console.log('loadSequenceInput', loadSequenceInput)
+  // console.log('newEvent after removing utc properties', newEvent)
+  // console.log('loadSequenceInput', loadSequenceInput)
 
   var output = {
     newEvent,

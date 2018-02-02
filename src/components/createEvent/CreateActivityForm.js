@@ -11,7 +11,6 @@ import DateTimePicker from '../eventFormComponents/DateTimePicker'
 import BookingDetails from '../eventFormComponents/BookingDetails'
 import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
-// import Attachments from '../eventFormComponents/Attachments'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
@@ -26,7 +25,6 @@ import latestTime from '../../helpers/latestTime'
 import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
 import { validateOpeningHours } from '../../helpers/openingHoursValidation'
-import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
 import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
 
 import { validateIntervals } from '../../helpers/intervalValidationTesting'
@@ -38,8 +36,7 @@ class CreateActivityForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      ItineraryId: this.props.ItineraryId,
-      startDay: this.props.day, // int
+      startDay: this.props.day,
       endDay: this.props.day,
       googlePlaceData: {},
       locationAlias: '',
@@ -80,7 +77,7 @@ class CreateActivityForm extends Component {
     var bookingStatus = this.state.bookingConfirmation ? true : false
 
     var newActivity = {
-      ItineraryId: parseInt(this.state.ItineraryId, 10),
+      ItineraryId: this.props.ItineraryId,
       locationAlias: this.state.locationAlias,
       startDay: this.state.startDay,
       endDay: this.state.endDay,
@@ -99,6 +96,30 @@ class CreateActivityForm extends Component {
     }
     if (this.state.googlePlaceData.placeId) {
       newActivity.googlePlaceData = this.state.googlePlaceData
+      newActivity.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+    // IF LOCATION MISSING, CHECK DAY'S EVENTS AND ASSIGN A UTC OFFSET.
+    if (!this.state.googlePlaceData.placeId) {
+      var daysEvents = this.props.events.filter(e => {
+        return e.day === newActivity.startDay
+      })
+      console.log('daysEvents', daysEvents)
+      if (!daysEvents.length) {
+        newActivity.utcOffset = 0
+      } else {
+        var utcOffsetHolder = daysEvents[0].utcOffset
+        var isDifferent = false
+        daysEvents.forEach(event => {
+          if (event.utcOffset !== utcOffsetHolder) {
+            isDifferent = true
+          }
+        })
+        if (isDifferent) {
+          newActivity.utcOffset = 0
+        } else {
+          newActivity.utcOffset = utcOffsetHolder
+        }
+      }
     }
 
     // VALIDATE AND ASSIGN MISSING TIMINGS.
@@ -117,11 +138,11 @@ class CreateActivityForm extends Component {
       endDay: newActivity.endDay,
       startTime: newActivity.startTime,
       endTime: newActivity.endTime,
-      utcOffset: this.state.googlePlaceData.utcOffset
+      utcOffset: newActivity.utcOffset
     }
+
     var isError = validateIntervals(this.props.events, eventObj, 'Activity')
     console.log('isError', isError)
-
     if (isError) {
       window.alert('timing clashes detected')
     }
@@ -245,10 +266,8 @@ class CreateActivityForm extends Component {
   render () {
     return (
       <div style={createEventFormContainerStyle}>
-
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>
-
           {/* LEFT PANEL --- BACKGROUND, LOCATION, DATETIME */}
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
@@ -272,28 +291,22 @@ class CreateActivityForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              {/* <SubmitCancelForm handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} /> */}
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
-              <h4 style={{fontSize: '24px', marginTop: '50px'}}>
-                  Additional Notes
-              </h4>
-
-              <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} />
-
+              {this.state.googlePlaceData.name &&
+                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Detailed Location (${this.state.googlePlaceData.name})`} />
+              }
+              {!this.state.googlePlaceData.name &&
+                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={'Detailed Location'} />
+              }
               <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 
-              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} />
+              <AttachmentsRework attachments={this.state.attachments} ItineraryId={this.props.ItineraryId} handleFileUpload={(e) => this.handleFileUpload(e)} removeUpload={i => this.removeUpload(i)} setBackground={(url) => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
 
               <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
             </div>
           </div>
         </div>
-
-        {/* BOTTOM PANEL --- ATTACHMENTS */}
-        {/* <div style={attachmentsStyle}>
-          <Attachments handleFileUpload={(e) => this.handleFileUpload(e)} attachments={this.state.attachments} ItineraryId={this.state.ItineraryId} removeUpload={i => this.removeUpload(i)} setBackground={url => this.setBackground(url)} />
-        </div> */}
       </div>
     )
   }

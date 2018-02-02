@@ -10,8 +10,11 @@ const tableWidth = 962
 const totalWidth = 1221
 const totalHeight = 755
 const leftPanelWidth = 755
+// const totalWidth = 1415
+// const totalHeight = 919
+// const leftPanelWidth = 919
 const rightPanelWidth = totalWidth - leftPanelWidth
-
+  // updated form dimensions. 1415 x 919 for events, 1290 x 869 flights. left panel 919 x 919 for event, 494 x 868 flight
 // PlannerPage.js styles
 export const plannerPageStyles = {
   fontFamily: '\'Roboto\', sans-serif',
@@ -179,8 +182,9 @@ export const expandEventIconStyle = {position: 'absolute', right: '0px', top: '1
 // Create Event Form Styles
 export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
 
-export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
-
+// export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
+// height 100% since attachments is no longer at bottom
+export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '100%'}
 export const createEventFormLeftPanelStyle = (url, type) => {
   return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? rightPanelWidth + 'px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative'}
 }
@@ -229,6 +233,7 @@ export const labelStyle = {
 
 // Attachments.js styles
 export const attachmentStyle = {margin: '1px 6px 0 0', verticalAlign: 'top', display: 'inline-block', position: 'relative', ':hover': {color: primaryColor}, border: '1px solid ' + secondaryFontColor, height: '50px', cursor: 'pointer', borderRadius: '5px', width: '15%', backgroundColor: backgroundColor}
+// export const addAttachmentBtnStyle = {color: secondaryFontColor, margin: '10px 5px 0 0', cursor: 'pointer', fontSize: '30px', ':hover': {color: primaryColor}}
 export const addAttachmentBtnStyle = {color: secondaryFontColor, margin: '10px 5px 0 0', cursor: 'pointer', fontSize: '30px', ':hover': {color: primaryColor}}
 export const attachmentNameStyle = {fontSize: '13px', color: secondaryFontColor, fontWeight: 'bold', position: 'relative', top: '-6px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}
 export const attachmentSizeStyle = {fontSize: '13px', color: secondaryFontColor, fontWeight: 'bold', position: 'relative', top: '-10px'}

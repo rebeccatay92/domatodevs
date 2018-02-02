@@ -3,9 +3,10 @@ import { connect } from 'react-redux'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import Radium from 'radium'
-import ImagePreview from './ImagePreview'
+// import ImagePreview from './ImagePreview'
 import Thumbnail from './Thumbnail'
 // import { addAttachmentBtnStyle } from '../../Styles/styles'
+import AttachmentOptionsDropdown from './AttachmentOptionsDropdown'
 
 class AttachmentsRework extends Component {
   constructor (props) {
@@ -13,9 +14,11 @@ class AttachmentsRework extends Component {
     this.state = {
       thumbnail: false,
       thumbnailUrl: null,
-      // hoveringOver: null, // determining which file's X icon to display
+      hoveringOverIndex: null,
       preview: false,
-      previewUrl: null
+      previewUrl: null,
+      dropdown: false,
+      dropdownIndex: null
     }
   }
 
@@ -108,24 +111,24 @@ class AttachmentsRework extends Component {
   }
 
   thumbnailMouseEnter (event, i) {
+    // console.log('mouse enter', i)
     var fileName = this.props.attachments[i].fileName
     var fileType = this.props.attachments[i].fileType
-
-    // this.setState({hoveringOver: i})
 
     if (fileType === 'application/pdf') {
       var url = 'http://media.idownloadblog.com/wp-content/uploads/2016/04/52ff0e80b07d28b590bbc4b30befde52.png'
     } else {
       url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
     }
+    this.setState({hoveringOverIndex: i})
     this.setState({thumbnailUrl: url})
     this.setState({thumbnail: true})
   }
 
   thumbnailMouseLeave (event) {
+    this.setState({hoveringOverIndex: null})
     this.setState({thumbnail: false})
     this.setState({thumbnailUrl: null})
-    // this.setState({hoveringOver: null})
   }
 
   openPreview () {
@@ -140,52 +143,67 @@ class AttachmentsRework extends Component {
     })
   }
 
+  toggleDropdown (i) {
+    console.log('toggle dropdown', i)
+    this.setState({dropdown: !this.state.dropdown, dropdownIndex: i})
+  }
+
   // NO CLICK TO OPEN PREVIEW YET. THUMBNAIL FLASHES
   render () {
-    // console.log('attachments props', this.props)
     return (
       <div>
         {/* LIST OF ATTACHMENTS */}
         {!this.state.preview && this.props.attachments.map((info, i) => {
+          // console.log('length', this.props.attachments.length, 'i+1', i + 1)
+          var fileName = info.fileName
+          var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
+          url = url.replace(/ /gi, '%20')
           return (
-            <div key={'thumbnail' + i} style={{width: '100%'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
+            <div key={'thumbnail' + i} style={{width: '100%', position: 'relative'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
               <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview()}>
                 {info.fileType === 'application/pdf' &&
-                <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '20px', marginRight: '2px'}}>picture_as_pdf</i>}
+                <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '20px', marginRight: '2px', verticalAlign: 'middle'}}>picture_as_pdf</i>}
                 {info.fileType !== 'application/pdf' &&
-                <i className='material-icons' style={{color: 'rgb(43, 201, 217)', fontSize: '20px'}}>photo</i>}
-                <h5 style={{display: 'inline-block'}}>{info.fileAlias}</h5>
+                <i className='material-icons' style={{color: 'rgb(43, 201, 217)', fontSize: '20px', marginRight: '2px', verticalAlign: 'middle'}}>photo</i>}
+                <h5 style={{display: 'inline-block', maxWidth: '150px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', verticalAlign: 'middle'}}>{info.fileAlias}</h5>
               </div>
 
-              <div style={{display: 'inline-block'}}>
-                <i className='material-icons' onClick={() => this.setBackground(i)} style={{cursor: 'pointer'}}>mood</i>
-                <i className='material-icons'>file_download</i>
-                <i className='material-icons' onClick={() => this.removeUpload(i, this.props.formType)} style={{cursor: 'pointer'}}>clear</i>
-                <i className='material-icons'>more_vert</i>
+              <div style={{display: 'inline-block', position: 'relative', float: 'right'}}>
+                {this.props.backgroundImage && (this.props.backgroundImage.indexOf(info.fileName) > -1) &&
+                  <i className='material-icons'>assignment_ind</i>
+                }
+                <a href={url} download='testing.png'><i className='material-icons' style={{color: 'black'}}>file_download</i></a>
+                <i className='material-icons ignoreMoreVert' style={{cursor: 'pointer'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
+                {this.state.dropdown && this.state.dropdownIndex === i &&
+                  <AttachmentOptionsDropdown toggleDropdown={() => this.toggleDropdown()} index={i} outsideClickIgnoreClass={'ignoreMoreVert'} setBackground={() => this.setBackground(i)} removeUpload={() => this.removeUpload(i, this.props.formType)} file={info} />
+                }
               </div>
+
+              {/* THUMBNAIL ON HOVER */}
+              {this.state.hoveringOverIndex === i && this.state.thumbnail && !this.state.dropdown &&
+                <Thumbnail thumbnailUrl={url} />
+              }
+              {(this.props.attachments.length !== i + 1) &&
+                <hr style={{margin: 0}} />
+              }
             </div>
           )
         })}
         {/* ADD ATTACHMENT ICON */}
         {this.props.attachments.length <= 5 &&
           <label style={{display: 'inline-block', color: 'black', cursor: 'pointer'}}>
-            <i key='attachmentAdd' className='material-icons'>add</i>
-            Upload a file
+            <i key='attachmentAdd' className='material-icons' style={{verticalAlign: 'middle'}}>file_upload</i>
+            Click here to upload files
             <input type='file' name='file' accept='.jpeg, .jpg, .png, .pdf' onChange={(e) => {
               this.handleFileUpload(e)
             }} style={{display: 'none'}} />
           </label>
         }
-        {this.props.attachments.length > 5 &&
-          <div style={{width: '50px'}}>
+        {/* {this.props.attachments.length > 5 &&
+          <div>
             <span style={{color: 'black'}}>Upload maxed</span>
           </div>
-        }
-
-        {/* THUMBNAIL ON HOVER */}
-        {this.state.thumbnail &&
-          <Thumbnail thumbnailUrl={this.state.thumbnailUrl} />
-        }
+        } */}
       </div>
     )
   }

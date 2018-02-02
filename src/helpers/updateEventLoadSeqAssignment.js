@@ -1,4 +1,7 @@
-import airports from '../data/airports.json'
+import findUtcOffsetAirports from './findUtcOffsetAirports'
+// import airports from '../data/airports.json'
+// import findUtcOffsetAirports from './findUtcOffsetAirports'
+
 // GIVEN EVENTS ARR, EVENTMODEL, MODELID AND UPDATEEVENTOBJ WITH STARTDAY,ENDDAY,STARTTIME,ENDTIME, RETURN CHANGINGLOADSEQUENCE ARR AND UPDATEEVENTOBJ WITH LOAD SEQ.
 
 // updateEventObj = {
@@ -7,10 +10,8 @@ import airports from '../data/airports.json'
 //   startTime,
 //   endTime,
 //   utcOffset, // for activity, food, lodging
-//   departureUtcOffset, // transport
-//   arrivalUtcOffset,
-//   departureIATA, // flight instances
-//   arrivalIATA
+//   departureUtcOffset, arrivalUtcOffset // transport
+//   departureIATA, arrivalIATA // flights
 // }
 
 function constructLoadSeqInputObj (event, correctLoadSeq) {
@@ -30,14 +31,6 @@ function checkIfEndingRow (event) {
   return (typeof (event.start) === 'boolean' && !event.start && event.type !== 'Lodging')
 }
 
-function findUtcOffsetAirports (iata) {
-  var airportRow = airports.find(row => {
-    return row.iata === iata
-  })
-  var utcInMinutes = airportRow.timezone * 60
-  return utcInMinutes
-}
-
 function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEvent) {
   var loadSequenceInput = []
 
@@ -54,29 +47,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
       return e
     }
   })
-
-  // TACK ON LOCATION UTCOFFSET FOR EVENTS ARR
-  allEvents = allEvents.map(eventRow => {
-    var type = eventRow.type
-    var eventRowWithUtc = null
-    if (type === 'Activity' || type === 'Food' || type === 'Lodging') {
-      eventRow.utcOffset = eventRow[`${type}`].location.utcOffset
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-      eventRowWithUtc = eventRow
-    }
-    if (type === 'LandTransport' || type === 'SeaTransport' || type === 'Train') {
-      eventRow.utcOffset = eventRow.start ? eventRow[`${type}`].departureLocation.utcOffset : eventRow[`${type}`].arrivalLocation.utcOffset
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-      eventRowWithUtc = eventRow
-    }
-    if (type === 'Flight') {
-      eventRow.utcOffset = eventRow.start ? eventRow.Flight.FlightInstance.departureLocation.utcOffset : eventRow.Flight.FlightInstance.arrivalLocation.utcOffset
-      eventRowWithUtc = eventRow
-      eventRow.timeUtcZero = eventRow.time - (eventRow.utcOffset * 60)
-    }
-    return eventRowWithUtc
-  })
-  console.log('after adding utc offset and utcTimeZero to eventsArr', allEvents)
+  // console.log('updateEventObj', updateEvent)
 
   // add timeUtcZero to updateEvent
   // console.log('before calculating utcTimeZero', updateEvent)
@@ -89,9 +60,11 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     updateEvent.endTimeUtcZero = updateEvent.endTime - (updateEvent.arrivalUtcOffset * 60)
   }
   if (eventModel === 'Flight') {
+    console.log('is flight')
     updateEvent = updateEvent.map(instance => {
       var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
       var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
+      // console.log('utc offsets', startUtcOffset, endUtcOffset)
       instance.startTimeUtcZero = instance.startTime - (startUtcOffset * 60)
       instance.endTimeUtcZero = instance.endTime - (endUtcOffset * 60)
       var instanceWithUtc = instance
@@ -270,19 +243,23 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     var days = []
 
     // reassign seq
-    console.log('updates arr', updateEvent)
+    // console.log('updates arr', updateEvent)
 
     updateEvent.forEach(instance => {
+      // console.log('instance', instance)
       flightInstanceRows.push(
         {day: instance.startDay, timeUtcZero: instance.startTimeUtcZero},
         {day: instance.endDay, timeUtcZero: instance.endTimeUtcZero}
       )
       if (!days.includes(instance.startDay)) {
         days.push(instance.startDay)
-      } else if (!days.includes(instance.endDay)) {
+      }
+      if (!days.includes(instance.endDay)) {
         days.push(instance.endDay)
       }
     })
+    // console.log('flightinstance rows', flightInstanceRows)
+    // console.log('days', days)
     // if reinsertion, remove days from affectedDays array.
     days.forEach(day => {
       if (affectedDays.includes(day)) {
@@ -301,16 +278,16 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
       var dayInstanceRows = flightInstanceRows.filter(e => {
         return e.day === day
       })
-
+      // console.log('dayInstanceRows', dayInstanceRows)
       dayInstanceRows.forEach(instanceRow => {
-        console.log('inserting for 1 instanceRow', instanceRow)
+        // console.log('inserting for 1 instanceRow', instanceRow)
         var displacedRow = dayEvents.find(e => {
           return (e.timeUtcZero >= instanceRow.timeUtcZero)
         })
         if (!displacedRow) {
           dayEvents.push(instanceRow)
         } else {
-          console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
+          // console.log('instanceRow time', instanceRow.time, 'displacedRow', displacedRow.time)
           var index = dayEvents.indexOf(displacedRow)
           if (checkIfEndingRow(displacedRow) && displacedRow.timeUtcZero === instanceRow.timeUtcZero) {
             dayEvents.splice(index + 1, 0, instanceRow)
