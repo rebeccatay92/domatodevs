@@ -338,7 +338,6 @@ class CreateFlightForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGS, MULTIPLE DETAILS/NOTES */}
           <div style={createEventFormRightPanelStyle('flight')}>
             <div style={bookingNotesContainerStyle}>
-              <SubmitCancelForm flight handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
               {this.state.bookingDetails && (
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
@@ -357,15 +356,22 @@ class CreateFlightForm extends Component {
               </div>
             </div>
             <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
-              {this.state.searching && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({searchClicked: this.state.searchClicked + 1})}>Search</Button>}
-              {this.state.searching && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => {
-                this.setState({
-                  searching: false,
-                  bookingDetails: true
-                })
-              }}>Confirm</Button>}
+              {this.state.searching &&
+                <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
+              }
+              {this.state.searching &&
+                <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => {
+                  this.setState({
+                    searching: false,
+                    bookingDetails: true
+                  })
+                }}>Confirm</Button>
+              }
 
               {this.state.bookingDetails && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({bookingDetails: false, searching: true})}>Back</Button>}
+              {this.state.bookingDetails &&
+                <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
+              }
               {this.state.bookingDetails && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>}
 
               {/* {this.state.bookingDetails &&
