@@ -6,11 +6,11 @@ export const queryItinerary = gql`
       id
       name
       description
-      countries {
-        id
-        name
-        code
-      }
+      # countries {
+      #   id
+      #   name
+      #   code
+      # }
       days
       startDate
       events {
@@ -503,43 +503,43 @@ export const itinerariesByUser = gql`
     itinerariesByUser {
       id
       name
+      description
       days
       startDate
-      description
-      countries {
-        id
-        name
-        code
-      }
+      # countries {
+      #   id
+      #   name
+      #   code
+      # }
       owner {
         id
         name
         email
       }
-      users {
-        id
-        name
-        email
-      }
+      # users {
+      #   id
+      #   name
+      #   email
+      # }
     }
   }`
 
 export const createItinerary = gql`
   mutation createItinerary(
     $UserId: Int!,
-    $CountryId: Int,
+    # $CountryId: Int,
     $name: String!,
+    $description: String,
     $days: Int!,
     $startDate: Int
-    $description: String
   ) {
     createItinerary(
       UserId:$UserId,
-      CountryId: $CountryId,
+      # CountryId: $CountryId,
       name: $name,
+      description: $description,
       days: $days,
       startDate: $startDate
-      description: $description
     ) {
       id
       name
@@ -553,22 +553,22 @@ export const updateItineraryDetails = gql`
   mutation updateItineraryDetails(
     $id: ID!,
     $name: String,
+    $description: String,
     $startDate: Int,
-    $days: Int,
-    $description: String
+    $days: Int
   ) {
     updateItineraryDetails(
       id: $id,
       name: $name,
+      description: $description,
       startDate: $startDate,
-      days: $days,
-      description: $description
+      days: $days
     ) {
       id
       name
+      description
       days
       startDate
-      description
     }
   }`
 
