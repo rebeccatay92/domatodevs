@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { Link } from 'react-router-dom'
+import moment from 'moment'
 
 import { deleteItinerary, deleteCountriesItineraries, itinerariesByUser } from '../../apollo/itinerary'
 
-import AddCountry from './AddCountry'
+// import AddCountry from './AddCountry'
 import UpdateItineraryDetails from './UpdateItineraryDetails'
 
 class Itinerary extends Component {
@@ -48,9 +49,20 @@ class Itinerary extends Component {
     if (itinerary.startDate) {
       var startDate = (new Date(itinerary.startDate * 1000).toISOString()).substring(0, 10)
     }
-    if (itinerary.endDate) {
-      var endDate = (new Date(itinerary.endDate * 1000).toISOString()).substring(0, 10)
+    // using moment to find start, end dates
+    if (itinerary.startDate) {
+      var startUnix = itinerary.startDate
+      var startMoment = moment.unix(startUnix).utc().format('ddd DD MMM YYYY HH:mm')
+      console.log(moment.unix(startUnix).utc())
+      console.log('startMoment', startMoment)
+
+      var endUnix = itinerary.startDate + (86400 * (itinerary.days - 1))
+      var endMoment = moment.unix(endUnix).utc().format('ddd DD MMM YYYY HH:mm')
+      console.log('endMoment', endMoment)
     }
+    // if (itinerary.endDate) {
+    //   var endDate = (new Date(itinerary.endDate * 1000).toISOString()).substring(0, 10)
+    // }
 
     return (
       <div style={{border: '1px solid black'}}>
