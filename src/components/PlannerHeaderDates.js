@@ -88,8 +88,8 @@ class PlannerHeaderDates extends Component {
             />
           </div>
         </span>
-      ) : (
-        <p style={itineraryDatesStyle} className='itineraryInfo'><span title={'Start Date'} onClick={() => this.setState({editing: true})}>{startDateString.toUpperCase()}</span> - <span title={'End Date'} onClick={() => this.setState({editing: true})}>{endDateString.toUpperCase()}</span></p>
+      ) : (this.props.startDate ?
+        <p style={itineraryDatesStyle} className='itineraryInfo'><span title={'Start Date'} onClick={() => this.setState({editing: true})}>{startDateString.toUpperCase()}</span> - <span title={'End Date'} onClick={() => this.setState({editing: true})}>{endDateString.toUpperCase()}</span></p> : <p style={itineraryDatesStyle} className='itineraryInfo'><span title={'Start Date'} onClick={() => this.setState({editing: true})}>Set a start date</span></p>
       )
     )
   }

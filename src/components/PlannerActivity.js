@@ -31,10 +31,9 @@ import { timelineStyle, eventBoxStyle, timelineColumnStyle, dateTableFirstHeader
 
 const plannerActivitySource = {
   beginDrag (props) {
-    return props.activity
+    return {...props.activity, ...{index: props.index}}
   },
   endDrag (props, monitor) {
-    console.log(monitor.didDrop());
     if (!monitor.didDrop()) {
       props.initializePlanner(props.data.findItinerary.events)
     }
@@ -54,7 +53,7 @@ const plannerActivityTarget = {
   },
   drop (props, monitor) {
     let day = props.activity.day
-    if (props.activity.day === monitor.getItem().day && monitor.getItem().loadSequence === props.index + 1) {
+    if (props.activity.day === monitor.getItem().day && monitor.getItem().index === props.index) {
       props.initializePlanner(props.data.findItinerary.events)
       return
     }
