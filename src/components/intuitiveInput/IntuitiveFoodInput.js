@@ -110,6 +110,30 @@ class IntuitiveFoodInput extends Component {
 
     if (this.state.googlePlaceData.placeId) {
       newFood.googlePlaceData = this.state.googlePlaceData
+      newFood.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+    // IF LOCATION MISSING, CHECK DAY'S EVENTS AND ASSIGN A UTC OFFSET.
+    if (!this.state.googlePlaceData.placeId) {
+      var daysEvents = this.props.events.filter(e => {
+        return e.day === newFood.startDay
+      })
+      console.log('daysEvents', daysEvents)
+      if (!daysEvents.length) {
+        newFood.utcOffset = 0
+      } else {
+        var utcOffsetHolder = daysEvents[0].utcOffset
+        var isDifferent = false
+        daysEvents.forEach(event => {
+          if (event.utcOffset !== utcOffsetHolder) {
+            isDifferent = true
+          }
+        })
+        if (isDifferent) {
+          newFood.utcOffset = 0
+        } else {
+          newFood.utcOffset = utcOffsetHolder
+        }
+      }
     }
 
     let startEndTimeOutput = newFood

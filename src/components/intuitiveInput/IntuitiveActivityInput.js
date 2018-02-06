@@ -94,7 +94,7 @@ class IntuitiveActivityInput extends Component {
     }
 
     const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.activityDate) + 1
-    console.log(startDay);
+    console.log(startDay)
 
 
     const newActivity = {
@@ -111,10 +111,33 @@ class IntuitiveActivityInput extends Component {
 
     if (this.state.googlePlaceData.placeId) {
       newActivity.googlePlaceData = this.state.googlePlaceData
+      newActivity.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+    // IF LOCATION MISSING, CHECK DAY'S EVENTS AND ASSIGN A UTC OFFSET.
+    if (!this.state.googlePlaceData.placeId) {
+      var daysEvents = this.props.events.filter(e => {
+        return e.day === newActivity.startDay
+      })
+      console.log('daysEvents', daysEvents)
+      if (!daysEvents.length) {
+        newActivity.utcOffset = 0
+      } else {
+        var utcOffsetHolder = daysEvents[0].utcOffset
+        var isDifferent = false
+        daysEvents.forEach(event => {
+          if (event.utcOffset !== utcOffsetHolder) {
+            isDifferent = true
+          }
+        })
+        if (isDifferent) {
+          newActivity.utcOffset = 0
+        } else {
+          newActivity.utcOffset = utcOffsetHolder
+        }
+      }
     }
 
     // Assign Start/End Time based on previous/next event within that day.
-    // unix 0 is taken to be falsy. check missing time using typeof !== number
     let startEndTimeOutput = newActivity
     if (!this.state.startTime && !this.state.endTime) {
       // add default time as all-day event here
