@@ -75,16 +75,14 @@ class PlannerHeaderDates extends Component {
           <div style={{display: 'inline-block', width: '40%'}}>
             <DatePicker
               selected={this.state.newStartDate}
-              maxDate={this.state.newEndDate}
-              onChange={(e) => this.setState({newStartDate: moment(e._d)})}
+              onChange={(e) => this.setState({newStartDate: moment(e._d), newEndDate: moment(e._d).add(this.props.days - 1, 'days')})}
             />
           </div>
           <span style={{marginLeft: '-4%'}}> - </span>
           <div style={{display: 'inline-block', width: '40%'}}>
             <DatePicker
               selected={this.state.newEndDate}
-              minDate={this.state.newStartDate}
-              onChange={(e) => this.setState({newEndDate: moment(e._d)})}
+              onChange={(e) => this.setState({newEndDate: moment(e._d), newStartDate: moment(e._d).subtract(this.props.days - 1, 'days')})}
             />
           </div>
         </span>

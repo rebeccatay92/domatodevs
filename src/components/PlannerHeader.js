@@ -6,15 +6,6 @@ import PlannerHeaderInfo from './PlannerHeaderInfo'
 import PlannerHeaderDates from './PlannerHeaderDates'
 
 class PlannerHeader extends Component {
-  // constructor (props) {
-  //   super(props)
-  //
-  //   this.state = {
-  //     editingName: false,
-  //     editingDesc: false
-  //   }
-  // }
-
   render () {
     return (
       <div style={plannerHeaderContainerStyle}>
