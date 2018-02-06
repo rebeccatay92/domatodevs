@@ -93,7 +93,7 @@ class IntuitiveActivityInput extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
-    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.activityDate) + 1
+    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.date) + 1
     console.log(startDay)
 
 
@@ -174,7 +174,7 @@ class IntuitiveActivityInput extends Component {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
 
-    console.log(this.props.activityDate, this.props.dates.map(date => date.getTime()))
+    console.log(this.props.date, this.props.dates.map(date => date.getTime()))
   }
 
   render () {

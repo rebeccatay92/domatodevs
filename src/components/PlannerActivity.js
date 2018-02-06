@@ -6,23 +6,18 @@ import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity, init
 import { deleteActivityFromBucket, addActivityToBucket } from '../actions/bucketActions'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
-import { createActivity } from '../apollo/activity'
-import { createFood } from '../apollo/food'
-import { createFlight } from '../apollo/flight'
-import { createLandTransport } from '../apollo/landtransport'
-import { createLodging } from '../apollo/lodging'
+// import { createActivity } from '../apollo/activity'
+// import { createFood } from '../apollo/food'
+// import { createFlight } from '../apollo/flight'
+// import { createLandTransport } from '../apollo/landtransport'
+// import { createLodging } from '../apollo/lodging'
 import { queryItinerary } from '../apollo/itinerary'
 import ActivityInfo from './ActivityInfo'
 import PlannerColumnValue from './PlannerColumnValue'
 import PlannerActivityTimeline from './PlannerActivityTimeline'
 import EventDropdownMenu from './EventDropdownMenu'
 
-import IntuitiveFlightInput from './intuitiveInput/IntuitiveFlightInput'
-import IntuitiveActivityInput from './intuitiveInput/IntuitiveActivityInput'
-import IntuitiveFoodInput from './intuitiveInput/IntuitiveFoodInput'
-import IntuitiveTransportInput from './intuitiveInput/IntuitiveTransportInput'
-import IntuitiveLodgingInput from './intuitiveInput/IntuitiveLodgingInput'
-
+import IntuitiveInputHOC from './intuitiveInput/IntuitiveInputHOC'
 import CreateEventFormHOC from './createEvent/CreateEventFormHOC'
 import EditEventFormHOC from './editEvent/EditEventFormHOC'
 
@@ -185,32 +180,9 @@ class PlannerActivity extends Component {
     if (this.state.creatingEvent && !this.state.intuitiveInputType) {
       createEventBox = eventsListBox
     } else if (this.state.intuitiveInputType) {
-      const types = {
-        Flight: (
-          <IntuitiveFlightInput itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        ),
-        Activity: (
-          <IntuitiveActivityInput itineraryId={this.props.itineraryId} dates={this.props.dates} activityDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        ),
-        Food: (
-          <IntuitiveFoodInput itineraryId={this.props.itineraryId} dates={this.props.dates} foodDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        ),
-        LandTransport: (
-          <IntuitiveTransportInput type='LandTransport' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        ),
-        SeaTransport: (
-          <IntuitiveTransportInput type='SeaTransport' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        ),
-        Train: (
-          <IntuitiveTransportInput type='Train' itineraryId={this.props.itineraryId} dates={this.props.dates} departureDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        ),
-        Lodging: (
-          <IntuitiveLodgingInput countries={this.props.countries} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} lodgingDate={this.props.date} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} toggleIntuitiveInput={() => this.handleIntuitiveInput()} />
-        )
-      }
       createEventBox = (
         <div>
-          {types[this.state.intuitiveInputType]}
+          <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} />
           {eventsListBox}
         </div>
       )
@@ -664,8 +636,6 @@ const options = {
   })
 }
 
-// REMOVE DELETE ACTIVITY
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(queryItinerary, options),
-  graphql(createActivity, { name: 'createActivity' })
+  graphql(queryItinerary, options)
 )(DragSource('plannerActivity', plannerActivitySource, collectSource)(DropTarget(['activity', 'plannerActivity'], plannerActivityTarget, collectTarget)(onClickOutside(Radium(PlannerActivity))))))

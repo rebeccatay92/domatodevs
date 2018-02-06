@@ -94,7 +94,7 @@ class IntuitiveFoodInput extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
-    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.foodDate) + 1
+    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.date) + 1
 
     const newFood = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
@@ -171,7 +171,7 @@ class IntuitiveFoodInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
-    console.log(this.props.foodDate, this.props.dates.map(date => date.getTime()))
+    console.log(this.props.date, this.props.dates.map(date => date.getTime()))
   }
 
   render () {

@@ -145,12 +145,12 @@ class IntuitiveLodgingInput extends Component {
           <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} />
         </div>
         <div style={{display: 'inline-block', width: '30%'}}>
-          <DateTimePicker intuitiveInput type='checkInTime' dates={this.props.dates} date={this.props.lodgingDate} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
+          <DateTimePicker intuitiveInput type='checkInTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
         </div>
         <div style={{display: 'inline-block', width: '30%'}}>
           <div style={{position: 'relative'}}>
             <i key='more' onClick={() => this.props.handleCreateEventClick('Lodging')} className='material-icons' style={{position: 'absolute', right: '0%', color: '#ed685a', cursor: 'pointer', zIndex: 1}}>more_horiz</i>
-            <DateTimePicker intuitiveInput type='checkOutTime' dates={this.props.dates} date={this.props.lodgingDate} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
+            <DateTimePicker intuitiveInput type='checkOutTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
           </div>
         </div>
         <div style={{marginTop: '5px', display: 'inline-block', textAlign: 'right', width: '97%'}}>

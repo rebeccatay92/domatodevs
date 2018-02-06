@@ -90,7 +90,7 @@ class IntuitiveTransportInput extends Component {
     var endMins = this.state.endTime.split(':')[1]
     var endUnix = (endHours * 60 * 60) + (endMins * 60)
 
-    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.departureDate) + 1
+    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.date) + 1
     console.log(startDay);
 
     const newTransport = {
@@ -156,7 +156,7 @@ class IntuitiveTransportInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
-    console.log(this.props.departureDate, this.props.dates.map(date => date.getTime()))
+    console.log(this.props.date, this.props.dates.map(date => date.getTime()))
   }
 
   render () {

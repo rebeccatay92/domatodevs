@@ -55,7 +55,7 @@ class IntuitiveFlightInput extends Component {
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
-    const travelDate = moment(new Date(this.props.departureDate)).format('MM/DD/YYYY')
+    const travelDate = moment(new Date(this.props.date)).format('MM/DD/YYYY')
     console.log('searching...')
     this.setState({
       searching: true
@@ -217,7 +217,7 @@ class IntuitiveFlightInput extends Component {
       // updated fields to match backend
       departureIATA: this.state.departureIATA,
       arrivalIATA: this.state.arrivalIATA,
-      departureDate: this.props.departureDate / 1000,
+      departureDate: this.props.date / 1000,
       // no return date for smart input (oneway)
       departureName: this.state.departureName,
       arrivalName: this.state.arrivalName,
