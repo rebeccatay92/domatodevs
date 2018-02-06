@@ -29,6 +29,12 @@ class IntuitiveFlightInput extends Component {
       paxChildren: '',
       paxInfants: '',
       classCode: '',
+      departureDate: null,
+      returnDate: null,
+      departureIATA: '',
+      arrivalIATA: '',
+      departureName: '',
+      arrivalName: '',
       search: '',
       searching: false
     }
@@ -46,7 +52,6 @@ class IntuitiveFlightInput extends Component {
   }
 
   handleFlightSearch () {
-    // console.log(moment(this.state.departureDate).format('MM/DD/YYYY'));
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
@@ -122,8 +127,12 @@ class IntuitiveFlightInput extends Component {
         paxAdults: 1,
         paxChildren: 0,
         paxInfants: 0,
-        classCode: 'Economy'
-      }, () => console.log(this.state))
+        classCode: 'Economy',
+        departureIATA: origin,
+        arrivalIATA: destination,
+        departureName: this.state.departureLocation.name,
+        arrivalName: this.state.arrivalLocation.name
+      }, () => console.log('handle flight search', this.state))
     })
   }
 
@@ -146,12 +155,17 @@ class IntuitiveFlightInput extends Component {
           airlineName: flight.airlineName,
           departureIATA: flight.departureAirportCode,
           arrivalIATA: flight.arrivalAirportCode,
+          departureAirport: flight.departureLocation,
+          arrivalAirport: flight.arrivalLocation,
+          departureCityCountry: flight.departureCityCountry,
+          arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
           arrivalTerminal: flight.arrivalTerminal,
           startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
           endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
           startTime: startTime,
           endTime: endTime,
+          durationMins: flight.duration,
           firstFlight: i === 0
         }
       })
@@ -200,10 +214,18 @@ class IntuitiveFlightInput extends Component {
       cost: 0,
       currency: this.state.currency,
       classCode: 'Economy',
+      // updated fields to match backend
+      departureIATA: this.state.departureIATA,
+      arrivalIATA: this.state.arrivalIATA,
+      departureDate: this.props.departureDate / 1000,
+      // no return date for smart input (oneway)
+      departureName: this.state.departureName,
+      arrivalName: this.state.arrivalName,
       bookingStatus: false,
       backgroundImage: defaultBackground,
       flightInstances: this.state.flightInstances
     }
+    console.log('new flight', newFlight)
 
     if (newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay > this.props.dates.length) {
       this.props.updateItineraryDetails({
