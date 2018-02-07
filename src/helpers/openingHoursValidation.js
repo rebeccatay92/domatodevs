@@ -39,9 +39,14 @@ export function validateOpeningHours (googlePlaceData, datesArr, startDayInt, en
     '5': 'Start time is after end time'
   }
   // find opening hours str
-  var dateUnix = datesArr[startDayInt - 1]
-  var momentTime = moment.utc(dateUnix)
-  var momentDayStr = momentTime.format('dddd')
+  if (datesArr) {
+    var dateUnix = datesArr[startDayInt - 1]
+    var momentTime = moment.utc(dateUnix)
+    var momentDayStr = momentTime.format('dddd')
+  } else if (!datesArr) {
+    momentDayStr = 'Monday'
+  }
+
   if (googlePlaceData.openingHoursText) {
     var textArr = googlePlaceData.openingHoursText.filter(e => {
       return e.indexOf(momentDayStr) > -1
@@ -56,7 +61,12 @@ export function validateOpeningHours (googlePlaceData, datesArr, startDayInt, en
   }
 
   // if not 24 hrs, closed, then continue validating
-  var dayOfWeekInt = findDayOfWeek(datesArr, startDayInt)
+  if (datesArr) {
+    var dayOfWeekInt = findDayOfWeek(datesArr, startDayInt)
+  } else {
+    dayOfWeekInt = 1
+  }
+
   var openAndCloseUnixArr = findOpenAndCloseUnix(dayOfWeekInt, googlePlaceData)
   var openingUnix = openAndCloseUnixArr[0]
   var closingUnix = openAndCloseUnixArr[1]
@@ -71,7 +81,7 @@ export function validateOpeningHours (googlePlaceData, datesArr, startDayInt, en
     if (endTime && endTime > closingUnix) {
       return errorTypes['3']
     }
-  } else if (endDayInt === startDayInt + 1) {
+  } else if (endDayInt === startDayInt + 1 || (endDayInt === 0 && startDayInt === 6)) {
     endTime = endTime + (24 * 60 * 60)
     if (startTime && startTime < openingUnix) {
       return errorTypes['2']

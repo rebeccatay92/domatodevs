@@ -57,14 +57,24 @@ export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
     address: googlePlaceData.address,
     telephone: googlePlaceData.telephone
   }
-  var dateUnix = datesArr[dayInt - 1]
-  var momentTime = moment.utc(dateUnix)
-  var momentDayStr = momentTime.format('dddd')
-  if (googlePlaceData.openingHoursText) {
-    var textArr = googlePlaceData.openingHoursText.filter(e => {
-      return e.indexOf(momentDayStr) > -1
-    })
-    locationDetails.openingHours = textArr[0]
+  if (datesArr) {
+    var dateUnix = datesArr[dayInt - 1]
+    var momentTime = moment.utc(dateUnix)
+    var momentDayStr = momentTime.format('dddd')
+    if (googlePlaceData.openingHoursText) {
+      var textArr = googlePlaceData.openingHoursText.filter(e => {
+        return e.indexOf(momentDayStr) > -1
+      })
+      locationDetails.openingHours = textArr[0]
+    }
+  } else if (!datesArr) {
+    // default to mon if datesArr does not exist
+    if (googlePlaceData.openingHoursText) {
+      textArr = googlePlaceData.openingHoursText.filter(e => {
+        return e.indexOf('Monday') > -1
+      })
+      locationDetails.openingHours = textArr[0]
+    }
   }
   return locationDetails
 }

@@ -204,7 +204,6 @@ class CreateActivityForm extends Component {
   selectLocation (place) {
     var googlePlaceData = constructGooglePlaceDataObj(place)
     this.setState({googlePlaceData: googlePlaceData}, () => {
-      if (!this.props.dates) return
       var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
       this.setState({locationDetails: locationDetails})
     })
@@ -251,8 +250,6 @@ class CreateActivityForm extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if (!this.props.dates) return
-
     if (this.state.googlePlaceData) {
       if (prevState.startDay !== this.state.startDay) {
         var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
