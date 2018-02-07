@@ -33,7 +33,6 @@ class CreateLandTransportForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      // ItineraryId: this.props.ItineraryId,
       startDay: this.props.day,
       endDay: this.props.day,
       departureGooglePlaceData: {},
@@ -297,7 +296,7 @@ class CreateLandTransportForm extends Component {
             </div>
 
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
           </div>
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}

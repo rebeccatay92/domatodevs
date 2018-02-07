@@ -70,7 +70,7 @@ class Planner extends Component {
 
     // use lodash to create arr of days. range(5) -> [0,1,2,3,4]. range(1,5) -> [1,2,3,4]
     var daysArr = _.range(1, days + 1)
-    console.log('daysArr', daysArr)
+    // console.log('daysArr', daysArr)
     // newDates is mapped to produce days in Planner. change to map by days
 
     return (
