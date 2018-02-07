@@ -204,6 +204,7 @@ class CreateActivityForm extends Component {
   selectLocation (place) {
     var googlePlaceData = constructGooglePlaceDataObj(place)
     this.setState({googlePlaceData: googlePlaceData}, () => {
+      if (!this.props.dates) return
       var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
       this.setState({locationDetails: locationDetails})
     })
@@ -250,6 +251,8 @@ class CreateActivityForm extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
+    if (!this.props.dates) return
+
     if (this.state.googlePlaceData) {
       if (prevState.startDay !== this.state.startDay) {
         var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
@@ -279,7 +282,7 @@ class CreateActivityForm extends Component {
               <input className='left-panel-input' placeholder='Input Description' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
 
             {this.state.openingHoursValidation &&
               <div>

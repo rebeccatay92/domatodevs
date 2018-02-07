@@ -19,7 +19,7 @@ class CreateEventFormHOC extends Component {
   render () {
     const CreateEventForm = this.components[this.props.eventType]
     return (
-      <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} toggleCreateEventType={() => this.props.toggleCreateEventType()} />
+      <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.props.toggleCreateEventType()} />
     )
   }
 }
