@@ -108,11 +108,9 @@ class DateTimePicker extends Component {
         this.props.updateDayTime('startDay', newDay)
         if (selectedUnix > this.state.endDate.unix()) {
           this.setState({endDate: moment(e._d)})
-          // this.setState({endDay: newDay})
           this.props.updateDayTime('endDay', newDay)
         }
       } else if (field === 'endDate') {
-        // this.setState({endDay: newDay})
         this.props.updateDayTime('endDay', newDay)
       }
     }
@@ -152,27 +150,57 @@ class DateTimePicker extends Component {
       return (
         <div style={dateTimePickerContainerStyle}>
           <div className='planner-date-picker'>
-            <select key={'startDaySelect'} name='startDay' onChange={(e) => this.handleChange(e, 'startDay')} value={this.props.startDay} style={dayStyle}>
+            {/* <select key={'startDaySelect'} name='startDay' onChange={(e) => this.handleChange(e, 'startDay')} value={this.props.startDay} style={dayStyle}>
               {this.state.dates.map((indiv, i) => {
                 return <option style={{background: '#6D6A7A'}} value={i + 1} key={i}>Day {i + 1}</option>
               })}
-            </select>
-            <DatePicker customInput={<CustomDatePicker />} selected={this.state.startDate} dateFormat={'ddd DD MMM YYYY'} minDate={moment.unix(this.state.dates[0])} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'startDate')} />
-            <input key='startTime' style={timeStyle} type='time' name='startTime' value={this.state.startTime} onChange={(e) => this.handleChange(e, 'startTime')} />
+            </select> */}
+            {!this.props.dates &&
+              <select key={'startDaySelect'} name='startDay' onChange={(e) => this.handleChange(e, 'startDay')} value={this.props.startDay} style={dayStyle}>
+                {this.props.daysArr.map((day, i) => {
+                  return <option style={{background: '#6D6A7A'}} value={day} key={i}>Day {day}</option>
+                })}
+              </select>
+            }
+            {this.props.dates &&
+              <div>
+                <DatePicker customInput={<CustomDatePicker />} selected={this.state.startDate} dateFormat={'ddd DD MMM YYYY'} minDate={moment.unix(this.state.dates[0])} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'startDate')} />
+                <input key='startTime' style={timeStyle} type='time' name='startTime' value={this.state.startTime} onChange={(e) => this.handleChange(e, 'startTime')} />
+              </div>
+            }
+            {/* <DatePicker customInput={<CustomDatePicker />} selected={this.state.startDate} dateFormat={'ddd DD MMM YYYY'} minDate={moment.unix(this.state.dates[0])} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'startDate')} />
+            <input key='startTime' style={timeStyle} type='time' name='startTime' value={this.state.startTime} onChange={(e) => this.handleChange(e, 'startTime')} /> */}
           </div>
+
           <div className='planner-time-picker' style={{margin: '10px 0'}}>
             <span style={{padding: '0 10px'}}>to</span>
           </div>
+
           <div className='planner-date-picker'>
-            <select key={'endDaySelect'} name='endDay' onChange={(e) => this.handleChange(e, 'endDay')} value={this.props.endDay} style={dayStyle}>
+            {!this.props.dates &&
+              <select key={'endDaySelect'} name='endDay' onChange={(e) => this.handleChange(e, 'endDay')} value={this.props.endDay} style={dayStyle}>
+                {this.state.daysArr.map((day, i) => {
+                  if (day >= this.props.startDay) {
+                    return <option style={{background: '#6D6A7A'}} value={day} key={i}>Day {day}</option>
+                  }
+                })}
+              </select>
+            }
+            {/* <select key={'endDaySelect'} name='endDay' onChange={(e) => this.handleChange(e, 'endDay')} value={this.props.endDay} style={dayStyle}>
               {this.state.dates.map((indiv, i) => {
                 if (i + 1 >= this.props.startDay) {
                   return <option style={{background: '#6D6A7A'}} value={i + 1} key={i}>Day {i + 1}</option>
                 }
               })}
-            </select>
-            <DatePicker customInput={<CustomDatePicker />} selected={this.state.endDate} dateFormat={'ddd DD MMM YYYY'} minDate={this.state.startDate} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'endDate')} />
-            <input key='endTime' style={timeStyle} type='time' name='endTime' value={this.state.endTime} onChange={(e) => this.handleChange(e, 'endTime')} />
+            </select> */}
+            {this.props.dates &&
+              <div>
+                <DatePicker customInput={<CustomDatePicker />} selected={this.state.endDate} dateFormat={'ddd DD MMM YYYY'} minDate={this.state.startDate} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'endDate')} />
+                <input key='endTime' style={timeStyle} type='time' name='endTime' value={this.state.endTime} onChange={(e) => this.handleChange(e, 'endTime')} />
+              </div>
+            }
+            {/* <DatePicker customInput={<CustomDatePicker />} selected={this.state.endDate} dateFormat={'ddd DD MMM YYYY'} minDate={this.state.startDate} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'endDate')} />
+            <input key='endTime' style={timeStyle} type='time' name='endTime' value={this.state.endTime} onChange={(e) => this.handleChange(e, 'endTime')} /> */}
           </div>
         </div>
       )

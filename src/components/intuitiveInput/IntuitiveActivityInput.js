@@ -25,7 +25,9 @@ class IntuitiveActivityInput extends Component {
       location: '',
       search: '',
       searching: false,
-      googlePlaceData: {}
+      googlePlaceData: {
+        name: ''
+      }
     }
   }
 
@@ -37,7 +39,7 @@ class IntuitiveActivityInput extends Component {
 
   resetState () {
     this.setState({
-      googlePlaceData: {},
+      googlePlaceData: {name: ''},
       search: ''
     })
   }
@@ -51,7 +53,6 @@ class IntuitiveActivityInput extends Component {
     this.setState({
       [field]: e.target.value
     })
-    console.log(e.target.value)
   }
 
   handleSubmit () {
@@ -93,8 +94,8 @@ class IntuitiveActivityInput extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
-    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.date) + 1
-    console.log(startDay)
+    const startDay = this.props.day
+    console.log('startDay', startDay)
 
 
     const newActivity = {
@@ -173,8 +174,6 @@ class IntuitiveActivityInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
-
-    console.log(this.props.date, this.props.dates.map(date => date.getTime()))
   }
 
   render () {

@@ -15,15 +15,21 @@ const _ = require('lodash')
 class PlannerTimelineHeader extends Component {
   shouldComponentUpdate (nextProps) {
     // if (this.props.getItem) return true
+
+    // if (nextProps.timeline.events && this.props.timeline.events && nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop) return false
+    // if (!nextProps.timeline.events && !this.props.timeline.events && !this.props.firstDay) return false
+    // if (nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop && _.isEqual(nextProps.timelineDay.dateOffsets, this.props.timelineDay.dateOffsets) && nextProps.timeline.events === this.props.timeline.events && nextProps.dates.length === this.props.dates.length) return false
+    // else return true
+
+    // switching to daysArr
     if (nextProps.timeline.events && this.props.timeline.events && nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop) return false
     if (!nextProps.timeline.events && !this.props.timeline.events && !this.props.firstDay) return false
-    if (nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop && _.isEqual(nextProps.timelineDay.dateOffsets, this.props.timelineDay.dateOffsets) && nextProps.timeline.events === this.props.timeline.events && nextProps.dates.length === this.props.dates.length) return false
+    if (nextProps.timelineDay.timelineAtTop === this.props.timelineDay.timelineAtTop && _.isEqual(nextProps.timelineDay.dateOffsets, this.props.timelineDay.dateOffsets) && nextProps.timeline.events === this.props.timeline.events && nextProps.daysArr === this.props.daysArr) return false
     else return true
-    // return true
   }
 
   render () {
-    console.log('render timeline');
+    // console.log('render timeline', this.props)
     // if (!this.props.firstDay && !this.props.timeline.events) return (
     //   <th id='timeline-top' style={timelineColumnStyle()}></th>
     // )
@@ -45,23 +51,34 @@ class PlannerTimelineHeader extends Component {
         )}
         {this.props.firstDay && this.props.timeline.days && (
           <div style={dayTimelineStyle(sticky)}>
-            {this.props.dates.map((date, i) => {
+
+            {/* {this.props.dates.map((date, i) => {
               const isDateOnScreen = this.props.timelineDay.dateOffsets[`day ${i + 1}`]
               return (
                 <div key={i}>
                   <Link to={'day-' + (i + 1)} smooth={true} duration={300} offset={-60}>
-                    {/* <a href={'#day-' + (i + 1)}> */}
                     <PlannerTimelineDayButton isDateOnScreen={isDateOnScreen} day={i + 1} itineraryId={this.props.itineraryId} days={this.props.dates.length} />
-                      {/* <div style={dayTimelineContainerStyle(isDateOnScreen)}>
-                        <span style={dayTimelineWordStyle(isDateOnScreen)}>Day {i + 1}</span>
-                      </div> */}
-                    {/* </a> */}
                   </Link>
                   {i < this.props.dates.length - 1 && <div style={{height: '10px', position: 'relative'}}>
                   </div>}
                 </div>
               )
+            })} */}
+
+            {this.props.daysArr.map((day, i) => {
+              const isDateOnScreen = this.props.timelineDay.dateOffsets[`day ${day}`]
+              return (
+                <div key={i}>
+                  <Link to={'day-' + (day)} smooth duration={300} offset={-60}>
+                    <PlannerTimelineDayButton isDateOnScreen={isDateOnScreen} day={day} itineraryId={this.props.itineraryId} days={this.props.days} />
+                  </Link>
+                  {i < this.props.days &&
+                  <div style={{height: '10px', position: 'relative'}} />
+                }
+                </div>
+              )
             })}
+
             <div onClick={() => this.addDay()} style={addDayButtonStyle}>
               <span style={addDayWordStyle}>+</span>
             </div>

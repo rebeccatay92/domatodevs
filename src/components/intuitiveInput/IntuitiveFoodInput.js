@@ -25,7 +25,9 @@ class IntuitiveFoodInput extends Component {
       location: '',
       search: '',
       searching: false,
-      googlePlaceData: {}
+      googlePlaceData: {
+        name: ''
+      }
     }
   }
 
@@ -37,7 +39,7 @@ class IntuitiveFoodInput extends Component {
 
   resetState () {
     this.setState({
-      googlePlaceData: '',
+      googlePlaceData: {name: ''},
       search: ''
     })
   }
@@ -51,7 +53,6 @@ class IntuitiveFoodInput extends Component {
     this.setState({
       [field]: e.target.value
     })
-    console.log(e.target.value)
   }
 
   handleSubmit () {
@@ -94,7 +95,7 @@ class IntuitiveFoodInput extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
-    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.date) + 1
+    const startDay = this.props.day
 
     const newFood = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
@@ -171,7 +172,6 @@ class IntuitiveFoodInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
-    console.log(this.props.date, this.props.dates.map(date => date.getTime()))
   }
 
   render () {

@@ -14,7 +14,6 @@ import { toggleTimeline } from '../actions/plannerTimelineActions'
 import PlannerColumnHeader from './PlannerColumnHeader'
 import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
 
-// import CreateActivityForm from './CreateActivityForm'
 const Element = Scroll.Element
 
 const dateTarget = {
@@ -50,12 +49,14 @@ class DateBox extends Component {
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} />
+              <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} daysArr={this.props.daysArr} />
               <th style={dateTableFirstHeaderStyle}>
                 <Element name={'day-' + this.props.day}>
                   <div id={'day-' + this.props.day}>
                     <h3 style={headerDayStyle}>Day {this.props.day} </h3>
-                    <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                    {this.props.date &&
+                      <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                    }
                   </div>
                 </Element>
               </th>
@@ -89,17 +90,10 @@ class DateBox extends Component {
                   isFirstInFlightBooking = activity.Flight.FlightInstance.firstFlight
                 }
                 return (
-                  <PlannerActivity mouseOverTimeline={this.state.mouseOverTimeline} day={this.props.day} itineraryId={this.props.itineraryId} draggable={this.props.draggable} activity={activity} key={i} index={i} isLast={i === array.length - 1} columns={this.props.columns} date={this.props.date} firstDay={this.props.firstDay} lastDay={this.props.lastDay} dates={this.props.dates} firstInFlightBooking={isFirstInFlightBooking} countries={this.props.countries} />
+                  <PlannerActivity mouseOverTimeline={this.state.mouseOverTimeline} day={this.props.day} itineraryId={this.props.itineraryId} draggable={this.props.draggable} activity={activity} key={i} index={i} isLast={i === array.length - 1} columns={this.props.columns} date={this.props.date} daysArr={this.props.daysArr} firstDay={this.props.firstDay} lastDay={this.props.lastDay} dates={this.props.dates} firstInFlightBooking={isFirstInFlightBooking} countries={this.props.countries} />
                 )
               })}
-              <PlannerActivity empty itineraryId={this.props.itineraryId} activity={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.activities.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} countries={this.props.countries} highestLoadSequence={
-                this.props.activities.length > 0 &&
-                (this.props.activities[this.props.activities.length - 1].loadSequence ||
-                this.props.activities[this.props.activities.length - 1].startLoadSequence ||
-                this.props.activities[this.props.activities.length - 1].endLoadSequence ||
-                this.props.activities[this.props.activities.length - 1].departureLoadSequence)
-                }
-              />
+              <PlannerActivity empty itineraryId={this.props.itineraryId} activity={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.activities.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} />
             </tbody>
         )}
         </table>

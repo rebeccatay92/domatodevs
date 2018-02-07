@@ -25,21 +25,19 @@ class IntuitiveTransportInput extends Component {
     this.state = {
       search: '',
       searching: false,
-      departureGooglePlaceData: null,
-      arrivalGooglePlaceData: null
+      departureGooglePlaceData: {name: ''},
+      arrivalGooglePlaceData: {name: ''}
     }
   }
 
   selectLocation (location, type) {
     this.setState({[`${type}GooglePlaceData`]: constructGooglePlaceDataObj(location)})
-    console.log('selected location', location)
   }
 
   handleChange (e, field) {
     this.setState({
       [field]: e.target.value
     })
-    console.log(e.target.value)
   }
 
   handleKeydown (e) {
@@ -90,9 +88,7 @@ class IntuitiveTransportInput extends Component {
     var endMins = this.state.endTime.split(':')[1]
     var endUnix = (endHours * 60 * 60) + (endMins * 60)
 
-    const startDay = this.props.dates.map(date => date.getTime()).findIndex((e) => e === this.props.date) + 1
-    console.log(startDay);
-
+    const startDay = this.props.day
     const newTransport = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
       startDay: startDay,
@@ -122,11 +118,11 @@ class IntuitiveTransportInput extends Component {
       }
     })
 
-    if (newTransport.endDay > this.props.dates.length) {
+    if (newTransport.endDay > this.props.daysArr.length) {
       this.props.updateItineraryDetails({
         variables: {
           id: this.props.itineraryId,
-          days: this.props.dates.length + 1
+          days: this.props.daysArr.length + 1
         }
       })
     }
@@ -147,8 +143,8 @@ class IntuitiveTransportInput extends Component {
 
   resetState () {
     this.setState({
-      departureGooglePlaceData: '',
-      arrivalGooglePlaceData: '',
+      departureGooglePlaceData: {name: ''},
+      arrivalGooglePlaceData: {name: ''},
       search: ''
     })
   }
@@ -156,7 +152,6 @@ class IntuitiveTransportInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
-    console.log(this.props.date, this.props.dates.map(date => date.getTime()))
   }
 
   render () {
@@ -168,11 +163,11 @@ class IntuitiveTransportInput extends Component {
       <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', paddingBottom: '10px', top: '-1.5vh'}}}>
         <div style={{display: 'inline-block', width: '35%'}}>
           {this.state.departRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location, 'departure')} placeholder={'Departure Location'} currentLocation={{}} />
+          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location, 'departure')} placeholder={'Departure Location'} currentLocation={this.state.departureGooglePlaceData} />
         </div>
         <div style={{display: 'inline-block', width: '35%'}}>
           {this.state.arriveRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location, 'arrival')} placeholder={'Arrival Location'} currentLocation={{}} />
+          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location, 'arrival')} placeholder={'Arrival Location'} currentLocation={this.state.arrivalGooglePlaceData} />
         </div>
         <div style={{display: 'inline-block', width: '30%'}}>
           {(this.state.startTimeRequired || this.state.endTimeRequired) && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Both Fields Required)</span>}

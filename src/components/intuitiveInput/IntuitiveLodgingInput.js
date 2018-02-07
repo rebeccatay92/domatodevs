@@ -21,12 +21,14 @@ class IntuitiveLodgingInput extends Component {
     super(props)
 
     this.state = {
-      googlePlaceData: '',
+      googlePlaceData: {name: ''},
       search: '',
       checkInDay: this.props.day,
       checkInTime: 0,
       checkOutDay: this.props.day,
-      checkOutTime: 0
+      checkOutTime: 0,
+      checkInTimeString: '',
+      checkOutTimeString: ''
     }
   }
 
@@ -47,6 +49,32 @@ class IntuitiveLodgingInput extends Component {
         checkOutDay: day,
         checkOutTime: time
       }, () => console.log(this.state))
+    }
+  }
+
+  handleChange (e, field) {
+    if (field === 'checkInDay' || field === 'checkOutDay') {
+      this.setState({
+        [field]: e.target.value
+      })
+    }
+    // if changing checkin day and it is later than checkout day, change checkout day
+    if (field === 'checkInDay' && e.target.value > this.state.checkOutDay) {
+      this.setState({checkOutDay: e.target.value})
+    }
+
+    // if changing time, convert string to unix
+    if (field === 'checkInTime' || field === 'checkOutTime') {
+      this.setState({
+        [`${field}String`]: e.target.value
+      })
+      var timestring = e.target.value
+      var hours = timestring.split(':')[0]
+      var mins = timestring.split(':')[1]
+      var unix = (hours * 60 * 60) + (mins * 60)
+      this.setState({
+        [field]: unix
+      }, () => console.log('dateless change time', this.state))
     }
   }
 
@@ -86,6 +114,9 @@ class IntuitiveLodgingInput extends Component {
     if (this.state.googlePlaceData.placeId) {
       newLodging.googlePlaceData = this.state.googlePlaceData
     }
+    if (newLodging.startDay === newLodging.endDay && newLodging.endTime < newLodging.startTime) {
+      newLodging.endDay = newLodging.startDay + 1
+    }
     console.log(newLodging)
 
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Lodging', newLodging)
@@ -112,13 +143,12 @@ class IntuitiveLodgingInput extends Component {
   }
 
   selectLocation (location) {
-    this.setState({googlePlaceData: constructGooglePlaceDataObj(location)}, () => console.log(this.state))
-    console.log('selected location', location)
+    this.setState({googlePlaceData: constructGooglePlaceDataObj(location)})
   }
 
   resetState () {
     this.setState({
-      googlePlaceData: '',
+      googlePlaceData: {name: ''},
       search: '',
       checkInDay: this.props.day,
       checkInTime: 0,
@@ -130,7 +160,6 @@ class IntuitiveLodgingInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
-    console.log(this.props.activityDate, this.props.dates.map(date => date.getTime()))
   }
 
   render () {
@@ -145,12 +174,44 @@ class IntuitiveLodgingInput extends Component {
           <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} />
         </div>
         <div style={{display: 'inline-block', width: '30%'}}>
-          <DateTimePicker intuitiveInput type='checkInTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
+          {/* IF DATES ARE PRESENT, USE DATETIMEPICKER */}
+          {this.props.dates &&
+            <DateTimePicker intuitiveInput type='checkInTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
+          }
+          {/* ELSE USE DROPDOWN FOR DAYS */}
+          {!this.props.dates &&
+            <div>
+              <select onChange={(e) => this.handleChange(e, 'checkInDay')} value={this.props.checkInDay}>
+                {this.props.daysArr.map((day, i) => {
+                  return (
+                    <option key={i} value={day}>Day {day}</option>
+                  )
+                })}
+              </select>
+              <input type='time' value={this.state.checkInTimeString} onChange={(e) => this.handleChange(e, 'checkInTime')} />
+            </div>
+          }
         </div>
         <div style={{display: 'inline-block', width: '30%'}}>
           <div style={{position: 'relative'}}>
             <i key='more' onClick={() => this.props.handleCreateEventClick('Lodging')} className='material-icons' style={{position: 'absolute', right: '0%', color: '#ed685a', cursor: 'pointer', zIndex: 1}}>more_horiz</i>
-            <DateTimePicker intuitiveInput type='checkOutTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
+            {this.props.dates &&
+              <DateTimePicker intuitiveInput type='checkOutTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
+            }
+            {!this.props.dates &&
+              <div>
+                <select onChange={(e) => this.handleChange(e, 'checkOutDay')} value={this.props.checkOutDay}>
+                  {this.props.daysArr.map((day, i) => {
+                    if (day >= this.state.checkInDay) {
+                      return (
+                        <option key={i} value={day}>Day {day}</option>
+                      )
+                    }
+                  })}
+                </select>
+                <input type='time' value={this.state.checkOutTimeString} onChange={(e) => this.handleChange(e, 'checkOutTime')} />
+              </div>
+            }
           </div>
         </div>
         <div style={{marginTop: '5px', display: 'inline-block', textAlign: 'right', width: '97%'}}>

@@ -9,7 +9,7 @@ class CreateItineraryForm extends Component {
     super()
     this.state = {
       name: 'My Itinerary',
-      description: '',
+      description: 'Description of itinerary',
       // CountryId: null,
       days: 1,
       startDate: null
@@ -50,7 +50,7 @@ class CreateItineraryForm extends Component {
   resetState () {
     this.setState({
       name: 'My Itinerary',
-      description: '',
+      description: 'Description of itinerary',
       days: 1,
       startDate: null
     })

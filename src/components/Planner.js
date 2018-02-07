@@ -27,12 +27,25 @@ class Planner extends Component {
 
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
-    console.log('rendering')
-    console.log(this.props.activities)
+    // console.log('rendering')
+    // console.log(this.props.activities)
     // console.log('apollo', this.props.data.findItinerary)
+    // const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
+    // const days = this.props.data.findItinerary.days
+    // const getDates = (startDate, days) => {
+    //   let dateArray = []
+    //   let currentDate = new Date(startDate)
+    //   while (dateArray.length < days) {
+    //     dateArray.push(new Date(currentDate))
+    //     currentDate.setDate(currentDate.getDate() + 1)
+    //   }
+    //   return dateArray
+    // }
+    // const dates = getDates(startDate, days)
+    // const newDates = dates.map((date) => {
+    //   return date.getTime()
+    // })
 
-    const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
-    const days = this.props.data.findItinerary.days
     const getDates = (startDate, days) => {
       let dateArray = []
       let currentDate = new Date(startDate)
@@ -42,10 +55,24 @@ class Planner extends Component {
       }
       return dateArray
     }
-    const dates = getDates(startDate, days)
-    const newDates = dates.map((date) => {
-      return date.getTime()
-    })
+
+    const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
+    const days = this.props.data.findItinerary.days
+
+    if (this.props.data.findItinerary.startDate) {
+      var dates = getDates(startDate, days)
+      var newDates = dates.map(date => {
+        return date.getTime()
+      })
+    } else {
+      newDates = null
+    }
+
+    // use lodash to create arr of days. range(5) -> [0,1,2,3,4]. range(1,5) -> [1,2,3,4]
+    var daysArr = _.range(1, days + 1)
+    console.log('daysArr', daysArr)
+    // newDates is mapped to produce days in Planner. change to map by days
+
     return (
       <div style={plannerContainerStyle}>
         {/* <Scrollbars renderThumbVertical={({ style }) =>
@@ -56,26 +83,42 @@ class Planner extends Component {
           renderTrackVertical={({style}) =>
             <div style={{ ...style, top: 0, right: 0, width: '10px', height: '100%' }} />
         } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
-          <div style={{
-            paddingRight: '44px',
-            paddingLeft: '10px'
-          }}>
-            <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} />
-            {/* <h4 style={{lineHeight: '-0px'}}>{this.props.data.findItinerary.countries[0].name}</h4> */}
-            {/* <button onClick={() => this.setState({draggable: !this.state.draggable})}>{this.state.draggable ? 'Rearrange Mode: On' : 'Rearrange Mode: Off'}</button> */}
-            <div>
-              {newDates.map((date, i) => {
-                return (
-                  <DateBox days={days} timelineAtTop={this.state.timelineAtTop} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={i + 1} date={date} dates={dates} countries={this.props.data.findItinerary.countries} activities={this.props.activities.filter(
+        <div style={{
+          paddingRight: '44px',
+          paddingLeft: '10px'
+        }}>
+          <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} />
+          {/* <h4 style={{lineHeight: '-0px'}}>{this.props.data.findItinerary.countries[0].name}</h4> */}
+          {/* <button onClick={() => this.setState({draggable: !this.state.draggable})}>{this.state.draggable ? 'Rearrange Mode: On' : 'Rearrange Mode: Off'}</button> */}
+          <div>
+            {/* {newDates.map((date, i) => {
+              return (
+                <DateBox days={days} timelineAtTop={this.state.timelineAtTop} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={i + 1} date={date} dates={dates} countries={this.props.data.findItinerary.countries} activities={this.props.activities.filter(
                     activity => {
                       let activityDay = activity.day || activity.departureDay || activity.startDay || activity.endDay
                       return activityDay === i + 1
                     }
                   )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === newDates.length - 1} />
-                )
-              })}
-            </div>
+              )
+            })} */}
+            {daysArr.map((day, i) => {
+              // if newDates exists, find date using day
+              if (newDates) {
+                var date = newDates[i]
+              } else {
+                date = null
+              }
+              return (
+                <DateBox days={days} daysArr={daysArr} timelineAtTop={this.state.timelineAtTop} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={day} date={date} dates={dates} countries={this.props.data.findItinerary.countries} activities={this.props.activities.filter(
+                    activity => {
+                      let activityDay = activity.day || activity.departureDay || activity.startDay || activity.endDay
+                      return activityDay === day
+                    }
+                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length} />
+              )
+            })}
           </div>
+        </div>
         {/* </Scrollbars> */}
       </div>
     )
@@ -92,7 +135,7 @@ class Planner extends Component {
   handleScroll (e) {
     function offset (el) {
       const rect = el.getBoundingClientRect(),
-      scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        scrollTop = window.pageYOffset || document.documentElement.scrollTop
       return { top: rect.top }
     }
 

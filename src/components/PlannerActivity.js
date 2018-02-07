@@ -182,7 +182,7 @@ class PlannerActivity extends Component {
     } else if (this.state.intuitiveInputType) {
       createEventBox = (
         <div>
-          <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} />
+          <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} daysArr={this.props.daysArr} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} />
           {eventsListBox}
         </div>
       )
@@ -225,7 +225,6 @@ class PlannerActivity extends Component {
   }
 
   handleIntuitiveInput (eventType = '') {
-    // console.log('eventType', eventType)
     this.setState({
       intuitiveInputType: eventType
     }, () => this.setState({creatingEvent: !!this.state.intuitiveInputType}))
