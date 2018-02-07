@@ -4,6 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import Radium from 'radium'
+import DatePicker from 'react-datepicker'
 
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
@@ -25,12 +26,11 @@ class IntuitiveFlightInput extends Component {
       flights: [],
       flightInstances: [],
       tripType: '',
-      paxAdults: '',
-      paxChildren: '',
-      paxInfants: '',
-      classCode: '',
+      paxAdults: 1,
+      paxChildren: 0,
+      paxInfants: 0,
+      classCode: 'Economy',
       departureDate: null,
-      returnDate: null,
       departureIATA: '',
       arrivalIATA: '',
       departureName: '',
@@ -42,7 +42,7 @@ class IntuitiveFlightInput extends Component {
 
   selectLocation (type, details) {
     this.setState({[`${type}Location`]: details}, () => {
-      if (this.state.departureLocation && this.state.arrivalLocation) {
+      if (this.state.departureLocation && this.state.arrivalLocation && this.state.departureDate) {
         this.handleFlightSearch()
         this.setState({
           showFlights: true
@@ -51,11 +51,40 @@ class IntuitiveFlightInput extends Component {
     })
   }
 
+  selectDate (e) {
+    // console.log('date', e._d)
+    // this is a moment obj, convert to unix for departureDate
+    var dateMidnight = moment(e._d).format('DD/MM/YYYY')
+    console.log('date string', dateMidnight)
+
+    var unix = moment(dateMidnight).unix()
+    // console.log('unix', unix, 'day where form is opened', this.props.day)
+    this.setState({departureDate: unix})
+
+    // CREATE A DATES ARR FOR HANDLEFLIGHTSEARCH TO FIND START/END DAY FOR INSTANCES. WORK BACKWARDS TO FIND UNIX FOR DAY 1, THEN FORWARD TO FILL ENTIRE DATES ARR
+    var dayOneUnix = unix - (this.props.day - 1) * 86400
+    // console.log('dayOneUnix', dayOneUnix)
+    var datesArr = this.props.daysArr.map(day => {
+      return dayOneUnix + ((day - 1) * 86400)
+    })
+    this.setState({datesArr: datesArr})
+
+    if (this.state.departureLocation && this.state.arrivalLocation && this.state.departureDate) {
+      this.handleFlightSearch()
+      this.setState({
+        showFlights: true
+      })
+    }
+  }
+
   handleFlightSearch () {
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
-    const travelDate = moment(new Date(this.props.date)).format('MM/DD/YYYY')
+
+    var travelDate = moment.unix(this.state.departureDate).format('MM/DD/YYYY')
+    console.log('travelDate', travelDate)
+
     console.log('searching...')
     this.setState({
       searching: true
@@ -124,10 +153,6 @@ class IntuitiveFlightInput extends Component {
       this.setState({
         flights: details,
         tripType: 'O',
-        paxAdults: 1,
-        paxChildren: 0,
-        paxInfants: 0,
-        classCode: 'Economy',
         departureIATA: origin,
         arrivalIATA: destination,
         departureName: this.state.departureLocation.name,
@@ -139,13 +164,20 @@ class IntuitiveFlightInput extends Component {
   handleSelectFlight (index) {
     const selectedFlight = this.state.flights.filter(flight => (flight.flights[0].carrierCode + flight.flights[0].flightNum).includes(this.state.search.replace(/\s/g, '').toUpperCase()))[index]
 
-    const datesUnix = this.props.dates.map(e => {
-      return moment(e).unix()
-    })
+    if (this.props.dates) {
+      var datesUnix = this.props.dates.map(e => {
+        return moment(e).unix()
+      })
+    } else {
+      datesUnix = this.state.datesArr
+    }
+    console.log('datesUnixArr', datesUnix)
 
     this.setState({
       flightInstances: selectedFlight.flights.map((flight, i) => {
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
+        console.log('startDayUnix', startDayUnix)
+
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
         const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
@@ -188,6 +220,10 @@ class IntuitiveFlightInput extends Component {
       {
         type: 'arrivalLocation',
         notification: 'arrivalRequired'
+      },
+      {
+        type: 'departureDate',
+        notification: 'dateRequired'
       }
     ]
     let validated = true
@@ -214,11 +250,9 @@ class IntuitiveFlightInput extends Component {
       cost: 0,
       currency: this.state.currency,
       classCode: 'Economy',
-      // updated fields to match backend
       departureIATA: this.state.departureIATA,
       arrivalIATA: this.state.arrivalIATA,
-      departureDate: this.props.date / 1000,
-      // no return date for smart input (oneway)
+      departureDate: this.state.departureDate,
       departureName: this.state.departureName,
       arrivalName: this.state.arrivalName,
       bookingStatus: false,
@@ -227,14 +261,27 @@ class IntuitiveFlightInput extends Component {
     }
     console.log('new flight', newFlight)
 
-    if (newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay > this.props.dates.length) {
-      this.props.updateItineraryDetails({
-        variables: {
-          id: this.props.itineraryId,
-          days: newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
-        }
-      })
+    var lastDay = newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
+
+    var apolloVariables = {id: this.props.itineraryId}
+
+    if (this.props.dates) {
+      if (lastDay > this.props.dates.length) {
+        apolloVariables.days = lastDay
+      }
+    } else {
+      // assign dates to itinerary, possibly update number of days
+      apolloVariables.startDate = this.state.datesArr[0]
+      if (lastDay > this.state.datesArr.length) {
+        apolloVariables.days = lastDay
+      }
     }
+
+    return
+
+    this.props.updateItineraryDetails({
+      variables: apolloVariables
+    })
 
     var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Flight', newFlight.flightInstances)
     console.log('helper output', helperOutput)
@@ -279,19 +326,57 @@ class IntuitiveFlightInput extends Component {
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
+
+    // SET UP DEPARTURE DATE. DEFAULTS TO CURRENT DATE IF DATE PROP DONT EXIST
+    if (this.props.date) {
+      this.setState({departureDate: this.props.date / 1000})
+    } else {
+      // if no date, default to 'today', make datesArr
+      var currentDate = moment().format('DD/MM/YYYY')
+      var departureDate = moment(currentDate).unix()
+
+      console.log('departureDate today', departureDate)
+      this.setState({departureDate: departureDate})
+
+      var dayOneUnix = departureDate - (this.props.day - 1) * 86400
+      var datesArr = this.props.daysArr.map(day => {
+        return dayOneUnix + ((day - 1) * 86400)
+      })
+      this.setState({datesArr: datesArr})
+    }
   }
 
   render () {
     return (
       <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', paddingBottom: '10px', top: '-1.5vh'}}}>
-        <div style={{width: '33%', display: 'inline-block'}}>
-          {this.state.departureRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <AirportSearch intuitiveInput currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
-        </div>
-        <div style={{width: '33%', display: 'inline-block'}}>
-          {this.state.arrivalRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <AirportSearch intuitiveInput currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
-        </div>
+        {/* IF DATE MISSING, DATE IS PICKABLE FROM CURRENT DATE ONWARDS */}
+        {!this.props.dates &&
+          <div style={{width: '66%', display: 'inline-block'}}>
+            <div style={{width: '20%', display: 'inline-block'}}>
+              <DatePicker dateFormat={'ddd DD MMM YYYY'} minDate={moment()} selected={moment.unix(this.state.departureDate)} onSelect={(e) => this.selectDate(e)} />
+            </div>
+            <div style={{width: '40%', display: 'inline-block'}}>
+              {this.state.departureRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
+              <AirportSearch intuitiveInput currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
+            </div>
+            <div style={{width: '40%', display: 'inline-block'}}>
+              {this.state.arrivalRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
+              <AirportSearch intuitiveInput currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+            </div>
+          </div>
+        }
+        {this.props.dates &&
+          <div style={{width: '66%', display: 'inline-block'}}>
+            <div style={{width: '50%', display: 'inline-block'}}>
+              {this.state.departureRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
+              <AirportSearch intuitiveInput currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
+            </div>
+            <div style={{width: '50%', display: 'inline-block'}}>
+              {this.state.arrivalRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
+              <AirportSearch intuitiveInput currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+            </div>
+          </div>
+        }
         <div style={{width: '34%', display: 'inline-block'}}>
           <div style={{position: 'relative'}}>
             <input style={{width: '90%'}} value={this.state.search} onChange={(e) => this.setState({
