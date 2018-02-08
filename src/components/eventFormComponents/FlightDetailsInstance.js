@@ -30,7 +30,7 @@ class FlightDetailsInstance extends Component {
 
     var departureMoment = moment.unix(departureDateUnix).utc().format('DD/MM/YYYY')
     var arrivalMoment = moment.unix(arrivalDateUnix).utc().format('DD/MM/YYYY')
-    console.log('departureMoment', departureMoment, 'arrivalMoment', arrivalMoment)
+    // console.log('departureMoment', departureMoment, 'arrivalMoment', arrivalMoment)
     var startTime = instance.startTime
     var startMoment = moment.unix(startTime).utc().format('HH:mm')
     var endTime = instance.endTime

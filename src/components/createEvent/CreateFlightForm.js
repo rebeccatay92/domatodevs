@@ -62,7 +62,7 @@ class CreateFlightForm extends Component {
   }
 
   handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr) {
-    console.log('CREATE FORM RAN HANDLE SEARCH')
+    // console.log('CREATE FORM RAN HANDLE SEARCH')
     this.setState({
       flights,
       tripType: tripType,
@@ -84,7 +84,7 @@ class CreateFlightForm extends Component {
     }
     if (datesArr) {
       // console.log('args received', datesArr)
-      this.setState({datesArr: datesArr}, () => console.log('CREATE FORM HANDLE SEARCH', this.state))
+      this.setState({datesArr: datesArr})
     }
 
     this.handleSelectFlight(0)

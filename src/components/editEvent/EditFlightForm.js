@@ -65,7 +65,8 @@ class EditFlightForm extends Component {
       searchParams: {},
       searchedCostCurrency: {cost: 0, currency: ''},
       // if flight has changed, old instances hv attachments in the cloud. dump if changed flight is submitted to backend
-      attachmentsToDumpIfFlightChange: []
+      attachmentsToDumpIfFlightChange: [],
+      datesArr: [] // PROPS.DATES CONVERT TO UNIX ARR, PASS TO FLIGHT DETAILS CONTAINER
     }
   }
 
@@ -450,6 +451,12 @@ class EditFlightForm extends Component {
     var currencyList = allCurrenciesList()
     this.setState({currencyList: currencyList})
 
+    // CONVERT PROPS.DATES ARR FROM JS DATE OBJ INTO UNIX TO PASS TO FlightDetailsContainerRework
+    var datesArr = this.props.dates.map(e => {
+      return moment(e).unix()
+    })
+    this.setState({datesArr: datesArr})
+
     // if cancel and reopen, reinitialize state
     if (this.props.data.findFlightBooking) {
       var booking = this.props.data.findFlightBooking
@@ -553,11 +560,12 @@ class EditFlightForm extends Component {
                 <button style={{color: 'black', position: 'relative'}} onClick={() => this.toggleEditingFlightDetails()}>EDIT FLIGHT DETAILS</button>
               </div>
             }
+            {/* UPDATE -> NEED TO SWITCH THIS.PROPS.DATES TO UNIX ARR */}
             {!this.state.searching && !this.state.changedFlight &&
-              <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+              <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.state.datesArr} />
             }
             {(this.state.searching || this.state.changedFlight) &&
-              <FlightDetailsContainerRework flightInstances={this.state.searchFlightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+              <FlightDetailsContainerRework flightInstances={this.state.searchFlightInstances} returnTrip={this.state.returnDate} dates={this.state.datesArr} />
             }
           </div>
 

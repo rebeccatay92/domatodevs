@@ -122,7 +122,7 @@ class FlightSearchParameters extends Component {
   handleChange (e, field) {
     if (field === 'departureDate' || field === 'returnDate') {
       // might be cleared to null
-      console.log('e', e)
+      // console.log('e', e)
       if (e) {
         this.setState({
           [field]: moment(e._d)
