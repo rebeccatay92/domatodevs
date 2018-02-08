@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
 import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
+import { connect } from 'react-redux'
+import { graphql, compose } from 'react-apollo'
+import { deleteMultipleEvents } from '../apollo/deleteMultipleEvents'
+import { queryItinerary } from '../apollo/itinerary'
+import findEventsFromDayToDelete from '../helpers/findEventsFromDayToDelete'
+import { initializePlanner } from '../actions/plannerActions'
 
 class DateDropdownMenu extends Component {
   handleClickOutside (event) {
@@ -8,7 +14,19 @@ class DateDropdownMenu extends Component {
   }
 
   deleteDay () {
-    console.log(this.props.day)
+    this.props.toggleDateDropdown()
+    const events = findEventsFromDayToDelete(this.props.events, this.props.day)
+
+    this.props.deleteMultipleEvents({
+      variables: {
+        input: events
+      }
+    })
+    .then(response => {
+      setTimeout(() => {
+        this.props.data.refetch()
+      }, 500)
+    })
   }
 
   render () {
@@ -25,4 +43,29 @@ class DateDropdownMenu extends Component {
   }
 }
 
-export default onClickOutside(Radium(DateDropdownMenu))
+const mapStateToProps = (state) => {
+  return {
+    events: state.plannerActivities
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
+    }
+  }
+}
+
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
+  graphql(deleteMultipleEvents, {name: 'deleteMultipleEvents'})
+)(onClickOutside(Radium(DateDropdownMenu))))

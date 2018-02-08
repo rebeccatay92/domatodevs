@@ -76,7 +76,7 @@ class DateBox extends Component {
                     <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
                     <div style={{position: 'relative', display: 'inline'}}>
                       {expandButton}
-                      {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
+                      {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
                     </div>
                   </div>
                 </Element>
