@@ -13,7 +13,7 @@ class DateDropdownMenu extends Component {
     this.props.toggleDateDropdown(event)
   }
 
-  deleteDay () {
+  clearDay () {
     this.props.toggleDateDropdown()
     const events = findEventsFromDayToDelete(this.props.events, this.props.day)
 
@@ -36,7 +36,7 @@ class DateDropdownMenu extends Component {
           <span key='delete' onClick={() => this.deleteDay()} style={{fontSize: '16px', fontWeight: '300', color: '#3C3A44', ':hover': {color: '#ed685a'}}}>Delete Day</span>
         </div>
         <div style={{margin: '8px', lineHeight: '100%'}}>
-          <span key='empty' onClick={() => this.deleteDay()} style={{fontSize: '16px', fontWeight: '300', color: '#3C3A44', ':hover': {color: '#ed685a'}}}>Clear Day</span>
+          <span key='empty' onClick={() => this.clearDay()} style={{fontSize: '16px', fontWeight: '300', color: '#3C3A44', ':hover': {color: '#ed685a'}}}>Clear Day</span>
         </div>
       </div>
     )
