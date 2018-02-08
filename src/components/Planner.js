@@ -3,6 +3,7 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../actions/plannerActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
+import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
 import { Scrollbars } from 'react-custom-scrollbars'
 import { primaryColor, plannerContainerStyle } from '../Styles/styles'
@@ -125,6 +126,7 @@ class Planner extends Component {
       // this.props.initializePlanner(activitiesWithTimelineErrors)
       console.log(allEvents)
       this.props.initializePlanner(allEvents)
+      this.props.toggleSpinner(false)
     }
   }
 }
@@ -150,6 +152,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleTimelineDay: (options) => {
       dispatch(toggleTimelineDay(options))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
     }
   }
 }

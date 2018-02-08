@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+import { ClipLoader } from 'react-spinners'
 
 import { createToken } from '../apollo/user'
 
@@ -57,6 +58,17 @@ class App extends Component {
           )} />
           <Route path='/planner/:itineraryId' component={PlannerPage} />
           <Route path='/maps' component={FlightMapHOC} />
+          {this.props.showSpinner && (
+            <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
+              <div style={{position: 'fixed', top: 'calc(50% - 35px)', left: 'calc(50% - 35px)', height: '70px', width: '70px'}}>
+                <ClipLoader
+                  color={'#000000'}
+                  size={70}
+                  loading={this.props.showSpinner}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </Router>
     )
@@ -66,7 +78,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     token: state.token,
-    cloudStorageToken: state.cloudStorageToken
+    cloudStorageToken: state.cloudStorageToken,
+    showSpinner: state.showSpinner
   }
 }
 

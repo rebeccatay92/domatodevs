@@ -7,6 +7,7 @@ import { deleteMultipleEvents } from '../apollo/deleteMultipleEvents'
 import { queryItinerary } from '../apollo/itinerary'
 import findEventsFromDayToDelete from '../helpers/findEventsFromDayToDelete'
 import { initializePlanner } from '../actions/plannerActions'
+import { toggleSpinner } from '../actions/spinnerActions'
 
 class DateDropdownMenu extends Component {
   handleClickOutside (event) {
@@ -17,12 +18,15 @@ class DateDropdownMenu extends Component {
     this.props.toggleDateDropdown()
     const events = findEventsFromDayToDelete(this.props.events, this.props.day)
 
+    if (events.length === 0) return
+
     this.props.deleteMultipleEvents({
       variables: {
         input: events
       }
     })
     .then(response => {
+      this.props.toggleSpinner(true)
       setTimeout(() => {
         this.props.data.refetch()
       }, 500)
@@ -53,6 +57,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initializePlanner: (activities) => {
       dispatch(initializePlanner(activities))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
     }
   }
 }

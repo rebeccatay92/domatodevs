@@ -48,7 +48,8 @@ class DateBox extends Component {
       if (event.target.textContent === 'more_horiz' && event.target.id === 'day' + this.props.day) return
     }
     this.setState({
-      showDateMenu: false
+      showDateMenu: false,
+      hoveringOverDate: false
     })
   }
 
