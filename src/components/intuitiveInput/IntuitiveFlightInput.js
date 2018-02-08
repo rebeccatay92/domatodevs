@@ -273,16 +273,14 @@ class IntuitiveFlightInput extends Component {
     }
     console.log('new flight', newFlight)
 
-    var lastDay = newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
-
     var apolloVariables = {id: this.props.itineraryId}
+    var lastDay = newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
 
     if (this.props.dates) {
       if (lastDay > this.props.dates.length) {
         apolloVariables.days = lastDay
       }
     } else {
-      // assign dates to itinerary, possibly update number of days
       apolloVariables.startDate = this.state.datesArr[0]
       if (lastDay > this.state.datesArr.length) {
         apolloVariables.days = lastDay

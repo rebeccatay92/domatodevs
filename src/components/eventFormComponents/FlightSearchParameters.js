@@ -18,20 +18,19 @@ class FlightSearchParameters extends Component {
       departureLocation: null,
       arrivalLocation: null,
       // start date, end date, start/end day
-      departureDate: moment(new Date(this.props.date)),
+      departureDate: null, // keep as moment so null wont display as 1970
       returnDate: null,
-      startDay: null,
       // req params for airhob
       classCode: 'Economy',
       paxAdults: 1,
       paxChildren: 0,
-      paxInfants: 0
+      paxInfants: 0,
+      datesArr: []
     }
   }
 
   handleFlightSearch () {
-    // console.log(moment(this.state.departureDate).format('MM/DD/YYYY'));
-    console.log(this.state)
+    // console.log(this.state)
     const uriFull = 'https://dev-sandbox-api.airhob.com/sandboxapi/flights/v1.2/search'
     const origin = this.state.departureLocation.type === 'airport' ? this.state.departureLocation.iata : this.state.departureLocation.cityCode
     const destination = this.state.arrivalLocation.type === 'airport' ? this.state.arrivalLocation.iata : this.state.arrivalLocation.cityCode
@@ -114,7 +113,9 @@ class FlightSearchParameters extends Component {
       // extract departure, arrival name (airport or city name)
       var departureName = this.state.departureLocation.name
       var arrivalName = this.state.arrivalLocation.name
-      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, departureName, arrivalName, this.state.departureDate, this.state.returnDate)
+
+      // PASS DATES ARRAY BACK UP TO FORM (IF PROPS DATES WAS MISSING DATESARR WAS CONSTRUCTED HERE WHEN DATE WAS CHOSEN)
+      this.props.handleSearch(details, tripType, this.state.paxAdults, this.state.paxChildren, this.state.paxInfants, this.state.classCode, origin, destination, departureName, arrivalName, this.state.departureDate, this.state.returnDate, this.state.datesArr)
     })
   }
 
@@ -136,6 +137,19 @@ class FlightSearchParameters extends Component {
         [field]: e.target.value
       })
     }
+    // WHEN DEPARTURE DATE CHANGES AND PROPS DATES IS NULL, RECONSTRUCT DATES ARR
+    if (field === 'departureDate' && !this.props.dates) {
+      var departureDate = moment(e._d).unix()
+      // console.log('changed date', departureDate)
+      // work backwards to construct datesArr(unix)
+      // console.log('day form was opened', this.props.day)
+      var dayOneUnix = departureDate - (this.props.day - 1) * 86400
+      var datesArr = this.props.daysArr.map(day => {
+        return dayOneUnix + ((day - 1) * 86400)
+      })
+      this.setState({datesArr: datesArr})
+      // console.log('changed datesArr', datesArr)
+    }
   }
 
   selectLocation (type, details) {
@@ -146,9 +160,42 @@ class FlightSearchParameters extends Component {
     if (nextProps.searchClicked !== this.props.searchClicked) {
       this.handleFlightSearch()
     }
+    // set departure date depending on whether date was passed. on flight search pass dates arr back up to form
+    if (!this.props.dates) {
+      // LOCAL TIME
+      var currentDate = moment().format('MM/DD/YYYY')
+      var months = currentDate.substring(0, 2)
+      var days = currentDate.substring(3, 5)
+      var years = currentDate.substring(6)
+      // FORCE UTC
+      var dateInUtc = moment.utc([years, months - 1, days])
+      var dateUtcMidnight = dateInUtc.format('MM/DD/YYYY')
+      var departureDate = moment.utc(dateUtcMidnight).unix()
+      this.setState({departureDate: moment.unix(departureDate)})
+
+      // work backwards to construct datesArr(unix)
+      console.log('day form was opened', this.props.day)
+      var dayOneUnix = departureDate - (this.props.day - 1) * 86400
+      var datesArr = this.props.daysArr.map(day => {
+        return dayOneUnix + ((day - 1) * 86400)
+      })
+      this.setState({datesArr: datesArr})
+      console.log('datesArr', datesArr)
+    } else {
+      // props dates are date objects. local time. convert all to unix
+      console.log('dates', this.props.dates)
+      datesArr = this.props.dates.map(e => {
+        return moment(e).unix()
+      })
+      console.log('datesArr', datesArr)
+      this.setState({datesArr: datesArr})
+
+      this.setState({departureDate: moment.unix(this.props.date / 1000)})
+    }
   }
 
   render () {
+    // console.log('props date', this.props.date)
     return (
       <div style={{position: 'relative'}}>
         {!this.props.searching && !this.props.bookingDetails &&
@@ -169,10 +216,10 @@ class FlightSearchParameters extends Component {
         {/* DATEBOX */}
         <div style={{textAlign: 'center'}}>
           <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.departureDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onChange={(e) => this.handleChange(e, 'departureDate')} />
+            <DatePicker customInput={<CustomDatePicker flight />} selected={moment(this.state.departureDate)} dateFormat={'DD MMM YYYY'} minDate={moment.unix(this.state.datesArr[this.props.day - 1])} onChange={(e) => this.handleChange(e, 'departureDate')} />
           </div>
           <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.props.dates[0])} maxDate={moment(this.props.dates[this.props.dates.length - 1])} onChange={(e) => this.handleChange(e, 'returnDate')} isClearable />
+            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.state.departureDate)} onChange={(e) => this.handleChange(e, 'returnDate')} isClearable />
           </div>
 
           <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}}>
@@ -183,17 +230,17 @@ class FlightSearchParameters extends Component {
           </select>
 
           <select value={this.state.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
-            {[1,2,3,4,5,6].map((num) => {
+            {[1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
           <select value={this.state.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
-            {[0,1,2,3,4,5,6].map((num) => {
+            {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
           <select value={this.state.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
-            {[0,1,2,3,4,5,6].map((num) => {
+            {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>

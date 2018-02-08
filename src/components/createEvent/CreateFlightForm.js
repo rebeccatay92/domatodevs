@@ -34,7 +34,6 @@ class CreateFlightForm extends Component {
     super(props)
     this.state = {
       currencyList: [], // not submitted
-      // ItineraryId: this.props.ItineraryId,
       paxAdults: null,
       paxChildren: null,
       paxInfants: null,
@@ -47,33 +46,11 @@ class CreateFlightForm extends Component {
       arrivalName: '',
       departureDate: null,
       returnDate: null,
+      datesArr: [], // generated unix arr which was passed up from child component (flight search).
       bookedThrough: '',
       bookingConfirmation: '',
       backgroundImage: defaultBackground,
       flightInstances: [],
-      // ARR OF FLIGHTINSTANCE INPUT
-      // input createFlightInstanceInput {
-      //   flightNumber: Int
-      //   airlineCode: String
-      //   airlineName: String
-      //   departureIATA: String
-      //   arrivalIATA: String
-      //   departureAirport: String
-      //   arrivalAirport: String
-      //   departureTerminal: String
-      //   arrivalTerminal: String
-      //   departureGate: String
-      //   arrivalGate: String
-      //   startDay: Int
-      //   endDay: Int
-      //   startTime: Int
-      //   endTime: Int
-      //   startLoadSequence: Int
-      //   endLoadSequence: Int
-      //   departureNotes: String
-      //   arrivalNotes: String,
-      //   attachments: [attachmentInput]
-      // }
       flights: [],
       searching: false,
       bookingDetails: false,
@@ -84,7 +61,7 @@ class CreateFlightForm extends Component {
     }
   }
 
-  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) {
+  handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr) {
     this.setState({
       flights,
       tripType: tripType,
@@ -105,6 +82,9 @@ class CreateFlightForm extends Component {
     }
     if (returnDate) {
       this.setState({returnDate: returnDate.utc().unix()})
+    }
+    if (datesArr) {
+      this.setState({datesArr: datesArr})
     }
     console.log('HANDLE SEARCH', this.state)
   }
@@ -133,14 +113,24 @@ class CreateFlightForm extends Component {
       flightInstances: this.state.flightInstances
     }
 
-    if (newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay > this.props.dates.length) {
-      this.props.updateItineraryDetails({
-        variables: {
-          id: this.props.ItineraryId,
-          days: newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
-        }
-      })
+    // IF ITINERARY HAS NO DATES, SET STARTDATE. IF DAYS HAS INCREASED, UPDATED NO OF DAYS
+    var apolloVariables = {id: this.props.ItineraryId}
+    var lastDay = newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
+
+    if (this.props.dates) {
+      if (lastDay > this.props.datesArr.length) {
+        apolloVariables.days = lastDay
+      }
+    } else {
+      apolloVariables.startDate = this.state.datesArr[0]
+      if (lastDay > this.state.datesArr.length) {
+        apolloVariables.days = lastDay
+      }
     }
+
+    this.props.updateItineraryDetails({
+      variables: apolloVariables
+    })
     console.log('newFlight', newFlight)
 
     // REWRITTEN FUNCTION TO VALIDATE
@@ -155,8 +145,6 @@ class CreateFlightForm extends Component {
       }
     })
     var isError = validateIntervals(this.props.events, eventObjArr, 'Flight')
-    console.log('isError', isError)
-
     if (isError) {
       window.alert('timing clashes detected')
     }
@@ -227,9 +215,10 @@ class CreateFlightForm extends Component {
   }
 
   handleSelectFlight (index) {
-    const datesUnix = this.props.dates.map(e => {
-      return moment(e).unix()
-    })
+    // const datesUnix = this.props.dates.map(e => {
+    //   return moment(e).unix()
+    // })
+    const datesUnix = this.state.datesArr // alrdy in unix
     // console.log('dates unix arr', datesUnix)
 
     this.setState({
@@ -325,11 +314,11 @@ class CreateFlightForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
             <div style={eventDescContainerStyle}>
-              <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate)} closeForm={() => this.closeForm()} />
+              <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} day={this.props.day} daysArr={this.props.daysArr} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr)} closeForm={() => this.closeForm()} />
 
               {/* REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
               {(this.state.searching || (!this.state.searching && this.state.bookingDetails)) &&
-                <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.props.dates} />
+                <FlightDetailsContainerRework flightInstances={this.state.flightInstances} returnTrip={this.state.returnDate} dates={this.state.datesArr} />
               }
             </div>
           </div>
