@@ -58,6 +58,7 @@ class Planner extends Component {
     }
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
+
     const days = this.props.data.findItinerary.days
 
     if (this.props.data.findItinerary.startDate) {
@@ -88,7 +89,12 @@ class Planner extends Component {
           paddingRight: '44px',
           paddingLeft: '10px'
         }}>
-          <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} />
+          {newDates &&
+            <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} startDate={newDates[0]} endDate={newDates[newDates.length - 1]} />
+          }
+          {!newDates &&
+            <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} />
+          }
           <div>
             {daysArr.map((day, i) => {
               // if newDates exists, find date using day
