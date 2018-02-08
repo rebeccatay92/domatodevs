@@ -35,8 +35,16 @@ export const plannerContainerStyle = {
 }
 
 export const plannerHeaderContainerStyle = {marginLeft: '89px'}
-export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', marginTop: '10px', marginBottom: '-20px'}
-export const itineraryDescStyle = {fontSize: '16px', fontWeight: '100', color: secondaryFontColor, marginBottom: '0px'}
+export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', margin: '10px 10px -20px 0', display: 'inline-block', maxWidth: '50%'}
+export const itineraryDescStyle = {fontSize: '16px', fontWeight: '100', color: secondaryFontColor, marginBottom: '15px'}
+export const itineraryDatesStyle = {
+  display: 'inline-block',
+  color: primaryColor,
+  fontSize: '16px',
+  margin: 0,
+  position: 'relative',
+  top: '-5px'
+}
 export const plannerHeaderIconsContainerStyle = {position: 'relative', height: '6vh', margin: '10px 0 2vh 0'}
 export const userIconsContainerStyle = {position: 'absolute', left: '0', top: '0'}
 export const userIconStyle = {height: '30px', width: '30px', margin: '0 0 10px 10px'}
@@ -105,7 +113,7 @@ export const eventBoxStyle = (draggable, activityId, clash, allDay) => {
   }
 }
 export const eventBoxFirstColumnStyle = (activity, minHeight, draggedItem) => {
-  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? '1px solid black' : 'none') }
+  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
 }
 export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}

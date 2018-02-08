@@ -29,7 +29,7 @@ class PlannerActivityTimeline extends Component {
   }
 
   renderDuration (duration, style, doNotShowTime) {
-    if (this.props.draggingItem || doNotShowTime || (!Math.floor(duration / 3600) && !Math.floor((duration % 3600) / 60))) {
+    if (doNotShowTime || (!Math.floor(duration / 3600) && !Math.floor((duration % 3600) / 60))) {
       return (
         <div style={{...{textAlign: 'center', position: 'relative', color: '#9FACBC', top: this.props.expanded ? '110px' : '3px', fontWeight: 'bold', padding: '2px 0'}, ...style}}>
           <span style={{opacity: '0'}}>empty string</span>
@@ -55,18 +55,14 @@ class PlannerActivityTimeline extends Component {
     //   }
     // )
     let timeOfNextActivity, indexOfNextActivity, doNotShowTime
-    if (this.props.draggingItem) {
-      indexOfNextActivity = 0
-    } else {
-      indexOfNextActivity = daySortedActivities.findIndex(activity => {
-        return activity === this.props.activity
-      }) + 1
-    }
+    indexOfNextActivity = daySortedActivities.findIndex(activity => {
+      return activity === this.props.activity
+    }) + 1
     let dayAdjustedTime, nextOffset
     let utcDiff = 0
     let location = typeof this.props.start !== 'boolean' || this.props.start ? this.props.startLocation : this.props.endLocation
     let offset = location ? location.utcOffset : 0
-    if (indexOfNextActivity === 0 || this.props.draggingItem) {
+    if (indexOfNextActivity === 0) {
       dayAdjustedTime = this.props.endTime
     } else if (indexOfNextActivity >= this.props.activities.length) {
       dayAdjustedTime = this.props.endTime

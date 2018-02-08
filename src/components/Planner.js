@@ -3,6 +3,7 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../actions/plannerActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
+import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
 import { Scrollbars } from 'react-custom-scrollbars'
 import { primaryColor, plannerContainerStyle } from '../Styles/styles'
@@ -60,7 +61,7 @@ class Planner extends Component {
             paddingRight: '44px',
             paddingLeft: '10px'
           }}>
-            <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} />
+            <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} startDate={newDates[0]} endDate={newDates[newDates.length - 1]} />
             {/* <h4 style={{lineHeight: '-0px'}}>{this.props.data.findItinerary.countries[0].name}</h4> */}
             {/* <button onClick={() => this.setState({draggable: !this.state.draggable})}>{this.state.draggable ? 'Rearrange Mode: On' : 'Rearrange Mode: Off'}</button> */}
             <div>
@@ -125,6 +126,7 @@ class Planner extends Component {
       // this.props.initializePlanner(activitiesWithTimelineErrors)
       console.log(allEvents)
       this.props.initializePlanner(allEvents)
+      this.props.toggleSpinner(false)
     }
   }
 }
@@ -150,6 +152,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleTimelineDay: (options) => {
       dispatch(toggleTimelineDay(options))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
     }
   }
 }

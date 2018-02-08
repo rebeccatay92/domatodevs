@@ -3,6 +3,7 @@ import Radium from 'radium'
 import Scroll from 'react-scroll'
 import PlannerActivity from './PlannerActivity'
 import PlannerTimelineHeader from './PlannerTimelineHeader'
+import DateDropdownMenu from './DateDropdownMenu'
 import { graphql, compose } from 'react-apollo'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
@@ -36,8 +37,20 @@ class DateBox extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      creatingActivity: false
+      creatingActivity: false,
+      hoveringOverDate: false,
+      showDateMenu: false
     }
+  }
+
+  toggleDateDropdown (event) {
+    if (event) {
+      if (event.target.textContent === 'more_horiz' && event.target.id === 'day' + this.props.day) return
+    }
+    this.setState({
+      showDateMenu: false,
+      hoveringOverDate: false
+    })
   }
 
   render () {
@@ -45,17 +58,27 @@ class DateBox extends Component {
     const timeline = (
       <div style={timelineStyle} />
     )
+    let expandButton
+    if (this.state.hoveringOverDate && !this.state.showDateMenu) {
+      expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: true})} className='material-icons dateMenu' style={{position: 'absolute', top: '-10px', marginLeft: '5px', fontSize: '30px', cursor: 'default'}} >more_horiz</i>
+    } else if (this.state.showDateMenu) {
+      expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: false})} className='material-icons dateMenu' style={{position: 'absolute', top: '-10px', marginLeft: '5px', fontSize: '30px', cursor: 'default', color: '#ed685a'}} >more_horiz</i>
+    }
     return (
       <div ref={elem => { this.elem = elem }}>
         <table style={dateTableStyle}>
           <thead>
             <tr>
               <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} />
-              <th style={dateTableFirstHeaderStyle}>
+              <th style={dateTableFirstHeaderStyle} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
                 <Element name={'day-' + this.props.day}>
                   <div id={'day-' + this.props.day}>
                     <h3 style={headerDayStyle}>Day {this.props.day} </h3>
                     <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                    <div style={{position: 'relative', display: 'inline'}}>
+                      {expandButton}
+                      {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
+                    </div>
                   </div>
                 </Element>
               </th>
@@ -155,7 +178,11 @@ class DateBox extends Component {
         this.props.changingLoadSequence({
           variables: {
             input: loadSequenceArr
-          }
+          },
+          refetchQueries: [{
+            query: queryItinerary,
+            variables: { id: this.props.itineraryId }
+          }]
         })
       }
       const handleKeydown = (event) => {
