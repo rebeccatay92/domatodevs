@@ -174,21 +174,19 @@ class FlightSearchParameters extends Component {
       this.setState({departureDate: moment.unix(departureDate)})
 
       // work backwards to construct datesArr(unix)
-      console.log('day form was opened', this.props.day)
+      // console.log('day form was opened', this.props.day)
       var dayOneUnix = departureDate - (this.props.day - 1) * 86400
       var datesArr = this.props.daysArr.map(day => {
         return dayOneUnix + ((day - 1) * 86400)
       })
-      this.setState({datesArr: datesArr})
-      console.log('datesArr', datesArr)
+      this.setState({datesArr: datesArr}, () => console.log('no dates props, set state with datesArr', this.state))
     } else {
       // props dates are date objects. local time. convert all to unix
-      console.log('dates', this.props.dates)
+      // console.log('dates', this.props.dates)
       datesArr = this.props.dates.map(e => {
         return moment(e).unix()
       })
-      console.log('datesArr', datesArr)
-      this.setState({datesArr: datesArr})
+      this.setState({datesArr: datesArr}, () => console.log('props dates was passed', this.state))
 
       this.setState({departureDate: moment.unix(this.props.date / 1000)})
     }

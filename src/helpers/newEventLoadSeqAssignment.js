@@ -215,7 +215,8 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
       var dayInstanceRows = flightInstanceRows.filter(e => {
         return e.day === day
       })
-
+      console.log('dayEvents', dayEvents)
+      console.log('dayinstancerows', dayInstanceRows)
       // inserting each instance individually
       dayInstanceRows.forEach(instanceRow => {
         var displacedRow = dayEvents.find(e => {
@@ -233,6 +234,7 @@ function newEventLoadSeqAssignment (eventsArr, eventModel, newEvent) {
             dayEvents.splice(index, 0, instanceRow)
           }
         }
+        console.log('after inserting one instance row', dayEvents)
       })
 
       dayEvents.forEach(event => {

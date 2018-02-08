@@ -21,18 +21,16 @@ const cityCountryStyle = {...pStyle,
 
 class FlightDetailsInstance extends Component {
   render () {
-    if (!this.props.instance) return null
+    if (!this.props.instance || !this.props.dates.length) return null
     // console.log('instance', this.props.instance)
-
     var instance = this.props.instance
-    // START AND END DAY MAY BE OUTSIDE OF DATES ARR.
-    // console.log('props dates arr', this.props.dates)
-    // dates arr props is date obj
-    var departureDateUnix = moment(this.props.dates[0]).unix() + (instance.startDay - 1) * 86400
-    var arrivalDateUnix = moment(this.props.dates[0]).unix() + (instance.endDay - 1) * 86400
+    // DATES ARR IS SUPPOSED TO BE UNIX
+    var departureDateUnix = this.props.dates[0] + (instance.startDay - 1) * 86400
+    var arrivalDateUnix = this.props.dates[0] + (instance.endDay - 1) * 86400
+
     var departureMoment = moment.unix(departureDateUnix).utc().format('DD/MM/YYYY')
     var arrivalMoment = moment.unix(arrivalDateUnix).utc().format('DD/MM/YYYY')
-    // console.log('departureMoment', departureMoment, 'arrivalMoment', arrivalMoment)
+    console.log('departureMoment', departureMoment, 'arrivalMoment', arrivalMoment)
     var startTime = instance.startTime
     var startMoment = moment.unix(startTime).utc().format('HH:mm')
     var endTime = instance.endTime

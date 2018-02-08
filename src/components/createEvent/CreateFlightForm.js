@@ -62,6 +62,7 @@ class CreateFlightForm extends Component {
   }
 
   handleSearch (flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr) {
+    console.log('CREATE FORM RAN HANDLE SEARCH')
     this.setState({
       flights,
       tripType: tripType,
@@ -74,8 +75,6 @@ class CreateFlightForm extends Component {
       arrivalIATA: arrivalIATA,
       departureName: departureName,
       arrivalName: arrivalName
-    }, () => {
-      this.handleSelectFlight(0)
     })
     if (departureDate) {
       this.setState({departureDate: departureDate.utc().unix()})
@@ -84,9 +83,11 @@ class CreateFlightForm extends Component {
       this.setState({returnDate: returnDate.utc().unix()})
     }
     if (datesArr) {
-      this.setState({datesArr: datesArr})
+      // console.log('args received', datesArr)
+      this.setState({datesArr: datesArr}, () => console.log('CREATE FORM HANDLE SEARCH', this.state))
     }
-    console.log('HANDLE SEARCH', this.state)
+
+    this.handleSelectFlight(0)
   }
 
   handleSubmit () {
@@ -118,7 +119,7 @@ class CreateFlightForm extends Component {
     var lastDay = newFlight.flightInstances[newFlight.flightInstances.length - 1].endDay
 
     if (this.props.dates) {
-      if (lastDay > this.props.datesArr.length) {
+      if (lastDay > this.props.dates.length) {
         apolloVariables.days = lastDay
       }
     } else {
