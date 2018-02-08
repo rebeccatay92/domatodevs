@@ -202,6 +202,13 @@ class ActivityInfo extends Component {
             },
             ...this.props.newDay && this.props.name === 'endTime' && {
               endDay: this.props.newDay
+            },
+            ...this.props.type === 'LandTransport' && {
+              departureUtcOffset: this.props.event.departureLocation.utcOffset,
+              arrivalUtcOffset: this.props.event.arrivalLocation.utcOffset
+            },
+            ...this.props.type === 'Lodging' && {
+              utcOffset: this.props.event.location.utcOffset
             }
           })
 

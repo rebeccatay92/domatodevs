@@ -3,21 +3,16 @@ import { plannerHeaderContainerStyle, itineraryNameStyle, itineraryDescStyle, pl
 import { Image } from 'react-bootstrap'
 import PlannerHeaderRightBarIcons from './PlannerHeaderRightBarIcons'
 import PlannerHeaderInfo from './PlannerHeaderInfo'
+import PlannerHeaderDates from './PlannerHeaderDates'
 
 class PlannerHeader extends Component {
-  // constructor (props) {
-  //   super(props)
-  //
-  //   this.state = {
-  //     editingName: false,
-  //     editingDesc: false
-  //   }
-  // }
-
   render () {
     return (
       <div style={plannerHeaderContainerStyle}>
-        <PlannerHeaderInfo type='name' style={itineraryNameStyle} value={this.props.name} id={this.props.id} />
+        <div>
+          <PlannerHeaderInfo type='name' style={itineraryNameStyle} value={this.props.name} id={this.props.id} />
+          <PlannerHeaderDates style={itineraryNameStyle} startDate={this.props.startDate} endDate={this.props.endDate} days={this.props.days} id={this.props.id} />
+        </div>
         <PlannerHeaderInfo type='description' style={itineraryDescStyle} value={this.props.description} id={this.props.id} />
         {/* <p style={itineraryDescStyle}>{this.props.description}</p> */}
         <div style={plannerHeaderIconsContainerStyle}>

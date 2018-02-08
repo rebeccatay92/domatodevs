@@ -3,6 +3,7 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../actions/plannerActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
+import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
 import { Scrollbars } from 'react-custom-scrollbars'
 import { primaryColor, plannerContainerStyle } from '../Styles/styles'
@@ -88,19 +89,7 @@ class Planner extends Component {
           paddingLeft: '10px'
         }}>
           <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} />
-          {/* <h4 style={{lineHeight: '-0px'}}>{this.props.data.findItinerary.countries[0].name}</h4> */}
-          {/* <button onClick={() => this.setState({draggable: !this.state.draggable})}>{this.state.draggable ? 'Rearrange Mode: On' : 'Rearrange Mode: Off'}</button> */}
           <div>
-            {/* {newDates.map((date, i) => {
-              return (
-                <DateBox days={days} timelineAtTop={this.state.timelineAtTop} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={i + 1} date={date} dates={dates} countries={this.props.data.findItinerary.countries} activities={this.props.activities.filter(
-                    activity => {
-                      let activityDay = activity.day || activity.departureDay || activity.startDay || activity.endDay
-                      return activityDay === i + 1
-                    }
-                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === newDates.length - 1} />
-              )
-            })} */}
             {daysArr.map((day, i) => {
               // if newDates exists, find date using day
               if (newDates) {
@@ -168,6 +157,7 @@ class Planner extends Component {
       // this.props.initializePlanner(activitiesWithTimelineErrors)
       console.log(allEvents)
       this.props.initializePlanner(allEvents)
+      this.props.toggleSpinner(false)
     }
   }
 }
@@ -193,6 +183,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleTimelineDay: (options) => {
       dispatch(toggleTimelineDay(options))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
     }
   }
 }
