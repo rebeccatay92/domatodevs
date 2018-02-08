@@ -53,21 +53,29 @@ class IntuitiveFlightInput extends Component {
 
   selectDate (e) {
     // console.log('date', e._d)
-    // this is a moment obj, convert to unix for departureDate
-    var dateMidnight = moment(e._d).format('DD/MM/YYYY')
-    console.log('date string', dateMidnight)
+    // LOCAL TIME
+    var dateMidnight = moment(e._d).format('MM/DD/YYYY')
+    var months = dateMidnight.substring(0, 2)
+    var days = dateMidnight.substring(3, 5)
+    var years = dateMidnight.substring(6)
+    // console.log(months, days, years)
 
-    var unix = moment(dateMidnight).unix()
-    // console.log('unix', unix, 'day where form is opened', this.props.day)
-    this.setState({departureDate: unix})
+    // FORCE DATE TO BE UTC
+    var dateInUtc = moment.utc([years, months - 1, days])
+    // console.log('date in utc', dateInUtc)
+    var dateUtcMidnight = dateInUtc.format('MM/DD/YYYY')
+    // console.log('date only portion', dateUtcMidnight)
+
+    var departureDate = moment.utc(dateUtcMidnight).unix()
+    this.setState({departureDate: departureDate})
 
     // CREATE A DATES ARR FOR HANDLEFLIGHTSEARCH TO FIND START/END DAY FOR INSTANCES. WORK BACKWARDS TO FIND UNIX FOR DAY 1, THEN FORWARD TO FILL ENTIRE DATES ARR
-    var dayOneUnix = unix - (this.props.day - 1) * 86400
-    // console.log('dayOneUnix', dayOneUnix)
+    var dayOneUnix = departureDate - (this.props.day - 1) * 86400
     var datesArr = this.props.daysArr.map(day => {
       return dayOneUnix + ((day - 1) * 86400)
     })
     this.setState({datesArr: datesArr})
+    // console.log('mount datesArr', datesArr)
 
     if (this.state.departureLocation && this.state.arrivalLocation && this.state.departureDate) {
       this.handleFlightSearch()
@@ -175,10 +183,14 @@ class IntuitiveFlightInput extends Component {
 
     this.setState({
       flightInstances: selectedFlight.flights.map((flight, i) => {
+        console.log('departureDateTime', flight.departureDateTime)
         const startDayUnix = moment.utc(flight.departureDateTime.slice(0, 10)).unix()
         console.log('startDayUnix', startDayUnix)
-
         const endDayUnix = moment.utc(flight.arrivalDateTime.slice(0, 10)).unix()
+
+        var startDayInt = (startDayUnix - datesUnix[0]) / 86400 + 1
+        var endDayInt = (endDayUnix - datesUnix[0]) / 86400 + 1
+
         const startTime = moment.utc(flight.departureDateTime).unix() - startDayUnix
         const endTime = moment.utc(flight.arrivalDateTime).unix() - endDayUnix
         return {
@@ -193,8 +205,8 @@ class IntuitiveFlightInput extends Component {
           arrivalCityCountry: flight.arrivalCityCountry,
           departureTerminal: flight.departureTerminal,
           arrivalTerminal: flight.arrivalTerminal,
-          startDay: datesUnix.indexOf(startDayUnix) + 1 ? datesUnix.indexOf(startDayUnix) + 1 : datesUnix.length + (startDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
-          endDay: datesUnix.indexOf(endDayUnix) + 1 ? datesUnix.indexOf(endDayUnix) + 1 : datesUnix.length + (endDayUnix - datesUnix[datesUnix.length - 1]) / 86400,
+          startDay: startDayInt,
+          endDay: endDayInt,
           startTime: startTime,
           endTime: endTime,
           durationMins: flight.duration,
@@ -277,8 +289,6 @@ class IntuitiveFlightInput extends Component {
       }
     }
 
-    return
-
     this.props.updateItineraryDetails({
       variables: apolloVariables
     })
@@ -332,10 +342,20 @@ class IntuitiveFlightInput extends Component {
       this.setState({departureDate: this.props.date / 1000})
     } else {
       // if no date, default to 'today', make datesArr
-      var currentDate = moment().format('DD/MM/YYYY')
-      var departureDate = moment(currentDate).unix()
+      // LOCAL TIME
+      var currentDate = moment().format('MM/DD/YYYY')
+      var months = currentDate.substring(0, 2)
+      var days = currentDate.substring(3, 5)
+      var years = currentDate.substring(6)
+      // console.log(months, days, years)
 
-      console.log('departureDate today', departureDate)
+      // FORCE IT TO BE UTC
+      var dateInUtc = moment.utc([years, months - 1, days])
+      // console.log('date in utc', dateInUtc)
+      var dateUtcMidnight = dateInUtc.format('MM/DD/YYYY')
+      // console.log('date only portion', dateUtcMidnight)
+
+      var departureDate = moment.utc(dateUtcMidnight).unix()
       this.setState({departureDate: departureDate})
 
       var dayOneUnix = departureDate - (this.props.day - 1) * 86400
@@ -343,6 +363,8 @@ class IntuitiveFlightInput extends Component {
         return dayOneUnix + ((day - 1) * 86400)
       })
       this.setState({datesArr: datesArr})
+
+      // console.log('mount datesArr', datesArr)
     }
   }
 
