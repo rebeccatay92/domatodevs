@@ -109,7 +109,7 @@ class Planner extends Component {
                       let activityDay = activity.day || activity.departureDay || activity.startDay || activity.endDay
                       return activityDay === day
                     }
-                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length} />
+                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length - 1} />
               )
             })}
           </div>
