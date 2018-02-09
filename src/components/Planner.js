@@ -163,7 +163,7 @@ class Planner extends Component {
       // this.props.initializePlanner(activitiesWithTimelineErrors)
       console.log(allEvents)
       this.props.initializePlanner(allEvents)
-      this.props.toggleSpinner(false)
+      setTimeout(() => this.props.toggleSpinner(false), 750)
     }
   }
 }
