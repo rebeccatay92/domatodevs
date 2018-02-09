@@ -24,6 +24,15 @@ class PlannerHeaderDates extends Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    this.setState({
+      startDate: moment(nextProps.startDate),
+      endDate: moment(nextProps.endDate),
+      newStartDate: moment(nextProps.startDate),
+      newEndDate: moment(nextProps.endDate)
+    })
+  }
+
   handleClickOutside (event) {
     if (event.target.localName === 'input' || event.target.className.includes('react-datepicker')) return
     this.setState({

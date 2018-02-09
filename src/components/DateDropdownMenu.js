@@ -3,9 +3,14 @@ import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+
 import { deleteMultipleEvents } from '../apollo/deleteMultipleEvents'
-import { queryItinerary } from '../apollo/itinerary'
+import { changingLoadSequence } from '../apollo/changingLoadSequence'
+import { queryItinerary, updateItineraryDetails } from '../apollo/itinerary'
+
 import findEventsFromDayToDelete from '../helpers/findEventsFromDayToDelete'
+import { deleteDayAndAssignLoadSequence } from '../helpers/deleteDayAndAssignLoadSequence'
+
 import { initializePlanner } from '../actions/plannerActions'
 import { toggleSpinner } from '../actions/spinnerActions'
 
@@ -14,19 +19,52 @@ class DateDropdownMenu extends Component {
     this.props.toggleDateDropdown(event)
   }
 
+  deleteDay () {
+    this.props.toggleDateDropdown()
+    const eventsToDelete = findEventsFromDayToDelete(this.props.events, this.props.day)
+    const newEventsArr = deleteDayAndAssignLoadSequence(this.props.events, this.props.day)
+    this.props.toggleSpinner(true)
+    this.props.changingLoadSequence({
+      variables: {
+        input: newEventsArr
+      }
+    })
+    .then(response => {
+      this.props.deleteMultipleEvents({
+        variables: {
+          input: eventsToDelete
+        }
+      })
+    })
+    .then(response => {
+      this.props.updateItineraryDetails({
+        variables: {
+          id: this.props.itineraryId,
+          days: this.props.days - 1
+        }
+      })
+    })
+    .then(response => {
+      setTimeout(() => {
+        this.props.data.refetch()
+      }, 1000)
+    })
+  }
+
   clearDay () {
     this.props.toggleDateDropdown()
+
     const events = findEventsFromDayToDelete(this.props.events, this.props.day)
 
     if (events.length === 0) return
 
+    this.props.toggleSpinner(true)
     this.props.deleteMultipleEvents({
       variables: {
         input: events
       }
     })
     .then(response => {
-      this.props.toggleSpinner(true)
       setTimeout(() => {
         this.props.data.refetch()
       }, 500)
@@ -74,5 +112,7 @@ const options = {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options),
-  graphql(deleteMultipleEvents, {name: 'deleteMultipleEvents'})
+  graphql(deleteMultipleEvents, {name: 'deleteMultipleEvents'}),
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
+  graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(onClickOutside(Radium(DateDropdownMenu))))
