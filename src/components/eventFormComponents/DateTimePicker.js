@@ -138,13 +138,14 @@ class DateTimePicker extends Component {
   componentDidMount () {
     // only set up state with dates if this.props.dates is present
     console.log('this.props', this.props)
-    // if dates are present in create form, default start and end day to the date form is opened.
+    // if dates are present in create form/smart input, default start and end day to the date form is opened.
     if (this.props.dates && this.props.formType !== 'edit') {
       this.setState({
         dates: this.props.dates.map(e => {
           return moment(e).unix()
         }),
         date: (new Date(this.props.date)).toISOString().substring(0, 10),
+        // this.props.types === checkInTime / checkOutTime from IntuitiveLodgingInput
         startDate: this.props.type ? moment.utc(new Date(this.props.date)) : moment(new Date(this.props.date)),
         endDate: this.props.type ? moment.utc(new Date(this.props.date)) : moment(new Date(this.props.date))
       })
