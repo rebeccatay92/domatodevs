@@ -8,7 +8,6 @@ export function deleteDayAndAssignLoadSequence (events, day) {
       }
     }
   })
-
   let eventsArrWithoutDeletedFlightBookings = events
   flightBookingsToDelete.forEach(flightBookingId => {
     const newArr = eventsArrWithoutDeletedFlightBookings.filter(event => {
@@ -23,6 +22,8 @@ export function deleteDayAndAssignLoadSequence (events, day) {
   const newEventsArr = eventsArrWithoutDeletedFlightBookings.filter(event => {
     if (event.type !== 'Flight') {
       return (event[event.type].startDay !== day && event[event.type].endDay !== day)
+    } else {
+      return true
     }
   })
   // Assigning new day to events after deleted day excluding flights
