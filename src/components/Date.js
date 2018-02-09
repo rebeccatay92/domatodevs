@@ -78,7 +78,7 @@ class DateBox extends Component {
                     }
                     <div style={{position: 'relative', display: 'inline'}}>
                       {expandButton}
-                      {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
+                      {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} days={this.props.days} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
                     </div>
                   </div>
                 </Element>
