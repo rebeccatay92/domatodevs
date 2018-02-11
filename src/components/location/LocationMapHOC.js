@@ -17,9 +17,8 @@ const LocationMap = compose(
       const refs = {}
       this.setState({
         bounds: null,
-        center: {
-          lat: 41.9, lng: -87.624
-        },
+        center: {lat: 0, lng: 0},
+        zoom: 2,
         markers: [],
         infoOpen: false,
         markerIndex: null,
@@ -55,9 +54,17 @@ const LocationMap = compose(
           refs.searchInput = ref
         },
         clearSearch: () => {
-          console.log('input field', refs.searchInput)
+          // console.log('input field', refs.searchInput)
           refs.searchInput.value = ''
           this.setState({markerIndex: null, infoOpen: false, markers: []})
+
+          // if current location exists, open the window again, recenter
+          console.log('ref', refs)
+          console.log('props', this.props)
+          if (refs.currentLocationMarker) {
+            this.setState({currentLocationWindow: true})
+            this.setState({center: {lat: this.props.currentLocation.latitude, lng: this.props.currentLocation.longitude}})
+          }
         },
         onMarkerMounted: ref => {
           refs.marker = ref
@@ -67,6 +74,7 @@ const LocationMap = compose(
         },
         onCurrentLocationMounted: ref => {
           refs.currentLocationMarker = ref
+          this.setState({zoom: 16})
         },
         onPlacesChanged: () => {
           const places = refs.searchBox.getPlaces()
@@ -95,6 +103,8 @@ const LocationMap = compose(
           this.setState({infoOpen: false})
           this.setState({markerIndex: null})
 
+          // close current location if open
+          this.setState({currentLocationWindow: false})
           // infowindow auto opens if only 1 result is present
           if (places.length === 1) {
             this.setState({infoOpen: true})
@@ -142,9 +152,9 @@ const LocationMap = compose(
   withScriptjs,
   withGoogleMap
 )((props) =>
-  <GoogleMap ref={props.onMapMounted} defaultZoom={15} center={props.center} onBoundsChanged={props.onBoundsChanged} style={{position: 'relative'}} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
+  <GoogleMap ref={props.onMapMounted} defaultZoom={2} zoom={props.zoom} center={props.center} onBoundsChanged={props.onBoundsChanged} style={{position: 'relative'}} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
     <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
-      <button onClick={() => props.toggleMap()} style={{width: '50px', height: '50px'}}>BACK</button>
+      <button onClick={() => props.toggleMap()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>BACK</button>
     </CustomControl>
     <SearchBox ref={props.onSearchBoxMounted} bounds={props.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={props.onPlacesChanged} >
       <div>
@@ -155,6 +165,7 @@ const LocationMap = compose(
             width: `300px`,
             height: `30px`,
             marginTop: `10px`,
+            marginLeft: '10px',
             padding: `0 12px`,
             borderRadius: `3px`,
             boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
@@ -163,7 +174,7 @@ const LocationMap = compose(
             textOverflow: `ellipses`
           }}
         />
-        <button onClick={() => props.clearSearch()}>CLEAR</button>
+        <button onClick={() => props.clearSearch()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginLeft: '10px'}}>Clear</button>
       </div>
     </SearchBox>
     {props.markers.map((marker, index) =>

@@ -131,8 +131,12 @@ class AttachmentsRework extends Component {
     this.setState({thumbnailUrl: null})
   }
 
-  openPreview () {
-    console.log('open preview overlay?')
+  openPreview (i) {
+    // console.log('open preview overlay?')
+    var fileName = this.props.attachments[i].fileName
+    // var fileType = this.props.attachments[i].fileType
+    var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
+    window.open(url)
   }
 
   componentDidMount () {
@@ -160,7 +164,7 @@ class AttachmentsRework extends Component {
           url = url.replace(/ /gi, '%20')
           return (
             <div key={'thumbnail' + i} style={{width: '100%', position: 'relative'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
-              <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview()}>
+              <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview(i)}>
                 {info.fileType === 'application/pdf' &&
                 <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '20px', marginRight: '2px', verticalAlign: 'middle'}}>picture_as_pdf</i>}
                 {info.fileType !== 'application/pdf' &&
