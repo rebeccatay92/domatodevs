@@ -24,6 +24,7 @@ class DateDropdownMenu extends Component {
     const eventsToDelete = findEventsFromDayToDelete(this.props.events, this.props.day)
     const newEventsArr = deleteDayAndAssignLoadSequence(this.props.events, this.props.day)
     this.props.toggleSpinner(true)
+
     this.props.changingLoadSequence({
       variables: {
         input: newEventsArr

@@ -83,7 +83,7 @@ class FlightSearchParameters extends Component {
         return
       }
       const flights = results.OneWayAvailabilityResponse.ItinearyDetails[0].Items
-      // console.log(flights);
+      console.log('AIRHOB RESULTS', flights)
       const details = flights.map(flight => {
         return {
           cost: flight.FareDescription.PaxFareDetails[0].OtherInfo.GrossAmount,

@@ -188,7 +188,7 @@ const TransportMap = compose(
 )((props) =>
   <GoogleMap ref={props.onMapMounted} defaultZoom={2} zoom={props.zoom} center={props.center} onBoundsChanged={props.onBoundsChanged} style={{position: 'relative'}} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
     <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
-      <button onClick={() => props.toggleMap()} style={{width: '50px', height: '50px'}}>BACK</button>
+      <button onClick={() => props.toggleMap()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>BACK</button>
     </CustomControl>
     <SearchBox ref={props.onSearchBoxMounted} bounds={props.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={props.onPlacesChanged} >
       <div>
@@ -199,6 +199,7 @@ const TransportMap = compose(
             width: `300px`,
             height: `30px`,
             marginTop: `10px`,
+            marginLeft: '10px',
             padding: `0 12px`,
             borderRadius: `3px`,
             boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
@@ -207,7 +208,7 @@ const TransportMap = compose(
             textOverflow: `ellipses`
           }}
         />
-        <button onClick={() => props.clearSearch()}>CLEAR</button>
+        <button onClick={() => props.clearSearch()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginLeft: '10px'}}>Clear</button>
       </div>
     </SearchBox>
     {props.markers.map((marker, index) =>

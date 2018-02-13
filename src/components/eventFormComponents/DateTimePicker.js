@@ -129,18 +129,35 @@ class DateTimePicker extends Component {
     if (this.props.defaultEndTime !== nextProps.defaultEndTime) {
       this.setState({endTime: nextProps.defaultEndTime})
     }
+
+    // if (this.props.formType === 'edit') {
+    //   console.log('props', nextProps)
+    // }
   }
 
   componentDidMount () {
     // only set up state with dates if this.props.dates is present
-    if (this.props.dates) {
+    console.log('this.props', this.props)
+    // if dates are present in create form/smart input, default start and end day to the date form is opened.
+    if (this.props.dates && this.props.formType !== 'edit') {
       this.setState({
         dates: this.props.dates.map(e => {
           return moment(e).unix()
         }),
         date: (new Date(this.props.date)).toISOString().substring(0, 10),
+        // this.props.types === checkInTime / checkOutTime from IntuitiveLodgingInput
         startDate: this.props.type ? moment.utc(new Date(this.props.date)) : moment(new Date(this.props.date)),
         endDate: this.props.type ? moment.utc(new Date(this.props.date)) : moment(new Date(this.props.date))
+      })
+    } else if (this.props.dates && this.props.formType === 'edit') {
+      // if dates are present and edit form is opened
+      this.setState({
+        dates: this.props.dates.map(e => {
+          return moment(e).unix()
+        }),
+        date: (new Date(this.props.date)).toISOString().substring(0, 10),
+        startDate: moment(new Date(this.props.dates[this.props.startDay - 1])),
+        endDate: moment(new Date(this.props.dates[this.props.endDay - 1]))
       })
     }
   }

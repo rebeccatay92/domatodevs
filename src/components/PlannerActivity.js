@@ -51,7 +51,7 @@ const plannerActivityTarget = {
     if (props.activity.day === monitor.getItem().day && monitor.getItem().index === props.index) {
       props.initializePlanner(props.data.findItinerary.events)
       return
-    } 
+    }
     // const typeOfDays = {
     //   Activity: 'startDay',
     //   Food: 'startDay',
@@ -144,8 +144,7 @@ class PlannerActivity extends Component {
           </div>)}
         </td>
         {this.state.editEventType && <td style={plannerBlurredBackgroundStyle} />}
-        {
-          !this.state.expanded && this.props.columns && this.props.columns.includes('Notes') &&
+        {!this.state.expanded && this.props.columns && this.props.columns.includes('Notes') &&
           <PlannerColumnValue column='Notes' activity={this.props.activity} isLast hover={this.state.hover} itineraryId={this.props.itineraryId} expandEvent={() => this.expandEvent()} expandedEvent={this.state.expanded} />
         }
         {!this.state.expanded && this.props.columns && !this.props.columns.includes('Notes') && this.props.columns.map((column, i) => {
@@ -194,9 +193,7 @@ class PlannerActivity extends Component {
             {!this.props.lastDay && this.props.timeline.events && timeline}
           </td>
           <td colSpan='4'>
-            <div onClick={() => this.setState({
-              creatingEvent: true
-            })} style={createEventBoxContainerStyle}>
+            <div onClick={() => this.setState({creatingEvent: true})} style={createEventBoxContainerStyle}>
               {createEventBox}
             </div>
 
@@ -241,7 +238,7 @@ class PlannerActivity extends Component {
       // editEventType: this.props.activity.type
       editEventType: eventType,
       hover: false
-    }, () => console.log('plannerActivity state', this.state))
+    })
   }
 
   toggleEventDropdown (event) {

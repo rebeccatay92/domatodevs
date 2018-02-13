@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import { compose, withProps, lifecycle } from 'recompose'
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
-import CustomControl from './CustomControl'
+import CustomControl from '../location/CustomControl'
 const _ = require('lodash')
 
-const LocationMap = compose(
+const MapPlanner = compose(
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.exp&libraries=geometry,drawing,places`,
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: '755px' }} />,
+    containerElement: <div style={{ height: '100%' }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
   lifecycle({
@@ -34,12 +34,6 @@ const LocationMap = compose(
         },
         onMapMounted: ref => {
           refs.map = ref
-          console.log('current location', this.props.currentLocation)
-          // even if current location doesnt exist, HOC still passes an empty obj down. check key exists
-          if (this.props.currentLocation.latitude) {
-            this.setState({center: {lat: this.props.currentLocation.latitude, lng: this.props.currentLocation.longitude}})
-            this.setState({currentLocationWindow: true})
-          }
         },
         onBoundsChanged: () => {
           this.setState({
@@ -142,9 +136,6 @@ const LocationMap = compose(
         closeInfoWindow: () => {
           this.setState({infoOpen: false})
           this.setState({markerIndex: null})
-        },
-        closeCurrentLocationWindow: () => {
-          this.setState({currentLocationWindow: false})
         }
       })
     }
@@ -152,71 +143,20 @@ const LocationMap = compose(
   withScriptjs,
   withGoogleMap
 )((props) =>
-  <GoogleMap ref={props.onMapMounted} defaultZoom={2} zoom={props.zoom} center={props.center} onBoundsChanged={props.onBoundsChanged} style={{position: 'relative'}} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
-    <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
-      <button onClick={() => props.toggleMap()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>BACK</button>
-    </CustomControl>
-    <SearchBox ref={props.onSearchBoxMounted} bounds={props.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={props.onPlacesChanged} >
-      <div>
-        <input ref={props.onSearchInputMounted} type='text' placeholder='Search for location'
-          style={{
-            boxSizing: `border-box`,
-            border: `1px solid transparent`,
-            width: `300px`,
-            height: `30px`,
-            marginTop: `10px`,
-            marginLeft: '10px',
-            padding: `0 12px`,
-            borderRadius: `3px`,
-            boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
-            fontSize: `14px`,
-            outline: `none`,
-            textOverflow: `ellipses`
-          }}
-        />
-        <button onClick={() => props.clearSearch()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginLeft: '10px'}}>Clear</button>
-      </div>
-    </SearchBox>
-    {props.markers.map((marker, index) =>
-      <Marker ref={props.onMarkerMounted} key={index} position={marker.position} onClick={() => props.handleMarkerClick(index)}>
-        {props.infoOpen && props.markerIndex === index &&
-          <InfoWindow ref={props.onInfoWindowMounted} key={index} onCloseClick={props.closeInfoWindow}>
-            <div>
-              <h5>Name: {marker.place.name}</h5>
-              <h5>Address: {marker.place.formatted_address}</h5>
-              <h5>place_id: {marker.place.place_id}</h5>
-              <button onClick={() => props.handleSelectLocationClick(marker.place.place_id)} >Select this location</button>
-            </div>
-          </InfoWindow>
-      }
-      </Marker>
-    )}
-    {props.currentLocation.latitude &&
-      <Marker ref={props.onCurrentLocationMounted} position={{lat: props.currentLocation.latitude, lng: props.currentLocation.longitude}} onClick={() => props.handleCurrentLocationClick()}>
-        {props.currentLocationWindow &&
-          <InfoWindow onCloseClick={props.closeCurrentLocationWindow}>
-            <div>
-              <h5>Currently selected location</h5>
-              <h5>Name: {props.currentLocation.name}</h5>
-              <h5>Address: {props.currentLocation.address}</h5>
-            </div>
-          </InfoWindow>
-        }
-      </Marker>
-    }
+  <GoogleMap ref={props.onMapMounted} defaultZoom={2} zoom={props.zoom} center={props.center} onBoundsChanged={props.onBoundsChanged} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
   </GoogleMap>
 )
 
-class LocationMapHOC extends Component {
+class MapPlannerHOC extends Component {
   constructor (props) {
     super(props)
     this.state = {}
   }
   render () {
     return (
-      <LocationMap selectLocation={(obj) => this.props.selectLocation(obj)} toggleMap={() => this.props.toggleMap()} currentLocation={this.props.currentLocation} />
+      <MapPlanner />
     )
   }
 }
 
-export default LocationMapHOC
+export default MapPlannerHOC
