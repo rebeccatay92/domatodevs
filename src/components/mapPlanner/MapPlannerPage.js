@@ -1,4 +1,9 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { graphql } from 'react-apollo'
+import { initializePlanner } from '../../actions/plannerActions'
+import { queryItinerary } from '../../apollo/itinerary'
+
 import SideBarPlanner from './SideBarPlanner'
 import MapPlannerHOC from './MapPlannerHOC'
 
@@ -10,6 +15,8 @@ class MapPlannerPage extends Component {
     this.state = {}
   }
   render () {
+    // console.log('props', this.props.match.params.itineraryId)
+    // console.log('props', this.props)
     return (
       <div>
         <div style={{position: 'absolute', display: 'inline-block', bottom: '0', width: '15%', height: '94vh', background: backgroundColor}}>
@@ -24,4 +31,26 @@ class MapPlannerPage extends Component {
   }
 }
 
-export default MapPlannerPage
+const options = {
+  options: props => ({
+    variables: {
+      id: props.match.params.itineraryId
+    }
+  })
+}
+
+const mapStateToProps = (state) => {
+  return {
+    activities: state.plannerActivities
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(graphql(queryItinerary, options)(MapPlannerPage))
