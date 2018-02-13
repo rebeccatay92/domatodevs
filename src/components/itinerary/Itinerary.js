@@ -53,17 +53,13 @@ class Itinerary extends Component {
     if (itinerary.startDate) {
       var startUnix = itinerary.startDate
       var startMoment = moment.unix(startUnix).utc().format('ddd DD MMM YYYY HH:mm')
-      console.log(moment.unix(startUnix).utc())
-      console.log('startMoment', startMoment)
+      // console.log(moment.unix(startUnix).utc())
+      // console.log('startMoment', startMoment)
 
       var endUnix = itinerary.startDate + (86400 * (itinerary.days - 1))
       var endMoment = moment.unix(endUnix).utc().format('ddd DD MMM YYYY HH:mm')
-      console.log('endMoment', endMoment)
+      // console.log('endMoment', endMoment)
     }
-    // if (itinerary.endDate) {
-    //   var endDate = (new Date(itinerary.endDate * 1000).toISOString()).substring(0, 10)
-    // }
-
     return (
       <div style={{border: '1px solid black'}}>
         <Link to={url}>Plan your itinerary</Link>

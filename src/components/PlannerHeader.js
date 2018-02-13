@@ -22,7 +22,7 @@ class PlannerHeader extends Component {
             <Image src='https://media.licdn.com/media/AAEAAQAAAAAAAAqQAAAAJDhmZmZhOTg2LWE1YmYtNDQ2OC1iMzhiLWU0Y2RiZTBmNGRkMw.jpg' circle style={userIconStyle} />
             <i className='material-icons person-add' style={{...plannerIconStyle, ...{verticalAlign: 'middle', margin: '0 0 10px 10px'}}}>person_add</i>
           </div>
-          <PlannerHeaderRightBarIcons />
+          <PlannerHeaderRightBarIcons id={this.props.id} />
         </div>
       </div>
     )

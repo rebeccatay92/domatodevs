@@ -13,7 +13,7 @@ import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
 import PlannerPage from './PlannerPage'
 import Navbar from './Navbar'
-import FlightMapHOC from './location/FlightMapHOC'
+import MapPlannerPage from './mapPlanner/MapPlannerPage'
 
 class App extends Component {
   toggleLoginLogout () {
@@ -57,7 +57,9 @@ class App extends Component {
             <ItineraryPage />
           )} />
           <Route path='/planner/:itineraryId' component={PlannerPage} />
-          <Route path='/maps' component={FlightMapHOC} />
+          <Route path='/map/:itineraryId' component={() => (
+            <MapPlannerPage />
+          )} />
           {this.props.showSpinner && (
             <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
               <div style={{position: 'fixed', top: 'calc(50% - 35px)', left: 'calc(50% - 35px)', height: '70px', width: '70px'}}>
