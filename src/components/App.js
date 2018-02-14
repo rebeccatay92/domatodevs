@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { ClipLoader } from 'react-spinners'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 import { createToken } from '../apollo/user'
 
@@ -97,6 +99,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(compose(
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(createToken, {name: 'createToken'})
-)(App))
+)(App)))
