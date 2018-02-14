@@ -118,7 +118,7 @@ class DateBox extends Component {
               })}
               <PlannerActivity empty itineraryId={this.props.itineraryId} activity={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.activities.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} />
             </tbody>
-        )}
+          )}
         </table>
       </div>
     )

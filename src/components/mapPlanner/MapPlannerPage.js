@@ -1,27 +1,69 @@
 import React, { Component } from 'react'
+import { graphql } from 'react-apollo'
+import { connect } from 'react-redux'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
+import { initializePlanner } from '../../actions/plannerActions'
+import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
 import MapPlannerHOC from './MapPlannerHOC'
 
 const backgroundColor = '#FAFAFA'
 
 class MapPlannerPage extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
   render () {
+    if (this.props.data.loading) return (
+      <h1 style={{marginTop: '60px'}}>Loading</h1>
+    )
     return (
-      <div>
-        <div style={{position: 'absolute', display: 'inline-block', bottom: '0', width: '15%', height: '94vh', background: backgroundColor}}>
-          <SideBarPlanner />
+      <div style={{marginTop: '60px', height: 'calc(100vh - 60px)', width: '1920px'}}>
+        <div style={{display: 'inline-block', verticalAlign: 'top', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor, overflow: 'hidden'}}>
+          <div style={{overflowY: 'scroll', width: '107%', height: '100%', paddingRight: '7%'}}>
+            <SideBarPlanner itinerary={this.props.data.findItinerary} itineraryId={this.props.match.params.itineraryId} events={this.props.events} />
+          </div>
         </div>
-        <div style={{position: 'absolute', display: 'inline-block', bottom: '0', left: '15%', width: '70%', height: '94vh'}}>
-          <MapPlannerHOC />
+        <div style={{display: 'inline-block', verticalAlign: 'top', left: '15%', width: '70%', height: 'calc(100vh - 60px)'}}>
+          {/* <div style={{height: '100%', width: '100%'}}> */}
+            <MapPlannerHOC />
+          {/* </div> */}
         </div>
-        <div style={{position: 'absolute', display: 'inline-block', bottom: '0', right: '0', width: '15%', height: '94vh', background: backgroundColor}}>BUCKET</div>
+        <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div>
       </div>
     )
   }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
+      const allEvents = nextProps.data.findItinerary.events
+      // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
+      // console.log(activitiesWithTimelineErrors)
+      // this.props.initializePlanner(activitiesWithTimelineErrors)
+      console.log(allEvents)
+      this.props.initializePlanner(allEvents)
+    }
+  }
 }
 
-export default MapPlannerPage
+const options = {
+  options: props => ({
+    variables: {
+      id: props.match.params.itineraryId
+    }
+  })
+}
+
+const mapStateToProps = (state) => {
+  return {
+    events: state.plannerActivities
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
+    }
+  }
+}
+
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(graphql(queryItinerary, options)(MapPlannerPage)))
