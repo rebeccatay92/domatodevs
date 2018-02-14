@@ -22,4 +22,4 @@ class PlannerPage extends Component {
   }
 }
 
-export default DragDropContext(HTML5Backend)(PlannerPage)
+export default PlannerPage
