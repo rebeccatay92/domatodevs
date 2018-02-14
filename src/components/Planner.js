@@ -6,7 +6,7 @@ import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
 import { Scrollbars } from 'react-custom-scrollbars'
-import { primaryColor, plannerContainerStyle } from '../Styles/styles'
+import { plannerContainerStyle } from '../Styles/styles'
 import DateBox from './Date'
 import PlannerHeader from './PlannerHeader'
 

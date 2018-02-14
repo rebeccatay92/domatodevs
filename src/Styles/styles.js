@@ -251,3 +251,8 @@ export const searchResultsTableStyle = {width: '100%', color: secondaryFontColor
 
 // AirportResults.js styles
 export const intuitiveDropdownStyle = {width: '282.5px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2', display: 'block'}
+
+// mapPlanner/SideBarDate.js styles
+export const mapPlannerDateTableHorizontalLineStyle = isFirstDay => {
+  return {marginBottom: '2vh', marginTop: isFirstDay ? '0' : '1vh', width: '100%', height: '8px', boxShadow: '0 8px 10px -10px #86919f inset'}
+}

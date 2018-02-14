@@ -79,10 +79,10 @@ const MapPlanner = compose(
         onSearchMarkerMounted: ref => {
           refs.searchMarker = ref
         },
-        onInfoBoxMounted: ref => {
-          refs.infoBox = ref
-          console.log('mounted')
-        },
+        // onInfoBoxMounted: ref => {
+        //   refs.infoBox = ref
+        //   console.log('mounted')
+        // },
         onPlacesChanged: () => {
           // called only by search box
           const places = refs.searchBox.getPlaces()
@@ -106,37 +106,37 @@ const MapPlanner = compose(
             searchMarkers: nextMarkers
           })
           refs.map.fitBounds(bounds)
-        },
-        onInfoBoxDomReady: () => {
-          function stopPropagation (event) {
-            event.stopPropagation()
-          }
-
-          var infoboxCreateEvent = document.querySelector('#infoboxCreateEvent')
-          window.google.maps.event.addDomListener(infoboxCreateEvent, 'dblclick', (e) => {
-            // stop infobox events from bubbling up to map
-            stopPropagation(e)
-          })
-          window.google.maps.event.addDomListener(infoboxCreateEvent, 'mouseenter', (e) => {
-            // console.log('mouse enter')
-            // console.log('map ref', refs.map)
-            this.setState({mapOptions: {draggable: false, scrollwheel: false}})
-          })
-        },
-        closeInfoBox: () => {
-          console.log('cancel button. close infobox')
-          this.setState({isInfoBoxOpen: false})
-        },
-        searchMarkerClicked: () => {
-          console.log('search marker clicked. open createEvent infobox')
-          this.setState({isInfoBoxOpen: true})
-        },
-        toggleCreateEventForm: () => {
-          console.log('toggle createEventForm')
-        },
-        createEvent: () => {
-          console.log('submit clicked')
         }
+        // onInfoBoxDomReady: () => {
+        //   function stopPropagation (event) {
+        //     event.stopPropagation()
+        //   }
+        //
+        //   var infoboxCreateEvent = document.querySelector('#infoboxCreateEvent')
+        //   window.google.maps.event.addDomListener(infoboxCreateEvent, 'dblclick', (e) => {
+        //     // stop infobox events from bubbling up to map
+        //     stopPropagation(e)
+        //   })
+        //   window.google.maps.event.addDomListener(infoboxCreateEvent, 'mouseenter', (e) => {
+        //     // console.log('mouse enter')
+        //     // console.log('map ref', refs.map)
+        //     this.setState({mapOptions: {draggable: false, scrollwheel: false}})
+        //   })
+        // },
+        // closeInfoBox: () => {
+        //   console.log('cancel button. close infobox')
+        //   this.setState({isInfoBoxOpen: false})
+        // },
+        // searchMarkerClicked: () => {
+        //   console.log('search marker clicked. open createEvent infobox')
+        //   this.setState({isInfoBoxOpen: true})
+        // },
+        // toggleCreateEventForm: () => {
+        //   console.log('toggle createEventForm')
+        // },
+        // createEvent: () => {
+        //   console.log('submit clicked')
+        // }
       })
     }
   }),
@@ -144,6 +144,7 @@ const MapPlanner = compose(
   withGoogleMap
 )((props) =>
   <GoogleMap ref={props.onMapMounted} defaultZoom={2} zoom={props.zoom} center={props.center} onBoundsChanged={props.onBoundsChanged} style={{position: 'relative'}} options={props.mapOptions}>
+
     {/* CLOSE MAP */}
     <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
       <button onClick={() => props.returnToPlanner()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>X</button>
@@ -158,14 +159,14 @@ const MapPlanner = compose(
     </SearchBox>
 
     {/* SEARCH MARKERS */}
-    {props.searchMarkers.map((marker, index) =>
+    {/* {props.searchMarkers.map((marker, index) =>
       <Marker ref={props.onSearchMarkerMounted} key={index} position={marker.position} onClick={() => props.searchMarkerClicked()} />
-    )}
+    )} */}
 
     {/* FILTERED EVENT MARKERS */}
 
     {/* CUSTOM INFOBOX. ONLY 1 CAN OPEN AT ANY TIME. OPEN EDIT/CREATE FORM DEPENDING ON TYPE */}
-    {props.isInfoBoxOpen &&
+    {/* {props.isInfoBoxOpen &&
       <InfoBox ref={props.onInfoBoxMounted} position={new window.google.maps.LatLng(props.center.lat, props.center.lng)} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => props.onInfoBoxDomReady()}>
         <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infoboxCreateEvent'>
           <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
@@ -192,7 +193,7 @@ const MapPlanner = compose(
           </div>
         </div>
       </InfoBox>
-    }
+    } */}
   </GoogleMap>
 )
 
