@@ -32,6 +32,8 @@ const MapPlanner = compose(
         },
         eventMarkers: [],
         searchMarkers: [],
+        bucketMarkers: [],
+        daysArr: [], // arr of days 1 to end. for filtering
         isInfoBoxOpen: true,
         createOrEdit: '', // switch between create or edit popup
         infoBoxModel: '', // activity, food, lodging, transport
@@ -77,17 +79,9 @@ const MapPlanner = compose(
         onSearchMarkerMounted: ref => {
           refs.searchMarker = ref
         },
-        // onInfoWindowMounted: ref => {
-        //   refs.infoWindow = ref
-        // },
         onInfoBoxMounted: ref => {
           refs.infoBox = ref
           console.log('mounted')
-          // var infobox = document.querySelector('#infobox')
-          // console.log('infobox', infobox)
-          // infobox.addEventListener('mouseenter', () => {
-          //   console.log('mouse enter')
-          // })
         },
         onPlacesChanged: () => {
           // called only by search box
@@ -113,22 +107,35 @@ const MapPlanner = compose(
           })
           refs.map.fitBounds(bounds)
         },
-        onDomReady: () => {
+        onInfoBoxDomReady: () => {
           function stopPropagation (event) {
             event.stopPropagation()
           }
 
-          var testing = document.querySelector('#testing')
-          window.google.maps.event.addDomListener(testing, 'dblclick', (e) => {
+          var infoboxCreateEvent = document.querySelector('#infoboxCreateEvent')
+          window.google.maps.event.addDomListener(infoboxCreateEvent, 'dblclick', (e) => {
             // stop infobox events from bubbling up to map
             stopPropagation(e)
-            console.log('prevent zoom')
           })
-          window.google.maps.event.addDomListener(testing, 'mouseenter', (e) => {
-            console.log('mouse enter')
-            console.log('map ref', refs.map)
+          window.google.maps.event.addDomListener(infoboxCreateEvent, 'mouseenter', (e) => {
+            // console.log('mouse enter')
+            // console.log('map ref', refs.map)
             this.setState({mapOptions: {draggable: false, scrollwheel: false}})
           })
+        },
+        closeInfoBox: () => {
+          console.log('cancel button. close infobox')
+          this.setState({isInfoBoxOpen: false})
+        },
+        searchMarkerClicked: () => {
+          console.log('search marker clicked. open createEvent infobox')
+          this.setState({isInfoBoxOpen: true})
+        },
+        toggleCreateEventForm: () => {
+          console.log('toggle createEventForm')
+        },
+        createEvent: () => {
+          console.log('submit clicked')
         }
       })
     }
@@ -152,24 +159,36 @@ const MapPlanner = compose(
 
     {/* SEARCH MARKERS */}
     {props.searchMarkers.map((marker, index) =>
-      <Marker ref={props.onSearchMarkerMounted} key={index} position={marker.position} />
+      <Marker ref={props.onSearchMarkerMounted} key={index} position={marker.position} onClick={() => props.searchMarkerClicked()} />
     )}
 
     {/* FILTERED EVENT MARKERS */}
 
     {/* CUSTOM INFOBOX. ONLY 1 CAN OPEN AT ANY TIME. OPEN EDIT/CREATE FORM DEPENDING ON TYPE */}
     {props.isInfoBoxOpen &&
-      <InfoBox ref={props.onInfoBoxMounted} position={new window.google.maps.LatLng(props.center.lat, props.center.lng)} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => props.onDomReady()} id='infobox'>
-        <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id={'testing'}>
+      <InfoBox ref={props.onInfoBoxMounted} position={new window.google.maps.LatLng(props.center.lat, props.center.lng)} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => props.onInfoBoxDomReady()}>
+        <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infoboxCreateEvent'>
           <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
             <i className='material-icons' style={{background: 'transparent', color: 'black'}}>location_on</i>
             <i className='material-icons'>delete</i>
           </div>
-          <div>main component (location details, opening hours, notes, forms)</div>
+          <div>
+            <div>Location name</div>
+            <div>Opening hours dropdown</div>
+            <div>
+              <div>Notes input field</div>
+              <div>description / arrival location</div>
+              <div>start date, start day</div>
+              <div>start time</div>
+              <div>end date, end day</div>
+              <div>end time</div>
+            </div>
+            <div>buttons for event type. activity, food, lodging, transport</div>
+          </div>
           <div style={{position: 'absolute', right: '0', bottom: '0'}}>
-            <Button bsStyle='danger' style={{backgroundColor: '#ed685a'}}>Submit</Button>
-            <Button bsStyle='default' style={{}}>Cancel</Button>
-            <Button bsStyle='default' style={{}}>More</Button>
+            <Button bsStyle='danger' style={{backgroundColor: '#ed685a'}} onClick={() => props.createEvent()}>Submit</Button>
+            <Button bsStyle='default' style={{}} onClick={() => props.closeInfoBox()}>Cancel</Button>
+            <Button bsStyle='default' style={{}} onClick={() => props.toggleCreateEventForm()} >More</Button>
           </div>
         </div>
       </InfoBox>

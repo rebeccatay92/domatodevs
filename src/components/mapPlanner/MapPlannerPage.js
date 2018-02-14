@@ -15,8 +15,6 @@ class MapPlannerPage extends Component {
     this.state = {}
   }
   render () {
-    // console.log('props', this.props.match.params.itineraryId)
-    // console.log('props', this.props)
     return (
       <div>
         <div style={{position: 'absolute', display: 'inline-block', bottom: '0', width: '15%', height: '94vh', background: backgroundColor}}>
