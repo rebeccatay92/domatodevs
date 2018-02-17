@@ -60,7 +60,7 @@ class Map extends Component {
 
   render () {
     return (
-      <GoogleMap ref={node => { this.map = node }} defaultZoom={2} center={this.state.center} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false, gestureHandling: 'none'}} onBoundsChanged={() => this.onBoundsChanged()} >
+      <GoogleMap ref={node => { this.map = node }} zoom={this.state.zoom} center={this.state.center} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false, gestureHandling: 'none'}} onBoundsChanged={() => this.onBoundsChanged()} >
         {this.props.departureLocation &&
           <Marker position={{lat: this.props.departureLocation.latitude, lng: this.props.departureLocation.longitude}} onClick={() => this.toggleDepartureInfo()}>
             {this.state.departureInfo &&

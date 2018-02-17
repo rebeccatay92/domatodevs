@@ -232,7 +232,6 @@ class Map extends Component {
       bounds: this.map.getBounds(),
       center: {lat: this.map.getCenter().lat(), lng: this.map.getCenter().lng()}
     })
-    // use latlng literal for center
   }
 
   onPlacesChanged () {
@@ -254,7 +253,6 @@ class Map extends Component {
     }))
     const nextCenter = _.get(nextMarkers, '0.position', this.state.center)
 
-    // center needs to be latlng literal
     this.setState({
       center: nextCenter,
       searchMarkers: nextMarkers
@@ -263,7 +261,6 @@ class Map extends Component {
   }
 
   clearSearch () {
-    // console.log('clear search', this.searchInput)
     this.searchInput.value = ''
   }
 
@@ -279,9 +276,7 @@ class Map extends Component {
   render () {
     return (
       <GoogleMap ref={node => { this.map = node }}
-        defaultZoom={2}
-        defaultCenter={{ lat: 0, lng: 0 }}
-        center={{lat: this.state.center.lat, lng: this.state.center.lng}}
+        center={this.state.center}
         zoom={this.state.zoom} onBoundsChanged={() => this.onBoundsChanged()}
         options={this.state.mapOptions}
       >
@@ -310,10 +305,6 @@ class Map extends Component {
 const MapPlanner = withScriptjs(withGoogleMap(Map))
 
 class MapPlannerHOC extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
   returnToPlanner () {
     console.log('return to planner')
   }

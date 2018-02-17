@@ -126,7 +126,7 @@ class Map extends Component {
 
   render () {
     return (
-      <GoogleMap ref={node => { this.map = node }} defaultZoom={2} defaultCenter={{lat: 0, lng: 0}} center={this.state.center} zoom={this.state.zoom} onBoundsChanged={() => this.onBoundsChanged()} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
+      <GoogleMap ref={node => { this.map = node }} center={this.state.center} zoom={this.state.zoom} onBoundsChanged={() => this.onBoundsChanged()} options={{fullscreenControl: false, mapTypeControl: false, streetViewControl: false}}>
         {/* CLOSE MAP */}
         <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
           <button onClick={() => this.props.toggleMap()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>BACK</button>
