@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { compose, withProps, lifecycle } from 'recompose'
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from './CustomControl'
@@ -54,7 +53,7 @@ class Map extends Component {
     this.map.fitBounds(bounds)
 
     // close any info windows that may be open
-    this.setState({infoOpen: false, markerIndex: null, marker: null})
+    this.setState({isInfoOpen: false, markerIndex: null, marker: null})
     this.setState({isCurrentLocationOpen: false})
 
     if (nextMarkers.length === 1) {
@@ -147,6 +146,7 @@ class Map extends Component {
         })}
 
         // INFO WINDOW NEEDS STYLING, AND POSITION ABOVE MARKER (OVERLAPPING NOW). SWITCH TO INFOBOX?
+
         {this.state.isInfoOpen &&
           <InfoWindow position={this.state.searchMarkers[this.state.markerIndex].position} onCloseClick={() => this.onCloseInfo()}>
             <div>
