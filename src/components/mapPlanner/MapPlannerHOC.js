@@ -256,7 +256,7 @@ class Map extends Component {
 
     // center needs to be latlng literal
     this.setState({
-      center: {lat: nextCenter.lat(), lng: nextCenter.lng()},
+      center: nextCenter,
       searchMarkers: nextMarkers
     })
     this.map.fitBounds(bounds)
@@ -320,7 +320,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner returnToPlanner={() => this.returnToPlanner()} googleMapURL='https://maps.googleapis.com/maps/api/js?v=3.31&libraries=geometry,drawing,places' loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }

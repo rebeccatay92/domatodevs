@@ -215,7 +215,7 @@ export const locationSelectionInputStyle = (marginTop, type) => {
 }
 export const locationDropdownStyle = {width: leftPanelWidth / 2 + 'px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2', left: `calc(50% - ${(leftPanelWidth / 2) / 2}px)`}
 
-export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: (0.9 * totalHeight) + 'px', zIndex: 999, color: 'black'}
+export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
 
 // POSITION FIXED, MOVE FURTHER RIGHT
 export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 610.5px)', top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: (0.9 * totalHeight) + 'px', zIndex: 999, color: 'black'}
