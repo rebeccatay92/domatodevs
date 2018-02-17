@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { compose, withProps, lifecycle } from 'recompose'
-import { withScriptjs, withGoogleMap, withState, withHandlers, GoogleMap, Marker } from 'react-google-maps'
+import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
@@ -218,7 +218,11 @@ class Map extends Component {
         draggable: true,
         scrollwheel: true
       },
-      searchMarkers: []
+      searchMarkers: [],
+      isInfoBoxOpen: false,
+      searchPlannerBucket: '', // search, planner or bucket
+      formModel: '', // activity, food, lodging, transport
+
     }
   }
 
@@ -233,12 +237,10 @@ class Map extends Component {
 
   onPlacesChanged () {
     // called only by search box
-    console.log('this', this)
     if (!this.searchBox) return
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
 
-    console.log('places', places)
     places.forEach(place => {
       if (place.geometry.viewport) {
         bounds.union(place.geometry.viewport)
@@ -252,18 +254,26 @@ class Map extends Component {
     }))
     const nextCenter = _.get(nextMarkers, '0.position', this.state.center)
 
-    console.log('nextCenter', nextCenter)
-
     // center needs to be latlng literal
     this.setState({
-      center: nextCenter,
+      center: {lat: nextCenter.lat(), lng: nextCenter.lng()},
       searchMarkers: nextMarkers
     })
     this.map.fitBounds(bounds)
   }
 
   clearSearch () {
-    console.log('clear search')
+    // console.log('clear search', this.searchInput)
+    this.searchInput.value = ''
+  }
+
+  onSearchMarkerClicked (index) {
+    var marker = this.state.searchMarkers[index]
+    console.log('marker', marker)
+    this.setState({
+      isInfoBoxOpen: true,
+      searchPlannerBucket: 'search'
+    })
   }
 
   render () {
@@ -275,12 +285,23 @@ class Map extends Component {
         zoom={this.state.zoom} onBoundsChanged={() => this.onBoundsChanged()}
         options={this.state.mapOptions}
       >
+        {/* CLOSE MAP */}
+        <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
+          <button onClick={() => this.props.returnToPlanner()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>X</button>
+        </CustomControl>
+
         <SearchBox ref={node => { this.searchBox = node }} bounds={this.state.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={() => this.onPlacesChanged()} >
           <div>
             <input ref={node => { this.searchInput = node }} type='text' placeholder='Search for location' style={{boxSizing: `border-box`, border: `1px solid transparent`, width: `300px`, height: `30px`, marginTop: `10px`, marginLeft: '10px', padding: `0 12px`, borderRadius: `3px`, boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: `none`, textOverflow: `ellipses`}} />
             <button onClick={() => this.clearSearch()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginLeft: '10px'}}>Clear</button>
           </div>
         </SearchBox>
+
+        {this.state.searchMarkers.map((marker, index) => {
+          return (
+            <Marker key={index} position={marker.position} onClick={() => this.onSearchMarkerClicked(index)} />
+          )
+        })}
       </GoogleMap>
     )
   }
