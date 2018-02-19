@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { compose, withProps, lifecycle } from 'recompose'
+import { withRouter } from 'react-router-dom'
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
@@ -306,7 +306,9 @@ const MapPlanner = withScriptjs(withGoogleMap(Map))
 
 class MapPlannerHOC extends Component {
   returnToPlanner () {
-    console.log('return to planner')
+    // console.log('react router', this.props)
+    var itineraryId = this.props.match.params.itineraryId
+    this.props.history.push(`/planner/${itineraryId}`)
   }
 
   render () {
@@ -316,4 +318,4 @@ class MapPlannerHOC extends Component {
   }
 }
 
-export default MapPlannerHOC
+export default withRouter(MapPlannerHOC)
