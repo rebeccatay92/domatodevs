@@ -27,7 +27,8 @@ class Map extends Component {
       isInfoBoxOpen: false,
       searchPlannerBucket: '', // search, planner or bucket
       eventType: '', // activity, food, lodging, transport
-      currentlyClicked: null
+      currentlyClicked: null,
+      currentlyClickedIndex: null
     }
   }
 
@@ -72,7 +73,8 @@ class Map extends Component {
         searchMarkers: [],
         isInfoBoxOpen: false,
         searchPlannerBucket: '',
-        currentlyClicked: null
+        currentlyClicked: null,
+        currentlyClickedIndex: null
       })
     }
   }
@@ -80,11 +82,15 @@ class Map extends Component {
   onSearchMarkerClicked (index) {
     var marker = this.state.searchMarkers[index]
     // console.log('marker', marker)
-    if (!this.state.searchPlannerBucket) {
+    this.map.panTo(marker.position)
+    this.setState({center: marker.position})
+
+    if (!this.state.searchPlannerBucket || index !== this.state.currentlyClickedIndex) {
       this.setState({
         isInfoBoxOpen: true,
         searchPlannerBucket: 'search',
         currentlyClicked: marker,
+        currentlyClickedIndex: index,
         eventType: 'activity'
       })
     } else {
@@ -92,6 +98,7 @@ class Map extends Component {
         isInfoBoxOpen: false,
         searchPlannerBucket: '',
         currentlyClicked: null,
+        currentlyClickedIndex: null,
         eventType: ''
       })
     }
@@ -130,19 +137,11 @@ class Map extends Component {
   }
 
   closeInfoBox () {
-    this.setState({isInfoBoxOpen: false, searchPlannerBucket: '', currentlyClicked: null, eventType: ''})
+    this.setState({isInfoBoxOpen: false, searchPlannerBucket: '', currentlyClicked: null, currentlyClickedIndex: null, eventType: ''})
   }
 
   changeEventType (type) {
     this.setState({eventType: type})
-  }
-
-  createEvent () {
-    console.log('submit create event')
-  }
-
-  toggleCreateEventForm () {
-    console.log('open bigger form')
   }
 
   render () {
