@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
+import { withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
@@ -66,9 +66,10 @@ class Map extends Component {
     this.map.fitBounds(bounds)
   }
 
+  // CLOSING INFOBOX SETS SEARCHPLANNERBUCKET TO ''. MARKER DOESNT GET CLEARED
   clearSearch () {
     this.searchInput.value = ''
-    if (this.state.searchPlannerBucket === 'search') {
+    if (this.state.searchMarkers.length) {
       this.setState({
         searchMarkers: [],
         isInfoBoxOpen: false,
@@ -85,7 +86,7 @@ class Map extends Component {
     this.map.panTo(marker.position)
     this.setState({center: marker.position})
 
-    if (!this.state.searchPlannerBucket || index !== this.state.currentlyClickedIndex) {
+    if (this.state.searchMarkers.length && index !== this.state.currentlyClickedIndex) {
       this.setState({
         isInfoBoxOpen: true,
         searchPlannerBucket: 'search',
@@ -136,8 +137,9 @@ class Map extends Component {
     })
   }
 
+  // CLOSE BOX BUT SEARCH IS STILL TRUE (MARKERS ARE PRESENT)
   closeInfoBox () {
-    this.setState({isInfoBoxOpen: false, searchPlannerBucket: '', currentlyClicked: null, currentlyClickedIndex: null, eventType: ''})
+    this.setState({isInfoBoxOpen: false, currentlyClicked: null, currentlyClickedIndex: null, eventType: ''})
   }
 
   changeEventType (type) {
@@ -156,6 +158,19 @@ class Map extends Component {
           <button onClick={() => this.props.returnToPlanner()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>X</button>
         </CustomControl>
 
+        <CustomControl controlPosition={window.google.maps.ControlPosition.LEFT_TOP}>
+          <div style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', width: '150px', marginTop: '10px', marginLeft: '10px', padding: `12px`, background: 'white'}} >
+            <label style={{display: 'block'}}>
+              <input type='checkbox' />
+              Day 1
+            </label>
+            <hr style={{margin: '5px'}} />
+            <label style={{display: 'block'}}>
+              <input type='checkbox' />
+              Bucket
+            </label>
+          </div>
+        </CustomControl>
         <SearchBox ref={node => { this.searchBox = node }} bounds={this.state.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={() => this.onPlacesChanged()} >
           <div>
             <input ref={node => { this.searchInput = node }} type='text' placeholder='Search for location' style={{boxSizing: `border-box`, border: `1px solid transparent`, width: `300px`, height: `30px`, marginTop: `10px`, marginLeft: '10px', padding: `0 12px`, borderRadius: `3px`, boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: `none`, textOverflow: `ellipses`}} />
@@ -196,9 +211,15 @@ class MapPlannerHOC extends Component {
     this.props.history.push(`/planner/${itineraryId}`)
   }
 
+  // componentWillReceiveProps (nextProps) {
+  //   if (this.props.events !== nextProps.events) {
+  //     console.log('events', nextProps.events)
+  //   }
+  // }
+
   render () {
     return (
-      <MapPlanner returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner events={this.props.events} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
