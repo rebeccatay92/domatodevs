@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import Radium from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { DropTarget, DragSource } from 'react-dnd'
 import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity, initializePlanner } from '../../actions/plannerActions'
 import { queryItinerary } from '../../apollo/itinerary'
 import ActivityInfo from '../ActivityInfo'
 
-import { timelineStyle, eventBoxStyle, timelineColumnStyle, dateTableFirstHeaderStyle, eventBoxFirstColumnStyle, createEventTextStyle, activityIconStyle, createEventBoxStyle, createEventPickOneStyle, createEventBoxContainerStyle, plannerBlurredBackgroundStyle, expandedEventIconsBoxStyle, expandedEventIconsStyle, expandedEventBoxStyle, expandedEventBoxImageContainerStyle, expandedEventBoxImageStyle, expandedEventBoxTextBoxStyle } from '../../Styles/styles'
+import { timelineStyle, eventBoxStyle, timelineColumnStyle, dateTableFirstHeaderStyle, mapPlannerEventBoxStyle, createEventTextStyle, activityIconStyle, createEventBoxStyle, createEventPickOneStyle, createEventBoxContainerStyle, plannerBlurredBackgroundStyle, expandedEventIconsBoxStyle, expandedEventIconsStyle, expandedEventBoxStyle, expandedEventBoxImageContainerStyle, expandedEventBoxImageStyle, expandedEventBoxTextBoxStyle } from '../../Styles/styles'
 
 const plannerActivitySource = {
   beginDrag (props) {
@@ -16,10 +17,6 @@ const plannerActivitySource = {
     if (!monitor.didDrop()) {
       props.initializePlanner(props.data.findItinerary.events)
     }
-  },
-  canDrag (props) {
-    if (props.draggable) return true
-    else return false
   }
 }
 
@@ -86,40 +83,15 @@ class SideBarEvent extends Component {
     if (this.props.event.type) type = this.props.event.type
 
     let eventBox = (
-      <tr>
+      <tr onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
         <td>
-          {connectDragPreview(<div style={eventBoxFirstColumnStyle(this.props.event, minHeight, getItem || {})} key={this.props.event.modelId}>
-            {/* {this.state.hover && !this.state.expanded && this.props.event.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a'}}}>drag_handle</i>)} */}
+          {connectDragPreview(<div style={mapPlannerEventBoxStyle(this.props.event, minHeight, getItem || {})} key={this.props.event.modelId}>
+            {this.state.hover && !this.state.expanded && this.props.event.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', right: '8%', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
             {this.renderInfo(this.props.event.type)}
           </div>)}
         </td>
       </tr>
     )
-
-    let createEventBox = (
-      <div style={{
-        cursor: 'pointer'
-      }}>
-        <p style={createEventTextStyle}>+ Add Event</p>
-      </div>
-    )
-
-    if (this.props.empty) {
-      return connectDropTarget(
-        <tr>
-          <td>
-            <div onClick={() => this.setState({creatingEvent: true})} style={createEventBoxContainerStyle}>
-              {createEventBox}
-            </div>
-
-            {/* {this.state.createEventType &&
-              <CreateEventFormHOC eventType={this.state.createEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.handleCreateEventClick()} />
-            } */}
-          </td>
-          {/* {this.state.createEventType && <td style={plannerBlurredBackgroundStyle} />} */}
-        </tr>
-      )
-    }
     return connectDropTarget(eventBox)
   }
 
@@ -247,6 +219,23 @@ class SideBarEvent extends Component {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    hoverOverActivity: (index, date) => {
+      dispatch(hoverOverActivity(index, date))
+    },
+    dropActivity: (activity, index) => {
+      dispatch(dropActivity(activity, index))
+    },
+    plannerActivityHoverOverActivity: (index, activity, date) => {
+      dispatch(plannerActivityHoverOverActivity(index, activity, date))
+    },
+    initializePlanner: (activities) => {
+      dispatch(initializePlanner(activities))
+    }
+  }
+}
+
 const options = {
   options: props => ({
     variables: {
@@ -255,6 +244,6 @@ const options = {
   })
 }
 
-export default compose(
+export default connect(null, mapDispatchToProps)(compose(
   graphql(queryItinerary, options)
-)(DragSource('plannerActivity', plannerActivitySource, collectSource)(DropTarget(['activity', 'plannerActivity'], plannerActivityTarget, collectTarget)(SideBarEvent)))
+)(DragSource('plannerActivity', plannerActivitySource, collectSource)(DropTarget(['activity', 'plannerActivity'], plannerActivityTarget, collectTarget)(Radium(SideBarEvent)))))
