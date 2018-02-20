@@ -45,7 +45,6 @@ class Map extends Component {
     }))
     const nextCenter = _.get(nextMarkers, '0.position', this.state.center)
 
-    // center needs to be latlng literal
     this.setState({
       center: nextCenter,
       searchMarkers: nextMarkers
