@@ -117,9 +117,10 @@ class LocationSearch extends Component {
       )
     } else {
       return (
-        <div style={{position: 'relative'}}>
-          <textarea key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
-          <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i>
+        <div style={{position: 'relative', display: 'inline-block'}}>
+          <p style={{position: 'relative', fontWeight: 'bold'}}>LOCATION</p>
+          <input key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
+          {/* <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i> */}
 
           {this.state.selecting &&
             <div style={locationDropdownStyle}>

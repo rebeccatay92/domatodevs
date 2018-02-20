@@ -186,14 +186,14 @@ export const createEventFormContainerStyle = {backgroundColor: 'transparent', po
 // height 100% since attachments is no longer at bottom
 export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '100%'}
 export const createEventFormLeftPanelStyle = (url, type) => {
-  return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? rightPanelWidth + 'px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative'}
+  return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? rightPanelWidth + 'px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', padding: '60px'}
 }
 export const createEventFormRightPanelStyle = (type) => {
   return {width: type === 'flight' ? leftPanelWidth + 'px' : rightPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', color: mainFontColor}
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#6D6A7A', opacity: '0.75'}
 export const eventDescriptionStyle = (bgImage) => {
-  return {background: bgImage ? 'none' : 'inherit', outline: 'none', border: 'none', textAlign: 'center', fontSize: '24px', fontWeight: '300', width: 'fit-content', minWidth: '100px', position: 'relative', ':hover': { boxShadow: '0 1px 0 #FFF' }}
+  return {background: bgImage ? 'rgba(255, 255, 255, 0.2)' : 'inherit', outline: 'none', border: 'none', fontSize: '24px', fontWeight: '300', width: 'fit-content', minWidth: leftPanelWidth / 2 + 'px', position: 'relative', ':hover': { boxShadow: '0 1px 0 #FFF' }}
 }
 
 export const eventWarningStyle = (bgImage) => {
@@ -203,7 +203,7 @@ export const eventWarningStyle = (bgImage) => {
 export const foodTypeStyle = (bgImage) => {
   return {background: bgImage ? 'none' : 'inherit', outline: 'none', border: 'none', textAlign: 'center', fontSize: '24px', fontWeight: '300', width: '150px', position: 'relative', ':hover': { boxShadow: '0 1px 0 #FFF' }}
 }
-export const eventDescContainerStyle = {margin: '0 auto', width: 'fit-content'}
+export const eventDescContainerStyle = {width: 'fit-content', marginTop: '30px'}
 export const foodTypeContainerStyle = {width: '150px', margin: '0 auto'}
 export const attachmentsStyle = {width: '100%', background: 'transparent', display: 'inline-block', marginTop: '5px'}
 
@@ -211,7 +211,7 @@ export const bookingNotesContainerStyle = {width: '100%', height: '100%', backgr
 
 // LocationSelection.js styles
 export const locationSelectionInputStyle = (marginTop, type) => {
-  return {fontSize: '48px', textAlign: 'center', width: type === 'flight' ? '' : leftPanelWidth / 2 + 'px', background: 'inherit', border: 'none', outline: 'none', fontWeight: '100', resize: 'none', marginTop: marginTop + 'px', maxHeight: '195px', ':hover': { boxShadow: '0 1px 0 #FFF' }}
+  return {fontSize: '24px', width: type === 'flight' ? '' : leftPanelWidth / 2 + 'px', background: 'rgba(255, 255, 255, 0.2)', border: 'none', outline: 'none', resize: 'none', marginTop: marginTop + 'px', maxHeight: '195px'}
 }
 export const locationDropdownStyle = {width: leftPanelWidth / 2 + 'px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2', left: `calc(50% - ${(leftPanelWidth / 2) / 2}px)`}
 
