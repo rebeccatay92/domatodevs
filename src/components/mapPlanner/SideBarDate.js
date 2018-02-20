@@ -25,7 +25,7 @@ class SideBarDate extends Component {
     const { connectDropTarget } = this.props
     return (
       <div>
-        <table style={{width: '100%', marginTop: '20px'}}>
+        <table style={{width: '100%', marginTop: '20px', marginLeft: '20px'}}>
           <thead>
             <tr>
               <th onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
@@ -56,7 +56,6 @@ class SideBarDate extends Component {
                 )
               })}
               {/* <PlannerActivity empty itineraryId={this.props.itineraryId} activity={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.activities.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} /> */}
-              <SideBarEvent empty itineraryId={this.props.itineraryId} event={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.events.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} />
             </tbody>
           )}
         </table>
