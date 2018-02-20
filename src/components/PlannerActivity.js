@@ -316,11 +316,11 @@ class PlannerActivity extends Component {
               <p style={nameStyle}>
                 <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location && this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={typeStyle}> - </span>
                 <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
+                <div style={{position: 'relative', display: 'inline'}}>
+                  {expandButton}
+                  {expandMenu}
+                </div>
               </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
               <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime} newDay={this.props.activity.newDay} />
             </div>
           )
@@ -361,11 +361,11 @@ class PlannerActivity extends Component {
               <p style={nameStyle}>
                 <ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={typeStyle}> - </span>
                 <ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
+                <div style={{position: 'relative', display: 'inline'}}>
+                  {expandButton}
+                  {expandMenu}
+                </div>
               </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
               <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
                 newDay={this.props.activity.newDay} />
             </div>

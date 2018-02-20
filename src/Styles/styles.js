@@ -97,8 +97,8 @@ export const dayTimelineWordStyle = isDateOnScreen => {
 export const addDayButtonStyle = {padding: '1px 3px', display: 'inline-block', marginTop: '10px', cursor: 'pointer'}
 export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block'}
 export const dateTableFirstHeaderStyle = {width: `${0.4 * tableWidth}px`}
-export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 1vw', fontSize: '24px', fontWeight: '300'}
-export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '0.5vw', fontWeight: '300'}
+export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 15px', fontSize: '24px', fontWeight: '300'}
+export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '8px', fontWeight: '300'}
 export const dateTableOtherHeaderStyle = {width: `${0.2 * tableWidth}px`}
 export const dateTableHorizontalLineStyle = isFirstDay => {
   return {marginBottom: '2vh', marginTop: isFirstDay ? '0' : '1vh', width: tableWidth + 'px', height: '8px', boxShadow: '0 8px 10px -10px #86919f inset'}
@@ -254,5 +254,10 @@ export const intuitiveDropdownStyle = {width: '282.5px', maxHeight: '250px', ove
 
 // mapPlanner/SideBarDate.js styles
 export const mapPlannerDateTableHorizontalLineStyle = isFirstDay => {
-  return {marginBottom: '2vh', marginTop: isFirstDay ? '0' : '1vh', width: '100%', height: '8px', boxShadow: '0 8px 10px -10px #86919f inset'}
+  return {marginLeft: '10px', marginBottom: '2vh', marginTop: isFirstDay ? '0' : '1vh', width: 'calc(93% - 20px)', height: '8px', boxShadow: '0 8px 10px -10px #86919f inset'}
+}
+
+// mapPlanner/SideBarEvent.js styles
+export const mapPlannerEventBoxStyle = (activity, minHeight, draggedItem) => {
+  return { lineHeight: '100%', marginRight: '7%', padding: '1vh 0', minHeight: '12vh', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
 }
