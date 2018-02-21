@@ -24,9 +24,11 @@ class Map extends Component {
         draggable: true,
         scrollwheel: true
       },
+      filterDays: [], // arr of days to show eg [1,2,5]
       allEvents: [], // entire this.props.events arr
       eventsArr: [], // manipulated arr to extract location
       searchMarkers: [],
+      plannerMarkers: [], // filtered planner markers. eg markers for days 1,2,5
       isInfoBoxOpen: false,
       searchPlannerBucket: '',
       // which marker is clicked. (infobox may be closed but marker still present)
@@ -196,6 +198,23 @@ class Map extends Component {
     })
     console.log('manipulated events arr', eventsArr)
     this.setState({eventsArr: eventsArr})
+
+    // default filter is all days
+    // console.log('daysArr', this.props.daysArr)
+    // this.setState({filterDays: this.props.daysArr})
+
+    // testing plannerMarkers with only some days
+    this.setState({filterDays: [1, 2]}, () => {
+      this.applyDaysFilter()
+    })
+  }
+
+  applyDaysFilter () {
+    // using this.state.filterDays, filter and setstate of plannerMarkers
+    var plannerMarkers = this.state.eventsArr.filter(e => {
+      return this.state.filterDays.includes(e.day)
+    })
+    this.setState({plannerMarkers: plannerMarkers})
   }
 
   // componentWillReceiveProps (nextProps) {
@@ -204,6 +223,24 @@ class Map extends Component {
   //     console.log('events arr', nextProps.events)
   //   }
   // }
+
+  changeDayCheckbox (e) {
+    var clickedDay = parseInt(e.target.value)
+
+    var filterDays = JSON.parse(JSON.stringify(this.state.filterDays))
+
+    if (filterDays.includes(clickedDay)) {
+      var newDaysArr = filterDays.filter(e => {
+        return e !== clickedDay
+      })
+    } else {
+      newDaysArr = filterDays.concat([clickedDay])
+    }
+    this.setState({filterDays: newDaysArr}, () => {
+      // after changing days filter, reapplying filter on markers
+      this.applyDaysFilter()
+    })
+  }
 
   render () {
     return (
@@ -223,7 +260,7 @@ class Map extends Component {
             {this.props.daysArr.map((day, i) => {
               return (
                 <label style={{display: 'block', fontSize: '18px'}} key={`day${i}`}>
-                  <input type='checkbox' style={{width: '20px', height: '20px'}} />
+                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.state.filterDays.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
                   Day {day}
                 </label>
               )
@@ -265,7 +302,7 @@ class Map extends Component {
         }
 
         {/* seeded data has 9 distinct locations. lodging is 2 rows but 1 location. lodging need to plot only 1 marker? */}
-        {this.state.eventsArr.map((event, index) => {
+        {this.state.plannerMarkers.map((event, index) => {
           return (
             <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} />
           )
