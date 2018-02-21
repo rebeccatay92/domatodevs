@@ -193,7 +193,7 @@ export const createEventFormRightPanelStyle = (type) => {
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#6D6A7A', opacity: '0.75'}
 export const eventDescriptionStyle = (bgImage) => {
-  return {background: bgImage ? 'rgba(255, 255, 255, 0.2)' : 'inherit', outline: 'none', border: 'none', fontSize: '24px', fontWeight: '300', width: 'fit-content', minWidth: leftPanelWidth / 2 + 'px', position: 'relative', ':hover': { boxShadow: '0 1px 0 #FFF' }}
+  return {background: bgImage ? 'rgba(255, 255, 255, 0.2)' : 'inherit', outline: 'none', border: 'none', fontSize: '24px', fontWeight: '300', width: 'fit-content', minWidth: leftPanelWidth / 2 + 'px', position: 'relative'}
 }
 
 export const eventWarningStyle = (bgImage) => {

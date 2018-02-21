@@ -76,5 +76,6 @@ export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
       locationDetails.openingHours = textArr[0]
     }
   }
+  console.log(locationDetails);
   return locationDetails
 }
