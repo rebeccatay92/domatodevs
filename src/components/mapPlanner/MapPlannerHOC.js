@@ -17,6 +17,7 @@ class Map extends Component {
       bounds: null,
       center: {lat: 0, lng: 0},
       mapOptions: {
+        minZoom: 2,
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
@@ -120,6 +121,7 @@ class Map extends Component {
     window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
       this.setState({
         mapOptions: {
+          minZoom: 2,
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
@@ -131,6 +133,7 @@ class Map extends Component {
     window.google.maps.event.addDomListener(infobox, 'mouseleave', e => {
       this.setState({
         mapOptions: {
+          minZoom: 2,
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
@@ -217,13 +220,17 @@ class Map extends Component {
         {/* FILTERS */}
         <CustomControl controlPosition={window.google.maps.ControlPosition.LEFT_TOP}>
           <div style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', width: '150px', marginTop: '10px', marginLeft: '10px', padding: `12px`, background: 'white'}} >
-            <label style={{display: 'block'}}>
-              <input type='checkbox' />
-              Day 1
-            </label>
+            {this.props.daysArr.map((day, i) => {
+              return (
+                <label style={{display: 'block', fontSize: '18px'}} key={`day${i}`}>
+                  <input type='checkbox' style={{width: '20px', height: '20px'}} />
+                  Day {day}
+                </label>
+              )
+            })}
             <hr style={{margin: '5px'}} />
-            <label style={{display: 'block'}}>
-              <input type='checkbox' />
+            <label style={{display: 'block', fontSize: '18px'}}>
+              <input type='checkbox' style={{width: '20px', height: '20px'}} />
               Bucket
             </label>
           </div>
@@ -283,7 +290,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner events={this.props.events} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
