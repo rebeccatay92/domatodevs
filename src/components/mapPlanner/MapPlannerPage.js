@@ -12,9 +12,11 @@ const backgroundColor = '#FAFAFA'
 
 class MapPlannerPage extends Component {
   render () {
-    if (this.props.data.loading) return (
-      <h1 style={{marginTop: '60px'}}>Loading</h1>
-    )
+    if (this.props.data.loading) {
+      return (
+        <h1 style={{marginTop: '60px'}}>Loading</h1>
+      )
+    }
     return (
       <div style={{marginTop: '60px', height: 'calc(100vh - 60px)', width: '1920px'}}>
         <div style={{display: 'inline-block', verticalAlign: 'top', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor, overflow: 'hidden'}}>
@@ -22,10 +24,8 @@ class MapPlannerPage extends Component {
             <SideBarPlanner itinerary={this.props.data.findItinerary} itineraryId={this.props.match.params.itineraryId} events={this.props.events} />
           </div>
         </div>
-        <div style={{display: 'inline-block', verticalAlign: 'top', left: '15%', width: '70%', height: 'calc(100vh - 60px)'}}>
-          {/* <div style={{height: '100%', width: '100%'}}> */}
-            <MapPlannerHOC />
-          {/* </div> */}
+        <div style={{display: 'inline-block', verticalAlign: 'top', left: '15%', width: '50%', height: 'calc(100vh - 60px)'}}>
+          <MapPlannerHOC ItineraryId={this.props.match.params.itineraryId} />
         </div>
         <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div>
       </div>
