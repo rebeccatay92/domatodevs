@@ -35,7 +35,7 @@ class MapCreateEventPopup extends Component {
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
           <Button bsStyle='danger' style={{backgroundColor: '#ed685a'}} onClick={() => this.createEvent()}>Submit</Button>
-          <Button bsStyle='default' style={{}} onClick={() => this.props.closeInfoBox()}>Cancel</Button>
+          <Button bsStyle='default' style={{}} onClick={() => this.props.closeSearchPopup()}>Cancel</Button>
           <Button bsStyle='default' style={{}} onClick={() => this.toggleCreateEventForm()} >More</Button>
         </div>
       </div>

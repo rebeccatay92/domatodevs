@@ -29,12 +29,9 @@ class Map extends Component {
       eventsArr: [], // manipulated arr to extract location
       searchMarkers: [],
       plannerMarkers: [], // filtered planner markers. eg markers for days 1,2,5
-      isInfoBoxOpen: false,
-      searchPlannerBucket: '',
-      // which marker is clicked. (infobox may be closed but marker still present)
-      eventType: '', // activity, food, lodging, transport
-      // index out of whichever marker arr
-      currentlyClickedIndex: null
+      isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null,
+      eventType: '' // activity, food, lodging, transport
     }
   }
 
@@ -82,9 +79,8 @@ class Map extends Component {
     if (this.state.searchMarkers.length) {
       this.setState({
         searchMarkers: [],
-        isInfoBoxOpen: false,
-        searchPlannerBucket: '',
-        currentlyClickedIndex: null
+        isSearchInfoBoxOpen: false,
+        clickedSearchMarkerIndex: null
       })
     }
 
@@ -100,19 +96,17 @@ class Map extends Component {
     this.map.panTo(marker.position)
     this.setState({center: marker.position})
 
-    if (this.state.searchMarkers.length && index !== this.state.currentlyClickedIndex) {
+    if (this.state.searchMarkers.length && index !== this.state.clickedSearchMarkerIndex) {
       this.setState({
-        isInfoBoxOpen: true,
-        searchPlannerBucket: 'search',
-        currentlyClickedIndex: index,
-        eventType: 'activity'
+        eventType: 'activity',
+        isSearchInfoBoxOpen: true,
+        clickedSearchMarkerIndex: index
       })
     } else {
       this.setState({
-        isInfoBoxOpen: false,
-        searchPlannerBucket: '',
-        currentlyClickedIndex: null,
-        eventType: ''
+        eventType: '',
+        isSearchInfoBoxOpen: false,
+        clickedSearchMarkerIndex: null
       })
     }
   }
@@ -151,11 +145,10 @@ class Map extends Component {
     })
   }
 
-  // CLOSE BOX BUT SEARCHPLANNERBUCKET DOESNT CHANGE (MARKERS STILL MOUNTED)
-  closeInfoBox () {
+  // CLOSE BOX BUT SEARCH MARKERS STILL MOUNTED
+  closeSearchPopup () {
     this.setState({
-      isInfoBoxOpen: false,
-      currentlyClickedIndex: null,
+      isSearchInfoBoxOpen: false,
       eventType: '',
       mapOptions: {
         minZoom: 2,
@@ -274,14 +267,6 @@ class Map extends Component {
   refitBounds (markerArr, type) {
     console.log('refit bounds type', type)
     if (!markerArr.length) return
-    // if (!markerArr.length) {
-    //   console.log('no markers')
-    //   this.setState({
-    //     center: {lat: 0, lng: 0},
-    //     zoom: 2
-    //   }, () => console.log('refit bounds', this.state))
-    //   return
-    // }
     if (type === 'planner') {
       var newBounds = new window.google.maps.LatLngBounds()
       // loops through markers n add to newBounds
@@ -355,7 +340,7 @@ class Map extends Component {
         {this.state.searchMarkers.map((marker, index) => {
           return (
             <Marker key={index} position={marker.position} onClick={() => this.onSearchMarkerClicked(index)}>
-              {this.state.isInfoBoxOpen && this.state.currentlyClickedIndex === index &&
+              {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
                 <InfoBox ref={node => { this.infoBox = node }} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
                   <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
                     <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
@@ -363,7 +348,7 @@ class Map extends Component {
                       <i className='material-icons'>delete</i>
                     </div>
                     <div>
-                      <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeInfoBox={() => this.closeInfoBox()} changeEventType={type => this.changeEventType(type)} />
+                      <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
                     </div>
                   </div>
                 </InfoBox>
@@ -374,7 +359,7 @@ class Map extends Component {
 
         {this.state.plannerMarkers.map((event, index) => {
           return (
-            <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} />
+            <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}}></Marker>
           )
         })}
       </GoogleMap>
