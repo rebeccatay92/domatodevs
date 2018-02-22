@@ -33,8 +33,6 @@ class Map extends Component {
       searchPlannerBucket: '',
       // which marker is clicked. (infobox may be closed but marker still present)
       eventType: '', // activity, food, lodging, transport
-      // currently clicked marker obj
-      currentlyClicked: null,
       // index out of whichever marker arr
       currentlyClickedIndex: null
     }
@@ -97,7 +95,6 @@ class Map extends Component {
       this.setState({
         isInfoBoxOpen: true,
         searchPlannerBucket: 'search',
-        currentlyClicked: marker,
         currentlyClickedIndex: index,
         eventType: 'activity'
       })
@@ -105,7 +102,6 @@ class Map extends Component {
       this.setState({
         isInfoBoxOpen: false,
         searchPlannerBucket: '',
-        currentlyClicked: null,
         currentlyClickedIndex: null,
         eventType: ''
       })
@@ -150,9 +146,16 @@ class Map extends Component {
   closeInfoBox () {
     this.setState({
       isInfoBoxOpen: false,
-      currentlyClicked: null,
       currentlyClickedIndex: null,
-      eventType: ''
+      eventType: '',
+      mapOptions: {
+        minZoom: 2,
+        fullscreenControl: false,
+        mapTypeControl: false,
+        streetViewControl: false,
+        draggable: true,
+        scrollwheel: true
+      }
     })
   }
 
@@ -282,24 +285,25 @@ class Map extends Component {
 
         {this.state.searchMarkers.map((marker, index) => {
           return (
-            <Marker key={index} position={marker.position} onClick={() => this.onSearchMarkerClicked(index)} />
+            <Marker key={index} position={marker.position} onClick={() => this.onSearchMarkerClicked(index)}>
+              {/* INFOBOX FOR CREATE */}
+              {this.state.isInfoBoxOpen && this.state.currentlyClickedIndex === index &&
+                <InfoBox ref={node => { this.infoBox = node }} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
+                  <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
+                    <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                      <i className='material-icons'>location_on</i>
+                      <i className='material-icons'>delete</i>
+                    </div>
+                    <div>
+                      <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeInfoBox={() => this.closeInfoBox()} changeEventType={type => this.changeEventType(type)} />
+                    </div>
+                  </div>
+                </InfoBox>
+              }
+            </Marker>
           )
         })}
 
-        {/* INFOBOX FOR CREATE */}
-        {this.state.isInfoBoxOpen && true &&
-          <InfoBox ref={node => { this.infoBox = node }} position={this.state.currentlyClicked.position} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
-            <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
-              <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
-                <i className='material-icons'>location_on</i>
-                <i className='material-icons'>delete</i>
-              </div>
-              <div>
-                <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeInfoBox={() => this.closeInfoBox()} changeEventType={type => this.changeEventType(type)} />
-              </div>
-            </div>
-          </InfoBox>
-        }
 
         {/* seeded data has 9 distinct locations. lodging is 2 rows but 1 location. lodging need to plot only 1 marker? */}
         {this.state.plannerMarkers.map((event, index) => {

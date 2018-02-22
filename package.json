@@ -8,6 +8,7 @@
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "material-design-icons": "^3.0.1",
+    "moment": "^2.20.1",
     "pdfjs-dist": "^2.0.232",
     "prop-types": "^15.6.0",
     "radium": "^0.21.0",
