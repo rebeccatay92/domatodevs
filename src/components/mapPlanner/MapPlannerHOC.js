@@ -18,13 +18,13 @@ class Map extends Component {
       center: {lat: 0, lng: 0},
       mapOptions: {
         minZoom: 2,
+        maxZoom: 16,
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
-        draggable: true,
-        scrollwheel: true
+        gestureHandling: 'cooperative'
       },
-      filterDays: [], // arr of days to show eg [1,2,5]
+      daysFilter: [], // arr of days to show eg [1,2,5]
       allEvents: [], // entire this.props.events arr
       eventsArr: [], // manipulated arr to extract location
       searchMarkers: [],
@@ -43,6 +43,11 @@ class Map extends Component {
     this.setState({
       bounds: this.map.getBounds(),
       center: {lat: this.map.getCenter().lat(), lng: this.map.getCenter().lng()}
+    }, () => {
+      // console.log('after on bounds changed', this.state)
+      // console.log('zoom is', this.map.getZoom())
+      // sync the zoom in state with map's actual zoom
+      this.setState({zoom: this.map.getZoom()})
     })
   }
 
@@ -79,9 +84,13 @@ class Map extends Component {
         searchMarkers: [],
         isInfoBoxOpen: false,
         searchPlannerBucket: '',
-        currentlyClicked: null,
         currentlyClickedIndex: null
       })
+    }
+
+    // if search was cleared, but planner has markers, refitBounds
+    if (this.state.plannerMarkers.length) {
+      this.refitBounds(this.state.plannerMarkers, 'planner')
     }
   }
 
@@ -120,11 +129,11 @@ class Map extends Component {
       this.setState({
         mapOptions: {
           minZoom: 2,
+          maxZoom: 16,
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
-          draggable: false,
-          scrollwheel: false
+          gestureHandling: 'none'
         }
       })
     })
@@ -132,11 +141,11 @@ class Map extends Component {
       this.setState({
         mapOptions: {
           minZoom: 2,
+          maxZoom: 16,
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
-          draggable: true,
-          scrollwheel: true
+          gestureHandling: 'cooperative'
         }
       })
     })
@@ -150,11 +159,11 @@ class Map extends Component {
       eventType: '',
       mapOptions: {
         minZoom: 2,
+        maxZoom: 16,
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
-        draggable: true,
-        scrollwheel: true
+        gestureHandling: 'cooperative'
       }
     })
   }
@@ -204,20 +213,28 @@ class Map extends Component {
 
     // default filter is all days
     // console.log('daysArr', this.props.daysArr)
-    // this.setState({filterDays: this.props.daysArr})
+    // this.setState({daysFilter: this.props.daysArr})
 
     // testing plannerMarkers with only some days
-    this.setState({filterDays: [1, 2]}, () => {
+    this.setState({daysFilter: [1, 2]}, () => {
       this.applyDaysFilter()
     })
   }
 
   applyDaysFilter () {
-    // using this.state.filterDays, filter and setstate of plannerMarkers
     var plannerMarkers = this.state.eventsArr.filter(e => {
-      return this.state.filterDays.includes(e.day)
+      return this.state.daysFilter.includes(e.day)
     })
-    this.setState({plannerMarkers: plannerMarkers})
+    this.setState({plannerMarkers: plannerMarkers}, () => {
+      if (!plannerMarkers.length && this.state.searchMarkers.length) {
+        // if planner no, search yes
+        console.log('no planner markers, but search is open')
+        this.refitBounds(this.state.searchMarkers, 'search')
+      } else {
+        // if planner yes
+        this.refitBounds(this.state.plannerMarkers, 'planner')
+      }
+    })
   }
 
   // componentWillReceiveProps (nextProps) {
@@ -230,19 +247,59 @@ class Map extends Component {
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
 
-    var filterDays = JSON.parse(JSON.stringify(this.state.filterDays))
+    var daysFilter = JSON.parse(JSON.stringify(this.state.daysFilter))
 
-    if (filterDays.includes(clickedDay)) {
-      var newDaysArr = filterDays.filter(e => {
+    if (daysFilter.includes(clickedDay)) {
+      var newDaysArr = daysFilter.filter(e => {
         return e !== clickedDay
       })
     } else {
-      newDaysArr = filterDays.concat([clickedDay])
+      newDaysArr = daysFilter.concat([clickedDay])
     }
-    this.setState({filterDays: newDaysArr}, () => {
+    this.setState({daysFilter: newDaysArr}, () => {
       // after changing days filter, reapplying filter on markers
       this.applyDaysFilter()
     })
+  }
+
+  // refit bounds may be used to refit planner markers (days filter), or call to manually focus on planner, search, bucket?. (set bounds, center, zoom?)
+
+  // by default all planner events are plotted
+
+  // planner yes, search yes. focus whichever was clicked. add toggle buttons to focus either, or both
+  // planner yes, search no (focus planner)
+  // planner no, search yes (focus search)
+  // planner no, search no (no change, just clear markers)
+
+  refitBounds (markerArr, type) {
+    console.log('refit bounds type', type)
+    if (!markerArr.length) return
+    // if (!markerArr.length) {
+    //   console.log('no markers')
+    //   this.setState({
+    //     center: {lat: 0, lng: 0},
+    //     zoom: 2
+    //   }, () => console.log('refit bounds', this.state))
+    //   return
+    // }
+    if (type === 'planner') {
+      var newBounds = new window.google.maps.LatLngBounds()
+      // loops through markers n add to newBounds
+      // console.log('marker arr', markerArr)
+      markerArr.forEach(marker => {
+        newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
+      })
+      // this.setState({bounds: newBounds})
+      this.map.fitBounds(newBounds, 100)
+    } else if (type === 'search') {
+      // no planner markers, focus on search
+      newBounds = new window.google.maps.LatLngBounds()
+      console.log('searchMarker arr', this.state.searchMarkers)
+      this.state.searchMarkers.forEach(marker => {
+        newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
+      })
+      this.map.fitBounds(newBounds, 100)
+    }
   }
 
   render () {
@@ -263,7 +320,7 @@ class Map extends Component {
             {this.props.daysArr.map((day, i) => {
               return (
                 <label style={{display: 'block', fontSize: '18px'}} key={`day${i}`}>
-                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.state.filterDays.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
+                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.state.daysFilter.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
                   Day {day}
                 </label>
               )
@@ -276,6 +333,17 @@ class Map extends Component {
           </div>
         </CustomControl>
 
+        {/* REFITBOUNDS TOGGLE BWTN SEARCH/PLANNER/ALL. HOW TO DEAL WITH BUCKET!!! */}
+        {this.state.plannerMarkers.length && this.state.searchMarkers.length &&
+          <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_BOTTOM}>
+            <div style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', width: '100px', marginTop: '10px', marginRight: '10px', background: 'white'}}>
+              <button style={{display: 'block', width: '100%'}}>Focus search</button>
+              <button style={{display: 'block', width: '100%'}}>Focus planner</button>
+              <button style={{display: 'block', width: '100%'}}>Fit all</button>
+            </div>
+          </CustomControl>
+        }
+
         <SearchBox ref={node => { this.searchBox = node }} bounds={this.state.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={() => this.onPlacesChanged()} >
           <div>
             <input ref={node => { this.searchInput = node }} type='text' placeholder='Search for location' style={{boxSizing: `border-box`, border: `1px solid transparent`, width: `300px`, height: `30px`, marginTop: `10px`, marginLeft: '10px', padding: `0 12px`, borderRadius: `3px`, boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: `none`, textOverflow: `ellipses`}} />
@@ -283,10 +351,10 @@ class Map extends Component {
           </div>
         </SearchBox>
 
+        {/* SEARCH MARKERS WITH CREATEEVENT POPUP */}
         {this.state.searchMarkers.map((marker, index) => {
           return (
             <Marker key={index} position={marker.position} onClick={() => this.onSearchMarkerClicked(index)}>
-              {/* INFOBOX FOR CREATE */}
               {this.state.isInfoBoxOpen && this.state.currentlyClickedIndex === index &&
                 <InfoBox ref={node => { this.infoBox = node }} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
                   <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
@@ -304,8 +372,6 @@ class Map extends Component {
           )
         })}
 
-
-        {/* seeded data has 9 distinct locations. lodging is 2 rows but 1 location. lodging need to plot only 1 marker? */}
         {this.state.plannerMarkers.map((event, index) => {
           return (
             <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} />
