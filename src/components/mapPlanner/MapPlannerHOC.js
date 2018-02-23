@@ -198,7 +198,6 @@ class Map extends Component {
       }
 
       temp.location = location
-
       return temp
     })
     console.log('manipulated events arr', eventsArr)
@@ -264,6 +263,7 @@ class Map extends Component {
   // planner no, search yes (focus search)
   // planner no, search no (no change, just clear markers)
 
+  // refitBounds only takes 1 type!
   refitBounds (markerArr, type) {
     console.log('refit bounds type', type)
     if (!markerArr.length) return
@@ -285,6 +285,25 @@ class Map extends Component {
       })
       this.map.fitBounds(newBounds, 100)
     }
+  }
+
+  focusSearchMarkers () {
+    this.refitBounds(this.state.searchMarkers, 'search')
+  }
+
+  focusPlannerMarkers () {
+    this.refitBounds(this.state.plannerMarkers, 'planner')
+  }
+
+  fitBothSearchPlannerMarkers () {
+    var newBounds = new window.google.maps.LatLngBounds()
+    this.state.searchMarkers.forEach(marker => {
+      newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
+    })
+    this.state.plannerMarkers.forEach(marker => {
+      newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
+    })
+    this.map.fitBounds(newBounds, 100)
   }
 
   render () {
@@ -322,9 +341,9 @@ class Map extends Component {
         {this.state.plannerMarkers.length && this.state.searchMarkers.length &&
           <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_BOTTOM}>
             <div style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', width: '100px', marginTop: '10px', marginRight: '10px', background: 'white'}}>
-              <button style={{display: 'block', width: '100%'}}>Focus search</button>
-              <button style={{display: 'block', width: '100%'}}>Focus planner</button>
-              <button style={{display: 'block', width: '100%'}}>Fit all</button>
+              <button style={{display: 'block', width: '100%'}} onClick={() => this.focusSearchMarkers()}>Focus search</button>
+              <button style={{display: 'block', width: '100%'}} onClick={() => this.focusPlannerMarkers()}>Focus planner</button>
+              <button style={{display: 'block', width: '100%'}} onClick={() => this.fitBothSearchPlannerMarkers()}>Fit all</button>
             </div>
           </CustomControl>
         }
@@ -359,7 +378,7 @@ class Map extends Component {
 
         {this.state.plannerMarkers.map((event, index) => {
           return (
-            <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}}></Marker>
+            <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} />
           )
         })}
       </GoogleMap>
