@@ -54,7 +54,7 @@ class PlannerHeaderInfo extends Component {
 
   render () {
     return (
-      this.state.editing ? <input onKeyDown={(e) => this.handleKeyDown(e)} autoFocus style={{...this.props.style, ...{padding: '0', marginBottom: '0px', color: 'black', width: this.props.type === 'description' ? '100%' : '50%'}}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} /> : <div style={this.props.style}><span title={this.state.value} style={{display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', marginBottom: '-15px'}} className='itineraryInfo' onClick={() => this.setState({editing: true})}>{this.state.value}</span></div>
+      this.state.editing ? <input onKeyDown={(e) => this.handleKeyDown(e)} autoFocus style={{...this.props.style, ...{padding: '8px', marginBottom: '0px', color: 'black', width: this.props.type === 'description' ? '100%' : '77%'}}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} /> : <span title={this.state.value} style={{...this.props.style, ...{display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '8px'}}} className='itineraryInfo' onClick={() => this.setState({editing: true})}>{this.state.value}</span>
     )
   }
 }

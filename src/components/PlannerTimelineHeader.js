@@ -42,7 +42,7 @@ class PlannerTimelineHeader extends Component {
       <th id='timeline-top' style={timelineColumnStyle()}>
         {this.props.firstDay && (
           <div style={timelineTitleStyle(headerSticky)}>
-            <span style={{fontSize: '24px', color: primaryColor, display: 'inline-block'}}>
+            <span style={{fontSize: '24px', color: primaryColor, display: 'inline-block', position: 'relative', top: '8px', marginBottom: '8px', height: '24px'}}>
               <i key='leftArrowTimeline' onClick={() => this.handleClick()} className='material-icons' style={{width: '15px', overflow: 'hidden', cursor: 'pointer', opacity: '0.6', ':hover': {opacity: '1'}}}>keyboard_arrow_left</i>
               <i key='righttArrowTimeline' onClick={() => this.handleClick()} className='material-icons' style={{cursor: 'pointer', opacity: '0.6', ':hover': {opacity: '1'}}}>keyboard_arrow_right</i>
             </span>

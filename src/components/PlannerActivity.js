@@ -122,7 +122,7 @@ class PlannerActivity extends Component {
       <div style={{...timelineStyle,
         ...{
           height: this.props.lastDay && this.props.isLast ? '60%' : '100%',
-          top: this.props.firstDay && this.props.index === 0 ? '20px' : '0'
+          top: this.props.firstDay && this.props.index === 0 ? '26px' : '0'
         }
       }} />
     )
@@ -157,15 +157,17 @@ class PlannerActivity extends Component {
     )
     let createEventBox = (
       <div style={{
-        cursor: 'pointer'
+        cursor: 'pointer',
+        height: '80px',
+        padding: '30px 0'
       }}>
-        <p style={createEventTextStyle}>+ Add Event</p>
+        <span style={createEventTextStyle}>+ Add Event</span>
       </div>
     )
     const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
     const eventTypes = ['Activity', 'Food', 'Lodging', 'Flight', 'Train', 'LandTransport', 'SeaTransport']
     const eventsListBox = (
-      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '35px'}}}>
+      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '15px'}}}>
         <span className='createEventBox'>
           {iconTypes.map((type, i) => {
             return (
@@ -259,10 +261,11 @@ class PlannerActivity extends Component {
   renderInfo (type, expanded) {
     const activityBoxStyle = {
       fontSize: '16px',
-      marginLeft: '1vw',
-      marginTop: '5px',
+      marginLeft: '16px',
+      padding: '19px 0',
       fontWeight: '300',
-      position: 'relative'
+      position: 'relative',
+      width: '366px'
     }
     const nameStyle = {
       display: 'inline-block',
@@ -280,7 +283,7 @@ class PlannerActivity extends Component {
     }
     const timeStyle = {
       marginTop: 0,
-      color: '#9FACBC',
+      color: 'rgba(60, 58, 68, 0.7)',
       position: 'relative'
     }
     const expandMenu = this.state.expandedMenu && (
@@ -289,11 +292,11 @@ class PlannerActivity extends Component {
     let expandButton
     if (this.state.hover && !this.state.expandedMenu) {
       expandButton = (
-        <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{fontSize: '30px', position: 'absolute', top: '-11px', ':hover': {color: '#ed685a'}}} onClick={() => this.setState({expandedMenu: true})}>more_horiz</i>
+        <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{marginLeft: '8px', fontSize: '20px', position: 'absolute', top: '-3px', ':hover': {color: '#ed685a'}}} onClick={() => this.setState({expandedMenu: true})}>more_horiz</i>
       )
     } else if (this.state.expandedMenu) {
       expandButton = (
-        <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{fontSize: '30px', position: 'absolute', top: '-11px', color: '#ed685a'}} onClick={() => this.setState({expandedMenu: false})}>more_horiz</i>
+        <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{marginLeft: '8px', fontSize: '20px', position: 'absolute', top: '-3px', color: '#ed685a'}} onClick={() => this.setState({expandedMenu: false})}>more_horiz</i>
       )
     }
     const errorIcon = (this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i onMouseEnter={() => this.setState({showClashes: true})} onMouseLeave={() => this.setState({showClashes: false})} className='material-icons' style={{position: 'absolute', top: '-2px', marginLeft: '4px', color: 'red'}}>error</i>
@@ -312,7 +315,7 @@ class PlannerActivity extends Component {
       switch (type) {
         case 'Activity':
           return (
-            <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+            <div style={{...activityBoxStyle, ...{height: '80px'}}}>
               <p style={nameStyle}>
                 <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location && this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={typeStyle}> - </span>
                 <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
@@ -327,7 +330,7 @@ class PlannerActivity extends Component {
         case 'Flight':
           if (this.props.activity.start) {
             return (
-              <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
                 <p style={nameStyle}><ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='departureLocation' value={this.props.activity[type].FlightInstance.departureLocation.name} />
                   <span style={typeStyle}> - </span>
                   <span style={typeStyle}>Flight Departure</span>
@@ -341,7 +344,7 @@ class PlannerActivity extends Component {
             )
           } else if (!this.props.activity.start) {
             return (
-              <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalLocation' value={this.props.activity[type].FlightInstance.arrivalLocation.name} />
                   <span style={typeStyle}> - </span>
                   <span style={typeStyle}>Flight Arrival</span>
@@ -357,7 +360,7 @@ class PlannerActivity extends Component {
           break
         case 'Food':
           return (
-            <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+            <div style={{...activityBoxStyle, ...{height: '80px'}}}>
               <p style={nameStyle}>
                 <ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={typeStyle}> - </span>
                 <ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
@@ -373,9 +376,9 @@ class PlannerActivity extends Component {
         case 'LandTransport':
           if (this.props.activity.start) {
             return (
-              <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='departureGooglePlaceData' value={this.props.activity[type].departureLocation.name} googlePlaceData={this.props.activity[type].departureLocation} /><span style={typeStyle}> - </span>
-                  <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value='Departure' />
+                  <span style={typeStyle}>Departure</span>
                 </p>
                 <div style={{position: 'relative', display: 'inline'}}>
                   {expandButton}
@@ -386,9 +389,9 @@ class PlannerActivity extends Component {
             )
           } else if (!this.props.activity.start) {
             return (
-              <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalGooglePlaceData' value={this.props.activity[type].arrivalLocation.name} googlePlaceData={this.props.activity[type].arrivalLocation} /><span style={typeStyle}> - </span>
-                  <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value='Arrival' />
+                  <span style={typeStyle}>Arrival</span>
                 </p>
                 <div style={{position: 'relative', display: 'inline'}}>
                   {expandButton}
@@ -409,7 +412,7 @@ class PlannerActivity extends Component {
             name = 'endTime'
           }
           return (
-            <div style={{...activityBoxStyle, ...{height: '10vh'}}}>
+            <div style={{...activityBoxStyle, ...{height: '80px'}}}>
               <div style={{display: 'inline'}}>
                 <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} />
                   <span style={typeStyle}> - </span>

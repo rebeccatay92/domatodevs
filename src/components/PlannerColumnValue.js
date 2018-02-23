@@ -36,7 +36,10 @@ class PlannerColumnValue extends Component {
   constructor (props) {
     super(props)
 
-    let value
+    let value, currency
+
+    if (props.activity && props.activity.type !== 'Flight') currency = props.activity[props.activity.type].currency
+    else if (props.activity) currency = props.activity.Flight.FlightBooking.currency
 
     if (!props.expandedEvent && props.column !== 'Notes') value = props.activity[props.activity.type][columnValues[props.column]]
     if (!props.expandedEvent && props.column === 'Notes') {
@@ -62,7 +65,8 @@ class PlannerColumnValue extends Component {
     this.state = {
       editing: false,
       value: value,
-      newValue: value
+      newValue: value,
+      currency: currency
     }
   }
 
@@ -211,11 +215,11 @@ class PlannerColumnValue extends Component {
         return {value: value || '', display: true}
       case 'Price':
         if (this.props.activity.type === 'Flight' && this.props.firstInFlightBooking && start) {
-          return {value: value || '', display: true}
+          return {value: this.state.currency + ' ' + value || '', display: true}
         } else if (this.props.activity.type === 'Flight') {
           return {value: '', display: false}
         } else {
-          if (start) return {value: value || '', display: true}
+          if (start) return {value: this.state.currency + ' ' + value || '', display: true}
           else {
             return {value: '', display: false}
           }

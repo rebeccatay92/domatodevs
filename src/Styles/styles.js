@@ -1,10 +1,10 @@
 export const primaryColor = '#ed685a'
 const mainFontColor = '#3C3A44'
 const secondaryFontColor = '#9FACBC'
-const backgroundColor = '#FAFAFA'
+const backgroundColor = '#FFFFFF'
 
 // Planner Table dimensions
-const tableWidth = 962
+const tableWidth = 1021
 
 // Create event form dimensions
 const totalWidth = 1221
@@ -19,8 +19,8 @@ const rightPanelWidth = totalWidth - leftPanelWidth
 export const plannerPageStyles = {
   fontFamily: '\'Roboto\', sans-serif',
   color: mainFontColor,
-  margin: '50px auto 0 auto',
-  width: '1300px',
+  margin: '50px calc(50vw - 553px + 89px) 0 calc(50vw - 553px - 89px)',
+  width: '1106px',
   fontWeight: '300'
 }
 
@@ -30,24 +30,25 @@ export const bucketTitleStyle = {textAlign: 'left', fontSize: '24px'}
 
 // Planner.js styles
 export const plannerContainerStyle = {
-  width: '100%',
-  borderRight: '1px solid rgba(159, 172, 188, 0.5)'
+  width: '100%'
 }
 
 export const plannerHeaderContainerStyle = {marginLeft: '89px'}
-export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', margin: '10px 10px -20px 0', display: 'inline-block', maxWidth: '50%'}
-export const itineraryDescStyle = {fontSize: '16px', fontWeight: '100', color: secondaryFontColor, marginBottom: '15px'}
+export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', margin: '10px 2px 0 0', display: 'inline-block', maxWidth: '78%', verticalAlign: 'middle'}
+export const itineraryDescStyle = {fontSize: '16px', color: mainFontColor, verticalAlign: 'middle', opacity: '0.7'}
 export const itineraryDatesStyle = {
   display: 'inline-block',
   color: primaryColor,
   fontSize: '16px',
   margin: 0,
   position: 'relative',
-  top: '-5px'
+  top: '-15px',
+  padding: '8px',
+  verticalAlign: 'bottom'
 }
-export const plannerHeaderIconsContainerStyle = {position: 'relative', height: '6vh', margin: '10px 0 2vh 0'}
+export const plannerHeaderIconsContainerStyle = {position: 'relative', height: '38px', margin: '0 0 32px 4px'}
 export const userIconsContainerStyle = {position: 'absolute', left: '0', top: '0'}
-export const userIconStyle = {height: '30px', width: '30px', margin: '0 0 10px 10px'}
+export const userIconStyle = {height: '30px', width: '30px', margin: '4px', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}
 export const plannerIconStyle = {
   fontSize: '24px',
   margin: '0 0 0 2vh',
@@ -59,10 +60,10 @@ export const plannerIconStyle = {
   }
 }
 export const plannerHeaderRightBarIconStyle = {
-  fontSize: '20px',
+  fontSize: '18px',
   color: 'white'
 }
-export const plannerHeaderRightBarIconContainerStyle = {backgroundColor: 'black', display: 'inline-block', marginLeft: '5px', height: '28px', padding: '4px', width: '28px', borderRadius: '15%', cursor: 'pointer', opacity: '0.8', ':hover': {opacity: '1.0'}}
+export const plannerHeaderRightBarIconContainerStyle = {backgroundColor: 'black', display: 'inline-block', marginLeft: '5px', height: '31px', padding: '6px', width: '31px', borderRadius: '3px', cursor: 'pointer', opacity: '0.8', ':hover': {opacity: '1.0'}}
 
 // Date.js styles
 export const timelineStyle = {
@@ -74,17 +75,17 @@ export const timelineStyle = {
   left: '50%',
   bottom: '0',
   margin: '0 auto',
-  backgroundColor: primaryColor
+  backgroundColor: 'rgba(237, 104, 90, 0.28)'
 }
 
-export const dateTableStyle = {width: '1052px'}
+export const dateTableStyle = {width: '1117px'}
 export const timelineColumnStyle = (clash, allDay) => {
   return {width: '89px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
 }
 export const timelineTitleStyle = headerSticky => {
-  return {...{position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '55px' : '0px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}, ...headerSticky && {backfaceVisibility: 'hidden'}}
+  return {...{position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '55px' : '-13px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}, ...headerSticky && {backfaceVisibility: 'hidden'}}
 }
-export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color: primaryColor}
+export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color: primaryColor, fontWeight: '300', borderBottom: '1px solid rgba(237, 104, 90, 0.28)', width: 'min-content', margin: '0 auto'}
 export const dayTimelineStyle = sticky => {
   return {...{position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '110px' : '60px', zIndex: 1, padding: '20px 0'}, ...sticky && {backfaceVisibility: 'hidden'}}
 }
@@ -96,12 +97,12 @@ export const dayTimelineWordStyle = isDateOnScreen => {
 }
 export const addDayButtonStyle = {padding: '1px 3px', display: 'inline-block', marginTop: '10px', cursor: 'pointer'}
 export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block'}
-export const dateTableFirstHeaderStyle = {width: `${0.4 * tableWidth}px`}
-export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 15px', fontSize: '24px', fontWeight: '300'}
+export const dateTableFirstHeaderStyle = {width: '366px', height: '43px', position: 'relative'}
+export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 16px', fontSize: '24px', fontWeight: '300'}
 export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '8px', fontWeight: '300'}
-export const dateTableOtherHeaderStyle = {width: `${0.2 * tableWidth}px`}
+export const dateTableOtherHeaderStyle = {width: '214px'}
 export const dateTableHorizontalLineStyle = isFirstDay => {
-  return {marginBottom: '2vh', marginTop: isFirstDay ? '0' : '1vh', width: tableWidth + 'px', height: '8px', boxShadow: '0 8px 10px -10px #86919f inset'}
+  return {marginBottom: '0', marginTop: isFirstDay ? '0' : '1vh', width: tableWidth + 'px', borderTop: '1px solid rgba(60, 58, 68, 0.2)'}
 }
 
 // PlannerActivity.js styles
@@ -113,7 +114,7 @@ export const eventBoxStyle = (draggable, activityId, clash, allDay) => {
   }
 }
 export const eventBoxFirstColumnStyle = (activity, minHeight, draggedItem) => {
-  return { lineHeight: '100%', padding: '1vh 0', minHeight: '12vh', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
+  return { lineHeight: '100%', padding: '0', minHeight: '80px', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
 }
 export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}
@@ -128,11 +129,10 @@ export const activityIconStyle = {
     WebkitTextStroke: '1px ' + primaryColor
   }
 }
-export const createEventBoxStyle = {}
+export const createEventBoxStyle = {height: '80px', padding: '30px 0'}
 export const createEventPickOneStyle = {fontSize: '16px', color: secondaryFontColor, position: 'relative', top: '-6px'}
 export const createEventBoxContainerStyle = {
-  margin: '3vh 0 3vh 1vw',
-  height: '50px',
+  margin: '0 0 0 16px',
   position: 'relative'
 }
 export const plannerBlurredBackgroundStyle = {position: 'fixed', bottom: 0, right: 0, top: 0, left: 0, backgroundColor: 'rgba(250, 250, 250, 1)', zIndex: 555}
@@ -150,16 +150,21 @@ export const tableDropdownStyle = {
   fontSize: '16px',
   color: mainFontColor,
   cursor: 'pointer',
-  padding: '1vh'
+  height: '35px',
+  margin: '8px 0 0 0',
+  padding: '8px 0',
+  fontWeight: '300'
 }
 
 export const tableOptionStyle = {
   display: 'block',
   fontSize: '16px',
-  textAlign: 'left',
+  textAlign: 'center',
   color: mainFontColor,
-  margin: '1vh 0',
-  cursor: 'pointer'
+  padding: '8px 0',
+  cursor: 'pointer',
+  fontWeight: '300',
+  width: '100%'
 }
 
 export const tableHeadingStyle = {
@@ -168,7 +173,7 @@ export const tableHeadingStyle = {
   position: 'relative',
   backgroundColor: backgroundColor,
   ':hover': {
-    backgroundColor: '#f0f0f0'
+    backgroundColor: 'rgba(245, 245, 245, 0.6)'
   }
 }
 
@@ -221,7 +226,7 @@ export const locationMapContainerStyle = {backgroundColor: 'white', position: 'f
 export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 610.5px)', top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
 
 // DateTimePicker.js styles
-export const dateTimePickerContainerStyle = {width: '415px', margin: '45px auto 0 auto', textAlign: 'center', height: '131px', position: 'relative', whiteSpace: 'noWrap'}
+export const dateTimePickerContainerStyle = {width: '415px', position: 'relative', whiteSpace: 'noWrap', marginTop: '30px'}
 
 // BookingDetails.js styles
 export const labelStyle = {
@@ -259,5 +264,5 @@ export const mapPlannerDateTableHorizontalLineStyle = isFirstDay => {
 
 // mapPlanner/SideBarEvent.js styles
 export const mapPlannerEventBoxStyle = (activity, minHeight, draggedItem) => {
-  return { lineHeight: '100%', marginRight: '7%', padding: '1vh 0', minHeight: '12vh', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
+  return { lineHeight: '100%', marginRight: '7%', padding: '0', minHeight: '80px', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
 }
