@@ -5,7 +5,7 @@ import { primaryColor } from '../Styles/styles'
 const timelineIconStyle = {
   fontSize: '21px',
   WebkitTextStroke: '1px ' + primaryColor,
-  WebkitTextFillColor: '#FAFAFA'
+  WebkitTextFillColor: '#FFFFFF'
 }
 
 const endStyle = {
@@ -21,7 +21,7 @@ class PlannerActivityTimeline extends Component {
   renderIcon (string, style) {
     return (
       <div style={{height: '65px', marginBottom: '-7px', position: 'relative'}}>
-        <div style={{width: 'fit-content', margin: '0 auto', position: 'relative', backgroundColor: '#FAFAFA', top: '26px', padding: '4px 4px 0 4px'}}>
+        <div style={{width: 'fit-content', margin: '0 auto', position: 'relative', backgroundColor: '#FFFFFF', top: '26px', padding: '4px 4px 0 4px'}}>
           <i className='material-icons' style={{...timelineIconStyle, ...style}}>{string}</i>
         </div>
       </div>

@@ -4,7 +4,7 @@ const secondaryFontColor = '#9FACBC'
 const backgroundColor = '#FFFFFF'
 
 // Planner Table dimensions
-const tableWidth = 1021
+const tableWidth = 1006
 
 // Create event form dimensions
 const totalWidth = 1221
@@ -33,7 +33,7 @@ export const plannerContainerStyle = {
   width: '100%'
 }
 
-export const plannerHeaderContainerStyle = {marginLeft: '89px'}
+export const plannerHeaderContainerStyle = {marginLeft: '109px', width: tableWidth + 'px'}
 export const itineraryNameStyle = {fontSize: '56px', fontWeight: '100', margin: '10px 2px 0 0', display: 'inline-block', maxWidth: '78%', verticalAlign: 'middle'}
 export const itineraryDescStyle = {fontSize: '16px', color: mainFontColor, verticalAlign: 'middle', opacity: '0.7'}
 export const itineraryDatesStyle = {
@@ -78,12 +78,12 @@ export const timelineStyle = {
   backgroundColor: 'rgba(237, 104, 90, 0.28)'
 }
 
-export const dateTableStyle = {width: '1117px'}
+export const dateTableStyle = {tableLayout: 'fixed', width: '1117px'}
 export const timelineColumnStyle = (clash, allDay) => {
-  return {width: '89px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
+  return {width: '110px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
 }
 export const timelineTitleStyle = headerSticky => {
-  return {...{position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '55px' : '-13px', textAlign: 'center', width: 'inherit', zIndex: 10, backgroundColor: backgroundColor}, ...headerSticky && {backfaceVisibility: 'hidden'}}
+  return {...{position: headerSticky ? 'fixed' : 'absolute', top: headerSticky ? '55px' : '-12px', textAlign: 'center', width: '110px', zIndex: 10, backgroundColor: backgroundColor}, ...headerSticky && {backfaceVisibility: 'hidden'}}
 }
 export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color: primaryColor, fontWeight: '300', borderBottom: '1px solid rgba(237, 104, 90, 0.28)', width: 'min-content', margin: '0 auto'}
 export const dayTimelineStyle = sticky => {
@@ -97,7 +97,7 @@ export const dayTimelineWordStyle = isDateOnScreen => {
 }
 export const addDayButtonStyle = {padding: '1px 3px', display: 'inline-block', marginTop: '10px', cursor: 'pointer'}
 export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block'}
-export const dateTableFirstHeaderStyle = {width: '366px', height: '43px', position: 'relative'}
+export const dateTableFirstHeaderStyle = {tableLayout: 'fixed', width: '366px', height: '43px', position: 'relative'}
 export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 16px', fontSize: '24px', fontWeight: '300'}
 export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '8px', fontWeight: '300'}
 export const dateTableOtherHeaderStyle = {width: '214px'}
@@ -168,7 +168,7 @@ export const tableOptionStyle = {
 }
 
 export const tableHeadingStyle = {
-  width: `${0.2 * 962}px`,
+  width: '214px',
   textAlign: 'center',
   position: 'relative',
   backgroundColor: backgroundColor,
@@ -179,10 +179,10 @@ export const tableHeadingStyle = {
 
 // PlannerColumnValue.js styles
 export const columnValueContainerStyle = (columnType) => {
-  return {position: 'relative', textAlign: columnType === 'Notes' ? 'left' : 'center', verticalAlign: 'top', color: mainFontColor, fontSize: '16px', paddingTop: '12px', width: `${0.2 * 962}px`}
+  return {position: 'relative', textAlign: columnType === 'Notes' ? 'left' : 'center', verticalAlign: 'top', color: mainFontColor, fontSize: '16px', width: '214px'}
 }
 
-export const expandEventIconStyle = {position: 'absolute', right: '0px', top: '10px', ':hover': {color: primaryColor}}
+export const expandEventIconStyle = {cursor: 'pointer', position: 'absolute', right: '0px', top: '10px', ':hover': {color: primaryColor}}
 
 // Create Event Form Styles
 export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}

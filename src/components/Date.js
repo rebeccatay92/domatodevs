@@ -59,9 +59,9 @@ class DateBox extends Component {
     )
     let expandButton
     if (this.state.hoveringOverDate && !this.state.showDateMenu) {
-      expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: true})} className='material-icons dateMenu' style={{position: 'absolute', top: '-5px', marginLeft: '8px', fontSize: '20px', cursor: 'default'}} >more_horiz</i>
+      expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: true})} className='material-icons dateMenu' style={{cursor: 'pointer', position: 'absolute', top: '-5px', marginLeft: '8px', fontSize: '20px'}} >more_horiz</i>
     } else if (this.state.showDateMenu) {
-      expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: false})} className='material-icons dateMenu' style={{position: 'absolute', top: '-5px', marginLeft: '8px', fontSize: '20px', cursor: 'default', color: '#ed685a'}} >more_horiz</i>
+      expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: false})} className='material-icons dateMenu' style={{cursor: 'pointer', position: 'absolute', top: '-5px', marginLeft: '8px', fontSize: '20px', color: '#ed685a'}} >more_horiz</i>
     }
     return (
       <div ref={elem => { this.elem = elem }}>
@@ -71,7 +71,7 @@ class DateBox extends Component {
               <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} daysArr={this.props.daysArr} />
               <th style={dateTableFirstHeaderStyle} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
                 <Element name={'day-' + this.props.day}>
-                  <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px'}}>
+                  <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px', cursor: 'default'}}>
                     <h3 style={headerDayStyle}>Day {this.props.day} </h3>
                     {this.props.date &&
                       <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>

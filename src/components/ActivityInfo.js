@@ -36,6 +36,14 @@ class ActivityInfo extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.handleEdit !== this.props.handleEdit) {
+      this.handleEdit()
+    }
+    if (nextProps.editing !== this.props.editing) {
+      this.setState({
+        editing: nextProps.editing
+      })
+    }
     if (nextProps.value !== this.props.value || nextProps.startTime !== this.props.startTime || nextProps.endTime !== this.props.endTime) {
       this.setState({
         value: nextProps.value,
@@ -49,9 +57,10 @@ class ActivityInfo extends Component {
   }
 
   selectLocation (location) {
-    this.setState({googlePlaceData: constructGooglePlaceDataObj(location)}, () => {
-      this.handleEdit()
-    })
+    this.setState({googlePlaceData: constructGooglePlaceDataObj(location)})
+    // , () => {
+    //   this.handleEdit()
+    // })
     console.log('selected location', location)
   }
 
@@ -68,16 +77,16 @@ class ActivityInfo extends Component {
       }
       return (
         <p onKeyDown={(e) => this.handleKeyDown(e)} style={{...this.props.timeStyle, ...{width: '220px'}}}>
-          <input autoFocus type='time' value={this.state.newStartTime} onChange={(e) => this.setState({ newStartTime: e.target.value })} />
+          <input autoFocus={this.props.suggestedEndTime || this.props.suggestedStartTime} style={{width: '73px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} type='time' value={this.state.newStartTime} onChange={(e) => this.setState({ newStartTime: e.target.value })} />
           <span> - </span>
-          <input type='time' value={this.state.newEndTime} onChange={(e) => this.setState({ newEndTime: e.target.value })} />
+          <input style={{width: '73px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} type='time' value={this.state.newEndTime} onChange={(e) => this.setState({ newEndTime: e.target.value })} />
         </p>
       )
     }
     if (this.state.editing) {
       if (this.props.name === 'startTime' || this.props.name === 'endTime') {
         return (
-          <input autoFocus onKeyDown={(e) => this.handleKeyDown(e)} type='time' value={this.state.newValue} onChange={(e) => this.setState({ newValue: e.target.value })} />
+          <input autoFocus={this.props.suggestedEndTime || this.props.suggestedStartTime} style={{width: '73px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} onKeyDown={(e) => this.handleKeyDown(e)} type='time' value={this.state.newValue} onChange={(e) => this.setState({ newValue: e.target.value })} />
         )
       }
       if (this.props.name === 'googlePlaceData' || this.props.name === 'departureGooglePlaceData' || this.props.name === 'arrivalGooglePlaceData') {
@@ -88,7 +97,7 @@ class ActivityInfo extends Component {
         )
       }
       return (
-        <input autoFocus onKeyDown={(e) => this.handleKeyDown(e)} style={{position: 'relative', top: '-5px'}} name={this.props.name} onChange={(e) => this.setState({ newValue: e.target.value })} value={this.state.newValue} />
+        <input autoFocus={this.props.name === 'googlePlaceData'} onKeyDown={(e) => this.handleKeyDown(e)} style={{position: 'relative', top: '-5px', fontSize: '13px', padding: '8px', width: '168px', height: '31px'}} name={this.props.name} onChange={(e) => this.setState({ newValue: e.target.value })} value={this.state.newValue} />
       )
     }
     if (!this.props.value && this.props.name !== 'time') {
@@ -100,7 +109,7 @@ class ActivityInfo extends Component {
       if (this.props.allDay) {
         return (
           <p style={{...this.props.timeStyle, ...{color: '#438496'}}}>
-            <span onClick={() => this.handleClick()} className='activityInfo' style={{padding: '3px 0', display: 'inline-block'}}>
+            <span onClick={() => this.handleClick()} className='activityInfo' style={{padding: '3px 0', display: 'inline-block', cursor: 'text'}}>
               Unassigned Time
             </span>
           </p>
@@ -108,9 +117,9 @@ class ActivityInfo extends Component {
       }
       return (
         <p style={this.props.timeStyle} onClick={() => this.handleClick()}>
-          <span className='activityInfo' style={{paddingTop: '3px', display: 'inline-block'}}>
+          <span className='activityInfo' style={{paddingTop: '3px', display: 'inline-block', cursor: 'text'}}>
             <span title={this.state.startTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.startTime}</span>
-            <span style={this.props.typeStyle}> - </span>
+            <span style={{...this.props.typeStyle, ...{padding: '1px 4px'}}}> - </span>
             <span title={this.state.endTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.endTime}</span>
           </span>
           {this.props.errorIcon}{this.props.errorBox}
@@ -118,29 +127,30 @@ class ActivityInfo extends Component {
       )
     }
     return (
-      <span className={'activityInfo ' + this.props.type} onClick={() => this.handleClick()} title={this.state.value} style={{display: 'inline-block', height: '18px', padding: '1px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.value}</span>
+      <span className={'activityInfo ' + this.props.type} onClick={() => this.handleClick()} title={this.state.value} style={{display: 'inline-block', height: '18px', padding: '1px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', cursor: this.props.type === 'Flight' ? 'default' : 'text'}}>{this.state.value}</span>
     )
   }
 
   handleClick () {
     if (this.props.type === 'Flight') return
-    this.setState({
-      editing: true
-    })
+    // this.setState({
+    //   editing: true
+    // })]
+    this.props.toggleEdit()
 
     // this.toggleDraggable()
   }
 
   handleKeyDown (e) {
     if (e.keyCode === 13) {
-      this.handleEdit()
+      if (this.props.suggestedEndTime || this.props.suggestedStartTime) this.handleEdit()
     }
   }
 
   handleClickOutside (event) {
-    if (event.target.localName === 'input') return
+    if (event.target.localName === 'input' || event.target.className === 'locationSearch') return
+    if (this.props.toggleEdit && this.state.editing) this.props.toggleEdit()
     this.setState({
-      editing: false,
       newValue: this.state.value,
       newStartTime: this.state.startTime,
       newEndTime: this.state.endTime,

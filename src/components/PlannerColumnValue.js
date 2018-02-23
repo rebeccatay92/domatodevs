@@ -197,11 +197,11 @@ class PlannerColumnValue extends Component {
     const display = obj.display
     return (
       <td onClick={(e) => this.handleClick(e, 'clickOutsideInput')} colSpan={this.props.column === 'Notes' ? 4 : 1} style={columnValueContainerStyle(this.props.column)}>
-        {!this.state.editing && display && <span className={'activityInfo ' + columnValues[this.props.column]} onClick={() => this.handleClick()} style={{padding: '1px', width: this.props.column === 'Notes' ? '95%' : '75%', minHeight: this.props.column === 'Notes' ? '51px' : '28px', maxHeight: '70px', overflow: 'hidden', display: 'inline-block', wordWrap: 'break-word'}}>
+        {!this.state.editing && display && <span className={'activityInfo ' + columnValues[this.props.column]} onClick={() => this.handleClick()} style={{width: this.props.column === 'Notes' ? '595px' : '75%', height: 'min-content', minHeight: this.props.column === 'Notes' ? '51px' : '28px', maxHeight: '64px', overflow: 'hidden', display: 'inline-block', wordWrap: 'break-word', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, margin: 'auto'}}>
           {value}
         </span>}
-        {this.state.editing && this.props.column !== 'Notes' && <input autoFocus type='text' style={{width: '70%'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
-        {this.state.editing && this.props.column === 'Notes' && <textarea autoFocus style={{width: '90%', resize: 'none', height: '70px'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
+        {this.state.editing && this.props.column !== 'Notes' && <input autoFocus type='text' style={{width: '70%', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, margin: 'auto', height: 'min-content'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
+        {this.state.editing && this.props.column === 'Notes' && <textarea autoFocus style={{width: '595px', resize: 'none', height: '64px', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, margin: 'auto'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
         {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' title='Expand' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_more</i>}
       </td>
     )

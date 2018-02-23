@@ -104,7 +104,7 @@ class LocationSearch extends Component {
     if (this.props.intuitiveInput || this.props.eventInfo) {
       return (
         <span style={{display: 'block'}}>
-          <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: '90%'}, ...this.props.eventInfo && {width: '100%', position: 'relative', top: '-5px'}}} value={this.state.search} />
+          <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: '90%'}, ...this.props.eventInfo && {width: '168px', height: '31px', position: 'relative', top: '-5px', fontSize: '13px', padding: '8px'}}} value={this.state.search} />
 
           {this.state.selecting &&
             <span style={{...intuitiveDropdownStyle, ...{width: '299.4px'}}}>
