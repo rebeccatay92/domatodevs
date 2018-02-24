@@ -4,6 +4,7 @@ import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-map
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
+import MarkerWithLabel from 'react-google-maps/lib/components/addons/MarkerWithLabel'
 
 import MapCreateEventPopup from './MapCreateEventPopup'
 
@@ -13,6 +14,7 @@ class Map extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      // hasImageUrl: false,
       zoom: 2,
       bounds: null,
       center: {lat: 0, lng: 0},
@@ -166,13 +168,15 @@ class Map extends Component {
   }
 
   // on first mount (props.events has already been passed)
-  componentDidMount () {
+  async componentDidMount () {
     // console.log('on map mount', this.props)
     this.setState({allEvents: this.props.events})
 
     // extract locations to plot. eventsArrObj
     // modelId: int, eventType: str, day: int, start:bool, location: obj, row: event
-    var eventsArr = this.props.events.map(e => {
+    var eventsPromiseArr = []
+
+    this.props.events.forEach(e => {
       var temp = {
         modelId: e.modelId,
         eventType: e.type,
@@ -198,32 +202,72 @@ class Map extends Component {
       }
 
       temp.location = location
-      return temp
-    })
-    console.log('manipulated events arr', eventsArr)
-    this.setState({eventsArr: eventsArr})
 
-    // default filter is all days
-    // console.log('daysArr', this.props.daysArr)
-    // this.setState({daysFilter: this.props.daysArr})
+      // call api with placeId and extract image url for marker icon
+      // console.log('placeId', location.placeId)
+      var request = {placeId: location.placeId}
+      var service = new window.google.maps.places.PlacesService(this.map.context.__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED)
 
-    // testing plannerMarkers with only some days
-    this.setState({daysFilter: [1, 2]}, () => {
-      this.applyDaysFilter()
+      service.getDetails(request, (place, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+          if (place.photos && place.photos[0]) {
+            var imageUrl = place.photos[0].getUrl({maxWidth: 50})
+            temp.imageUrl = imageUrl
+          } else {
+            temp.imageUrl = null
+          }
+        }
+        // return temp
+      })
+      eventsPromiseArr.push(temp)
     })
+    // console.log('eventsArr', eventsArr)
+
+    var asyncEventsArr = await Promise.all(eventsPromiseArr)
+      .then(values => {
+        console.log('values', values)
+        return values
+      })
+    console.log('async', asyncEventsArr)
+
+    setTimeout(function () {
+      this.setState({
+        eventsArr: asyncEventsArr,
+        daysFilter: [1, 2]
+      }, () => {
+        this.applyDaysFilter()
+      })
+    }.bind(this), 1000)
+
+      // this.setState({
+      //   eventsArr: values,
+      //   daysFilter: [1, 2]
+      // }, () => {
+      //   this.applyDaysFilter()
+      // })
+
+    // this.setState({
+    //   eventsArr: eventsArr,
+    //   daysFilter: [1, 2]
+    // }, () => {
+    //   this.applyDaysFilter()
+    // })
+    // PLACE DETAILS IS ASYNC. MARKER LABELS ALRDY MOUNTED B4 imageUrl
+    // ??? first render -> componentDidMount -> rerender
   }
 
   applyDaysFilter () {
+    // console.log('is async done?', this.state.eventsAsyncDone)
+    // console.log('eventsArr', this.state.eventsArr)
+
     var plannerMarkers = this.state.eventsArr.filter(e => {
       return this.state.daysFilter.includes(e.day)
     })
+    console.log('plannerMarkers', plannerMarkers)
     this.setState({plannerMarkers: plannerMarkers}, () => {
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
-        // if planner no, search yes
-        console.log('no planner markers, but search is open')
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
-        // if planner yes
         this.refitBounds(this.state.plannerMarkers, 'planner')
       }
     })
@@ -254,32 +298,17 @@ class Map extends Component {
     })
   }
 
-  // refit bounds may be used to refit planner markers (days filter), or call to manually focus on planner, search, bucket?. (set bounds, center, zoom?)
-
-  // by default all planner events are plotted
-
-  // planner yes, search yes. focus whichever was clicked. add toggle buttons to focus either, or both
-  // planner yes, search no (focus planner)
-  // planner no, search yes (focus search)
-  // planner no, search no (no change, just clear markers)
-
-  // refitBounds only takes 1 type!
+  // refitBounds only takes 1 type
   refitBounds (markerArr, type) {
-    console.log('refit bounds type', type)
     if (!markerArr.length) return
     if (type === 'planner') {
       var newBounds = new window.google.maps.LatLngBounds()
-      // loops through markers n add to newBounds
-      // console.log('marker arr', markerArr)
       markerArr.forEach(marker => {
         newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
       })
-      // this.setState({bounds: newBounds})
       this.map.fitBounds(newBounds, 100)
     } else if (type === 'search') {
-      // no planner markers, focus on search
       newBounds = new window.google.maps.LatLngBounds()
-      console.log('searchMarker arr', this.state.searchMarkers)
       this.state.searchMarkers.forEach(marker => {
         newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
       })
@@ -305,6 +334,19 @@ class Map extends Component {
     })
     this.map.fitBounds(newBounds, 100)
   }
+
+  // componentDidUpdate (prevProps, prevState) {
+  //   if (prevState.plannerMarkers !== this.state.plannerMarkers) {
+  //     console.log('previous', prevState.plannerMarkers, 'now', this.state.plannerMarkers)
+  //
+  //     console.log(this.state.plannerMarkers[0], this.state.plannerMarkers[0].imageUrl)
+  //
+  //     // if (this.state.plannerMarkers[0] && this.state.plannerMarkers[0].hasOwnProperty('imageUrl')) {
+  //     //   console.log()
+  //     // }
+  //     // this.setState({hasImageUrl: true})
+  //   }
+  // }
 
   render () {
     return (
@@ -378,7 +420,13 @@ class Map extends Component {
 
         {this.state.plannerMarkers.map((event, index) => {
           return (
-            <Marker key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} />
+            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}}>
+              <div style={{width: '40px', height: '40px'}}>
+                {event.imageUrl &&
+                  <img width='100%' height='100%' src={event.imageUrl} />
+                }
+              </div>
+            </MarkerWithLabel>
           )
         })}
       </GoogleMap>
