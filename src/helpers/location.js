@@ -1,4 +1,5 @@
 import moment from 'moment'
+const crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
 
 // CONSTRUCT GOOGLEPLACEDATA OBJ FOR DB FROM GOOGLE PLACES/MAPS JSON OBJECT
 export function constructGooglePlaceDataObj (place) {
@@ -48,8 +49,35 @@ export function constructGooglePlaceDataObj (place) {
     googlePlaceData.longitude = place.geometry.location.lng()
   }
 
-  console.log('constructor for googlePlaceData', googlePlaceData)
-  return googlePlaceData
+  let googlePlaceDataWithImg
+  if (place.photos && place.photos[0]) {
+    // check if photo ref or getUrl()
+    var photoReference = place.photos[0].photo_reference
+    var photoApiUrl = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=${photoReference}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`
+    googlePlaceDataWithImg = window.fetch(photoApiUrl, {
+      headers: {
+        'Access-Control-Expose-Headers': 'x-final-url'
+      }
+    })
+    .then(response => {
+      // console.log('RESPONSE FROM API', response)
+      // console.log(response.headers.get('x-final-url'))
+      // console.log('all headers', response.headers)
+      // console.log('x-final-url', response.headers('x-final-url'))
+      // response.headers.forEach((value, key) => {
+      //   // console.log('key', key, 'value', value)
+      //   if (key === 'x-final-url') console.log('url', value)
+      // })
+      googlePlaceData.imageUrl = response.headers.get('x-final-url')
+      return Promise.resolve(googlePlaceData)
+    })
+  } else {
+    googlePlaceDataWithImg = Promise.resolve(googlePlaceData)
+  }
+  // console.log('constructor for googlePlaceData', googlePlaceData)
+  // return googlePlaceData
+  // console.log('before exiting helper', googlePlaceDataWithImg)
+  return googlePlaceDataWithImg
 }
 
 // CONSTRUCT LOCATION DETAILS OBJ FROM GOOGLE PLACE DATA OBJ, DATES ARR, AND CHOSEN DAY
