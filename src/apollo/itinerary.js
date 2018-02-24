@@ -48,6 +48,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           locationAlias
           startDay
@@ -93,6 +94,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           locationAlias
           startDay
@@ -141,6 +143,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           locationAlias
           startDay
@@ -188,6 +191,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           arrivalLocation {
             id
@@ -209,6 +213,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           departureLocationAlias
           arrivalLocationAlias
@@ -257,6 +262,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           arrivalLocation {
             id
@@ -278,6 +284,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           departureLocationAlias
           arrivalLocationAlias
@@ -326,6 +333,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           arrivalLocation {
             id
@@ -347,6 +355,7 @@ export const queryItinerary = gql`
               }
             }
             openingHoursText
+            imageUrl
           }
           departureLocationAlias
           arrivalLocationAlias
@@ -407,6 +416,7 @@ export const queryItinerary = gql`
                 }
               }
               openingHoursText
+              imageUrl
             }
             arrivalLocation {
               id
@@ -427,6 +437,7 @@ export const queryItinerary = gql`
                 }
               }
               openingHoursText
+              imageUrl
             }
             departureTerminal
             arrivalTerminal

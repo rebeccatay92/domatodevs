@@ -2,6 +2,7 @@ import moment from 'moment'
 
 // CONSTRUCT GOOGLEPLACEDATA OBJ FOR DB FROM GOOGLE PLACES/MAPS JSON OBJECT
 export function constructGooglePlaceDataObj (place) {
+  console.log('helper args', place)
   var googlePlaceData = {
     placeId: place.place_id,
     countryCode: null,
