@@ -143,7 +143,12 @@ class IntuitiveLodgingInput extends Component {
   }
 
   selectLocation (location) {
-    this.setState({googlePlaceData: constructGooglePlaceDataObj(location)})
+    var googlePlaceData = constructGooglePlaceDataObj(location)
+    googlePlaceData
+    .then(resolved => {
+      console.log('resolved', resolved)
+      this.setState({googlePlaceData: resolved})
+    })
   }
 
   resetState () {

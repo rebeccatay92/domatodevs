@@ -31,7 +31,12 @@ class IntuitiveTransportInput extends Component {
   }
 
   selectLocation (location, type) {
-    this.setState({[`${type}GooglePlaceData`]: constructGooglePlaceDataObj(location)})
+    var googlePlaceData = constructGooglePlaceDataObj(location)
+    googlePlaceData
+    .then(resolved => {
+      console.log('resolved', resolved)
+      this.setState({[`${type}GooglePlaceData`]: resolved})
+    })
   }
 
   handleChange (e, field) {
