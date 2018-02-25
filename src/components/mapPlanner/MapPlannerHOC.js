@@ -14,7 +14,6 @@ class Map extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      // hasImageUrl: false,
       zoom: 2,
       bounds: null,
       center: {lat: 0, lng: 0},
@@ -39,7 +38,9 @@ class Map extends Component {
 
   onBoundsChanged () {
     if (!this.map) return
-    console.log('on bounds changed')
+    // if bounds dont change, zoom and center also wont change. dont rerender extra
+    if (this.state.bounds === this.map.getBounds()) return
+    // console.log('bounds changed (not same)')
     this.setState({
       bounds: this.map.getBounds(),
       center: {lat: this.map.getCenter().lat(), lng: this.map.getCenter().lng()},
@@ -53,12 +54,11 @@ class Map extends Component {
     if (!this.searchBox) return
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
-    console.log('places', places)
+    // console.log('places', places)
     places.forEach(place => {
       if (place.photos) {
-        console.log('imageUrl', place.photos[0].getUrl({maxWidth: 200}))
-      } else {
-        console.log('no photo')
+        var imageUrl = place.photos[0].getUrl({maxWidth: 200})
+        place.imageUrl = imageUrl
       }
       if (place.geometry.viewport) {
         bounds.union(place.geometry.viewport)
@@ -171,161 +171,51 @@ class Map extends Component {
   }
 
   // on first mount (props.events has already been passed)
-  // async componentDidMount () {
-  //   // console.log('on map mount', this.props)
-  //   // this.setState({allEvents: this.props.events})
-  //
-  //   // extract locations to plot. eventsArrObj
-  //   // modelId: int, eventType: str, day: int, start:bool, location: obj, row: eventType
-  //   console.log('componentDidMount')
-  //
-  //   var eventsPromiseArr = []
-  //
-  //   this.props.events.forEach(e => {
-  //     var temp = {
-  //       modelId: e.modelId,
-  //       eventType: e.type,
-  //       day: e.day,
-  //       start: e.start,
-  //       event: e[`${e.type}`] // Activity/Flight etc
-  //     }
-  //     let location
-  //     if (e.type === 'Activity' || e.type === 'Food' || e.type === 'Lodging') {
-  //       location = e[`${e.type}`].location
-  //     } else if (e.type === 'LandTransport' || e.type === 'SeaTransport' || e.type === 'Train') {
-  //       if (e.start) {
-  //         location = e[`${e.type}`].departureLocation
-  //       } else {
-  //         location = e[`${e.type}`].arrivalLocation
-  //       }
-  //     } else if (e.type === 'Flight') {
-  //       if (e.start) {
-  //         location = e.Flight.FlightInstance.departureLocation
-  //       } else {
-  //         location = e.Flight.FlightInstance.arrivalLocation
-  //       }
-  //     }
-  //
-  //     temp.location = location
-  //
-  //     // call api with placeId and extract image url for marker icon
-  //     // console.log('placeId', location.placeId)
-  //     var request = {placeId: location.placeId}
-  //     var service = new window.google.maps.places.PlacesService(this.map.context.__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED)
-  //
-  //     service.getDetails(request, (place, status) => {
-  //       console.log('status', status)
-  //       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-  //         if (place.photos && place.photos[0]) {
-  //           console.log('place', place)
-  //           var imageUrl = place.photos[0].getUrl({maxWidth: 100})
-  //           console.log('imageUrl', imageUrl)
-  //           temp.imageUrl = imageUrl
-  //         } else {
-  //           // temp.imageUrl = null
-  //           console.log('place', place)
-  //           // console.log('icon', place.icon)
-  //           temp.imageUrl = place.icon
-  //         }
-  //       }
-  //       // return temp
-  //     })
-  //     eventsPromiseArr.push(temp)
-  //   })
-  //
-  //   var asyncEventsArr = await Promise.all(eventsPromiseArr)
-  //     .then(values => {
-  //       console.log('values', values)
-  //       return values
-  //     })
-  //   // console.log('async', asyncEventsArr)
-  //
-  //   setTimeout(function () {
-  //     console.log('timeout')
-  //     this.setState({
-  //       allEvents: this.props.events,
-  //       eventsArr: asyncEventsArr,
-  //       daysFilter: [1, 2, 3]
-  //     }, () => {
-  //       this.applyDaysFilter()
-  //     })
-  //   }.bind(this), 1000)
-  // }
+  componentDidMount () {
+    // console.log('on map mount', this.props)
+    // this.setState({allEvents: this.props.events})
 
-  // componentDidMount () {
-  //   var eventsArrWithoutImage = this.props.events.map(e => {
-  //     var temp = {
-  //       modelId: e.modelId,
-  //       eventType: e.type,
-  //       day: e.day,
-  //       start: e.start,
-  //       event: e[`${e.type}`] // Activity/Flight etc
-  //     }
-  //     let location
-  //     if (e.type === 'Activity' || e.type === 'Food' || e.type === 'Lodging') {
-  //       location = e[`${e.type}`].location
-  //     } else if (e.type === 'LandTransport' || e.type === 'SeaTransport' || e.type === 'Train') {
-  //       if (e.start) {
-  //         location = e[`${e.type}`].departureLocation
-  //       } else {
-  //         location = e[`${e.type}`].arrivalLocation
-  //       }
-  //     } else if (e.type === 'Flight') {
-  //       if (e.start) {
-  //         location = e.Flight.FlightInstance.departureLocation
-  //       } else {
-  //         location = e.Flight.FlightInstance.arrivalLocation
-  //       }
-  //     }
-  //     temp.location = location
-  //     return temp
-  //   })
-  //   // console.log('eventsArrWithoutImage', eventsArrWithoutImage)
-  //   this.componentDidMountFetchPhotos(eventsArrWithoutImage)
-  //   .then(values => {
-  //     console.log('values in then', values)
-  //   })
-  // }
-  //
-  // componentDidMountFetchPhotos (eventsArr) {
-  //   // console.log('events arr without img', eventsArr)
-  //   var promiseArr = []
-  //   eventsArr.forEach(event => {
-  //     var request = {placeId: event.location.placeId}
-  //     var service = new window.google.maps.places.PlacesService(this.map.context.__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED)
-  //
-  //     service.getDetails(request, (place, status) => {
-  //       console.log('status', status)
-  //       // OVER QUERY LIMIT. MAX IS 10 PER SEC
-  //       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-  //         // if (place.photos && place.photos[0]) {
-  //         //   var imageUrl = place.photos[0].getUrl({maxWidth: 100})
-  //         //   console.log('imageUrl', imageUrl)
-  //         //   event.imageUrl = imageUrl
-  //         // } else {
-  //         //   // temp.imageUrl = null
-  //         //   console.log('place', place)
-  //         //   // console.log('icon', place.icon)
-  //         //   event.imageUrl = place.icon
-  //         // }
-  //         event.imageUrl = place.icon
-  //       } else {
-  //         console.log('status not ok', window.google.maps.places.PlacesServiceStatus.OK)
-  //       }
-  //       console.log('event', event)
-  //     })
-  //     promiseArr.push(event)
-  //   })
-  //
-  //   return Promise.all(promiseArr)
-  //   .then(values => {
-  //     console.log('values in helper', values)
-  //     return values
-  //   })
-  // }
+    // extract locations to plot. eventsArrObj
+    // modelId: int, eventType: str, day: int, start:bool, location: obj, row: eventType
+    var eventsArr = this.props.events.map(e => {
+      var temp = {
+        modelId: e.modelId,
+        eventType: e.type,
+        day: e.day,
+        start: e.start,
+        event: e[`${e.type}`] // Activity/Flight etc
+      }
+      let location
+      if (e.type === 'Activity' || e.type === 'Food' || e.type === 'Lodging') {
+        location = e[`${e.type}`].location
+      } else if (e.type === 'LandTransport' || e.type === 'SeaTransport' || e.type === 'Train') {
+        if (e.start) {
+          location = e[`${e.type}`].departureLocation
+        } else {
+          location = e[`${e.type}`].arrivalLocation
+        }
+      } else if (e.type === 'Flight') {
+        if (e.start) {
+          location = e.Flight.FlightInstance.departureLocation
+        } else {
+          location = e.Flight.FlightInstance.arrivalLocation
+        }
+      }
+      temp.location = location
+      temp.imageUrl = location.imageUrl
+      return temp
+    })
+
+    this.setState({
+      allEvents: this.props.events,
+      eventsArr: eventsArr,
+      daysFilter: [1, 2]
+    }, () => {
+      this.applyDaysFilter()
+    })
+  }
 
   applyDaysFilter () {
-    console.log('apply days filter')
     var plannerMarkers = this.state.eventsArr.filter(e => {
       return this.state.daysFilter.includes(e.day)
     })
@@ -337,13 +227,6 @@ class Map extends Component {
       }
     })
   }
-
-  // componentWillReceiveProps (nextProps) {
-  //   console.log('on map receive next props', nextProps)
-  //   if (this.props.events !== nextProps.events) {
-  //     console.log('events arr', nextProps.events)
-  //   }
-  // }
 
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
@@ -366,7 +249,7 @@ class Map extends Component {
   // refitBounds only takes 1 type
   refitBounds (markerArr, type) {
     if (!markerArr.length) return
-    console.log('refit bounds')
+    // console.log('refit bounds')
     if (type === 'planner') {
       var newBounds = new window.google.maps.LatLngBounds()
       markerArr.forEach(marker => {
@@ -402,7 +285,6 @@ class Map extends Component {
   }
 
   render () {
-    console.log('RENDER')
     return (
       <GoogleMap ref={node => { this.map = node }}
         center={this.state.center}
@@ -451,13 +333,21 @@ class Map extends Component {
           </div>
         </SearchBox>
 
-        {/* SEARCH MARKERS WITH CREATEEVENT POPUP */}
-        {this.state.searchMarkers.map((marker, index) => {
+        {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
           return (
-            <Marker key={index} position={marker.position} onClick={() => this.onSearchMarkerClicked(index)}>
-              {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                <InfoBox ref={node => { this.infoBox = node }} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
-                  <div style={{position: 'relative', background: 'white', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
+            <MarkerWithLabel key={index} position={marker.position} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid red', backgroundColor: 'red'}} onClick={() => this.onSearchMarkerClicked(index)}>
+              <div>
+                <div style={{width: '40px', height: '40px'}}>
+                  {marker.place.imageUrl &&
+                  <img width='100%' height='100%' src={marker.place.imageUrl} />
+                }
+                  {!marker.place.imageUrl &&
+                  <div style={{width: '100%', height: '100%', background: 'white'}} />
+                }
+                </div>
+                {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
+                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
+                  <div style={{position: 'relative', background: 'white', marginTop: '25px', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
                     <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                       <i className='material-icons'>location_on</i>
                       <i className='material-icons'>delete</i>
@@ -468,17 +358,19 @@ class Map extends Component {
                   </div>
                 </InfoBox>
               }
-            </Marker>
+              </div>
+            </MarkerWithLabel>
           )
         })}
-
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
-          // console.log('event', event, 'imageUrl', event.imageUrl)
           return (
             <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}}>
               <div style={{width: '40px', height: '40px'}}>
                 {event.imageUrl &&
                   <img width='100%' height='100%' src={event.imageUrl} />
+                }
+                {!event.imageUrl &&
+                  <div style={{width: '100%', height: '100%', background: 'white'}} />
                 }
               </div>
             </MarkerWithLabel>
