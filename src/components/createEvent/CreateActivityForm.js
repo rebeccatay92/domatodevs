@@ -203,7 +203,6 @@ class CreateActivityForm extends Component {
 
   selectLocation (place) {
     var googlePlaceData = constructGooglePlaceDataObj(place)
-    // console.log('in selectLocation', googlePlaceData)
     googlePlaceData
     .then(resolved => {
       console.log('resolved', resolved)

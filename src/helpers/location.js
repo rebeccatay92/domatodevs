@@ -3,7 +3,7 @@ const crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
 
 // CONSTRUCT GOOGLEPLACEDATA OBJ FOR DB FROM GOOGLE PLACES/MAPS JSON OBJECT
 export function constructGooglePlaceDataObj (place) {
-  console.log('helper args', place)
+  // console.log('helper args', place)
   var googlePlaceData = {
     placeId: place.place_id,
     countryCode: null,
@@ -50,8 +50,8 @@ export function constructGooglePlaceDataObj (place) {
   }
 
   let googlePlaceDataWithImg
-  if (place.photos && place.photos[0]) {
-    // check if photo ref or getUrl()
+  if (place.photos && place.photos[0] && place.photos[0].photo_reference) {
+    // photo_reference comes from text search
     var photoReference = place.photos[0].photo_reference
     var photoApiUrl = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=${photoReference}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`
     googlePlaceDataWithImg = window.fetch(photoApiUrl, {
@@ -63,20 +63,16 @@ export function constructGooglePlaceDataObj (place) {
       // console.log('RESPONSE FROM API', response)
       // console.log(response.headers.get('x-final-url'))
       // console.log('all headers', response.headers)
-      // console.log('x-final-url', response.headers('x-final-url'))
-      // response.headers.forEach((value, key) => {
-      //   // console.log('key', key, 'value', value)
-      //   if (key === 'x-final-url') console.log('url', value)
-      // })
       googlePlaceData.imageUrl = response.headers.get('x-final-url')
       return Promise.resolve(googlePlaceData)
     })
+  } else if (place.photos && place.photos[0] && place.imageUrl) {
+    // if getUrl(), it comes from map. extract within the map selectLocation fxn and add to place obj. cant call getUrl() here
+    googlePlaceData.imageUrl = place.imageUrl
+    return Promise.resolve(googlePlaceData)
   } else {
     googlePlaceDataWithImg = Promise.resolve(googlePlaceData)
   }
-  // console.log('constructor for googlePlaceData', googlePlaceData)
-  // return googlePlaceData
-  // console.log('before exiting helper', googlePlaceDataWithImg)
   return googlePlaceDataWithImg
 }
 

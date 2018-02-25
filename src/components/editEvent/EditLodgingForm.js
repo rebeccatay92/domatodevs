@@ -219,9 +219,13 @@ class EditLodgingForm extends Component {
 
   selectLocation (place) {
     var googlePlaceData = constructGooglePlaceDataObj(place)
-    this.setState({googlePlaceData: googlePlaceData}, () => {
-      var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
-      this.setState({locationDetails: locationDetails})
+    googlePlaceData
+    .then(resolved => {
+      console.log('resolved', resolved)
+      this.setState({googlePlaceData: resolved}, () => {
+        var locationDetails = constructLocationDetails(this.state.googlePlaceData, this.props.dates, this.state.startDay)
+        this.setState({locationDetails: locationDetails})
+      })
     })
   }
 

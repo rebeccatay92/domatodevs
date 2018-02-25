@@ -112,7 +112,9 @@ class Map extends Component {
 
     service.getDetails(request, (place, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        console.log('placeDetails', place)
+        if (place.photos && place.photos[0]) {
+          place.imageUrl = place.photos[0].getUrl({maxWidth: 200})
+        }
         this.props.selectLocation(place)
       }
     })

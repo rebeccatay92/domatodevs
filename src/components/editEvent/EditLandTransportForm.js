@@ -241,15 +241,18 @@ class EditLandTransportForm extends Component {
   // need to select either departure or arrival
   selectLocation (place, type) {
     var googlePlaceData = constructGooglePlaceDataObj(place)
-    this.setState({[`${type}GooglePlaceData`]: googlePlaceData}, () => {
-      // construct location details for both departure/arrival, start/end day
-      if (type === 'departure') {
-        var locationDetails = constructLocationDetails(this.state.departureGooglePlaceData, this.props.dates, this.state.startDay)
-        this.setState({departureLocationDetails: locationDetails})
-      } else if (type === 'arrival') {
-        locationDetails = constructLocationDetails(this.state.arrivalGooglePlaceData, this.props.dates, this.state.endDay)
-        this.setState({arrivalLocationDetails: locationDetails})
-      }
+    googlePlaceData
+    .then(resolved => {
+      console.log('resolved', resolved)
+      this.setState({[`${type}GooglePlaceData`]: resolved}, () => {
+        if (type === 'departure') {
+          var locationDetails = constructLocationDetails(this.state.departureGooglePlaceData, this.props.dates, this.state.startDay)
+          this.setState({departureLocationDetails: locationDetails})
+        } else if (type === 'arrival') {
+          locationDetails = constructLocationDetails(this.state.arrivalGooglePlaceData, this.props.dates, this.state.endDay)
+          this.setState({arrivalLocationDetails: locationDetails})
+        }
+      })
     })
   }
 
