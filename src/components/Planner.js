@@ -86,7 +86,6 @@ class Planner extends Component {
             <div style={{ ...style, top: 0, right: 0, width: '10px', height: '100%' }} />
         } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
         <div style={{
-          paddingRight: '44px',
           paddingLeft: '10px'
         }}>
           {newDates &&

@@ -46,7 +46,7 @@ class App extends Component {
   render () {
     return (
       <Router>
-        <div style={{backgroundColor: '#FAFAFA'}}>
+        <div style={{backgroundColor: '#FFFFFF'}}>
           {Navbar}
           {/* <div style={{border: '1px solid red'}}>
             <button onClick={() => this.toggleLoginLogout()}>Fake login/logout toggle. User 1's token. change toggleLoginLogout email to your own seeded user 1's.</button>

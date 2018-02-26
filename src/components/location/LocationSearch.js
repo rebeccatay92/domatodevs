@@ -104,7 +104,7 @@ class LocationSearch extends Component {
     if (this.props.intuitiveInput || this.props.eventInfo) {
       return (
         <span style={{display: 'block'}}>
-          <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: '90%'}, ...this.props.eventInfo && {width: '100%', position: 'relative', top: '-5px'}}} value={this.state.search} />
+          <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: '90%'}, ...this.props.eventInfo && {width: '168px', height: '31px', position: 'relative', top: '-5px', fontSize: '13px', padding: '8px'}}} value={this.state.search} />
 
           {this.state.selecting &&
             <span style={{...intuitiveDropdownStyle, ...{width: '299.4px'}}}>
@@ -117,9 +117,10 @@ class LocationSearch extends Component {
       )
     } else {
       return (
-        <div style={{position: 'relative'}}>
-          <textarea key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
-          <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i>
+        <div style={{position: 'relative', display: 'inline-block'}}>
+          <p style={{position: 'relative', fontWeight: 'bold'}}>LOCATION</p>
+          <input key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
+          {/* <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i> */}
 
           {this.state.selecting &&
             <div style={locationDropdownStyle}>
