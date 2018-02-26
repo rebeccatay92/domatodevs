@@ -20,6 +20,7 @@ class CustomControlSelectedLocation extends React.Component {
 		this.map = this.context[MAP];
 		controlPosition: this.props.controlPosition
 		this._render()
+		// console.log(this.props.controlPosition)
 	}
 
 	componentDidUpdate() {
@@ -33,7 +34,6 @@ class CustomControlSelectedLocation extends React.Component {
 	}
 	_render() {
 		const {controlPosition, children} = this.props;
-
 		render(
 			<div ref={el => {
 				if (!this.renderedOnce) {
@@ -52,7 +52,7 @@ class CustomControlSelectedLocation extends React.Component {
 	}
 
 	render() {
-		return <noscript />;
+		return <noscript />
 	}
 }
 

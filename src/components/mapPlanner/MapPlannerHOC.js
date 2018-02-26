@@ -60,7 +60,7 @@ class Map extends Component {
     if (!this.searchBox) return
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
-    // console.log('places', places)
+    console.log('places', places)
     if (places.length === 0) {
       console.log('no results')
       return
