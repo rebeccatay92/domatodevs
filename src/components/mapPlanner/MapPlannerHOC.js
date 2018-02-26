@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
+import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
@@ -10,8 +10,6 @@ import MapCreateEventPopup from './MapCreateEventPopup'
 
 const _ = require('lodash')
 
-// searchMarkerStyle = {}
-// searchMarkerClickedStyle = {}
 const unclickedMarkerSize = {width: '40px', height: '40px'}
 const clickedMarkerSize = {width: '60px', height: '60px'}
 
@@ -58,11 +56,17 @@ class Map extends Component {
   }
 
   onPlacesChanged () {
-    // called only by search box
     if (!this.searchBox) return
+    //  clear out old clicked state
+    this.setState({
+      eventType: '',
+      isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null
+    })
+
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
-    console.log('places', places)
+    // console.log('places', places)
     if (places.length === 0) {
       console.log('no results')
       return
@@ -115,6 +119,13 @@ class Map extends Component {
     // console.log('marker', marker)
     this.map.panTo(marker.position)
     this.setState({center: marker.position})
+
+    // clear any clicked state for planner
+    this.setState({
+      eventType: '',
+      isPlannerInfoBoxOpen: false,
+      clickedPlannerMarkerIndex: null
+    })
 
     if (this.state.searchMarkers.length && index !== this.state.clickedSearchMarkerIndex) {
       this.setState({
@@ -237,7 +248,12 @@ class Map extends Component {
     var plannerMarkers = this.state.eventsArr.filter(e => {
       return this.state.daysFilter.includes(e.day)
     })
-    this.setState({plannerMarkers: plannerMarkers}, () => {
+    this.setState({
+      plannerMarkers: plannerMarkers,
+      eventType: '',
+      isPlannerInfoBoxOpen: false,
+      clickedPlannerMarkerIndex: null
+    }, () => {
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
@@ -303,14 +319,25 @@ class Map extends Component {
   }
 
   onPlannerMarkerClicked (index) {
-    console.log('planner marker clicked')
+    // clear clicked state in search
+    this.setState({
+      eventType: '',
+      isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null
+    })
+
     var marker = this.state.plannerMarkers[index]
-    this.map.panTo(marker.position)
-    this.setState({center: marker.position})
+    this.map.panTo({lat: marker.location.latitude, lng: marker.location.longitude})
+    this.setState({center: {lat: marker.location.latitude, lng: marker.location.longitude}})
     if (this.state.clickedPlannerMarkerIndex !== index) {
-      console.log('another marker clicked')
+      this.setState({
+        eventType: marker.eventType,
+        isPlannerInfoBoxOpen: true,
+        clickedPlannerMarkerIndex: index
+      })
     } else {
       this.setState({
+        eventType: '',
         isPlannerInfoBoxOpen: false,
         clickedPlannerMarkerIndex: null
       })
@@ -398,7 +425,7 @@ class Map extends Component {
 
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
-            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}} onClick={() => this.onPlannerMarkerClicked(index)}>
+            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}} onClick={() => this.onPlannerMarkerClicked(index)}>
               <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
                 {event.imageUrl &&
                   <img width='100%' height='100%' src={event.imageUrl} />
