@@ -42,7 +42,7 @@ class PlannerTimelineHeader extends Component {
       <th id='timeline-top' style={timelineColumnStyle()}>
         {this.props.firstDay && (
           <div style={timelineTitleStyle(headerSticky)}>
-            <span style={{fontSize: '24px', color: primaryColor, display: 'inline-block'}}>
+            <span style={{fontSize: '24px', color: primaryColor, display: 'inline-block', position: 'relative', top: '8px', marginBottom: '8px', height: '24px'}}>
               <i key='leftArrowTimeline' onClick={() => this.handleClick()} className='material-icons' style={{width: '15px', overflow: 'hidden', cursor: 'pointer', opacity: '0.6', ':hover': {opacity: '1'}}}>keyboard_arrow_left</i>
               <i key='righttArrowTimeline' onClick={() => this.handleClick()} className='material-icons' style={{cursor: 'pointer', opacity: '0.6', ':hover': {opacity: '1'}}}>keyboard_arrow_right</i>
             </span>
@@ -68,7 +68,7 @@ class PlannerTimelineHeader extends Component {
             {this.props.daysArr.map((day, i) => {
               const isDateOnScreen = this.props.timelineDay.dateOffsets[`day ${day}`]
               return (
-                <div key={i}>
+                <div style={{height: '19px', marginBottom: '24px'}} key={i}>
                   <Link to={'day-' + (day)} smooth duration={300} offset={-60}>
                     <PlannerTimelineDayButton isDateOnScreen={isDateOnScreen} day={day} itineraryId={this.props.itineraryId} days={this.props.days} />
                   </Link>
@@ -80,7 +80,7 @@ class PlannerTimelineHeader extends Component {
             })}
 
             <div onClick={() => this.addDay()} style={addDayButtonStyle}>
-              <span style={addDayWordStyle}>+</span>
+              <span className='addDayButton' style={addDayWordStyle}>+</span>
             </div>
           </div>
         )}

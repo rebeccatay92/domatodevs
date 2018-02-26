@@ -30,12 +30,12 @@ class PlannerColumnHeader extends Component {
     } else if (this.state.dropdown) {
       return (
         <th style={tableHeadingStyle}>
-          <div style={{width: '100%', border: '1px solid #9FACBC', position: 'absolute', top: '-1px', backgroundColor: 'white', zIndex: '1'}}>
-            <span onClick={() => this.setState({dropdown: !this.state.dropdown})} style={tableDropdownStyle}>{this.props.column}<i className='material-icons' style={{fontSize: '24px', verticalAlign: 'middle'}}>keyboard_arrow_down</i></span>
-            <div style={{width: '95%', margin: '1vh auto 0 auto'}}>
+          <div style={{width: '100%', border: '1px solid rgba(60, 58, 68, 0.2)', position: 'absolute', top: '-1px', backgroundColor: 'white', zIndex: '1', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}}>
+            <span className='plannerDropdownOption' key='header' onClick={() => this.setState({dropdown: !this.state.dropdown})} style={{...tableDropdownStyle, ...{width: '100%'}}}>{this.props.column}</span>
+            <div style={{width: '100%', margin: '0 auto', paddingBottom: '8px'}}>
               {options.filter(option => option !== this.props.column).map((option, i) => {
                 return (
-                  <span key={i} style={tableOptionStyle} onClick={() => this.handleClick(option)}>{option}</span>
+                  <span className='plannerDropdownOption' key={i} style={tableOptionStyle} onClick={() => this.handleClick(option)}>{option}</span>
                 )
               })}
             </div>

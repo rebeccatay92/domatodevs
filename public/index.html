@@ -35,7 +35,7 @@
         -moz-appearance: none;
         appearance: none;
       }
-      .planner-time-picker input[type="time"]::-webkit-clear-button,
+      input[type="time"]::-webkit-clear-button,
       input[type=time]::-webkit-inner-spin-button,
       input[type=time]::-webkit-outer-spin-button {
         -webkit-appearance: none;
@@ -78,7 +78,7 @@
       #exitImgPreview:hover {
         color: #ed685a;
       }
-      .person-add:hover {
+      .person-add:hover, .addDayButton:hover {
         opacity: 1 !important;
       }
       .dateMenu:hover {
@@ -94,10 +94,24 @@
         }
       }
       .itineraryInfo:hover, .activityInfo:not(.Flight):not(.bookingStatus):hover {
-        outline: 1px solid black;
+        outline: 1px solid rgba(60, 58, 68, 0.2);
+      }
+      input {
+        border: none;
+        outline: 1px solid rgba(60, 58, 68, 0.2);
       }
       embed {
         z-index: 9999;
+      }
+      .itineraryDates input {
+        width: 100% !important;
+        font-size: 16px;
+        padding: 8px;
+        color: #3C3A44;
+        text-align: center;
+      }
+      .plannerDropdownOption:hover {
+        background-color: rgba(60, 58, 68, 0.3);
       }
     </style>
     <!--
