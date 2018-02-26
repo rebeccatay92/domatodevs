@@ -187,7 +187,7 @@ class PlannerColumnValue extends Component {
       return (
         <td style={{position: 'relative'}}>
           {this.props.isLast && this.props.expandedEvent && (
-            <i key='eventOptions' title='Hide' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_less</i>
+            <i key='eventOptions' title='Hide' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>arrow_drop_up</i>
           )}
         </td>
       )
@@ -202,7 +202,7 @@ class PlannerColumnValue extends Component {
         </span>}
         {this.state.editing && this.props.column !== 'Notes' && <input autoFocus type='text' style={{width: '70%', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, margin: 'auto', height: 'min-content'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
         {this.state.editing && this.props.column === 'Notes' && <textarea autoFocus style={{width: '595px', resize: 'none', height: '64px', position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, margin: 'auto'}} value={this.state.newValue} onChange={(e) => this.setState({newValue: e.target.value})} onKeyDown={(e) => this.handleKeyDown(e)} />}
-        {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' title='Expand' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>expand_more</i>}
+        {this.props.isLast && this.props.hover && !this.props.expandedEvent && !this.props.activity.dropzone && <i key='eventOptions' title='Expand' className='material-icons' style={expandEventIconStyle} onClick={() => this.props.expandEvent()}>arrow_drop_down</i>}
       </td>
     )
   }

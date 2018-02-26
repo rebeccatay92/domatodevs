@@ -68,7 +68,7 @@ class PlannerTimelineHeader extends Component {
             {this.props.daysArr.map((day, i) => {
               const isDateOnScreen = this.props.timelineDay.dateOffsets[`day ${day}`]
               return (
-                <div key={i}>
+                <div style={{height: '19px', marginBottom: '24px'}} key={i}>
                   <Link to={'day-' + (day)} smooth duration={300} offset={-60}>
                     <PlannerTimelineDayButton isDateOnScreen={isDateOnScreen} day={day} itineraryId={this.props.itineraryId} days={this.props.days} />
                   </Link>
@@ -80,7 +80,7 @@ class PlannerTimelineHeader extends Component {
             })}
 
             <div onClick={() => this.addDay()} style={addDayButtonStyle}>
-              <span style={addDayWordStyle}>+</span>
+              <span className='addDayButton' style={addDayWordStyle}>+</span>
             </div>
           </div>
         )}

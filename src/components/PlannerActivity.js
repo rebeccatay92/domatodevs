@@ -140,7 +140,7 @@ class PlannerActivity extends Component {
             <EditEventFormHOC eventType={this.state.editEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.activity[`${this.state.editEventType}`]} toggleEditEventType={() => this.handleEditEventClick()} />
           }
           {connectDragPreview(<div style={eventBoxFirstColumnStyle(this.props.activity, minHeight, getItem || {})} key={this.props.activity.modelId}>
-            {!this.state.editing && this.state.hover && !this.state.expanded && this.props.activity.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
+            {!this.state.editing && this.state.hover && !this.state.expanded && this.props.activity.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 0.7, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a', opacity: getItem ? 0 : 1}}}>unfold_more</i>)}
             {this.renderInfo(this.props.activity.type, this.state.expanded)}
           </div>)}
         </td>
@@ -158,11 +158,10 @@ class PlannerActivity extends Component {
     )
     let createEventBox = (
       <div style={{
-        cursor: 'pointer',
         height: '80px',
         padding: '30px 0'
       }}>
-        <span style={createEventTextStyle}>+ Add Event</span>
+        <span onClick={() => this.setState({creatingEvent: true})} style={createEventTextStyle}>+ Add Event</span>
       </div>
     )
     const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
@@ -196,7 +195,7 @@ class PlannerActivity extends Component {
             {!this.props.lastDay && this.props.timeline.events && timeline}
           </td>
           <td colSpan='4'>
-            <div onClick={() => this.setState({creatingEvent: true})} style={createEventBoxContainerStyle}>
+            <div style={createEventBoxContainerStyle}>
               {createEventBox}
             </div>
 
@@ -290,7 +289,7 @@ class PlannerActivity extends Component {
     }
     const nameStyle = {
       display: 'inline-block',
-      margin: this.state.editing ? '0' : '0 0 5px 0',
+      margin: this.state.editing ? '0' : this.state.expanded ? '0 0 9px 0' : '0 0 5px 0',
       position: 'relative'
       // width: '300px',
       // overflow: 'hidden',
@@ -314,7 +313,7 @@ class PlannerActivity extends Component {
     let expandButton
     if (!this.state.editing && this.state.hover && !this.state.expandedMenu) {
       expandButton = (
-        <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{cursor: 'pointer', marginLeft: '8px', fontSize: '20px', position: 'absolute', top: '-3px', ':hover': {color: '#ed685a'}}} onClick={() => this.setState({expandedMenu: true})}>more_horiz</i>
+        <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{opacity: '0.7', cursor: 'pointer', marginLeft: '8px', fontSize: '20px', position: 'absolute', top: '-4px', ':hover': {color: '#ed685a', opacity: '1'}}} onClick={() => this.setState({expandedMenu: true})}>more_horiz</i>
       )
     } else if (this.state.expandedMenu) {
       expandButton = (

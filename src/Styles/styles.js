@@ -87,16 +87,16 @@ export const timelineTitleStyle = headerSticky => {
 }
 export const timelineTitleWordStyle = {fontSize: '16px', display: 'block', color: primaryColor, fontWeight: '300', borderBottom: '1px solid rgba(237, 104, 90, 0.28)', width: 'min-content', margin: '0 auto'}
 export const dayTimelineStyle = sticky => {
-  return {...{position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '110px' : '60px', zIndex: 1, padding: '20px 0'}, ...sticky && {backfaceVisibility: 'hidden'}}
+  return {...{position: sticky ? 'fixed' : 'absolute', textAlign: 'center', width: 'inherit', top: sticky ? '110px' : '42px', zIndex: 1, padding: '32px 0 0 0'}, ...sticky && {backfaceVisibility: 'hidden'}}
 }
 export const dayTimelineContainerStyle = (isDateOnScreen, isOver) => {
-  return {paddingLeft: '5px', display: 'inline-block', borderLeft: isDateOnScreen ? '5px solid ' + primaryColor : 0, marginLeft: isDateOnScreen ? '-10px' : '-5px', outline: isOver ? '1px solid ' + primaryColor : 'none'}
+  return {paddingLeft: '8px', height: '19px', display: 'inline-block', borderLeft: isDateOnScreen ? '4px solid ' + primaryColor : 0, marginLeft: isDateOnScreen ? '-12px' : '-8px', outline: isOver ? '1px solid ' + primaryColor : 'none'}
 }
 export const dayTimelineWordStyle = isDateOnScreen => {
-  return {fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer'}
+  return {fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer', fontWeight: '300'}
 }
-export const addDayButtonStyle = {padding: '1px 3px', display: 'inline-block', marginTop: '10px', cursor: 'pointer'}
-export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block'}
+export const addDayButtonStyle = {display: 'inline-block', cursor: 'pointer'}
+export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block', opacity: '0.3'}
 export const dateTableFirstHeaderStyle = {tableLayout: 'fixed', width: '366px', height: '43px', position: 'relative'}
 export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 16px', fontSize: '24px', fontWeight: '300'}
 export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '8px', fontWeight: '300'}
@@ -118,7 +118,7 @@ export const eventBoxFirstColumnStyle = (activity, minHeight, draggedItem) => {
 }
 export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}
-export const createEventTextStyle = {marginTop: 0, fontSize: '16px', color: primaryColor, display: 'inline-block'}
+export const createEventTextStyle = {marginTop: 0, fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer'}
 export const activityIconStyle = {
   fontSize: '24px',
   marginRight: '1vw',
@@ -182,7 +182,7 @@ export const columnValueContainerStyle = (columnType) => {
   return {position: 'relative', textAlign: columnType === 'Notes' ? 'left' : 'center', verticalAlign: 'top', color: mainFontColor, fontSize: '16px', width: '214px'}
 }
 
-export const expandEventIconStyle = {cursor: 'pointer', position: 'absolute', right: '0px', top: '10px', ':hover': {color: primaryColor}}
+export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', position: 'absolute', right: '0px', top: '28px', height: '14px', ':hover': {color: primaryColor}}
 
 // Create Event Form Styles
 export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}

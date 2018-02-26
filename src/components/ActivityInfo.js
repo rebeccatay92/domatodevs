@@ -116,8 +116,8 @@ class ActivityInfo extends Component {
         )
       }
       return (
-        <p style={this.props.timeStyle} onClick={() => this.handleClick()}>
-          <span className='activityInfo' style={{paddingTop: '3px', display: 'inline-block', cursor: 'text'}}>
+        <p style={this.props.timeStyle}>
+          <span onClick={() => this.handleClick()} className='activityInfo' style={{paddingTop: '3px', display: 'inline-block', cursor: 'text'}}>
             <span title={this.state.startTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.startTime}</span>
             <span style={{...this.props.typeStyle, ...{padding: '1px 4px'}}}> - </span>
             <span title={this.state.endTime} style={{display: 'inline-block', height: '18px', maxWidth: '220px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{this.state.endTime}</span>
