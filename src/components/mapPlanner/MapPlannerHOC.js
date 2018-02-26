@@ -38,6 +38,8 @@ class Map extends Component {
       plannerMarkers: [], // filtered planner markers. eg markers for days 1,2,5
       isSearchInfoBoxOpen: false,
       clickedSearchMarkerIndex: null,
+      isPlannerInfoBoxOpen: false,
+      clickedPlannerMarkerIndex: null,
       eventType: '' // activity, food, lodging, transport
     }
   }
@@ -300,6 +302,21 @@ class Map extends Component {
     this.map.fitBounds(newBounds, 100)
   }
 
+  onPlannerMarkerClicked (index) {
+    console.log('planner marker clicked')
+    var marker = this.state.plannerMarkers[index]
+    this.map.panTo(marker.position)
+    this.setState({center: marker.position})
+    if (this.state.clickedPlannerMarkerIndex !== index) {
+      console.log('another marker clicked')
+    } else {
+      this.setState({
+        isPlannerInfoBoxOpen: false,
+        clickedPlannerMarkerIndex: null
+      })
+    }
+  }
+
   render () {
     return (
       <GoogleMap ref={node => { this.map = node }}
@@ -381,8 +398,8 @@ class Map extends Component {
 
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
-            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}}>
-              <div style={{width: '40px', height: '40px'}}>
+            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}} onClick={() => this.onPlannerMarkerClicked(index)}>
+              <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
                 {event.imageUrl &&
                   <img width='100%' height='100%' src={event.imageUrl} />
                 }
