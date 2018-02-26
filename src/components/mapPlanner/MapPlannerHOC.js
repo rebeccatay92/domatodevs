@@ -10,6 +10,11 @@ import MapCreateEventPopup from './MapCreateEventPopup'
 
 const _ = require('lodash')
 
+// searchMarkerStyle = {}
+// searchMarkerClickedStyle = {}
+const unclickedMarkerSize = {width: '40px', height: '40px'}
+const clickedMarkerSize = {width: '60px', height: '60px'}
+
 class Map extends Component {
   constructor (props) {
     super(props)
@@ -23,7 +28,8 @@ class Map extends Component {
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
-        gestureHandling: 'cooperative'
+        gestureHandling: 'cooperative',
+        clickableIcons: false
       },
       daysFilter: [], // arr of days to show eg [1,2,5]
       allEvents: [], // entire this.props.events arr
@@ -55,6 +61,11 @@ class Map extends Component {
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
     // console.log('places', places)
+    if (places.length === 0) {
+      console.log('no results')
+      return
+    }
+
     places.forEach(place => {
       if (place.photos) {
         var imageUrl = place.photos[0].getUrl({maxWidth: 200})
@@ -97,6 +108,8 @@ class Map extends Component {
 
   onSearchMarkerClicked (index) {
     var marker = this.state.searchMarkers[index]
+    // console.log('marker ref', this.searchMarker)
+    // console.log('zindex', this.searchMarker.getZIndex())
     // console.log('marker', marker)
     this.map.panTo(marker.position)
     this.setState({center: marker.position})
@@ -132,7 +145,8 @@ class Map extends Component {
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
-          gestureHandling: 'none'
+          gestureHandling: 'none',
+          clickableIcons: false
         }
       })
     })
@@ -144,7 +158,8 @@ class Map extends Component {
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
-          gestureHandling: 'cooperative'
+          gestureHandling: 'cooperative',
+          clickableIcons: false
         }
       })
     })
@@ -161,7 +176,8 @@ class Map extends Component {
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
-        gestureHandling: 'cooperative'
+        gestureHandling: 'cooperative',
+        clickableIcons: false
       }
     })
   }
@@ -209,7 +225,7 @@ class Map extends Component {
     this.setState({
       allEvents: this.props.events,
       eventsArr: eventsArr,
-      daysFilter: [1, 2]
+      daysFilter: []
     }, () => {
       this.applyDaysFilter()
     })
@@ -335,19 +351,19 @@ class Map extends Component {
 
         {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
           return (
-            <MarkerWithLabel key={index} position={marker.position} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid red', backgroundColor: 'red'}} onClick={() => this.onSearchMarkerClicked(index)}>
+            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid red', backgroundColor: 'red', cursor: 'pointer'}} onClick={() => this.onSearchMarkerClicked(index)}>
               <div>
-                <div style={{width: '40px', height: '40px'}}>
+                <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
                   {marker.place.imageUrl &&
-                  <img width='100%' height='100%' src={marker.place.imageUrl} />
-                }
+                    <img width='100%' height='100%' src={marker.place.imageUrl} />
+                  }
                   {!marker.place.imageUrl &&
-                  <div style={{width: '100%', height: '100%', background: 'white'}} />
-                }
+                    <div style={{width: '100%', height: '100%', background: 'white'}} />
+                  }
                 </div>
                 {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true}} onDomReady={() => this.onInfoBoxDomReady()} >
-                  <div style={{position: 'relative', background: 'white', marginTop: '25px', width: '384px', height: '243px', padding: '10px'}} id='infobox'>
+                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', marginTop: '60px'}}} onDomReady={() => this.onInfoBoxDomReady()}>
+                  <div id='infobox'>
                     <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                       <i className='material-icons'>location_on</i>
                       <i className='material-icons'>delete</i>
@@ -362,6 +378,7 @@ class Map extends Component {
             </MarkerWithLabel>
           )
         })}
+
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
             <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}}>

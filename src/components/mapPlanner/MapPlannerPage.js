@@ -47,7 +47,7 @@ class MapPlannerPage extends Component {
       // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
       // console.log(activitiesWithTimelineErrors)
       // this.props.initializePlanner(activitiesWithTimelineErrors)
-      console.log('allEvents', allEvents)
+      // console.log('allEvents', allEvents)
       this.props.initializePlanner(allEvents)
 
       var startDate = nextProps.data.findItinerary.startDate
