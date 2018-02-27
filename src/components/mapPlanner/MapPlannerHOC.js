@@ -424,7 +424,7 @@ class Map extends Component {
                   }
                 </div>
                 {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', marginLeft: '-192px', marginTop: '60px'}}} onDomReady={() => this.onInfoBoxDomReady()}>
+                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
                   <div id='infobox'>
                     <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                       <i className='material-icons'>location_on</i>
