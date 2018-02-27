@@ -13,6 +13,11 @@ const _ = require('lodash')
 const unclickedMarkerSize = {width: '40px', height: '40px'}
 const clickedMarkerSize = {width: '60px', height: '60px'}
 
+const clickedSearchMarkerStyle = {borderRadius: '50%', border: '3px solid red', boxShadow: '0 0 0 3px white', backgroundColor: 'red', cursor: 'pointer'}
+const unclickedSearchMarkerStyle = {borderRadius: '50%', border: '3px solid red', backgroundColor: 'red', cursor: 'pointer'}
+const clickedPlannerMarkerStyle = {borderRadius: '50%', border: '3px solid orange', boxShadow: '0 0 0 3px white', backgroundColor: 'orange'}
+const unclickedPlannerMarkerStyle = {borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}
+
 class Map extends Component {
   constructor (props) {
     super(props)
@@ -114,11 +119,9 @@ class Map extends Component {
 
   onSearchMarkerClicked (index) {
     var marker = this.state.searchMarkers[index]
-    // console.log('marker ref', this.searchMarker)
-    // console.log('zindex', this.searchMarker.getZIndex())
-    // console.log('marker', marker)
+
     this.map.panTo(marker.position)
-    this.setState({center: marker.position})
+    this.setState({center: marker.position, zoom: 15})
 
     // clear any clicked state for planner
     this.setState({
@@ -395,7 +398,7 @@ class Map extends Component {
 
         {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
           return (
-            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid red', backgroundColor: 'red', cursor: 'pointer'}} onClick={() => this.onSearchMarkerClicked(index)}>
+            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedSearchMarkerIndex === index ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} onClick={() => this.onSearchMarkerClicked(index)} zIndex={this.state.clickedSearchMarkerIndex === index ? 2 : 1}>
               <div>
                 <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
                   {marker.place.imageUrl &&
@@ -425,7 +428,7 @@ class Map extends Component {
 
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
-            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}} onClick={() => this.onPlannerMarkerClicked(index)}>
+            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
               <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
                 {event.imageUrl &&
                   <img width='100%' height='100%' src={event.imageUrl} />
