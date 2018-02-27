@@ -123,9 +123,17 @@ class Map extends Component {
   onSearchMarkerClicked (index) {
     var marker = this.state.searchMarkers[index]
 
-    this.map.panTo(marker.position)
-    this.setState({center: marker.position, zoom: 15})
+    // this.map.panTo(marker.position)
+    // this.setState({center: marker.position, zoom: 15})
     // this.setState({zoom: 15})
+
+    // conditional zoom and center?
+    if (this.state.zoom < 15) {
+      this.map.panTo(marker.position)
+      this.setState({center: marker.position, zoom: 15})
+    } else if (this.state.zoom >= 15) {
+      console.log('already zoomed in. just open')
+    }
 
     // clear any clicked state for planner
     this.setState({
@@ -189,6 +197,7 @@ class Map extends Component {
   closeSearchPopup () {
     this.setState({
       isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null,
       eventType: '',
       mapOptions: {
         minZoom: 2,

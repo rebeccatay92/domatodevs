@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { MAP } from 'react-google-maps/lib/constants'
 
-class CustomControlSelectedLocation extends React.Component {
+class CustomControl extends Component {
 	static contextTypes = {
 		[MAP]: PropTypes.object
 	}
@@ -56,4 +56,4 @@ class CustomControlSelectedLocation extends React.Component {
 	}
 }
 
-export default CustomControlSelectedLocation
+export default CustomControl
