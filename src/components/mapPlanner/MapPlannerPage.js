@@ -72,6 +72,37 @@ class MapPlannerPage extends Component {
       this.setState({daysArr: daysArr})
     }
   }
+
+  componentDidMount () {
+    // console.log('this', this.state, 'props', this.props)
+    if (this.props.data.findItinerary) {
+      // console.log('props', this.props.data.findItinerary)
+      var allEvents = this.props.data.findItinerary.events
+      // console.log('allevents', allEvents)
+      this.props.initializePlanner(allEvents)
+
+      var startDate = this.props.data.findItinerary.startDate
+      var days = this.props.data.findItinerary.days
+
+      // startDate is unix (secs)
+      this.setState({startDate: startDate, days: days})
+
+      // x1000 to convert to ms for datesArr
+      startDate = new Date(startDate * 1000)
+
+      if (startDate && days) {
+        var dates = getDates(startDate, days)
+        var datesArr = dates.map(date => {
+          return date.getTime()
+        })
+        this.setState({datesArr: datesArr})
+      } else {
+        datesArr = null
+      }
+      var daysArr = _.range(1, days + 1)
+      this.setState({daysArr: daysArr})
+    }
+  }
 }
 
 const getDates = (startDate, days) => {
