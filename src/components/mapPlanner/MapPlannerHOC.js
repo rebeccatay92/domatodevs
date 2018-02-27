@@ -109,6 +109,9 @@ class Map extends Component {
         isSearchInfoBoxOpen: false,
         clickedSearchMarkerIndex: null
       })
+    } else {
+      // if there were no search markers, clearing search should not rezoom on planner markers
+      return
     }
 
     // if search was cleared, but planner has markers, refitBounds
@@ -122,6 +125,7 @@ class Map extends Component {
 
     this.map.panTo(marker.position)
     this.setState({center: marker.position, zoom: 15})
+    // this.setState({zoom: 15})
 
     // clear any clicked state for planner
     this.setState({
@@ -332,6 +336,8 @@ class Map extends Component {
     var marker = this.state.plannerMarkers[index]
     this.map.panTo({lat: marker.location.latitude, lng: marker.location.longitude})
     this.setState({center: {lat: marker.location.latitude, lng: marker.location.longitude}})
+    this.setState({zoom: 15})
+    // zoom but dont center the clicked marker?
     if (this.state.clickedPlannerMarkerIndex !== index) {
       this.setState({
         eventType: marker.eventType,
@@ -409,7 +415,7 @@ class Map extends Component {
                   }
                 </div>
                 {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', marginTop: '60px'}}} onDomReady={() => this.onInfoBoxDomReady()}>
+                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', marginLeft: '-192px', marginTop: '60px'}}} onDomReady={() => this.onInfoBoxDomReady()}>
                   <div id='infobox'>
                     <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                       <i className='material-icons'>location_on</i>
