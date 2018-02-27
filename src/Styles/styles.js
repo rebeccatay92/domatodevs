@@ -1,5 +1,6 @@
 export const primaryColor = '#ed685a'
 const mainFontColor = '#3C3A44'
+const borderColor = 'rgba(60, 58, 68, 0.2)'
 const secondaryFontColor = '#9FACBC'
 const backgroundColor = '#FFFFFF'
 
@@ -120,19 +121,20 @@ export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}
 export const createEventTextStyle = {marginTop: 0, fontSize: '16px', color: primaryColor, display: 'inline-block', cursor: 'pointer'}
 export const activityIconStyle = {
-  fontSize: '24px',
-  marginRight: '1vw',
-  WebkitTextStroke: '1px ' + secondaryFontColor,
-  WebkitTextFillColor: '#FAFAFA',
+  fontSize: '19px',
+  marginRight: '24px',
+  WebkitTextStroke: '1px rgba(60, 58, 68, 0.7)',
+  WebkitTextFillColor: '#FFFFFF',
   cursor: 'pointer',
   ':hover': {
     WebkitTextStroke: '1px ' + primaryColor
   }
 }
-export const createEventBoxStyle = {height: '80px', padding: '30px 0'}
-export const createEventPickOneStyle = {fontSize: '16px', color: secondaryFontColor, position: 'relative', top: '-6px'}
+export const createEventBoxStyle = {height: '80px', padding: '30px 0', marginLeft: '1px'}
+export const createEventPickOneStyle = {fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', position: 'relative', top: '-4px'}
 export const createEventBoxContainerStyle = {
   margin: '0 0 0 16px',
+  width: '1007px',
   position: 'relative'
 }
 export const plannerBlurredBackgroundStyle = {position: 'fixed', bottom: 0, right: 0, top: 0, left: 0, backgroundColor: 'rgba(250, 250, 250, 1)', zIndex: 555}
@@ -255,7 +257,7 @@ export const createFlightButtonStyle = {backgroundColor: primaryColor, border: '
 export const searchResultsTableStyle = {width: '100%', color: secondaryFontColor, fontSize: '16px', cursor: 'default'}
 
 // AirportResults.js styles
-export const intuitiveDropdownStyle = {width: '282.5px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2', display: 'block'}
+export const intuitiveDropdownStyle = {width: '282.5px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2', display: 'block', border: '1px solid ' + borderColor, borderTop: 'none', top: '42px'}
 
 // mapPlanner/SideBarDate.js styles
 export const mapPlannerDateTableHorizontalLineStyle = isFirstDay => {

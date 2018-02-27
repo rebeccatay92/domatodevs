@@ -167,8 +167,8 @@ class PlannerActivity extends Component {
     const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
     const eventTypes = ['Activity', 'Food', 'Lodging', 'Flight', 'Train', 'LandTransport', 'SeaTransport']
     const eventsListBox = (
-      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '40px', padding: '0'}}}>
-        <span className='createEventBox'>
+      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '52px', padding: '0'}}}>
+        <span className='createEventBox' style={{marginLeft: '8px'}}>
           {iconTypes.map((type, i) => {
             return (
               <i title={eventTypes[i]} key={i} onClick={() => this.handleIntuitiveInput(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>

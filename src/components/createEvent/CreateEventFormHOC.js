@@ -4,6 +4,7 @@ import CreateFoodForm from './CreateFoodForm'
 import CreateFlightForm from './CreateFlightForm'
 import CreateLodgingForm from './CreateLodgingForm'
 import CreateLandTransportForm from './CreateLandTransportForm'
+import Radium, { Style } from 'radium'
 
 class CreateEventFormHOC extends Component {
   constructor (props) {
@@ -19,9 +20,16 @@ class CreateEventFormHOC extends Component {
   render () {
     const CreateEventForm = this.components[this.props.eventType]
     return (
-      <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.props.toggleCreateEventType()} />
+      <div>
+        <Style rules={{
+          html: {
+            overflowY: 'hidden'
+          }
+        }} />
+        <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} eventType={this.props.eventType} toggleCreateEventType={() => this.props.toggleCreateEventType()} />
+      </div>
     )
   }
 }
 
-export default CreateEventFormHOC
+export default Radium(CreateEventFormHOC)
