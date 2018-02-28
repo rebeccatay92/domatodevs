@@ -5,6 +5,7 @@ import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
 import MarkerWithLabel from 'react-google-maps/lib/components/addons/MarkerWithLabel'
+import MarkerClusterer from 'react-google-maps/lib/components/addons/MarkerClusterer'
 
 import MapCreateEventPopup from './MapCreateEventPopup'
 
@@ -27,7 +28,7 @@ class Map extends Component {
       center: {lat: 0, lng: 0},
       mapOptions: {
         minZoom: 2,
-        maxZoom: 16,
+        maxZoom: 17,
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
@@ -169,7 +170,7 @@ class Map extends Component {
       this.setState({
         mapOptions: {
           minZoom: 2,
-          maxZoom: 16,
+          maxZoom: 17,
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
@@ -182,7 +183,7 @@ class Map extends Component {
       this.setState({
         mapOptions: {
           minZoom: 2,
-          maxZoom: 16,
+          maxZoom: 17,
           fullscreenControl: false,
           mapTypeControl: false,
           streetViewControl: false,
@@ -201,7 +202,7 @@ class Map extends Component {
       eventType: '',
       mapOptions: {
         minZoom: 2,
-        maxZoom: 16,
+        maxZoom: 17,
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
@@ -248,8 +249,42 @@ class Map extends Component {
       }
       temp.location = location
       temp.imageUrl = location.imageUrl
+      // display position is the apparent marker position, and might not be the actual lat/lng of the location
+      // temp.displayPosition = {latitude: location.latitude, longitude: location.longitude}
       return temp
     })
+    // console.log('eventsArr before marker offset', eventsArr)
+    var comparisonArr = []
+
+    var finalEventsArr = eventsArr.map(event => {
+      var position = {latitude: event.location.latitude, longitude: event.location.longitude}
+      // console.log('comparisonArr so far', JSON.parse(JSON.stringify(comparisonArr)))
+      // check offset arr against position, if unique set displayPosition and push
+      var isUnique = true
+      for (var i = 0; i < comparisonArr.length; i++) {
+        if (comparisonArr[i].latitude === position.latitude && comparisonArr[i].longitude === position.longitude) {
+          isUnique = false
+          // console.log('IS NOT UNIQUE')
+        }
+      }
+
+      if (isUnique) {
+        // console.log('JUST PUSH')
+        comparisonArr.push(position)
+        event.displayPosition = position
+      } else {
+        // console.log('OFFSETTING')
+        var offsetPosition = {
+          latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
+          longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
+        }
+        comparisonArr.push(offsetPosition)
+        event.displayPosition = offsetPosition
+      }
+      // console.log('event to return', event)
+      return event
+    })
+    console.log('final events arr', finalEventsArr)
 
     this.setState({
       allEvents: this.props.events,
@@ -363,6 +398,13 @@ class Map extends Component {
     }
   }
 
+  onPlannerClusterClick (e) {
+    if (this.map.getZoom() === 16) {
+      console.log('alrdy max zoom, but still overlap')
+      console.log(e.getMarkers())
+    }
+  }
+
   render () {
     return (
       <GoogleMap ref={node => { this.map = node }}
@@ -412,22 +454,25 @@ class Map extends Component {
           </div>
         </SearchBox>
 
-        {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
-          return (
-            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedSearchMarkerIndex === index ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} onClick={() => this.onSearchMarkerClicked(index)} zIndex={this.state.clickedSearchMarkerIndex === index ? 2 : 1}>
-              <div>
-                <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
-                  {marker.place.imageUrl &&
-                    <img width='100%' height='100%' src={marker.place.imageUrl} />
-                  }
-                  {!marker.place.imageUrl &&
-                    <div style={{width: '100%', height: '100%', background: 'white'}} />
-                  }
+        <MarkerClusterer gridSize={50} minimumClusterSize={3} maxZoom={14} averageCenter>
+          {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
+            return (
+              <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedSearchMarkerIndex === index ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} onClick={() => this.onSearchMarkerClicked(index)} zIndex={this.state.clickedSearchMarkerIndex === index ? 2 : 1}>
+                <div>
+                  <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+                    {marker.place.imageUrl &&
+                      <img width='100%' height='100%' src={marker.place.imageUrl} />
+                    }
+                    {!marker.place.imageUrl &&
+                      <div style={{width: '100%', height: '100%', background: 'white'}} />
+                    }
+                  </div>
                 </div>
-              </div>
-            </MarkerWithLabel>
-          )
-        })}
+              </MarkerWithLabel>
+            )
+          })}
+        </MarkerClusterer>
+
         {this.state.isSearchInfoBoxOpen &&
           <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox'>
@@ -441,24 +486,28 @@ class Map extends Component {
             </div>
           </InfoBox>
         }
-        {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
-          return (
-            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
-              <div>
-                <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
-                  {event.imageUrl &&
-                    <img width='100%' height='100%' src={event.imageUrl} />
-                  }
-                  {!event.imageUrl &&
-                    <div style={{width: '100%', height: '100%', background: 'white'}} />
-                  }
+
+        <MarkerClusterer gridSize={50} minimumClusterSize={3} maxZoom={14} averageCenter onClick={(e) => this.onPlannerClusterClick(e)}>
+          {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
+            return (
+              <MarkerWithLabel key={index} position={{lat: event.displayPosition.latitude, lng: event.displayPosition.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
+                <div>
+                  <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+                    {event.imageUrl &&
+                      <img width='100%' height='100%' src={event.imageUrl} />
+                    }
+                    {!event.imageUrl &&
+                      <div style={{width: '100%', height: '100%', background: 'white'}} />
+                    }
+                  </div>
                 </div>
-              </div>
-            </MarkerWithLabel>
-          )
-        })}
+              </MarkerWithLabel>
+            )
+          })}
+        </MarkerClusterer>
+
         {this.state.isPlannerInfoBoxOpen &&
-          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].location.latitude, this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].location.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].displayPosition.latitude, this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox'>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
