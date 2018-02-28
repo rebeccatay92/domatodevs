@@ -3,7 +3,7 @@ import LocationSearch from './LocationSearch'
 import TransportMapHOC from './TransportMapHOC'
 import LocationDetails from './LocationDetails'
 
-import { locationMapContainerStyle } from '../../Styles/styles'
+import { locationMapContainerStyle, eventDescContainerStyle } from '../../Styles/styles'
 
 // ENTIRE LOCATION COMPONENT (DEPARTURE + ARRIVAL + ADDRESS + SHARED MAP)
 
@@ -34,14 +34,17 @@ class TransportLocationSelection extends Component {
 
   render () {
     return (
-      <div>
-        <LocationSearch selectLocation={place => this.selectLocation(place, 'departure')} toggleMap={() => this.toggleMap('departure')} placeholder={'Departure Location'} currentLocation={this.props.departureLocation} />
-        {/* DEPARTURE PLACEHOLDER OVERFLOW NOT SEEN */}
-        <LocationDetails locationDetails={this.props.departureLocationDetails} />
+      <div style={{position: 'relative'}}>
+        <div style={{...eventDescContainerStyle, ...{position: 'relative'}}}>
+          <LocationSearch eventType={this.props.eventType} selectLocation={place => this.selectLocation(place, 'departure')} toggleMap={() => this.toggleMap('departure')} currentLocation={this.props.departureLocation} />
+          {/* DEPARTURE PLACEHOLDER OVERFLOW NOT SEEN */}
+          {this.props.departureLocation.placeId && <LocationDetails locationDetails={this.props.departureLocationDetails} />}
+        </div>
 
-        <p style={{textAlign: 'center'}}>to</p>
-        <LocationSearch selectLocation={place => this.selectLocation(place, 'arrival')} toggleMap={() => this.toggleMap('arrival')} placeholder={'Arrival Location'} currentLocation={this.props.arrivalLocation} />
-        <LocationDetails locationDetails={this.props.arrivalLocationDetails} />
+        <div style={{...eventDescContainerStyle, ...{position: 'relative'}}}>
+          <LocationSearch eventType={this.props.eventType + 'End'} selectLocation={place => this.selectLocation(place, 'arrival')} toggleMap={() => this.toggleMap('arrival')} currentLocation={this.props.arrivalLocation} />
+          {this.props.arrivalLocation.placeId && <LocationDetails locationDetails={this.props.arrivalLocationDetails} />}
+        </div>
 
         {this.state.mapIsOpen &&
         <div style={locationMapContainerStyle}>

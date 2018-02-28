@@ -157,6 +157,7 @@ class AttachmentsRework extends Component {
     return (
       <div>
         {/* LIST OF ATTACHMENTS */}
+        <label style={{fontSize: '13px', fontWeight: '400', marginBottom: '16px', display: 'block'}}>Attachments</label>
         {!this.state.preview && this.props.attachments.map((info, i) => {
           // console.log('length', this.props.attachments.length, 'i+1', i + 1)
           var fileName = info.fileName
@@ -166,13 +167,13 @@ class AttachmentsRework extends Component {
             <div key={'thumbnail' + i} style={{width: '100%', position: 'relative'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
               <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview(i)}>
                 {info.fileType === 'application/pdf' &&
-                <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '20px', marginRight: '2px', verticalAlign: 'middle'}}>picture_as_pdf</i>}
+                <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '18px', marginRight: '8px', 'marginBottom': '8px'}}>picture_as_pdf</i>}
                 {info.fileType !== 'application/pdf' &&
-                <i className='material-icons' style={{color: 'rgb(43, 201, 217)', fontSize: '20px', marginRight: '2px', verticalAlign: 'middle'}}>photo</i>}
-                <h5 style={{display: 'inline-block', maxWidth: '150px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', verticalAlign: 'middle'}}>{info.fileAlias}</h5>
+                <i className='material-icons' style={{color: 'rgb(43, 201, 217)', fontSize: '18px', marginRight: '8px', 'marginBottom': '8px'}}>photo</i>}
+                <h5 style={{display: 'inline-block', maxWidth: '367px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', verticalAlign: 'middle', color: 'rgba(60, 58, 68, 0.7)', fontWeight: '300', fontSize: '13px', margin: '0 0 8px 0'}}>{info.fileAlias}</h5>
               </div>
 
-              <div style={{display: 'inline-block', position: 'relative', float: 'right'}}>
+              <div style={{display: 'inline-block', position: 'absolute', right: '0'}}>
                 {this.props.backgroundImage && (this.props.backgroundImage.indexOf(info.fileName) > -1) &&
                   <i className='material-icons'>assignment_ind</i>
                 }
@@ -196,8 +197,8 @@ class AttachmentsRework extends Component {
         {/* ADD ATTACHMENT ICON */}
         {this.props.attachments.length <= 5 &&
           <label style={{display: 'inline-block', color: 'black', cursor: 'pointer'}}>
-            <i key='attachmentAdd' className='material-icons' style={{verticalAlign: 'middle'}}>file_upload</i>
-            Click here to upload files
+            <i key='attachmentAdd' className='material-icons' style={{verticalAlign: 'text-bottom', fontSize: '18px', color: 'rgba(60, 58, 68, 0.7)'}}>file_upload</i>
+            <span style={{fontSize: '13px', fontWeight: 300, marginLeft: '16px', color: 'rgba(60, 58, 68, 0.7)'}}>Click here to upload file</span>
             <input type='file' name='file' accept='.jpeg, .jpg, .png, .pdf' onChange={(e) => {
               this.handleFileUpload(e)
             }} style={{display: 'none'}} />

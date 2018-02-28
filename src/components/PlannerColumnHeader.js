@@ -24,7 +24,7 @@ class PlannerColumnHeader extends Component {
           <span onClick={() => {
             if (notesIsVisible) return
             this.setState({dropdown: !this.state.dropdown})
-          }} style={{...tableDropdownStyle, ...{opacity: notesIsVisible ? 0.3 : 1, cursor: notesIsVisible ? 'auto' : 'pointer'}}}>{this.props.column}<i className='material-icons' style={{fontSize: '24px', verticalAlign: 'middle'}}>keyboard_arrow_down</i></span>
+          }} style={{...tableDropdownStyle, ...{opacity: notesIsVisible ? 0.3 : 1, cursor: notesIsVisible ? 'auto' : 'pointer'}}}>{this.props.column}<i className='material-icons' style={{fontSize: '24px', verticalAlign: 'middle', position: 'absolute'}}>keyboard_arrow_down</i></span>
         </th>
       )
     } else if (this.state.dropdown) {

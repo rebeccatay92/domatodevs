@@ -4,6 +4,7 @@ import EditFoodForm from './EditFoodForm'
 import EditLodgingForm from './EditLodgingForm'
 import EditLandTransportForm from './EditLandTransportForm'
 import EditFlightForm from './EditFlightForm'
+import Radium, { Style } from 'radium'
 
 class EditEventFormHOC extends Component {
   constructor (props) {
@@ -19,9 +20,16 @@ class EditEventFormHOC extends Component {
   render () {
     const EditEventForm = this.components[this.props.eventType]
     return (
-      <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} events={this.props.events} toggleEditEventType={() => this.props.toggleEditEventType()} />
+      <div>
+        <Style rules={{
+          html: {
+            overflowY: 'hidden'
+          }
+        }} />
+        <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} events={this.props.events} toggleEditEventType={() => this.props.toggleEditEventType()} />
+      </div>
     )
   }
 }
 
-export default EditEventFormHOC
+export default Radium(EditEventFormHOC)
