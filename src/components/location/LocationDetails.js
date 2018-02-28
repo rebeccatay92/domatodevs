@@ -3,10 +3,10 @@ import React, { Component } from 'react'
 class LocationDetails extends Component {
   render () {
     return (
-      <div style={{position: 'absolute', bottom: '0px', display: 'inline-block', verticalAlign: 'bottom', marginLeft: '20px', width: '230px'}}>
-        <h6 style={{fontWeight: 'bold'}}>Address: {this.props.locationDetails.address}</h6>
-        <h6 style={{fontWeight: 'bold'}}>Tel: {this.props.locationDetails.telephone}</h6>
-        <h6 style={{fontWeight: 'bold', marginBottom: 0}}>Opening: {this.props.locationDetails.openingHours}</h6>
+      <div style={{position: 'absolute', bottom: '0px', display: 'inline-block', verticalAlign: 'bottom', marginLeft: '34px', width: '282px'}}>
+        <span style={{display: 'block', fontSize: '16px', fontWeight: '300', marginBottom: '8px'}}>{this.props.locationDetails.address}</span>
+        <span style={{display: 'block', fontSize: '16px', fontWeight: '300', marginBottom: '8px'}}>Tel: {this.props.locationDetails.telephone}</span>
+        <span style={{display: 'block', fontSize: '16px', fontWeight: '300', marginBottom: 0}}>Opening: {this.props.locationDetails.openingHours}</span>
       </div>
     )
   }

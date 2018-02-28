@@ -185,10 +185,10 @@ class IntuitiveActivityInput extends Component {
     return (
       <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', padding: '10px 0'}}}>
         <div style={{display: 'inline-block'}}>
+          {this.state.descRequired && this.state.locRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Description or Location Required)</span>}
           <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} />
         </div>
         <div style={{display: 'inline-block'}}>
-          {this.state.descRequired && this.state.locRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Description or Location Required)</span>}
           <div>
             <input type='text' placeholder='Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} />
           </div>
