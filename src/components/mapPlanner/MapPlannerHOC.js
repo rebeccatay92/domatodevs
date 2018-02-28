@@ -221,14 +221,11 @@ class Map extends Component {
     this.setState({eventType: type})
   }
 
-  // on first mount (props.events has already been passed)
-  componentDidMount () {
-    // console.log('on map mount', this.props)
-    // this.setState({allEvents: this.props.events})
-
+  // constructs obj structure. no marker position offseting
+  constructEventsArrFromPropsEvents (propsEventsArr) {
     // extract locations to plot. eventsArrObj
     // modelId: int, eventType: str, day: int, start:bool, location: obj, row: eventType
-    var eventsArr = this.props.events.map(e => {
+    var eventsArr = propsEventsArr.map(e => {
       var temp = {
         modelId: e.modelId,
         eventType: e.type,
@@ -254,31 +251,28 @@ class Map extends Component {
       }
       temp.location = location
       temp.imageUrl = location.imageUrl
-      // display position is the apparent marker position, and might not be the actual lat/lng of the location
-      // temp.displayPosition = {latitude: location.latitude, longitude: location.longitude}
       return temp
     })
-    // console.log('eventsArr before marker offset', eventsArr)
-    var comparisonArr = []
+    return eventsArr
+  }
 
+  componentDidMount () {
+    var eventsArr = this.constructEventsArrFromPropsEvents(this.props.events)
+    // console.log('eventsArr before marker offset', eventsArr)
+
+    var comparisonArr = []
     var finalEventsArr = eventsArr.map(event => {
       var position = {latitude: event.location.latitude, longitude: event.location.longitude}
-      // console.log('comparisonArr so far', JSON.parse(JSON.stringify(comparisonArr)))
-      // check offset arr against position, if unique set displayPosition and push
-      var isUnique = true
-      for (var i = 0; i < comparisonArr.length; i++) {
-        if (comparisonArr[i].latitude === position.latitude && comparisonArr[i].longitude === position.longitude) {
-          isUnique = false
-          // console.log('IS NOT UNIQUE')
-        }
-      }
 
-      if (isUnique) {
-        // console.log('JUST PUSH')
+      // use lodash check uniqueness of positions
+      var positionMatch = _.find(comparisonArr, function (e) {
+        return (e.latitude === position.latitude && e.longitude === position.longitude)
+      })
+
+      if (!positionMatch) {
         comparisonArr.push(position)
         event.displayPosition = position
       } else {
-        // console.log('OFFSETTING')
         var offsetPosition = {
           latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
           longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
@@ -286,18 +280,62 @@ class Map extends Component {
         comparisonArr.push(offsetPosition)
         event.displayPosition = offsetPosition
       }
-      // console.log('event to return', event)
       return event
     })
     console.log('final events arr', finalEventsArr)
 
     this.setState({
       allEvents: this.props.events,
-      eventsArr: eventsArr,
+      eventsArr: finalEventsArr,
       daysFilter: []
     }, () => {
       this.applyDaysFilter()
     })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.events !== this.props.events) {
+      // console.log('nextProps', nextProps.events)
+      var stillDragging = _.find(nextProps.events, function (e) {
+        return (e.fromReducer)
+      })
+      if (!stillDragging) {
+        console.log('nextProps', nextProps.events)
+        var eventsArr = this.constructEventsArrFromPropsEvents(nextProps.events)
+
+        var comparisonArr = []
+        var finalEventsArr = eventsArr.map(event => {
+          var position = {latitude: event.location.latitude, longitude: event.location.longitude}
+
+          // use lodash check uniqueness of positions
+          var positionMatch = _.find(comparisonArr, function (e) {
+            return (e.latitude === position.latitude && e.longitude === position.longitude)
+          })
+
+          if (!positionMatch) {
+            comparisonArr.push(position)
+            event.displayPosition = position
+          } else {
+            var offsetPosition = {
+              latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
+              longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
+            }
+            comparisonArr.push(offsetPosition)
+            event.displayPosition = offsetPosition
+          }
+          return event
+        })
+        console.log('final events arr', finalEventsArr)
+
+        this.setState({
+          allEvents: nextProps.events,
+          eventsArr: finalEventsArr
+          // daysFilter: []
+        }, () => {
+          this.applyDaysFilter()
+        })
+      }
+    }
   }
 
   applyDaysFilter () {
