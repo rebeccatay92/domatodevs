@@ -424,24 +424,23 @@ class Map extends Component {
                     <div style={{width: '100%', height: '100%', background: 'white'}} />
                   }
                 </div>
-                {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                  <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
-                    <div id='infobox'>
-                      <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
-                        <i className='material-icons'>location_on</i>
-                        <i className='material-icons'>delete</i>
-                      </div>
-                      <div>
-                        <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
-                      </div>
-                    </div>
-                  </InfoBox>
-                }
               </div>
             </MarkerWithLabel>
           )
         })}
-
+        {this.state.isSearchInfoBoxOpen &&
+          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+            <div id='infobox'>
+              <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                <i className='material-icons'>location_on</i>
+                <i className='material-icons'>delete</i>
+              </div>
+              <div>
+                <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
+              </div>
+            </div>
+          </InfoBox>
+        }
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
             <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
@@ -454,23 +453,23 @@ class Map extends Component {
                     <div style={{width: '100%', height: '100%', background: 'white'}} />
                   }
                 </div>
-                {this.state.isPlannerInfoBoxOpen && this.state.clickedPlannerMarkerIndex === index &&
-                  <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(event.location.latitude, event.location.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
-                    <div id='infobox'>
-                      <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
-                        <i className='material-icons'>location_on</i>
-                        <i className='material-icons'>delete</i>
-                      </div>
-                      {/* <div>
-                        <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
-                      </div> */}
-                    </div>
-                  </InfoBox>
-                }
               </div>
             </MarkerWithLabel>
           )
         })}
+        {this.state.isPlannerInfoBoxOpen &&
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].location.latitude, this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].location.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+            <div id='infobox'>
+              <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                <i className='material-icons'>location_on</i>
+                <i className='material-icons'>delete</i>
+              </div>
+              {/* <div>
+                <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
+              </div> */}
+            </div>
+          </InfoBox>
+        }
       </GoogleMap>
     )
   }
