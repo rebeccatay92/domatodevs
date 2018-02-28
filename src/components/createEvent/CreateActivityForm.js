@@ -276,10 +276,10 @@ class CreateActivityForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
 
-            <p style={{textDecoration: 'underline', position: 'relative', fontSize: '64px'}}>ACTIVITY</p>
+            <span style={{borderBottom: '1px solid rgba(255, 255, 255, 0.2)', position: 'relative', paddingBottom: '8px', fontSize: '77px', fontWeight: '100', display: 'inline'}}>ACTIVITY</span>
 
             <div style={eventDescContainerStyle}>
-              <p style={{color: 'white', position: 'relative', fontWeight: 'bold'}}>DESCRIPTION</p>
+              <p style={{color: 'white', position: 'relative', fontWeight: '100', fontSize: '16px', margin: '0 0 16px 0'}}>DESCRIPTION</p>
               <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
             <div style={eventDescContainerStyle}>
@@ -294,19 +294,19 @@ class CreateActivityForm extends Component {
               </div>
             }
 
-            <ScheduleOfEvents dates={this.props.dates} events={this.props.events} />
+            <ScheduleOfEvents dates={this.props.dates} events={this.props.events} daysArr={this.props.daysArr} />
 
           </div>
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              <h4 style={{fontSize: '24px'}}>Booking Details</h4>
+              <h4 style={{fontSize: '24px', margin: '0 0 13px 0', fontWeight: '300'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
               {this.state.googlePlaceData.name &&
-                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Detailed Location (${this.state.googlePlaceData.name})`} />
+                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Location in  ${this.state.googlePlaceData.name}`} />
               }
               {!this.state.googlePlaceData.name &&
-                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={'Detailed Location'} />
+                <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={'Location'} />
               }
               <Notes handleChange={(e) => this.handleChange(e, 'notes')} label={'Notes'} />
 

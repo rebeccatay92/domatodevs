@@ -2,19 +2,21 @@ import React, { Component } from 'react'
 
 class ScheduleOfEvents extends Component {
   render () {
+    const datesArr = this.props.dates || this.props.daysArr
     return (
-      <div style={{position: 'relative', overflowY: 'scroll', height: '250px', marginTop: '30px'}}>
-        {this.props.dates.map((date, i) => {
+      <div className='scheduleOfEvents' style={{position: 'relative', overflowY: 'scroll', height: '269px', marginTop: '56px'}}>
+        {datesArr.map((date, i) => {
           return (
-            <div>
+            <div key={i}>
               <p>
-                <span style={{fontSize: '20px'}}>Day {i + 1}</span>
-                <span style={{fontSize: '14px', marginLeft: '5px'}}>{date.toDateString().toUpperCase()}</span>
+                <span style={{fontSize: '24px', fontWeight: '100'}}>Day {i + 1}</span>
+                {this.props.dates && <span style={{fontSize: '16px', fontWeight: '100', marginLeft: '8px'}}>{date.toDateString().toUpperCase()}</span>}
               </p>
               {this.props.events.filter(event => {
                 return event.day === i + 1
-              }).map(event => {
+              }).map((event, i, array) => {
                 let time, location, description
+                const isLast = i === array.length - 1
                 if (event.type === 'Food' || event.type === 'Activity') {
                   time = new Date(event[event.type].startTime * 1000).toGMTString().substring(17, 22)
                   location = event[event.type].location.name
@@ -41,9 +43,9 @@ class ScheduleOfEvents extends Component {
                   }
                 }
                 return (
-                  <p style={{fontWeight: 'bold'}}>
+                  <p key={i} style={{fontWeight: '300', fontSize: '16px', margin: isLast ? '0 0 24px 0 ' : '0 0 16px 0'}}>
                     <span>{time}</span>
-                    <span style={{marginLeft: '5px'}}>{location}</span>
+                    <span style={{marginLeft: '16px'}}>{location}</span>
                     <span> - {description}</span>
                   </p>
                 )

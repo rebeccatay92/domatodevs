@@ -77,16 +77,16 @@ class ActivityInfo extends Component {
       }
       return (
         <p onKeyDown={(e) => this.handleKeyDown(e)} style={{...this.props.timeStyle, ...{width: '220px'}}}>
-          <input autoFocus={this.props.suggestedEndTime || this.props.suggestedStartTime} style={{width: '73px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} type='time' value={this.state.newStartTime} onChange={(e) => this.setState({ newStartTime: e.target.value })} />
+          <input autoFocus={this.props.suggestedEndTime || this.props.suggestedStartTime} style={{width: '78px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} type='time' value={this.state.newStartTime} onChange={(e) => this.setState({ newStartTime: e.target.value })} />
           <span> - </span>
-          <input style={{width: '73px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} type='time' value={this.state.newEndTime} onChange={(e) => this.setState({ newEndTime: e.target.value })} />
+          <input style={{width: '78px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} type='time' value={this.state.newEndTime} onChange={(e) => this.setState({ newEndTime: e.target.value })} />
         </p>
       )
     }
     if (this.state.editing) {
       if (this.props.name === 'startTime' || this.props.name === 'endTime') {
         return (
-          <input autoFocus={this.props.suggestedEndTime || this.props.suggestedStartTime} style={{width: '73px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} onKeyDown={(e) => this.handleKeyDown(e)} type='time' value={this.state.newValue} onChange={(e) => this.setState({ newValue: e.target.value })} />
+          <input autoFocus={this.props.suggestedEndTime || this.props.suggestedStartTime} style={{width: '78px', height: '31px', color: '#3C3A44', padding: '8px', fontSize: '13px'}} onKeyDown={(e) => this.handleKeyDown(e)} type='time' value={this.state.newValue} onChange={(e) => this.setState({ newValue: e.target.value })} />
         )
       }
       if (this.props.name === 'googlePlaceData' || this.props.name === 'departureGooglePlaceData' || this.props.name === 'arrivalGooglePlaceData') {
