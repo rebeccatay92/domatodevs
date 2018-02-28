@@ -98,7 +98,7 @@ class Map extends Component {
       center: nextCenter,
       searchMarkers: nextMarkers
     })
-    this.map.fitBounds(bounds)
+    this.map.fitBounds(bounds, 150)
   }
 
   clearSearch () {
@@ -128,12 +128,12 @@ class Map extends Component {
     // this.setState({zoom: 15})
 
     // conditional zoom and center?
-    if (this.state.zoom < 15) {
-      this.map.panTo(marker.position)
-      this.setState({center: marker.position, zoom: 15})
-    } else if (this.state.zoom >= 15) {
-      console.log('already zoomed in. just open')
-    }
+    // if (this.state.zoom < 15) {
+    //   this.map.panTo(marker.position)
+    //   this.setState({center: marker.position, zoom: 15})
+    // } else if (this.state.zoom >= 15) {
+    //   console.log('already zoomed in. just open')
+    // }
 
     // clear any clicked state for planner
     this.setState({
@@ -305,13 +305,13 @@ class Map extends Component {
       markerArr.forEach(marker => {
         newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
       })
-      this.map.fitBounds(newBounds, 100)
+      this.map.fitBounds(newBounds, 150)
     } else if (type === 'search') {
       newBounds = new window.google.maps.LatLngBounds()
       this.state.searchMarkers.forEach(marker => {
         newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
       })
-      this.map.fitBounds(newBounds, 100)
+      this.map.fitBounds(newBounds, 150)
     }
   }
 
@@ -331,7 +331,7 @@ class Map extends Component {
     this.state.plannerMarkers.forEach(marker => {
       newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
     })
-    this.map.fitBounds(newBounds, 100)
+    this.map.fitBounds(newBounds, 150)
   }
 
   onPlannerMarkerClicked (index) {
@@ -343,10 +343,11 @@ class Map extends Component {
     })
 
     var marker = this.state.plannerMarkers[index]
-    this.map.panTo({lat: marker.location.latitude, lng: marker.location.longitude})
-    this.setState({center: {lat: marker.location.latitude, lng: marker.location.longitude}})
-    this.setState({zoom: 15})
-    // zoom but dont center the clicked marker?
+
+    // this.map.panTo({lat: marker.location.latitude, lng: marker.location.longitude})
+    // this.setState({center: {lat: marker.location.latitude, lng: marker.location.longitude}})
+    // this.setState({zoom: 15})
+
     if (this.state.clickedPlannerMarkerIndex !== index) {
       this.setState({
         eventType: marker.eventType,
@@ -424,18 +425,18 @@ class Map extends Component {
                   }
                 </div>
                 {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
-                  <div id='infobox'>
-                    <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
-                      <i className='material-icons'>location_on</i>
-                      <i className='material-icons'>delete</i>
+                  <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+                    <div id='infobox'>
+                      <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                        <i className='material-icons'>location_on</i>
+                        <i className='material-icons'>delete</i>
+                      </div>
+                      <div>
+                        <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
+                      </div>
                     </div>
-                    <div>
-                      <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
-                    </div>
-                  </div>
-                </InfoBox>
-              }
+                  </InfoBox>
+                }
               </div>
             </MarkerWithLabel>
           )
@@ -444,12 +445,27 @@ class Map extends Component {
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
             <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
-              <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
-                {event.imageUrl &&
-                  <img width='100%' height='100%' src={event.imageUrl} />
-                }
-                {!event.imageUrl &&
-                  <div style={{width: '100%', height: '100%', background: 'white'}} />
+              <div>
+                <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+                  {event.imageUrl &&
+                    <img width='100%' height='100%' src={event.imageUrl} />
+                  }
+                  {!event.imageUrl &&
+                    <div style={{width: '100%', height: '100%', background: 'white'}} />
+                  }
+                </div>
+                {this.state.isPlannerInfoBoxOpen && this.state.clickedPlannerMarkerIndex === index &&
+                  <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(event.location.latitude, event.location.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+                    <div id='infobox'>
+                      <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                        <i className='material-icons'>location_on</i>
+                        <i className='material-icons'>delete</i>
+                      </div>
+                      {/* <div>
+                        <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
+                      </div> */}
+                    </div>
+                  </InfoBox>
                 }
               </div>
             </MarkerWithLabel>
