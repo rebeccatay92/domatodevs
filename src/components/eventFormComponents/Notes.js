@@ -3,7 +3,8 @@ import React, { Component } from 'react'
 const labelStyle = {
   fontSize: '13px',
   fontWeight: '400',
-  marginBottom: '16px'
+  marginBottom: '16px',
+  lineHeight: '15px'
 }
 
 // DIRECTLY PASS THE VALUE UP TO FORM, WHICH NOTES IS CHANGING DEPENDS ON PROPS FXN

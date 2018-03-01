@@ -161,7 +161,7 @@ class PlannerActivity extends Component {
         height: '80px',
         padding: '30px 0'
       }}>
-        <span onClick={() => this.setState({creatingEvent: true})} style={createEventTextStyle}>+ Add Event</span>
+        <span onClick={() => this.setState({creatingEvent: true, intuitiveInputType: 'Activity'})} style={createEventTextStyle}>+ Add Event</span>
       </div>
     )
     const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']

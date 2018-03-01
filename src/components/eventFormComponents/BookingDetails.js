@@ -4,7 +4,8 @@ const labelStyle = {
   fontSize: '13px',
   fontWeight: '400',
   display: 'block',
-  marginBottom: '16px'
+  marginBottom: '16px',
+  lineHeight: '15px'
 }
 
 class BookingDetails extends Component {

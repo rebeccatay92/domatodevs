@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button } from 'react-bootstrap'
+// import { Button } from 'react-bootstrap'
 
 class SaveCancelDelete extends Component {
   deleteEvent () {
@@ -8,12 +8,12 @@ class SaveCancelDelete extends Component {
 
   render () {
     return (
-      <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
+      <div style={{position: 'absolute', right: '0', bottom: '0', padding: '24px'}}>
         {this.props.delete &&
-        <Button bsStyle='default' style={{border: 'none', marginRight: '10px'}} onClick={() => this.deleteEvent()}>Delete</Button>
+        <button style={{height: '35px', width: '60px', padding: '8px', fontSize: '16px', border: 'none', marginRight: '16px', textAlign: 'center', borderRadius: '2px', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}} onClick={() => this.deleteEvent()}>Delete</button>
         }
-        <Button bsStyle='default' style={{border: 'none', marginRight: '10px'}} onClick={() => this.props.closeForm()}>Cancel</Button>
-        <Button bsStyle='danger' style={{backgroundColor: '#ed685a', border: 'none'}} onClick={() => this.props.handleSubmit()}>Save</Button>
+        <button style={{height: '35px', width: '60px', fontSize: '16px', backgroundColor: '#df386b', color: 'white', border: '1px solid #df386b', marginRight: '16px', textAlign: 'center', borderRadius: '2px', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}} onClick={() => this.props.handleSubmit()}>Save</button>
+        <button style={{border: '1px solid rgba(223, 56, 107, 0.3)', height: '35px', width: '60px', fontSize: '16px', color: '#df386b', backgroundColor: 'white', textAlign: 'center', borderRadius: '2px', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}} onClick={() => this.props.closeForm()}>Cancel</button>
       </div>
     )
   }

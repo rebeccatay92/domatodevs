@@ -300,7 +300,7 @@ class CreateActivityForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              <h4 style={{fontSize: '24px', margin: '0 0 13px 0', fontWeight: '300'}}>Booking Details</h4>
+              <h4 style={{fontSize: '24px', margin: '0 0 16px 0', fontWeight: '300'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
               {this.state.googlePlaceData.name &&
                 <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Location in  ${this.state.googlePlaceData.name}`} />
