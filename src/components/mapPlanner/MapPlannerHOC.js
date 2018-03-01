@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { toggleDaysFilter } from '../../actions/mapPlannerActions'
+import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
@@ -302,7 +302,30 @@ class Map extends Component {
     if (nextProps.daysFilterArr !== this.props.daysFilterArr) {
       this.applyDaysFilter(nextProps.daysFilterArr)
     }
-
+    if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
+      // focus marker has changed. set isPlannerInfoBoxOpen and clickedPlannerMarkerIndex.
+      var focus = nextProps.currentlyFocusedEvent
+      console.log('focus', focus)
+      // force redraw on infoBoxClearance
+      this.setState({isPlannerInfoBoxOpen: false})
+      if (focus.modelId) {
+        // find plannerMarkerIndex
+        var foundIndex = this.state.plannerMarkers.findIndex(e => {
+          return (e.modelId === focus.modelId && e.eventType === focus.eventType && e.flightInstanceId === focus.flightInstanceId && e.day === focus.day && e.start === focus.start && e.loadSequence === focus.loadSequence)
+        })
+        this.setState({
+          eventType: focus.eventType,
+          isPlannerInfoBoxOpen: true,
+          clickedPlannerMarkerIndex: foundIndex
+        })
+      } else {
+        this.setState({
+          eventType: '',
+          isPlannerInfoBoxOpen: false,
+          clickedPlannerMarkerIndex: null
+        })
+      }
+    }
     if (nextProps.events !== this.props.events) {
       var stillDragging = _.find(nextProps.events, function (e) {
         return (e.fromReducer)
@@ -413,30 +436,22 @@ class Map extends Component {
       isSearchInfoBoxOpen: false,
       clickedSearchMarkerIndex: null
     })
-
     var marker = this.state.plannerMarkers[index]
 
-    // this.map.panTo({lat: marker.location.latitude, lng: marker.location.longitude})
-    // this.setState({center: {lat: marker.location.latitude, lng: marker.location.longitude}})
-    // this.setState({zoom: 15})
-
-    // force redraw on infoBoxClearance
-    this.setState({
-      isPlannerInfoBoxOpen: false
-    })
-
     if (this.state.clickedPlannerMarkerIndex !== index) {
-      this.setState({
+      // construct currentEventObj and dispatch setCurrentlyFocusedEvent
+      var currentEventObj = {
+        modelId: marker.modelId,
         eventType: marker.eventType,
-        isPlannerInfoBoxOpen: true,
-        clickedPlannerMarkerIndex: index
-      })
+        flightInstanceId: marker.flightInstanceId,
+        day: marker.day,
+        start: marker.start,
+        loadSequence: marker.loadSequence
+      }
+      this.props.setCurrentlyFocusedEvent(currentEventObj)
     } else {
-      this.setState({
-        eventType: '',
-        isPlannerInfoBoxOpen: false,
-        clickedPlannerMarkerIndex: null
-      })
+      // dispatch clear focus event
+      this.props.clearCurrentlyFocusedEvent()
     }
   }
 
@@ -582,7 +597,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} toggleDaysFilter={(dayInt) => this.props.toggleDaysFilter(dayInt)} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={(dayInt) => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={(currentEventObj) => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
@@ -591,12 +606,19 @@ const mapDispatchToProps = (dispatch) => {
   return {
     toggleDaysFilter: (dayInt) => {
       dispatch(toggleDaysFilter(dayInt))
+    },
+    setCurrentlyFocusedEvent: (currentEventObj) => {
+      dispatch(setCurrentlyFocusedEvent(currentEventObj))
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
   }
 }
 const mapStateToProps = (state) => {
   return {
-    mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr
+    mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr,
+    currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
