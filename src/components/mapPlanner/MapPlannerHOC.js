@@ -138,12 +138,13 @@ class Map extends Component {
     //   console.log('already zoomed in. just open')
     // }
 
-    // clear any clicked state for planner
-    this.setState({
-      eventType: '',
-      isPlannerInfoBoxOpen: false,
-      clickedPlannerMarkerIndex: null
-    })
+    // clear planner focusEvent if any
+    // this.setState({
+    //   eventType: '',
+    //   isPlannerInfoBoxOpen: false,
+    //   clickedPlannerMarkerIndex: null
+    // })
+    this.props.clearCurrentlyFocusedEvent()
 
     // force redraw infoBoxClearance for searchInfoBox (else switching between search markers may cause infobox to be hidden by custom controls)
     this.setState({
@@ -373,10 +374,7 @@ class Map extends Component {
       return daysFilterArr.includes(e.day)
     })
     this.setState({
-      plannerMarkers: plannerMarkers,
-      eventType: '',
-      isPlannerInfoBoxOpen: false,
-      clickedPlannerMarkerIndex: null
+      plannerMarkers: plannerMarkers
     }, () => {
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
@@ -388,6 +386,10 @@ class Map extends Component {
 
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
+    // if unchecking a day, and focusEvent is inside. clear the focusevent.
+    if (this.props.currentlyFocusedEvent.day === clickedDay) {
+      this.props.clearCurrentlyFocusedEvent()
+    }
     this.props.toggleDaysFilter(clickedDay)
   }
 
