@@ -122,17 +122,17 @@ class LocationSearch extends Component {
       )
     } else {
       const locationTitle = {
-        'Activity': 'LOCATION',
-        'Food': 'EATERY',
-        'Lodging': 'LODGING',
-        'LandTransport': 'DEPARTURE LOCATION',
-        'LandTransportEnd': 'ARRIVAL LOCATION'
+        'Activity': 'Location',
+        'Food': 'Eatery',
+        'Lodging': 'Lodging',
+        'LandTransport': 'Departure Location',
+        'LandTransportEnd': 'Arrival Location'
       }
       return (
         <div style={{position: 'relative', display: 'inline-block'}}>
-          <p style={{position: 'relative', fontWeight: '100', fontSize: '16px', margin: '0 0 16px 0'}}>{locationTitle[this.props.eventType]}</p>
+          <p style={{position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>{locationTitle[this.props.eventType]}</p>
           <input key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
-          <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i>
+          {/* <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i> */}
 
           {this.state.selecting && this.state.results.length > 0 &&
             <div style={{...locationDropdownStyle, ...{overflowY: 'none', maxHeight: '1000px'}}}>

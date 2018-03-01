@@ -11,11 +11,11 @@ import moment from 'moment'
 import Radium from 'radium'
 
 const dayStyle = {
-  background: 'rgba(255, 255, 255, 0.3)', border: 'none', outline: 'none', fontSize: '24px', fontWeight: 100, textAlign: 'center', padding: '8px', height: '45px'
+  background: 'rgba(255, 255, 255, 0.3)', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 300, textAlign: 'center', padding: '8px', height: '35px', width: '83px'
 }
 
 const timeStyle = {
-  background: 'rgba(255, 255, 255, 0.3)', marginLeft: '8px', fontWeight: '100', fontSize: '24px', outline: 'none', border: 'none', textAlign: 'center', padding: '8px', height: '45px', verticalAlign: 'top'
+  background: 'rgba(255, 255, 255, 0.3)', marginLeft: '8px', fontWeight: '300', fontSize: '16px', outline: 'none', border: 'none', textAlign: 'center', padding: '8px', height: '35px', verticalAlign: 'top', width: '83px', letterSpacing: '-1px'
 }
 
 class DateTimePicker extends Component {
@@ -178,8 +178,8 @@ class DateTimePicker extends Component {
     } else {
       return (
         <div style={dateTimePickerContainerStyle}>
-          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '32px'}}>
-            <p style={{fontWeight: '100', fontSize: '16px', margin: '0 0 16px 0'}}>START TIME</p>
+          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '21px'}}>
+            <p style={{fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Start Time</p>
             {!this.props.dates &&
               <select key={'startDaySelect'} name='startDay' onChange={(e) => this.handleChange(e, 'startDay')} value={this.props.startDay} style={dayStyle}>
                 {this.props.daysArr.map((day, i) => {
@@ -196,7 +196,7 @@ class DateTimePicker extends Component {
           </div>
 
           <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '32px'}}>
-            <p style={{fontWeight: '100', fontSize: '16px', margin: '0 0 16px 0'}}>END TIME</p>
+            <p style={{fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>End Time</p>
             {!this.props.dates &&
               <select key={'endDaySelect'} name='endDay' onChange={(e) => this.handleChange(e, 'endDay')} value={this.props.endDay} style={dayStyle}>
                 {this.props.daysArr.map((day, i) => {
