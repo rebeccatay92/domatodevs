@@ -276,10 +276,10 @@ class CreateActivityForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
 
-            <span style={{borderBottom: '1px solid rgba(255, 255, 255, 0.2)', position: 'relative', paddingBottom: '8px', fontSize: '77px', fontWeight: '100', display: 'inline'}}>ACTIVITY</span>
+            <span style={{position: 'relative', paddingBottom: '8px', fontSize: '55px', fontWeight: '100', display: 'inline'}}>ACTIVITY</span>
 
             <div style={eventDescContainerStyle}>
-              <p style={{color: 'white', position: 'relative', fontWeight: '100', fontSize: '16px', margin: '0 0 16px 0'}}>DESCRIPTION</p>
+              <p style={{color: 'white', position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Description</p>
               <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
             <div style={eventDescContainerStyle}>

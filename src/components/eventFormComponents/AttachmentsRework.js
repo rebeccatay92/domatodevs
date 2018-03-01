@@ -74,6 +74,12 @@ class AttachmentsRework extends Component {
   }
 
   removeUpload (index, formType) {
+    this.setState({
+      hoverIndex: null,
+      dropdown: false,
+      dropdownIndex: null
+    })
+
     if (formType === 'edit') {
       this.props.removeUpload(index)
       return
@@ -164,24 +170,26 @@ class AttachmentsRework extends Component {
           var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
           url = url.replace(/ /gi, '%20')
           return (
-            <div key={'thumbnail' + i} style={{width: '100%', position: 'relative'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
-              <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview(i)}>
-                {info.fileType === 'application/pdf' &&
-                <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '18px', marginRight: '8px', 'marginBottom': '8px'}}>picture_as_pdf</i>}
-                {info.fileType !== 'application/pdf' &&
-                <i className='material-icons' style={{color: 'rgb(43, 201, 217)', fontSize: '18px', marginRight: '8px', 'marginBottom': '8px'}}>photo</i>}
-                <h5 style={{display: 'inline-block', maxWidth: '367px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', verticalAlign: 'middle', color: 'rgba(60, 58, 68, 0.7)', fontWeight: '300', fontSize: '13px', margin: '0 0 8px 0'}}>{info.fileAlias}</h5>
-              </div>
+            <div onMouseOver={() => this.setState({hoverIndex: i})} onMouseOut={() => this.setState({hoverIndex: null})} key={'thumbnail' + i} style={{width: '100%', position: 'relative'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
+              <div style={{marginBottom: '8px'}}>
+                <div style={{cursor: 'pointer', display: 'inline-block'}} onClick={() => this.openPreview(i)}>
+                  {info.fileType === 'application/pdf' &&
+                  <i className='material-icons' style={{color: 'rgb(237, 15, 135)', fontSize: '18px', marginRight: '8px', verticalAlign: 'middle'}}>picture_as_pdf</i>}
+                  {info.fileType !== 'application/pdf' &&
+                  <i className='material-icons' style={{color: 'rgb(43, 201, 217)', fontSize: '18px', marginRight: '8px', verticalAlign: 'middle'}}>photo</i>}
+                  <h5 style={{display: 'inline-block', maxWidth: '367px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', verticalAlign: 'middle', color: 'rgba(60, 58, 68, 0.7)', fontWeight: '300', fontSize: '13px', margin: '0px'}}>{info.fileAlias}</h5>
+                </div>
 
-              <div style={{display: 'inline-block', position: 'absolute', right: '0'}}>
-                {this.props.backgroundImage && (this.props.backgroundImage.indexOf(info.fileName) > -1) &&
-                  <i className='material-icons'>assignment_ind</i>
-                }
-                <a href={url} download='testing.png'><i className='material-icons' style={{color: 'black'}}>file_download</i></a>
-                <i className='material-icons ignoreMoreVert' style={{cursor: 'pointer'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
-                {this.state.dropdown && this.state.dropdownIndex === i &&
-                  <AttachmentOptionsDropdown toggleDropdown={() => this.toggleDropdown()} index={i} outsideClickIgnoreClass={'ignoreMoreVert'} setBackground={() => this.setBackground(i)} removeUpload={() => this.removeUpload(i, this.props.formType)} file={info} />
-                }
+                <div style={{display: 'inline-block', position: 'absolute', right: '-18px', top: '3px'}}>
+                  {this.props.backgroundImage && (this.props.backgroundImage.indexOf(info.fileName) > -1) &&
+                    <i className='material-icons' style={{fontSize: '18px'}}>assignment_ind</i>
+                  }
+                  <a href={url} download='testing.png'><i className='material-icons' style={{color: 'black', fontSize: '18px'}}>file_download</i></a>
+                  <i className='material-icons ignoreMoreVert' style={{cursor: 'pointer', fontSize: '18px', opacity: this.state.hoverIndex === i || this.state.dropdownIndex === i ? '1' : '0'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
+                  {this.state.dropdown && this.state.dropdownIndex === i &&
+                    <AttachmentOptionsDropdown toggleDropdown={() => this.toggleDropdown()} index={i} outsideClickIgnoreClass={'ignoreMoreVert'} setBackground={() => this.setBackground(i)} removeUpload={() => this.removeUpload(i, this.props.formType)} file={info} />
+                  }
+                </div>
               </div>
 
               {/* THUMBNAIL ON HOVER */}
@@ -189,7 +197,7 @@ class AttachmentsRework extends Component {
                 <Thumbnail thumbnailUrl={url} />
               }
               {(this.props.attachments.length !== i + 1) &&
-                <hr style={{margin: 0}} />
+                <hr style={{margin: '0 0 8px 0'}} />
               }
             </div>
           )

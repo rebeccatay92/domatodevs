@@ -4,13 +4,13 @@ class ScheduleOfEvents extends Component {
   render () {
     const datesArr = this.props.dates || this.props.daysArr
     return (
-      <div className='scheduleOfEvents' style={{position: 'relative', overflowY: 'scroll', height: '269px', marginTop: '56px'}}>
+      <div className='scheduleOfEvents' style={{position: 'relative', overflowY: 'scroll', height: '397px', marginTop: '48px'}}>
         {datesArr.map((date, i) => {
           return (
             <div key={i}>
               <p>
-                <span style={{fontSize: '24px', fontWeight: '100'}}>Day {i + 1}</span>
-                {this.props.dates && <span style={{fontSize: '16px', fontWeight: '100', marginLeft: '8px'}}>{date.toDateString().toUpperCase()}</span>}
+                <span style={{fontSize: '24px', fontWeight: '300'}}>Day {i + 1}</span>
+                {this.props.dates && <span style={{fontSize: '16px', fontWeight: '300', marginLeft: '8px'}}>{date.toDateString().toUpperCase()}</span>}
               </p>
               {this.props.events.filter(event => {
                 return event.day === i + 1
