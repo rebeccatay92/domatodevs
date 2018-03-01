@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux'
+mport { combineReducers } from 'redux'
 import { plannerReducer } from './plannerReducer'
 import { bucketReducer } from './bucketReducer'
 import { userReducer } from './userReducer'

@@ -224,12 +224,16 @@ class Map extends Component {
   // constructs obj structure. no marker position offseting
   constructEventsArrFromPropsEvents (propsEventsArr) {
     // extract locations to plot. eventsArrObj
-    // modelId: int, eventType: str, day: int, start:bool, location: obj, row: eventType
+    // modelId: id, eventType: str, flightInstanceId: id, day: int, start:bool, location: obj, row: eventType
+    // modelId is FlightBookingId and eventType is Flight
     var eventsArr = propsEventsArr.map(e => {
       var temp = {
         modelId: e.modelId,
         eventType: e.type,
+        // flightInstanceId is extra differentiator because modelId=FlightBookingId, eventType=Flight refers to multiple rows/markers.
+        flightInstanceId: e.type === 'Flight' ? e.Flight.FlightInstance.id : null,
         day: e.day,
+        loadSequence: e.loadSequence,
         start: e.start,
         event: e[`${e.type}`] // Activity/Flight etc
       }

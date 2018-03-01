@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../../actions/plannerActions'
+import { changeCurrentlyClicked } from '../../actions/mapPlannerActions'
+
 import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
 import MapPlannerHOC from './MapPlannerHOC'
