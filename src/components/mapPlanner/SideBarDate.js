@@ -22,8 +22,13 @@ function collect (connect, monitor) {
 }
 
 class SideBarDate extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      hoveringOverDate: false
+    }
+  }
   render () {
-    // console.log('day is', this.props.day, 'is in filterArr', this.props.mapPlannerDaysFilterArr.includes(this.props.day))
     var isExpanded = this.props.mapPlannerDaysFilterArr.includes(this.props.day)
     const { connectDropTarget } = this.props
     return (
@@ -31,11 +36,17 @@ class SideBarDate extends Component {
         <table style={{width: '100%', marginTop: '20px', marginLeft: '20px'}}>
           <thead>
             <tr>
-              <th onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
+              <th onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})} onClick={() => this.props.toggleDaysFilter(this.props.day)}>
                 <div id={'day-' + this.props.day}>
                   <h3 style={headerDayStyle}>Day {this.props.day} </h3>
                   {this.props.date &&
                     <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                  }
+                  {this.state.hoveringOverDate && !isExpanded &&
+                    <span>Expand</span>
+                  }
+                  {this.state.hoveringOverDate && isExpanded &&
+                    <span>Collapse</span>
                   }
                 </div>
               </th>
