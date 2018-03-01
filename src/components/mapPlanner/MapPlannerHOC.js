@@ -295,7 +295,6 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.events !== this.props.events) {
-      // console.log('nextProps', nextProps.events)
       var stillDragging = _.find(nextProps.events, function (e) {
         return (e.fromReducer)
       })
@@ -330,7 +329,6 @@ class Map extends Component {
         this.setState({
           allEvents: nextProps.events,
           eventsArr: finalEventsArr
-          // daysFilter: []
         }, () => {
           this.applyDaysFilter()
         })
