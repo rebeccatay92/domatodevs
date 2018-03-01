@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { DropTarget } from 'react-dnd'
-
+import { connect } from 'react-redux'
+import { toggleDaysFilter } from '../../actions/mapPlannerActions'
 import SideBarEvent from './SideBarEvent'
 
 import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, mapPlannerDateTableHorizontalLineStyle } from '../../Styles/styles'
@@ -22,6 +23,8 @@ function collect (connect, monitor) {
 
 class SideBarDate extends Component {
   render () {
+    // console.log('day is', this.props.day, 'is in filterArr', this.props.mapPlannerDaysFilterArr.includes(this.props.day))
+    var isExpanded = this.props.mapPlannerDaysFilterArr.includes(this.props.day)
     const { connectDropTarget } = this.props
     return (
       <div>
@@ -45,7 +48,7 @@ class SideBarDate extends Component {
           </thead>
           {connectDropTarget(
             <tbody>
-              {this.props.events.map((event, i, array) => {
+              {isExpanded && this.props.events.map((event, i, array) => {
                 let isFirstInFlightBooking
                 if (event.type === 'Flight') {
                   isFirstInFlightBooking = event.Flight.FlightInstance.firstFlight
@@ -64,4 +67,17 @@ class SideBarDate extends Component {
   }
 }
 
-export default DropTarget(['activity', 'plannerActivity'], dateTarget, collect)(SideBarDate)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleDaysFilter: (dayInt) => {
+      dispatch(toggleDaysFilter(dayInt))
+    }
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+    mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DropTarget(['activity', 'plannerActivity'], dateTarget, collect)(SideBarDate))
