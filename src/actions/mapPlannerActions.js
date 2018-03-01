@@ -1,6 +1,6 @@
-export const changeCurrentlyClicked = (currentlyClickedObj) => {
+export const setCurrentlyFocusedEvent = (currentlyFocusedEvent) => {
   return {
-    type: 'CHANGE_CURRENTLY_CLICKED',
-    currentlyClickedObj
+    type: 'SET_CURRENTLY_FOCUSED_EVENT',
+    currentlyFocusedEvent
   }
 }
