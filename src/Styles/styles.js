@@ -20,7 +20,7 @@ const rightPanelWidth = totalWidth - leftPanelWidth
 export const plannerPageStyles = {
   fontFamily: '\'Roboto\', sans-serif',
   color: mainFontColor,
-  margin: '50px calc(50vw - 558px + 110px) 0 calc(50vw - 558px - 110px)',
+  margin: '50px calc(50vw - 508px + 110px) 0 calc(50vw - 508px - 110px)',
   width: '1116px',
   fontWeight: '300'
 }

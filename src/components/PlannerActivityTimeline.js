@@ -5,7 +5,8 @@ import { primaryColor } from '../Styles/styles'
 const timelineIconStyle = {
   fontSize: '21px',
   WebkitTextStroke: '1px ' + primaryColor,
-  WebkitTextFillColor: '#FFFFFF'
+  WebkitTextFillColor: '#FFFFFF',
+  padding: '4px 0'
 }
 
 const endStyle = {
@@ -21,8 +22,8 @@ class PlannerActivityTimeline extends Component {
   renderIcon (string, style) {
     return (
       <div style={{height: '65px', marginBottom: '-7px', position: 'relative'}}>
-        <div style={{width: 'fit-content', margin: '0 auto', position: 'relative', backgroundColor: '#FFFFFF', top: '26px', padding: '4px 4px 0 4px'}}>
-          <i className='material-icons' style={{...timelineIconStyle, ...style}}>{string}</i>
+        <div style={{width: 'fit-content', margin: '0 auto', position: 'relative', backgroundColor: '#FFFFFF', top: '26px'}}>
+          <i className='material-icons' style={timelineIconStyle}>{string}</i>
         </div>
       </div>
     )
@@ -41,7 +42,7 @@ class PlannerActivityTimeline extends Component {
       minutes: Math.floor((duration % 3600) / 60) + ' min'
     }
     return (
-      <div style={{...{fontSize: '13px', textAlign: 'center', backgroundColor: '#FFFFFF', position: 'relative', color: 'rgba(60, 58, 68, 0.7)', top: this.props.expanded ? '110px' : '11px', fontWeight: 'bold', padding: '2px 0', zIndex: 1}, ...style}}>
+      <div style={{...{fontSize: '13px', textAlign: 'center', backgroundColor: '#FFFFFF', position: 'relative', color: 'rgba(60, 58, 68, 0.7)', top: this.props.expanded ? '110px' : '11px', fontWeight: '300', padding: '4px 0', zIndex: 1}, ...style}}>
         <span style={{color: this.props.isLast && this.props.lastDay ? 'white' : 'rgba(60, 58, 68, 0.7)'}}>{time.hours}{time.minutes}</span>
       </div>
     )

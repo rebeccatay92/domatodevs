@@ -272,10 +272,10 @@ class CreateFoodForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
 
-            <p style={{textDecoration: 'underline', position: 'relative', fontSize: '64px'}}>FOOD</p>
+            <p style={{position: 'relative', paddingBottom: '8px', fontSize: '55px', fontWeight: '100', display: 'inline'}}>FOOD</p>
 
             <div style={eventDescContainerStyle}>
-              <p style={{color: 'white', position: 'relative', fontWeight: 'bold'}}>DESCRIPTION</p>
+              <p style={{color: 'white', position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Description</p>
               <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} key='fooddescription' />
             </div>
             <div style={eventDescContainerStyle}>

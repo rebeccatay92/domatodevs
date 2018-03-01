@@ -248,14 +248,14 @@ class CreateLodgingForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
 
-            <p style={{textDecoration: 'underline', position: 'relative', fontSize: '64px'}}>LODGING</p>
+            <p style={{position: 'relative', paddingBottom: '8px', fontSize: '55px', fontWeight: '100', display: 'inline'}}>LODGING</p>
 
             <div style={eventDescContainerStyle}>
-              <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
+              <p style={{color: 'white', position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Room Description</p>
+              <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
             <div style={eventDescContainerStyle}>
-              <p style={{color: 'white', position: 'relative', fontWeight: 'bold'}}>ROOM DESCRIPTION</p>
-              <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
+              <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
             </div>
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
             <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />

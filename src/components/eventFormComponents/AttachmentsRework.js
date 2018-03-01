@@ -169,6 +169,7 @@ class AttachmentsRework extends Component {
           var fileName = info.fileName
           var url = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${fileName}`
           url = url.replace(/ /gi, '%20')
+          console.log('filename', fileName, 'bg image', this.props.backgroundImage)
           return (
             <div onMouseOver={() => this.setState({hoverIndex: i})} onMouseOut={() => this.setState({hoverIndex: null})} key={'thumbnail' + i} style={{width: '100%', position: 'relative'}} onMouseEnter={(event) => this.thumbnailMouseEnter(event, i)} onMouseLeave={(event) => this.thumbnailMouseLeave(event)}>
               <div style={{marginBottom: '8px', height: '18px'}}>
@@ -182,7 +183,7 @@ class AttachmentsRework extends Component {
 
                 <div style={{display: 'inline-block', position: 'absolute', right: '-18px', top: '2px'}}>
                   {this.props.backgroundImage && (this.props.backgroundImage.indexOf(info.fileName) > -1) &&
-                    <i className='material-icons' style={{fontSize: '18px'}}>assignment_ind</i>
+                    <i className='material-icons' style={{color: 'rgba(60, 58, 68, 0.7)', fontSize: '21px', lineHeight: '18px'}}>assignment_ind</i>
                   }
                   <a href={url} download='testing.png'><i className='material-icons' style={{color: 'rgba(60, 58, 68, 0.7)', fontSize: '21px', lineHeight: '18px'}}>file_download</i></a>
                   <i className='material-icons ignoreMoreVert' style={{color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', fontSize: '21px', lineHeight: '18px', position: 'relative', top: '-1px', opacity: this.state.hoverIndex === i || this.state.dropdownIndex === i ? '1' : '0'}} onClick={() => this.toggleDropdown(i)}>more_vert</i>
