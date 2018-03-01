@@ -200,7 +200,7 @@ export const createEventFormRightPanelStyle = (type) => {
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#3C3A44', opacity: '0.7'}
 export const eventDescriptionStyle = (bgImage) => {
-  return {background: bgImage ? 'rgba(255, 255, 255, 0.3)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '100', width: '471px', position: 'relative', height: '35px', padding: '8px'}
+  return {background: bgImage ? 'rgba(245, 245, 245, 0.4)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '300', width: '471px', position: 'relative', height: '35px', padding: '8px', borderRadius: '2px'}
 }
 
 export const eventWarningStyle = (bgImage) => {
@@ -218,7 +218,7 @@ export const bookingNotesContainerStyle = {width: '100%', height: '100%', backgr
 
 // LocationSelection.js styles
 export const locationSelectionInputStyle = (marginTop, type) => {
-  return {fontSize: '16px', width: type === 'flight' ? '' : '471px', background: 'rgba(255, 255, 255, 0.3)', border: 'none', outline: 'none', height: '35px', padding: '8px', fontWeight: '100'}
+  return {fontSize: '16px', width: type === 'flight' ? '' : '471px', background: 'rgba(245, 245, 245, 0.4)', border: 'none', outline: 'none', height: '35px', padding: '8px', fontWeight: '300', borderRadius: '2px'}
 }
 export const locationDropdownStyle = {width: '471px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2'}
 
