@@ -3,6 +3,8 @@ export const mapPlannerCurrentFocusReducer = (state = {modelId: '', eventType: '
     case 'SET_CURRENTLY_FOCUSED_EVENT':
       // console.log('obj', action.currentlyFocusedEvent)
       return action.currentlyFocusedEvent
+    case 'CLEAR_CURRENTLY_FOCUSED_EVENT':
+      return {modelId: '', eventType: '', flightInstanceId: '', day: 0, start: null, loadSequence: 0}
     default:
       return state
   }

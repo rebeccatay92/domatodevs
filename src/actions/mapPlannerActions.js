@@ -4,3 +4,9 @@ export const setCurrentlyFocusedEvent = (currentlyFocusedEvent) => {
     currentlyFocusedEvent
   }
 }
+
+export const clearCurrentlyFocusedEvent = () => {
+  return {
+    type: 'CLEAR_CURRENTLY_FOCUSED_EVENT'
+  }
+}
