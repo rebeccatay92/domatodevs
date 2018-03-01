@@ -10,3 +10,10 @@ export const clearCurrentlyFocusedEvent = () => {
     type: 'CLEAR_CURRENTLY_FOCUSED_EVENT'
   }
 }
+
+export const toggleDaysFilter = (dayInt) => {
+  return {
+    type: 'TOGGLE_DAYS_FILTER',
+    dayInt
+  }
+}

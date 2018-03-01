@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { toggleDaysFilter } from '../../actions/mapPlannerActions'
+
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
@@ -35,7 +38,6 @@ class Map extends Component {
         gestureHandling: 'cooperative',
         clickableIcons: false
       },
-      daysFilter: [], // arr of days to show eg [1,2,5]
       allEvents: [], // entire this.props.events arr
       eventsArr: [], // manipulated arr to extract location
       searchMarkers: [],
@@ -290,20 +292,23 @@ class Map extends Component {
 
     this.setState({
       allEvents: this.props.events,
-      eventsArr: finalEventsArr,
-      daysFilter: []
+      eventsArr: finalEventsArr
     }, () => {
-      this.applyDaysFilter()
+      this.applyDaysFilter(this.props.daysFilterArr)
     })
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.daysFilterArr !== this.props.daysFilterArr) {
+      this.applyDaysFilter(nextProps.daysFilterArr)
+    }
+
     if (nextProps.events !== this.props.events) {
       var stillDragging = _.find(nextProps.events, function (e) {
         return (e.fromReducer)
       })
       if (!stillDragging) {
-        console.log('nextProps', nextProps.events)
+        // console.log('nextProps', nextProps.events)
         var eventsArr = this.constructEventsArrFromPropsEvents(nextProps.events)
 
         var comparisonArr = []
@@ -334,15 +339,15 @@ class Map extends Component {
           allEvents: nextProps.events,
           eventsArr: finalEventsArr
         }, () => {
-          this.applyDaysFilter()
+          this.applyDaysFilter(nextProps.daysFilterArr)
         })
       }
     }
   }
 
-  applyDaysFilter () {
+  applyDaysFilter (daysFilterArr) {
     var plannerMarkers = this.state.eventsArr.filter(e => {
-      return this.state.daysFilter.includes(e.day)
+      return daysFilterArr.includes(e.day)
     })
     this.setState({
       plannerMarkers: plannerMarkers,
@@ -360,20 +365,7 @@ class Map extends Component {
 
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
-
-    var daysFilter = JSON.parse(JSON.stringify(this.state.daysFilter))
-
-    if (daysFilter.includes(clickedDay)) {
-      var newDaysArr = daysFilter.filter(e => {
-        return e !== clickedDay
-      })
-    } else {
-      newDaysArr = daysFilter.concat([clickedDay])
-    }
-    this.setState({daysFilter: newDaysArr}, () => {
-      // after changing days filter, reapplying filter on markers
-      this.applyDaysFilter()
-    })
+    this.props.toggleDaysFilter(clickedDay)
   }
 
   // refitBounds only takes 1 type
@@ -473,7 +465,7 @@ class Map extends Component {
             {this.props.daysArr.map((day, i) => {
               return (
                 <label style={{display: 'block', fontSize: '18px'}} key={`day${i}`}>
-                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.state.daysFilter.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
+                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.props.daysFilterArr.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
                   Day {day}
                 </label>
               )
@@ -590,9 +582,22 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} toggleDaysFilter={(dayInt) => this.props.toggleDaysFilter(dayInt)} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
 
-export default withRouter(MapPlannerHOC)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleDaysFilter: (dayInt) => {
+      dispatch(toggleDaysFilter(dayInt))
+    }
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+    mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MapPlannerHOC))
