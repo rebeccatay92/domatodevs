@@ -13,19 +13,18 @@ class MapCreateEventPopup extends Component {
       startDay: 0,
       endDay: 0,
       startTime: null,
-      endTime: null
+      endTime: null,
+      description: ''
     }
     // keep event state here to send to backend. submit button submits the state held here. createeventhoc only passes props down to input fields
   }
 
-  // POP UP CONTAINS CREATEEVENT COMPONENT + EVENT TYPE TOGGLES + BUTTONS
-
   createEvent () {
-    console.log('create event', this.props.eventType)
+    console.log('create event', this.state.eventType)
   }
 
   toggleCreateEventForm () {
-    console.log('open create event form', this.props.eventType)
+    console.log('open create event form', this.state.eventType)
   }
 
   componentDidMount () {
@@ -33,14 +32,13 @@ class MapCreateEventPopup extends Component {
     var service = new window.google.maps.places.PlacesService(document.createElement('div'))
     service.getDetails(request, (place, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        // console.log('place details', place)
         if (place.photos && place.photos[0]) {
           place.imageUrl = place.photos[0].getUrl({maxWidth: 200})
         }
         var googlePlaceData = constructGooglePlaceDataObj(place)
         googlePlaceData
         .then(resolved => {
-          this.setState({googlePlaceData: resolved}, () => console.log(this.state))
+          this.setState({googlePlaceData: resolved})
         })
       }
     })
@@ -50,21 +48,41 @@ class MapCreateEventPopup extends Component {
     this.setState({eventType: type})
   }
 
+  // description uses this
+  handleChange (e, field) {
+    this.setState({
+      [field]: e.target.value
+    })
+  }
+
   render () {
-    if (!this.state.googlePlaceData.placeId) return <span>Loading</span>
+    var place = this.state.googlePlaceData
+    if (!place.placeId) return <span>Loading</span>
     return (
       <div>
         <div style={{width: '100%', height: '160px'}}>
-          <h5 onClick={() => console.log('clicked')}>{this.state.googlePlaceData.name}</h5>
+          <h5>{place.name}</h5>
           <div>
             <span>Opening hours: </span>
-            <select>
-              <option value='1'>test</option>
-              <option value='2'>hello</option>
-            </select>
+            {place.openingHoursText &&
+              <select>
+                {place.openingHoursText.length && place.openingHoursText.map((text, index) => {
+                  return (
+                    <option key={index}>{text}</option>
+                  )
+                })}
+              </select>
+            }
+            {!place.openingHoursText &&
+              <span>Not available</span>
+            }
           </div>
-          <input type='text' />
-          <div>description / arrival location</div>
+          {this.state.eventType !== 'LandTransport' &&
+            <input type='text' placeholder='Description' onChange={(e) => this.handleChange(e, 'description')} />
+          }
+          {this.state.eventType === 'LandTransport' &&
+            <div>arrival location</div>
+          }
           <div>start date, start day</div>
           <div>start time</div>
           <div>end date, end day</div>
