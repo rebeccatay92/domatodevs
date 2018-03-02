@@ -11,11 +11,11 @@ import moment from 'moment'
 import Radium from 'radium'
 
 const dayStyle = {
-  background: 'inherit', border: 'none', outline: 'none', fontSize: '24px', fontWeight: 300, margin: '10px 25px 10px 0px', ':hover': {boxShadow: '0 1px 0 #FFF'}
+  background: 'rgba(245, 245, 245, 0.4)', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 300, textAlign: 'center', padding: '8px', height: '35px', width: '83px', borderRadius: '2px'
 }
 
 const timeStyle = {
-  background: 'rgba(255, 255, 255, 0.2)', marginLeft: '5px', fontWeight: '300', fontSize: '18px', outline: 'none', border: 'none', textAlign: 'center', padding: '5px'
+  background: 'rgba(245, 245, 245, 0.4)', marginLeft: '8px', fontWeight: '300', fontSize: '16px', outline: 'none', border: 'none', textAlign: 'center', padding: '8px', height: '35px', verticalAlign: 'top', width: '83px', letterSpacing: '-1px', borderRadius: '2px'
 }
 
 class DateTimePicker extends Component {
@@ -178,8 +178,8 @@ class DateTimePicker extends Component {
     } else {
       return (
         <div style={dateTimePickerContainerStyle}>
-          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '20px'}}>
-            <p style={{fontWeight: 'bold'}}>START TIME</p>
+          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '21px'}}>
+            <p style={{fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Start Time</p>
             {!this.props.dates &&
               <select key={'startDaySelect'} name='startDay' onChange={(e) => this.handleChange(e, 'startDay')} value={this.props.startDay} style={dayStyle}>
                 {this.props.daysArr.map((day, i) => {
@@ -189,14 +189,14 @@ class DateTimePicker extends Component {
             }
             {this.props.dates &&
               <div>
-                <DatePicker customInput={<CustomDatePicker />} selected={this.state.startDate} dateFormat={'ddd DD MMM YYYY'} minDate={moment.unix(this.state.dates[0])} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'startDate')} />
+                <DatePicker customInput={<CustomDatePicker />} selected={this.state.startDate} dateFormat={'ddd, DD/MM/YYYY'} minDate={moment.unix(this.state.dates[0])} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'startDate')} />
               </div>
             }
             <input key='startTime' style={timeStyle} type='time' name='startTime' value={this.state.startTime} onChange={(e) => this.handleChange(e, 'startTime')} />
           </div>
 
-          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '20px'}}>
-            <p style={{fontWeight: 'bold'}}>END TIME</p>
+          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '32px'}}>
+            <p style={{fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>End Time</p>
             {!this.props.dates &&
               <select key={'endDaySelect'} name='endDay' onChange={(e) => this.handleChange(e, 'endDay')} value={this.props.endDay} style={dayStyle}>
                 {this.props.daysArr.map((day, i) => {
@@ -208,7 +208,7 @@ class DateTimePicker extends Component {
             }
             {this.props.dates &&
               <div>
-                <DatePicker customInput={<CustomDatePicker />} selected={this.state.endDate} dateFormat={'ddd DD MMM YYYY'} minDate={this.state.startDate} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'endDate')} />
+                <DatePicker customInput={<CustomDatePicker />} selected={this.state.endDate} dateFormat={'ddd, DD/MM/YYYY'} minDate={this.state.startDate} maxDate={moment.unix(this.state.dates[this.state.dates.length - 1])} onSelect={(e) => this.handleChange(e, 'endDate')} />
               </div>
             }
             <input key='endTime' style={timeStyle} type='time' name='endTime' value={this.state.endTime} onChange={(e) => this.handleChange(e, 'endTime')} />

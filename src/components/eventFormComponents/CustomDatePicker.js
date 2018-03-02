@@ -7,8 +7,8 @@ class CustomDatePicker extends Component {
       <button
         key='datePicker'
         onClick={this.props.onClick}
-        style={{verticalAlign: this.props.flight ? 'middle' : '', border: '0px', width: '162px', minHeight: '24.5px', fontSize: this.props.flight ? '16px' : '18px', background: 'rgba(255, 255, 255, 0.2)', textTransform: 'uppercase', padding: '5px', ':hover': {boxShadow: '0 1px 0 #FFF'}}}>
-        {this.props.value}
+        style={{verticalAlign: this.props.flight ? 'middle' : '', border: '0px', width: '134px', height: '35px', fontSize: this.props.flight ? '16px' : '16px', background: 'rgba(245, 245, 245, 0.4)', fontWeight: '300', padding: '8px', borderRadius: '2px', ':hover': {boxShadow: '0 1px 0 #FFF'}}}>
+        <span style={{position: 'relative', top: '-2px'}}>{this.props.value}</span>
       </button>
     )
   }

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
+import moment from 'moment'
+import DatePicker from 'react-datepicker'
 import Radium from 'radium'
 import LocationSearch from '../location/LocationSearch'
 
@@ -103,7 +105,7 @@ class IntuitiveLodgingInput extends Component {
 
     var newLodging = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
-      startDay: this.state.checkInDay,
+      startDay: this.props.day,
       endDay: this.state.checkOutDay,
       startTime: this.state.checkInTime,
       endTime: this.state.checkOutTime,
@@ -168,23 +170,43 @@ class IntuitiveLodgingInput extends Component {
   }
 
   render () {
-    const endStyle = {
-      WebkitTextStroke: '1px ' + primaryColor,
-      WebkitTextFillColor: primaryColor
-    }
     return (
-      <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', paddingBottom: '10px', top: '-1.5vh'}}}>
-        <div style={{display: 'inline-block', width: '40%'}}>
+      <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', padding: '10px 0'}}}>
+        <div style={{display: 'inline-block'}}>
           {this.state.locRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} />
+          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Lodging'} currentLocation={this.state.googlePlaceData} />
         </div>
-        <div style={{display: 'inline-block', width: '30%'}}>
+        <div style={{display: 'inline-block'}}>
+          <div>
+            <input type='text' placeholder='Room Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} />
+          </div>
+        </div>
+        <div style={{display: 'inline-block'}}>
+          <div style={{position: 'relative'}}>
+            {!this.state.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingStartTime: true})} />}
+            {(this.state.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={(e) => this.setState({editingStartTime: false})} />}
+            {!this.state.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingEndTime: true})} />}
+            {(this.state.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={(e) => this.setState({editingEndTime: false})} />}
+            {!this.state.endDate && !this.state.editingEndDate && <input type='text' placeholder='End Date' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingEndDate: true})} />}
+            {(this.state.endDate || this.state.editingEndDate) && <div style={{display: 'inline-block', width: '86px', marginLeft: '8px'}} className='quickInputCalender'>
+              <DatePicker
+                autoFocus
+                selected={this.state.endDate}
+                onChange={(e) => this.setState({endDate: moment(e._d)})}
+                onBlur={(e) => this.setState({editingEndDate: false})}
+                minDate={moment(this.props.date)}
+                maxDate={moment(this.props.dates[this.props.dates.length - 1])}
+              />
+            </div> }
+          </div>
+        </div>
+        {/* <div style={{display: 'inline-block', width: '30%'}}> */}
           {/* IF DATES ARE PRESENT, USE DATETIMEPICKER */}
-          {this.props.dates &&
+          {/* {this.props.dates &&
             <DateTimePicker intuitiveInput type='checkInTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
-          }
+          } */}
           {/* ELSE USE DROPDOWN FOR DAYS */}
-          {!this.props.dates &&
+          {/* {!this.props.dates &&
             <div>
               <select onChange={(e) => this.handleChange(e, 'checkInDay')} value={this.props.checkInDay}>
                 {this.props.daysArr.map((day, i) => {
@@ -196,10 +218,9 @@ class IntuitiveLodgingInput extends Component {
               <input type='time' value={this.state.checkInTimeString} onChange={(e) => this.handleChange(e, 'checkInTime')} />
             </div>
           }
-        </div>
-        <div style={{display: 'inline-block', width: '30%'}}>
+        </div> */}
+        {/* <div style={{display: 'inline-block', width: '30%'}}>
           <div style={{position: 'relative'}}>
-            <i key='more' onClick={() => this.props.handleCreateEventClick('Lodging')} className='material-icons' style={{position: 'absolute', right: '0%', color: '#ed685a', cursor: 'pointer', zIndex: 1}}>more_horiz</i>
             {this.props.dates &&
               <DateTimePicker intuitiveInput type='checkOutTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
             }
@@ -218,10 +239,11 @@ class IntuitiveLodgingInput extends Component {
               </div>
             }
           </div>
-        </div>
-        <div style={{marginTop: '5px', display: 'inline-block', textAlign: 'right', width: '97%'}}>
-          <button onClick={() => this.handleSubmit()} style={{marginRight: '5px', backgroundColor: 'white', border: '1px solid #9FACBC'}}>Submit</button>
-          <button onClick={() => this.props.toggleIntuitiveInput()} style={{backgroundColor: 'white', border: '1px solid #9FACBC'}}>Cancel</button>
+        </div> */}
+        <div style={{marginTop: '6px', display: 'inline-block', textAlign: 'right', width: '100%'}}>
+          <button onClick={() => this.handleSubmit()} style={{marginRight: '8px', backgroundColor: '#ed685a', border: 'none', color: 'white', height: '31px', fontSize: '13px', padding: '8px'}}>Submit</button>
+          <button onClick={() => this.props.toggleIntuitiveInput()} style={{marginRight: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>Cancel</button>
+          <button onClick={() => this.props.handleCreateEventClick('Lodging')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>More</button>
         </div>
       </div>
     )

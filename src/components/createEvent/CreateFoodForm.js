@@ -13,6 +13,7 @@ import LocationAlias from '../eventFormComponents/LocationAlias'
 import Notes from '../eventFormComponents/Notes'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
+import ScheduleOfEvents from '../eventFormComponents/ScheduleOfEvents'
 
 import { createFood } from '../../apollo/food'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -270,11 +271,15 @@ class CreateFoodForm extends Component {
           {/* LEFT PANEL --- BACKGROUND, LOCATION, DATETIME */}
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
-            <div style={{...eventDescContainerStyle, ...{marginTop: '120px'}}}>
-              <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} />
+
+            <p style={{position: 'relative', paddingBottom: '8px', fontSize: '55px', fontWeight: '100', display: 'inline'}}>FOOD</p>
+
+            <div style={eventDescContainerStyle}>
+              <p style={{color: 'white', position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Description</p>
+              <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} key='fooddescription' />
             </div>
             <div style={eventDescContainerStyle}>
-              <input className='left-panel-input' placeholder='Input Description' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} key='fooddescription' />
+              <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
             </div>
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
             <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
@@ -284,6 +289,9 @@ class CreateFoodForm extends Component {
                 <h4 style={eventWarningStyle(this.state.backgroundImage)}>Warning: {this.state.openingHoursValidation}</h4>
               </div>
             }
+
+            <ScheduleOfEvents dates={this.props.dates} events={this.props.events} />
+
           </div>
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}

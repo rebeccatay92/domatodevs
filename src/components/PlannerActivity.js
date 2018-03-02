@@ -161,14 +161,14 @@ class PlannerActivity extends Component {
         height: '80px',
         padding: '30px 0'
       }}>
-        <span onClick={() => this.setState({creatingEvent: true})} style={createEventTextStyle}>+ Add Event</span>
+        <span onClick={() => this.setState({creatingEvent: true, intuitiveInputType: 'Activity'})} style={createEventTextStyle}>+ Add Event</span>
       </div>
     )
     const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
     const eventTypes = ['Activity', 'Food', 'Lodging', 'Flight', 'Train', 'LandTransport', 'SeaTransport']
     const eventsListBox = (
-      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '40px', padding: '0'}}}>
-        <span className='createEventBox'>
+      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '52px', padding: '0'}}}>
+        <span className='createEventBox' style={{marginLeft: '8px'}}>
           {iconTypes.map((type, i) => {
             return (
               <i title={eventTypes[i]} key={i} onClick={() => this.handleIntuitiveInput(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>

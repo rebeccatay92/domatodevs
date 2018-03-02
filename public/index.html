@@ -10,7 +10,7 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -66,6 +66,12 @@
       .react-datepicker__input-container input {
         width: 90% !important;
       }
+      .quickInputCalender .react-datepicker__input-container input {
+        width: 100% !important;
+        font-size: 13px;
+        padding: 8px;
+        height: 31px;
+      }
       li.react-datepicker__time-list-item {
         margin-left: -40px;
       }
@@ -112,6 +118,25 @@
       }
       .plannerDropdownOption:hover {
         background-color: rgba(60, 58, 68, 0.3);
+      }
+      .placeSearchResults::-webkit-scrollbar {
+        width: 8px;
+      }
+      .scheduleOfEvents::-webkit-scrollbar {
+        width: 3px;
+      }
+      .placeSearchResults::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .scheduleOfEvents::-webkit-scrollbar-track {
+        background: transparent;
+        border-left: 3px solid rgba(255, 255, 255, 0.3);
+      }
+      .placeSearchResults::-webkit-scrollbar-thumb {
+        background: rgba(60, 58, 68, 0.7);
+      }
+      .scheduleOfEvents::-webkit-scrollbar-thumb {
+        background: white;
       }
     </style>
     <!--

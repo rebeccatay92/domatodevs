@@ -104,29 +104,46 @@ class LocationSearch extends Component {
     if (this.props.intuitiveInput || this.props.eventInfo) {
       return (
         <span style={{display: 'block'}}>
-          <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: '90%'}, ...this.props.eventInfo && {width: '168px', height: '31px', position: 'relative', top: '-5px', fontSize: '13px', padding: '8px'}}} value={this.state.search} />
+          <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: this.props.transport ? '358.5px' : '218px', height: '31px', fontSize: '13px', padding: '8px'}, ...this.props.eventInfo && {width: '168px', position: 'relative', top: '-5px'}}} value={this.state.search} />
 
-          {this.state.selecting &&
-            <span style={{...intuitiveDropdownStyle, ...{width: '299.4px'}}}>
-              {this.state.results.map((indiv, i) => {
-                return <GooglePlaceResult intuitiveInput result={indiv} selectLocation={(location) => this.selectLocation(location)} key={i} />
-              })}
+          {this.state.selecting && this.state.results.length > 0 &&
+            <span className='placeSearchResults' style={{...intuitiveDropdownStyle, ...{width: '218px', overflowY: 'none', maxHeight: '1000px'}}}>
+              <span className='placeSearchResults' style={{overflowY: 'auto', display: 'inline-block', maxHeight: '216px'}}>
+                {this.state.results.map((indiv, i) => {
+                  return <GooglePlaceResult intuitiveInput result={indiv} selectLocation={(location) => this.selectLocation(location)} key={i} />
+                })}
+              </span>
+              {this.state.results.length > 0 && <div style={{textAlign: 'left', paddingLeft: '8px'}}>
+                <img style={{width: '50%', opacity: '0.5'}} src={`${process.env.PUBLIC_URL}/img/poweredByGoogle.png`} />
+              </div>}
             </span>
           }
         </span>
       )
     } else {
+      const locationTitle = {
+        'Activity': 'Location',
+        'Food': 'Eatery',
+        'Lodging': 'Lodging',
+        'LandTransport': 'Departure Location',
+        'LandTransportEnd': 'Arrival Location'
+      }
       return (
         <div style={{position: 'relative', display: 'inline-block'}}>
-          <p style={{position: 'relative', fontWeight: 'bold'}}>LOCATION</p>
+          <p style={{position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>{locationTitle[this.props.eventType]}</p>
           <input key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
           {/* <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i> */}
 
-          {this.state.selecting &&
-            <div style={locationDropdownStyle}>
-              {this.state.results.map((indiv, i) => {
-                return <GooglePlaceResult result={indiv} selectLocation={(location) => this.selectLocation(location)} key={i} />
-              })}
+          {this.state.selecting && this.state.results.length > 0 &&
+            <div style={{...locationDropdownStyle, ...{overflowY: 'none', maxHeight: '1000px'}}}>
+              <div className='placeSearchResults' style={{overflowY: 'auto', display: 'inline-block', maxHeight: '216px', width: '100%'}}>
+                {this.state.results.map((indiv, i) => {
+                  return <GooglePlaceResult result={indiv} selectLocation={(location) => this.selectLocation(location)} key={i} />
+                })}
+              </div>
+              {this.state.results.length > 0 && <div style={{textAlign: 'left', paddingLeft: '8px'}}>
+                <img style={{width: '30%', opacity: '0.5'}} src={`${process.env.PUBLIC_URL}/img/poweredByGoogle.png`} />
+              </div>}
             </div>
           }
         </div>

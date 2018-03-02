@@ -66,9 +66,7 @@ class Planner extends Component {
           renderTrackVertical={({style}) =>
             <div style={{ ...style, top: 0, right: 0, width: '10px', height: '100%' }} />
         } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
-        <div style={{
-          paddingLeft: '10px'
-        }}>
+        <div>
           {newDates &&
             <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} startDate={newDates[0]} endDate={newDates[newDates.length - 1]} />
           }
