@@ -181,7 +181,7 @@ export const tableHeadingStyle = {
 
 // PlannerColumnValue.js styles
 export const columnValueContainerStyle = (columnType) => {
-  return {position: 'relative', textAlign: columnType === 'Notes' ? 'left' : 'center', verticalAlign: 'top', color: mainFontColor, fontSize: '16px', width: '214px'}
+  return {position: 'relative', textAlign: columnType === 'Notes' ? 'left' : 'center', color: mainFontColor, fontSize: '16px', width: '214px'}
 }
 
 export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', position: 'absolute', right: '0px', top: '28px', height: '14px', ':hover': {color: primaryColor}}
@@ -189,14 +189,17 @@ export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'po
 // Create Event Form Styles
 export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
 
+// Create Flight Form Styles
+export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
+
 // export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
 // height 100% since attachments is no longer at bottom
 export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '100%'}
 export const createEventFormLeftPanelStyle = (url, type) => {
-  return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? rightPanelWidth + 'px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', padding: '32px'}
+  return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? '494px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', padding: '32px'}
 }
 export const createEventFormRightPanelStyle = (type) => {
-  return {width: type === 'flight' ? leftPanelWidth + 'px' : rightPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', color: mainFontColor}
+  return {width: type === 'flight' ? '796px' : rightPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', color: mainFontColor}
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#3C3A44', opacity: '0.7'}
 export const eventDescriptionStyle = (bgImage) => {
@@ -218,14 +221,14 @@ export const bookingNotesContainerStyle = {width: '100%', height: '100%', backgr
 
 // LocationSelection.js styles
 export const locationSelectionInputStyle = (marginTop, type) => {
-  return {fontSize: '16px', width: type === 'flight' ? '' : '471px', background: 'rgba(245, 245, 245, 0.4)', border: 'none', outline: 'none', height: '35px', padding: '8px', fontWeight: '300', borderRadius: '2px'}
+  return {fontSize: '16px', width: type === 'flight' ? '100%' : '471px', background: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', outline: 'none', height: '35px', padding: '8px', fontWeight: '300', borderRadius: '2px'}
 }
 export const locationDropdownStyle = {width: '471px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2'}
 
 export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
 
 // POSITION FIXED, MOVE FURTHER RIGHT
-export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 610.5px)', top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
+export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 398px - 247px)', top: `calc(50% - 434.5px)`, width: '796px', height: '869px', zIndex: 999, color: 'black'}
 
 // DateTimePicker.js styles
 export const dateTimePickerContainerStyle = {position: 'relative', whiteSpace: 'noWrap', marginTop: '16px'}
@@ -251,10 +254,10 @@ export const pdfLogoStyle = {color: 'rgb(237, 15, 135)', fontSize: '50px', margi
 export const imageLogoStyle = {color: 'rgb(43, 201, 217)', fontSize: '50px'}
 
 // Create Flight Form Button
-export const createFlightButtonStyle = {backgroundColor: primaryColor, border: 'none'}
+export const createFlightButtonStyle = {backgroundColor: '#df386b', border: '1px solid #df386b', color: 'white', height: '35px', width: '72px', fontSize: '16px', textAlign: 'center', borderRadius: '2px', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)', fontWeight: 300}
 
 // FlightSearchResults.js styles
-export const searchResultsTableStyle = {width: '100%', color: secondaryFontColor, fontSize: '16px', cursor: 'default'}
+export const searchResultsTableStyle = {width: '749px', color: mainFontColor, fontSize: '16px', cursor: 'default', borderCollapse: 'separate', borderSpacing: '0 8px', padding: '0 0px 0 2px', tableLayout: 'fixed', fontWeight: 300}
 
 // AirportResults.js styles
 export const intuitiveDropdownStyle = {width: '282.5px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2', display: 'block', border: '1px solid ' + borderColor, borderTop: 'none', top: '42px'}

@@ -122,7 +122,7 @@ class PlannerActivity extends Component {
     const timeline = (
       <div style={{...timelineStyle,
         ...{
-          height: this.props.lastDay && this.props.isLast ? '60%' : '100%',
+          height: (this.props.lastDay && this.props.isLast) || (this.props.firstDay && this.props.index === 0) ? '60%' : '100%',
           top: this.props.firstDay && this.props.index === 0 ? '26px' : '0'
         }
       }} />

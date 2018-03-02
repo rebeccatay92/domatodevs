@@ -96,7 +96,7 @@ class AirportSearch extends Component {
     } else {
       return (
         <div>
-          <textarea key='airportLocation' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' placeholder={this.props.placeholder} name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...locationSelectionInputStyle(this.state.marginTop, 'flight'), ...{fontSize: '36px'}}} />
+          <input key='airportLocation' id='locationInput' className='left-panel-input' autoComplete='off' name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(this.state.marginTop, 'flight')} />
 
           {this.state.selecting &&
             <AirportResults results={this.state.results} selectLocation={(details) => this.selectLocation(details)} />
