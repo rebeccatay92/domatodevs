@@ -39,8 +39,9 @@ class SideBarDate extends Component {
               <th onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})} onClick={() => this.props.toggleDaysFilter(this.props.day)}>
                 <div id={'day-' + this.props.day}>
                   <h3 style={headerDayStyle}>Day {this.props.day} </h3>
+                  {/* THIS.PROPS.DATE IS UNIX SECS */}
                   {this.props.date &&
-                    <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                    <span style={headerDateStyle}>{new Date(this.props.date * 1000).toDateString().toUpperCase()}</span>
                   }
                   {this.state.hoveringOverDate && !isExpanded &&
                     <span>Expand</span>
@@ -65,8 +66,7 @@ class SideBarDate extends Component {
                   isFirstInFlightBooking = event.Flight.FlightInstance.firstFlight
                 }
                 return (
-                //   <PlannerActivity mouseOverTimeline={this.state.mouseOverTimeline} day={this.props.day} itineraryId={this.props.itineraryId} draggable={this.props.draggable} activity={activity} key={i} index={i} isLast={i === array.length - 1} columns={this.props.columns} date={this.props.date} daysArr={this.props.daysArr} firstDay={this.props.firstDay} lastDay={this.props.lastDay} dates={this.props.dates} firstInFlightBooking={isFirstInFlightBooking} countries={this.props.countries} />
-                  <SideBarEvent day={this.props.day} itineraryId={this.props.itineraryId} draggable={this.props.draggable} event={event} key={i} index={i} isLast={i === array.length - 1} date={this.props.date} daysArr={this.props.daysArr} firstDay={this.props.firstDay} lastDay={this.props.lastDay} dates={this.props.dates} firstInFlightBooking={isFirstInFlightBooking} countries={this.props.countries} />
+                  <SideBarEvent day={this.props.day} itineraryId={this.props.itineraryId} draggable={this.props.draggable} event={event} key={i} index={i} isLast={i === array.length - 1} date={this.props.date} daysArr={this.props.daysArr} firstDay={this.props.firstDay} lastDay={this.props.lastDay} dates={this.props.dates} firstInFlightBooking={isFirstInFlightBooking} />
                 )
               })}
               {/* <PlannerActivity empty itineraryId={this.props.itineraryId} activity={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.activities.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} /> */}

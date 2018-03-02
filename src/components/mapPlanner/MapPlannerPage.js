@@ -16,7 +16,7 @@ class MapPlannerPage extends Component {
     this.state = {
       startDate: null,
       days: null,
-      datesArr: null, // keep null instead of [] so components know to display day dropdown
+      datesArr: null, // keep null instead of [] so components know to display day dropdown. DATES ARR IS IN UNIX (SECS) FOR MAPPLANNER
       daysArr: [] // keep as empty arr. first render needs a daysArr.map
     }
   }
@@ -48,26 +48,15 @@ class MapPlannerPage extends Component {
       // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
       // console.log(activitiesWithTimelineErrors)
       // this.props.initializePlanner(activitiesWithTimelineErrors)
-      // console.log('allEvents', allEvents)
       this.props.initializePlanner(allEvents)
 
       var startDate = nextProps.data.findItinerary.startDate
       var days = nextProps.data.findItinerary.days
 
-      // startDate is unix (secs)
       this.setState({startDate: startDate, days: days})
-
-      // x1000 to convert to ms for datesArr
-      startDate = new Date(startDate * 1000)
-
       if (startDate && days) {
-        var dates = getDates(startDate, days)
-        var datesArr = dates.map(date => {
-          return date.getTime()
-        })
+        var datesArr = constructDatesArrUnix(startDate, days)
         this.setState({datesArr: datesArr})
-      } else {
-        datesArr = null
       }
       var daysArr = _.range(1, days + 1)
       this.setState({daysArr: daysArr})
@@ -75,11 +64,8 @@ class MapPlannerPage extends Component {
   }
 
   componentDidMount () {
-    // console.log('this', this.state, 'props', this.props)
     if (this.props.data.findItinerary) {
-      // console.log('props', this.props.data.findItinerary)
       var allEvents = this.props.data.findItinerary.events
-      // console.log('allevents', allEvents)
       this.props.initializePlanner(allEvents)
 
       var startDate = this.props.data.findItinerary.startDate
@@ -88,17 +74,9 @@ class MapPlannerPage extends Component {
       // startDate is unix (secs)
       this.setState({startDate: startDate, days: days})
 
-      // x1000 to convert to ms for datesArr
-      startDate = new Date(startDate * 1000)
-
       if (startDate && days) {
-        var dates = getDates(startDate, days)
-        var datesArr = dates.map(date => {
-          return date.getTime()
-        })
+        var datesArr = constructDatesArrUnix(startDate, days)
         this.setState({datesArr: datesArr})
-      } else {
-        datesArr = null
       }
       var daysArr = _.range(1, days + 1)
       this.setState({daysArr: daysArr})
@@ -106,14 +84,12 @@ class MapPlannerPage extends Component {
   }
 }
 
-const getDates = (startDate, days) => {
-  let dateArray = []
-  let currentDate = new Date(startDate)
-  while (dateArray.length < days) {
-    dateArray.push(new Date(currentDate))
-    currentDate.setDate(currentDate.getDate() + 1)
+function constructDatesArrUnix (startDateUnix, days) {
+  let datesArrUnix = [startDateUnix]
+  while (datesArrUnix.length < days) {
+    datesArrUnix.push(datesArrUnix[datesArrUnix.length - 1] + 86400)
   }
-  return dateArray
+  return datesArrUnix
 }
 
 const options = {

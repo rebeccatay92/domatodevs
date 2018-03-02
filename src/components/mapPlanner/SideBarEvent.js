@@ -264,14 +264,15 @@ class SideBarEvent extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    //DATE OR DAY?
     hoverOverActivity: (index, date) => {
       dispatch(hoverOverActivity(index, date))
     },
     dropActivity: (activity, index) => {
       dispatch(dropActivity(activity, index))
     },
-    plannerActivityHoverOverActivity: (index, activity, date) => {
-      dispatch(plannerActivityHoverOverActivity(index, activity, date))
+    plannerActivityHoverOverActivity: (index, activity, day) => {
+      dispatch(plannerActivityHoverOverActivity(index, activity, day))
     },
     initializePlanner: (activities) => {
       dispatch(initializePlanner(activities))

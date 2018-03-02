@@ -12,6 +12,16 @@ import PlannerHeader from './PlannerHeader'
 
 const _ = require('lodash')
 
+const getDates = (startDate, days) => {
+  let dateArray = []
+  let currentDate = new Date(startDate)
+  while (dateArray.length < days) {
+    dateArray.push(new Date(currentDate))
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+  return dateArray
+}
+
 class Planner extends Component {
   constructor (props) {
     super(props)
@@ -28,34 +38,7 @@ class Planner extends Component {
 
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
-    // console.log('rendering')
-    // console.log(this.props.activities)
     // console.log('apollo', this.props.data.findItinerary)
-    // const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
-    // const days = this.props.data.findItinerary.days
-    // const getDates = (startDate, days) => {
-    //   let dateArray = []
-    //   let currentDate = new Date(startDate)
-    //   while (dateArray.length < days) {
-    //     dateArray.push(new Date(currentDate))
-    //     currentDate.setDate(currentDate.getDate() + 1)
-    //   }
-    //   return dateArray
-    // }
-    // const dates = getDates(startDate, days)
-    // const newDates = dates.map((date) => {
-    //   return date.getTime()
-    // })
-
-    const getDates = (startDate, days) => {
-      let dateArray = []
-      let currentDate = new Date(startDate)
-      while (dateArray.length < days) {
-        dateArray.push(new Date(currentDate))
-        currentDate.setDate(currentDate.getDate() + 1)
-      }
-      return dateArray
-    }
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
 
@@ -70,10 +53,8 @@ class Planner extends Component {
       newDates = null
     }
 
-    // use lodash to create arr of days. range(5) -> [0,1,2,3,4]. range(1,5) -> [1,2,3,4]
+    // use lodash to create arr of days
     var daysArr = _.range(1, days + 1)
-    // console.log('daysArr', daysArr)
-    // newDates is mapped to produce days in Planner. change to map by days
 
     return (
       <div style={plannerContainerStyle}>
