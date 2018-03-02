@@ -34,7 +34,6 @@ class Map extends Component {
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
-        gestureHandling: 'cooperative',
         clickableIcons: false
       },
       allEvents: [], // entire this.props.events arr
@@ -44,8 +43,7 @@ class Map extends Component {
       isSearchInfoBoxOpen: false,
       clickedSearchMarkerIndex: null,
       isPlannerInfoBoxOpen: false,
-      clickedPlannerMarkerIndex: null,
-      eventType: '' // activity, food, lodging, transport. only for search popup.
+      clickedPlannerMarkerIndex: null
     }
   }
 
@@ -66,7 +64,6 @@ class Map extends Component {
     if (!this.searchBox) return
     //  clear out old clicked state
     this.setState({
-      eventType: '',
       isSearchInfoBoxOpen: false,
       clickedSearchMarkerIndex: null
     })
@@ -133,13 +130,11 @@ class Map extends Component {
 
     if (this.state.clickedSearchMarkerIndex !== index) {
       this.setState({
-        eventType: 'activity',
         isSearchInfoBoxOpen: true,
         clickedSearchMarkerIndex: index
       })
     } else {
       this.setState({
-        eventType: '',
         isSearchInfoBoxOpen: false,
         clickedSearchMarkerIndex: null
       })
@@ -154,54 +149,46 @@ class Map extends Component {
     window.google.maps.event.addDomListener(infobox, 'dblclick', e => {
       stopPropagation(e)
     })
-    window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
-      this.setState({
-        mapOptions: {
-          minZoom: 2,
-          maxZoom: 17,
-          fullscreenControl: false,
-          mapTypeControl: false,
-          streetViewControl: false,
-          gestureHandling: 'none',
-          clickableIcons: false
-        }
-      })
-    })
-    window.google.maps.event.addDomListener(infobox, 'mouseleave', e => {
-      this.setState({
-        mapOptions: {
-          minZoom: 2,
-          maxZoom: 17,
-          fullscreenControl: false,
-          mapTypeControl: false,
-          streetViewControl: false,
-          gestureHandling: 'cooperative',
-          clickableIcons: false
-        }
-      })
-    })
+    // window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
+    //   this.setState({
+    //     mapOptions: {
+    //       minZoom: 2,
+    //       maxZoom: 17,
+    //       fullscreenControl: false,
+    //       mapTypeControl: false,
+    //       streetViewControl: false,
+    //       clickableIcons: false
+    //     }
+    //   })
+    // })
+    // window.google.maps.event.addDomListener(infobox, 'mouseleave', e => {
+    //   this.setState({
+    //     mapOptions: {
+    //       minZoom: 2,
+    //       maxZoom: 17,
+    //       fullscreenControl: false,
+    //       mapTypeControl: false,
+    //       streetViewControl: false,
+    //       clickableIcons: false
+    //     }
+    //   })
+    // })
   }
 
   // CLOSE BOX BUT SEARCH MARKERS STILL MOUNTED
   closeSearchPopup () {
     this.setState({
       isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null,
-      eventType: '',
-      mapOptions: {
-        minZoom: 2,
-        maxZoom: 17,
-        fullscreenControl: false,
-        mapTypeControl: false,
-        streetViewControl: false,
-        gestureHandling: 'cooperative',
-        clickableIcons: false
-      }
+      clickedSearchMarkerIndex: null
+      // mapOptions: {
+      //   minZoom: 2,
+      //   maxZoom: 17,
+      //   fullscreenControl: false,
+      //   mapTypeControl: false,
+      //   streetViewControl: false,
+      //   clickableIcons: false
+      // }
     })
-  }
-
-  changeEventType (type) {
-    this.setState({eventType: type})
   }
 
   // constructs obj structure. no marker position offseting
@@ -286,7 +273,7 @@ class Map extends Component {
     if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
       // focus marker has changed. set isPlannerInfoBoxOpen and clickedPlannerMarkerIndex.
       var focus = nextProps.currentlyFocusedEvent
-      console.log('focus', focus)
+      // console.log('focus', focus)
       // force redraw on infoBoxClearance
       this.setState({isPlannerInfoBoxOpen: false})
       if (focus.modelId) {
@@ -374,7 +361,6 @@ class Map extends Component {
   // refitBounds only takes 1 type
   refitBounds (markerArr, type) {
     if (!markerArr.length) return
-    // console.log('refit bounds')
     if (type === 'planner') {
       var newBounds = new window.google.maps.LatLngBounds()
       markerArr.forEach(marker => {
@@ -412,7 +398,6 @@ class Map extends Component {
   onPlannerMarkerClicked (index) {
     // clear clicked state in search
     this.setState({
-      eventType: '',
       isSearchInfoBoxOpen: false,
       clickedSearchMarkerIndex: null
     })
@@ -502,15 +487,13 @@ class Map extends Component {
         })}
 
         {this.state.isSearchInfoBoxOpen &&
-          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
-            <div id='infobox'>
+          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+            <div id='infobox' style={{width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)', border: '1px solid red'}}>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <div>
-                <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
-              </div>
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} closeSearchPopup={() => this.closeSearchPopup()} />
             </div>
           </InfoBox>
         }
@@ -539,9 +522,6 @@ class Map extends Component {
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              {/* <div>
-                <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
-              </div> */}
             </div>
           </InfoBox>
         }
@@ -565,7 +545,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
