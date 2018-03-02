@@ -203,63 +203,69 @@ class FlightSearchParameters extends Component {
         }
 
         {/* NEED TO STYLE MARGIN TOP HERE / INSIDE AIRPORTSEARCH */}
-        <div style={{...eventDescContainerStyle, ...{marginTop: this.props.searching || this.props.bookingDetails ? '55px' : '180px'}}}>
-          <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
-
-          <p style={{textAlign: 'center'}}>to</p>
-
-          <AirportSearch currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+        <div style={{position: 'relative'}}>
+          <div style={{...eventDescContainerStyle, ...{width: '100%'}}}>
+            <p style={{position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 8px 0'}}>Departure</p>
+            <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
+          </div>
+          <div style={{...eventDescContainerStyle, ...{width: '100%', marginTop: '24px'}}}>
+            <p style={{position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 8px 0'}}>Arrival</p>
+            <AirportSearch currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+          </div>
         </div>
 
         {/* DATEBOX */}
-        <div style={{textAlign: 'center'}}>
-          <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={moment(this.state.departureDate)} dateFormat={'DD MMM YYYY'} minDate={moment.unix(this.state.datesArr[this.props.day - 1])} onChange={(e) => this.handleChange(e, 'departureDate')} />
+        <div className='flightSearchParams' style={{...eventDescContainerStyle, ...{marginTop: '24px', width: '100%'}}}>
+          <div style={{marginBottom: '8px', textAlign: 'center', fontSize: '13px'}}>
+            <span style={{width: '99px', display: 'inline-block', textAlign: 'center', marginRight: '8px'}}>Departing</span>
+            <span style={{width: '99px', display: 'inline-block', textAlign: 'center'}}>Returning</span>
+            <span style={{width: '24px', display: 'inline-block', textAlign: 'center'}} />
+            <span style={{width: '44px', display: 'inline-block', textAlign: 'center', marginRight: '8px'}}>Class</span>
+            <span style={{width: '44px', display: 'inline-block', textAlign: 'center', marginRight: '8px'}}>Adults</span>
+            <span style={{width: '44px', display: 'inline-block', textAlign: 'center', marginRight: '8px'}}>2-11y</span>
+            <span style={{width: '44px', display: 'inline-block', textAlign: 'center'}}>{'<2y'}</span>
           </div>
-          <div style={{display: 'inline-block', width: '25%'}}>
-            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD MMM YYYY'} minDate={moment(this.state.departureDate)} onChange={(e) => this.handleChange(e, 'returnDate')} isClearable />
+          <div style={{display: 'inline-block', marginRight: '8px'}}>
+            <DatePicker customInput={<CustomDatePicker flight />} selected={moment(this.state.departureDate)} dateFormat={'DD/MM/YYYY'} minDate={moment.unix(this.state.datesArr[this.props.day - 1])} onChange={(e) => this.handleChange(e, 'departureDate')} />
+          </div>
+          <div style={{display: 'inline-block', marginRight: '8px'}}>
+            <DatePicker customInput={<CustomDatePicker flight />} selected={this.state.returnDate} dateFormat={'DD/MM/YYYY'} minDate={moment(this.state.departureDate)} onChange={(e) => this.handleChange(e, 'returnDate')} isClearable />
           </div>
 
-          <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'transparent', marginRight: '5px'}}>
+          <hr style={{height: '1px', width: '8px', margin: '0 8px 0 0', display: 'inline-block', verticalAlign: 'middle'}} />
+
+          <select value={this.state.classCode} onChange={(e) => this.handleChange(e, 'classCode')} style={{backgroundColor: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', height: '35px', fontSize: '16px', marginRight: '8px', width: '44px'}}>
             <option style={{color: 'black'}} value='Economy'>E</option>
             <option style={{color: 'black'}} value='PremiumEconomy'>PE</option>
             <option style={{color: 'black'}} value='Business'>B</option>
             <option style={{color: 'black'}} value='First'>F</option>
           </select>
 
-          <select value={this.state.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.state.paxAdults} onChange={(e) => this.handleChange(e, 'paxAdults')} style={{width: '44px', backgroundColor: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', height: '35px', fontSize: '16px', marginRight: '8px'}}>
             {[1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.state.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.state.paxChildren} onChange={(e) => this.handleChange(e, 'paxChildren')} style={{width: '44px', backgroundColor: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', height: '35px', fontSize: '16px', marginRight: '8px'}}>
             {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-          <select value={this.state.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '10%', backgroundColor: 'transparent', marginRight: '5px'}}>
+          <select value={this.state.paxInfants} onChange={(e) => this.handleChange(e, 'paxInfants')} style={{width: '44px', backgroundColor: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', height: '35px', fontSize: '16px'}}>
             {[0, 1, 2, 3, 4, 5, 6].map((num) => {
               return <option key={num} style={{color: 'black'}}>{num}</option>
             })}
           </select>
-        </div>
-        <div style={{marginBottom: '10px', textAlign: 'center'}}>
-          <span style={{width: '25%', display: 'inline-block', textAlign: 'center'}}>Departing</span>
-          <span style={{width: '25%', display: 'inline-block', textAlign: 'center'}}>Returning</span>
-          <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>Class</span>
-          <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>Adults</span>
-          <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>2-11y</span>
-          <span style={{width: '10%', display: 'inline-block', textAlign: 'center', marginRight: '5px'}}>{'<2y'}</span>
         </div>
         {this.props.searching &&
           <div style={{textAlign: 'right', marginRight: '20px'}} onClick={() => this.handleFlightSearch()}>
             <h5>Search again</h5>
           </div>
         }
+        <hr style={{display: 'block', height: '1px', margin: '32px 0', opacity: '0.3'}} />
         <div style={{textAlign: 'center'}}>
-          <hr style={{opacity: 0.5}} />
-          {!this.props.searching && !this.props.bookingDetails && <Button style={{...createFlightButtonStyle, ...{marginRight: '20px'}}} bsStyle='danger' onClick={() => this.handleFlightSearch()}>SEARCH</Button>}
-          {!this.props.searching && !this.props.bookingDetails && <Button style={createFlightButtonStyle} bsStyle='danger' onClick={() => this.props.closeForm()}>CANCEL</Button>}
+          {!this.props.searching && !this.props.bookingDetails && <button style={{...createFlightButtonStyle, ...{marginRight: '32px', width: '65px'}}} onClick={() => this.handleFlightSearch()}>Search</button>}
+          {!this.props.searching && !this.props.bookingDetails && <button style={{...createFlightButtonStyle, ...{width: '65px'}}} onClick={() => this.props.closeForm()}>Cancel</button>}
         </div>
       </div>
     )

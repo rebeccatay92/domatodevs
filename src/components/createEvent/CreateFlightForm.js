@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import Radium from 'radium'
 import moment from 'moment'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
-import { Button } from 'react-bootstrap'
+// import { button } from 'react-bootstrap'
 
-import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
+import { labelStyle, createFlightFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
 
 import FlightSearchParameters from '../eventFormComponents/FlightSearchParameters'
 import FlightSearchResults from '../eventFormComponents/FlightSearchResults'
@@ -307,14 +307,15 @@ class CreateFlightForm extends Component {
 
   render () {
     return (
-      <div style={createEventFormContainerStyle}>
+      <div style={createFlightFormContainerStyle}>
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>
 
           {/* LEFT PANEL --- LOCATION X 2, DATE DAY X 2, PAX, SELECTED FLIGHT */}
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
-            <div style={eventDescContainerStyle}>
+            <span style={{position: 'relative', fontSize: '55px', fontWeight: '100', display: 'inline-block', marginTop: '88px', paddingBottom: '8px'}}>FLIGHT</span>
+            <div style={{...eventDescContainerStyle, ...{width: '100%'}}}>
               <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} day={this.props.day} daysArr={this.props.daysArr} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr)} closeForm={() => this.closeForm()} />
 
               {/* REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
@@ -327,7 +328,7 @@ class CreateFlightForm extends Component {
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGS, MULTIPLE DETAILS/NOTES */}
           <div style={createEventFormRightPanelStyle('flight')}>
-            <div style={bookingNotesContainerStyle}>
+            <div style={{...bookingNotesContainerStyle, ...{padding: '45px 10px 24px 24px'}}}>
               {this.state.bookingDetails && (
                 <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
@@ -341,28 +342,28 @@ class CreateFlightForm extends Component {
                   <FlightInstanceNotesAttachments ItineraryId={this.props.ItineraryId} instance={this.state.flightInstances[this.state.instanceTabIndex]} handleFlightInstanceChange={(updatedInstance) => this.handleFlightInstanceChange(updatedInstance)} setBackground={url => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
                 </div>
               )}
-              <div style={{width: '100%', height: '91%', margin: '2% 0 6% 0', overflowY: 'auto'}}>
+              <div style={{width: '100%'}}>
                 {this.state.searching && <FlightSearchResults flights={this.state.flights} searching={this.state.searching} selected={this.state.selected} handleSelectFlight={(index) => this.handleSelectFlight(index)} tripType={this.state.tripType} />}
               </div>
             </div>
-            <div style={{position: 'absolute', right: '0', bottom: '0', padding: '10px'}}>
+            <div style={{position: 'absolute', right: '0', bottom: '0', padding: '0 32px 32px 0'}}>
               {this.state.searching &&
-                <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
-              }
-              {this.state.searching &&
-                <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => {
+                <button style={{...createFlightButtonStyle, ...{marginRight: '16px'}}} onClick={() => {
                   this.setState({
                     searching: false,
                     bookingDetails: true
                   })
-                }}>Confirm</Button>
+                }}>Confirm</button>
+              }
+              {this.state.searching &&
+                <button style={{...createFlightButtonStyle, ...{backgroundColor: 'white', border: '1px solid rgba(223, 56, 107, 0.3)', color: '#df386b'}}} onClick={() => this.closeForm()}>Cancel</button>
               }
 
-              {this.state.bookingDetails && <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({bookingDetails: false, searching: true})}>Back</Button>}
+              {this.state.bookingDetails && <button style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.setState({bookingDetails: false, searching: true})}>Back</button>}
               {this.state.bookingDetails &&
-                <Button bsStyle='danger' style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</Button>
+                <button style={{...createFlightButtonStyle, ...{marginRight: '10px'}}} onClick={() => this.closeForm()}>Cancel</button>
               }
-              {this.state.bookingDetails && <Button bsStyle='danger' style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>}
+              {this.state.bookingDetails && <button style={createFlightButtonStyle} onClick={() => this.handleSubmit()}>Save</button>}
 
               {/* {this.state.bookingDetails &&
                 <SaveCancelDelete handleSubmit={() => this.handleSubmit()} closeForm={() => this.closeForm()} />
