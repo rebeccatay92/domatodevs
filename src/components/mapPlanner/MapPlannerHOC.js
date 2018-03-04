@@ -493,7 +493,7 @@ class Map extends Component {
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} />
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} />
             </div>
           </InfoBox>
         }

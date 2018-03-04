@@ -6,6 +6,7 @@ function checkStartAndEndTime (eventsArr, event, type) {
   // console.log('type', type)
 
   const eventsInDay = eventsArr.filter(e => e.day === event.startDay)
+  console.log('eventsInDay', eventsInDay)
 
   if (type === 'startTimeMissing') {
     let index = eventsInDay.findIndex(e => {
@@ -37,6 +38,7 @@ function checkStartAndEndTime (eventsArr, event, type) {
       event.endTime = 86400
     }
   }
+  console.log('EVENT IN HELPER', event)
   return event
 }
 
