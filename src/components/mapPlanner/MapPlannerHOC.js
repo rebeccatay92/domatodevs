@@ -488,12 +488,12 @@ class Map extends Component {
 
         {this.state.isSearchInfoBoxOpen &&
           <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
-            <div id='infobox' style={{width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)', border: '1px solid red'}}>
+            <div id='infobox' style={{width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)'}}>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} closeSearchPopup={() => this.closeSearchPopup()} />
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} />
             </div>
           </InfoBox>
         }
@@ -545,7 +545,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }

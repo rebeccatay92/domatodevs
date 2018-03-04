@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
+import MapDateTimePicker from './MapDateTimePicker'
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 
 class MapCreateEventPopup extends Component {
@@ -10,9 +11,9 @@ class MapCreateEventPopup extends Component {
       googlePlaceData: {}, // use helper to construct google place details from api response
       eventType: 'Activity', // Activity/Food etcx
       ItineraryId: this.props.ItineraryId,
-      startDay: 0,
-      endDay: 0,
-      startTime: null,
+      startDay: 1,
+      endDay: 1,
+      startTime: null, // unix secs
       endTime: null,
       description: ''
     }
@@ -48,11 +49,16 @@ class MapCreateEventPopup extends Component {
     this.setState({eventType: type})
   }
 
-  // description uses this
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field === 'description') {
+      this.setState({
+        description: e.target.value
+      })
+    } else {
+      this.setState({
+        [field]: e
+      }, () => console.log('state', this.state))
+    }
   }
 
   render () {
@@ -60,10 +66,12 @@ class MapCreateEventPopup extends Component {
     if (!place.placeId) return <span>Loading</span>
     return (
       <div>
-        <div style={{width: '100%', height: '160px'}}>
-          <h5>{place.name}</h5>
+        <div style={{width: '100%'}}>
+          <h5 style={{fontSize: '16px'}}>{place.name}</h5>
+
+          {/* OPENING HOURS */}
           <div>
-            <span>Opening hours: </span>
+            <h5 style={{display: 'inline-block', fontSize: '12px', marginRight: '10px'}}>Opening hours: </h5>
             {place.openingHoursText &&
               <select>
                 {place.openingHoursText.length && place.openingHoursText.map((text, index) => {
@@ -74,31 +82,36 @@ class MapCreateEventPopup extends Component {
               </select>
             }
             {!place.openingHoursText &&
-              <span>Not available</span>
+              <h5 style={{display: 'inline-block', fontSize: '12px'}}>Not Available</h5>
             }
           </div>
-          {this.state.eventType !== 'LandTransport' &&
-            <input type='text' placeholder='Description' onChange={(e) => this.handleChange(e, 'description')} />
-          }
-          {this.state.eventType === 'LandTransport' &&
-            <div>arrival location</div>
-          }
-          <div>start date, start day</div>
-          <div>start time</div>
-          <div>end date, end day</div>
-          <div>end time</div>
+
+          {/* DESCRIPTION OR LOCATION INPUT */}
+          <div style={{width: '100%'}}>
+            {this.state.eventType !== 'LandTransport' &&
+              <input type='text' placeholder='Description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+            }
+            {this.state.eventType === 'LandTransport' &&
+              <div>arrival location</div>
+            }
+          </div>
+
+          {/* START / END DATE/DAY/TIME */}
+          <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} />
         </div>
 
         <MapEventToggles eventType={this.state.eventType} changeEventType={(type) => this.changeEventType(type)} />
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
-          <Button bsStyle='danger' style={{marginRight: '8px', marginBottom: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}} onClick={() => this.createEvent()}>Submit</Button>
-          <Button bsStyle='default' style={{marginRight: '8px', marginBottom: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}} onClick={() => this.props.closeSearchPopup()}>Cancel</Button>
-          <Button bsStyle='default' style={{marginRight: '8px', marginBottom: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}} onClick={() => this.toggleCreateEventForm()} >More</Button>
+          <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.createEvent()}>Submit</Button>
+          <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.props.closeSearchPopup()}>Cancel</Button>
+          <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleCreateEventForm()} >More</Button>
         </div>
       </div>
     )
   }
 }
+
+const mapInfoBoxButtonStyle = {marginRight: '8px', marginBottom: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '30px', fontSize: '12px', padding: '6px'}
 
 export default MapCreateEventPopup
