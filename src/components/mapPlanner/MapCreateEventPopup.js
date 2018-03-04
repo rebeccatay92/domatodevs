@@ -17,11 +17,11 @@ class MapCreateEventPopup extends Component {
       endTime: null,
       description: ''
     }
-    // keep event state here to send to backend. submit button submits the state held here. createeventhoc only passes props down to input fields
   }
 
   createEvent () {
     console.log('create event', this.state.eventType)
+    console.log('state', this.state)
   }
 
   toggleCreateEventForm () {
@@ -57,7 +57,7 @@ class MapCreateEventPopup extends Component {
     } else {
       this.setState({
         [field]: e
-      }, () => console.log('state', this.state))
+      })
     }
   }
 
