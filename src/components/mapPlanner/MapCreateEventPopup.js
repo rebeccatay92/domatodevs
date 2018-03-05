@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
@@ -13,6 +16,8 @@ import { createActivity } from '../../apollo/activity'
 import { createFood } from '../../apollo/food'
 import { createLodging } from '../../apollo/lodging'
 import { createLandTransport } from '../../apollo/landtransport'
+
+const _ = require('lodash')
 
 const defaultBackgrounds = {
   Activity: `${process.env.REACT_APP_CLOUD_PUBLIC_URI}activityDefaultBackground.jpg`,
@@ -42,7 +47,8 @@ class MapCreateEventPopup extends Component {
       startTime: null, // unix secs
       endTime: null,
       description: '', // except transport
-      arrivalGooglePlaceData: {} // only for transport
+      arrivalGooglePlaceData: {}, // only for transport
+      eventObj: null
     }
   }
 
@@ -122,6 +128,36 @@ class MapCreateEventPopup extends Component {
         variables: {id: this.props.ItineraryId}
       }]
     })
+    .then(resolved => {
+      // console.log('returning', resolved)
+      var modelId = resolved.data[`${apolloNamespace}`].id
+      var day = newEvent.startDay
+      var eventType = this.state.eventType
+      if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
+        var loadSequence = helperOutput.newEvent.loadSequence
+        var start = null
+      } else if (this.state.eventType === 'Lodging' || this.state.eventType === 'LandTransport') {
+        loadSequence = helperOutput.newEvent.startLoadSequence
+        start = true
+      }
+      var eventObj = {
+        modelId,
+        eventType,
+        day,
+        loadSequence,
+        start,
+        flightInstanceId: null
+      }
+      this.setState({eventObj: eventObj}, () => console.log('set state eventObj'))
+
+      // set day filter first before setCurrentlyFocusedEvent. DAYS FILTER MUST CORRESPOND WITH THE DAY OF NEWLY CREATED EVENT.
+      if (!this.props.daysFilterArr.includes(eventObj.day)) {
+        this.props.toggleDaysFilter(eventObj.day)
+      }
+    })
+    .catch(err => {
+      console.log('err', err)
+    })
   }
 
   toggleCreateEventForm () {
@@ -158,6 +194,28 @@ class MapCreateEventPopup extends Component {
       this.setState({
         [field]: e
       })
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+
+    // unneeded if applydaysfilter is done here.
+    // if (this.props.mapEventsArr !== prevProps.mapEventsArr) {
+    //   if (this.props.mapEventsArr.length > prevProps.mapEventsArr.length) {
+    //     console.log('parent event arr successfully updated')
+    //   }
+    // }
+
+    if (this.props.plannerMarkers !== prevProps.plannerMarkers) {
+      var isCreatedEventInPlannerMarkers = _.find(this.props.plannerMarkers, function (e) {
+        return (e.modelId === prevState.eventObj.modelId)
+      })
+      if (isCreatedEventInPlannerMarkers) {
+        console.log('isCreatedEventInPlannerMarkers', isCreatedEventInPlannerMarkers)
+        console.log('plannerMarkers', this.props.plannerMarkers)
+        this.props.searchCreateEventSuccess(prevState.eventObj)
+        this.props.setCurrentlyFocusedEvent(prevState.eventObj)
+      }
     }
   }
 
@@ -212,10 +270,21 @@ class MapCreateEventPopup extends Component {
   }
 }
 
-export default compose(
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleDaysFilter: (dayInt) => {
+      dispatch(toggleDaysFilter(dayInt))
+    },
+    setCurrentlyFocusedEvent: (currentEventObj) => {
+      dispatch(setCurrentlyFocusedEvent(currentEventObj))
+    }
+  }
+}
+
+export default connect(null, mapDispatchToProps)(compose(
   graphql(createActivity, {name: 'createActivity'}),
   graphql(createFood, {name: 'createFood'}),
   graphql(createLodging, {name: 'createLodging'}),
   graphql(createLandTransport, {name: 'createLandTransport'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
-)(MapCreateEventPopup)
+)(MapCreateEventPopup))

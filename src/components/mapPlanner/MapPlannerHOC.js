@@ -277,10 +277,10 @@ class Map extends Component {
       // force redraw on infoBoxClearance
       this.setState({isPlannerInfoBoxOpen: false})
       if (focus.modelId) {
-        // find plannerMarkerIndex
         var foundIndex = this.state.plannerMarkers.findIndex(e => {
           return (e.modelId === focus.modelId && e.eventType === focus.eventType && e.flightInstanceId === focus.flightInstanceId && e.day === focus.day && e.start === focus.start && e.loadSequence === focus.loadSequence)
         })
+        console.log('foundindex', foundIndex)
         this.setState({
           isPlannerInfoBoxOpen: true,
           clickedPlannerMarkerIndex: foundIndex
@@ -322,13 +322,14 @@ class Map extends Component {
           }
           return event
         })
-        console.log('final events arr', finalEventsArr)
+        // console.log('AFTER ASSIGNING DISPLAY POSITION', finalEventsArr)
 
         this.setState({
           allEvents: nextProps.events,
           eventsArr: finalEventsArr
         }, () => {
           this.applyDaysFilter(nextProps.daysFilterArr)
+          // console.log('COMPONENT WILL RECEIVE PROPS DONE')
         })
       }
     }
@@ -341,6 +342,7 @@ class Map extends Component {
     this.setState({
       plannerMarkers: plannerMarkers
     }, () => {
+      console.log('SET STATE PLANNER MARKERS BASED ON DAYS FILTER')
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
@@ -349,12 +351,20 @@ class Map extends Component {
     })
   }
 
+  // CLICKED PLANNER MARKER INDEX IS ALL DAYS. CHANGING DAYS FILTER WILL CHANGE INDEX FOR CURRENTLY FOCUSED. IF WANT TO KEEP TO CURRENT FOCUS, RE-CALCULATE WHAT THE INDEX IS
+
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
     // if unchecking a day, and focusEvent is inside. clear the focusevent.
-    if (this.props.currentlyFocusedEvent.day === clickedDay) {
-      this.props.clearCurrentlyFocusedEvent()
-    }
+    console.log('clicked checkbox day', clickedDay)
+
+    // if (this.props.currentlyFocusedEvent.day === clickedDay) {
+    //   this.props.clearCurrentlyFocusedEvent()
+    // }
+
+    // always clear focus first
+    this.props.clearCurrentlyFocusedEvent()
+
     this.props.toggleDaysFilter(clickedDay)
   }
 
@@ -420,7 +430,22 @@ class Map extends Component {
     }
   }
 
+  searchCreateEventSuccess (eventObj) {
+    // clear search, close search box
+    this.searchInput.value = ''
+    this.setState({
+      searchMarkers: [],
+      isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null
+    })
+    // apply days filter done in search popup. (if new event has different day from filterArr). we apply days filter to include new event -> else cannot setCurrentlyFocusedEvent (depends on clickedPlannerMarkerIndex, which itself depends on daysFilterArr)
+
+    // zoom, center on focused event?
+  }
+
   render () {
+    // console.log('render planner markers', this.state.plannerMarkers)
+    // console.log('render clickedPlannerMarkerIndex', this.state.clickedPlannerMarkerIndex)
     return (
       <GoogleMap ref={node => { this.map = node }}
         center={this.state.center}
@@ -493,7 +518,7 @@ class Map extends Component {
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} />
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} mapEventsArr={this.state.eventsArr} plannerMarkers={this.state.plannerMarkers} daysFilterArr={this.props.daysFilterArr} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} searchCreateEventSuccess={(eventObj) => this.searchCreateEventSuccess(eventObj)} />
             </div>
           </InfoBox>
         }
