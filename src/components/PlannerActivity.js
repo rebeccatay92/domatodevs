@@ -93,6 +93,7 @@ class PlannerActivity extends Component {
     this.state = {
       creatingEvent: false,
       createEventType: null,
+      intuitiveInputType: 'Activity',
       // editingEvent: false,
       editEventType: null,
       onBox: false,
@@ -156,38 +157,33 @@ class PlannerActivity extends Component {
         })}
       </tr>
     )
-    let createEventBox = (
-      <div style={{
-        height: '80px',
-        padding: '30px 0'
-      }}>
-        <span onClick={() => this.setState({creatingEvent: true, intuitiveInputType: 'Activity'})} style={createEventTextStyle}>+ Add Event</span>
+    // let createEventBox = (
+    //   <div style={{
+    //     height: '80px',
+    //     padding: '30px 0'
+    //   }}>
+    //     <span onClick={() => this.setState({creatingEvent: true, intuitiveInputType: 'Activity'})} style={createEventTextStyle}>+ Add Event</span>
+    //   </div>
+    // )
+    // const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
+    // const eventTypes = ['Activity', 'Food', 'Lodging', 'Flight', 'Train', 'LandTransport', 'SeaTransport']
+    // const eventsListBox = (
+    //   <div style={{...createEventBoxStyle, ...{position: 'absolute', top: '52px', padding: '0'}}}>
+    //     <span className='createEventBox' style={{marginLeft: '8px'}}>
+    //       {iconTypes.map((type, i) => {
+    //         return (
+    //           <i title={eventTypes[i]} key={i} onClick={() => this.handleIntuitiveInput(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>
+    //         )
+    //       })}
+    //       <span style={createEventPickOneStyle}>Pick One</span>
+    //     </span>
+    //   </div>
+    // )
+    const createEventBox = (
+      <div>
+        <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} daysArr={this.props.daysArr} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} handleIntuitiveInput={(eventType) => this.handleIntuitiveInput(eventType)} />
       </div>
     )
-    const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
-    const eventTypes = ['Activity', 'Food', 'Lodging', 'Flight', 'Train', 'LandTransport', 'SeaTransport']
-    const eventsListBox = (
-      <div style={{...createEventBoxStyle, ...this.state.intuitiveInputType && {position: 'absolute', top: '52px', padding: '0'}}}>
-        <span className='createEventBox' style={{marginLeft: '8px'}}>
-          {iconTypes.map((type, i) => {
-            return (
-              <i title={eventTypes[i]} key={i} onClick={() => this.handleIntuitiveInput(eventTypes[i])} className='material-icons' style={{...activityIconStyle, ...eventTypes[i] === this.state.intuitiveInputType && {WebkitTextStroke: '1px #ed685a'}}}>{type}</i>
-            )
-          })}
-          <span style={createEventPickOneStyle}>Pick One</span>
-        </span>
-      </div>
-    )
-    if (this.state.creatingEvent && !this.state.intuitiveInputType) {
-      createEventBox = eventsListBox
-    } else if (this.state.intuitiveInputType) {
-      createEventBox = (
-        <div>
-          <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} daysArr={this.props.daysArr} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} />
-          {eventsListBox}
-        </div>
-      )
-    }
     if (this.props.empty) {
       return connectDropTarget(
         <tr>
@@ -218,12 +214,12 @@ class PlannerActivity extends Component {
     if (!this.props.empty) return
     this.setState({
       creatingEvent: false,
-      intuitiveInputType: null,
       _radiumStyleState: {}
     })
   }
 
   handleIntuitiveInput (eventType = '') {
+    if (!eventType) return
     this.setState({
       intuitiveInputType: eventType
     }, () => this.setState({creatingEvent: !!this.state.intuitiveInputType}))

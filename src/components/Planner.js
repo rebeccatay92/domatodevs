@@ -126,8 +126,8 @@ class Planner extends Component {
 
   handleScroll (e) {
     function offset (el) {
-      const rect = el.getBoundingClientRect(),
-        scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const rect = el.getBoundingClientRect()
+        // scrollTop = window.pageYOffset || document.documentElement.scrollTop
       return { top: rect.top }
     }
 

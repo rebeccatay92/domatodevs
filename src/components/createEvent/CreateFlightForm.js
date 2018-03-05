@@ -314,8 +314,8 @@ class CreateFlightForm extends Component {
           {/* LEFT PANEL --- LOCATION X 2, DATE DAY X 2, PAX, SELECTED FLIGHT */}
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage, 'flight')}>
             <div style={greyTintStyle} />
-            <span style={{position: 'relative', fontSize: '55px', fontWeight: '100', display: 'inline-block', marginTop: '88px', paddingBottom: '8px'}}>FLIGHT</span>
-            <div style={{...eventDescContainerStyle, ...{width: '100%'}}}>
+            {!this.state.searching && <span style={{position: 'relative', fontSize: '55px', fontWeight: '100', display: 'inline-block', marginTop: '88px', paddingBottom: '8px'}}>FLIGHT</span>}
+            <div style={{...eventDescContainerStyle, ...{width: '100%', marginTop: 0}}}>
               <FlightSearchParameters searchClicked={this.state.searchClicked} bookingDetails={this.state.bookingDetails} searching={this.state.searching} dates={this.props.dates} date={this.props.date} day={this.props.day} daysArr={this.props.daysArr} handleSearch={(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr) => this.handleSearch(flights, tripType, adults, children, infants, classCode, departureIATA, arrivalIATA, departureName, arrivalName, departureDate, returnDate, datesArr)} closeForm={() => this.closeForm()} />
 
               {/* REFACTOR SO CREATE AND EDIT FORM USE SAME DETAILS CONTAINER. PASS ONLY SELECTED FLIGHT DOWN */}
