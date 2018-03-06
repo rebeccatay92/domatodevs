@@ -187,7 +187,9 @@ export const columnValueContainerStyle = (columnType) => {
 export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', position: 'absolute', right: '0px', top: '28px', height: '14px', ':hover': {color: primaryColor}}
 
 // Create Event Form Styles
-export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
+// export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
+
+export const createEventFormContainerStyle = {position: 'inline-block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: '0 auto'}
 
 // Create Flight Form Styles
 export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
@@ -203,7 +205,7 @@ export const createEventFormRightPanelStyle = (type) => {
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#3C3A44', opacity: '0.7'}
 export const eventDescriptionStyle = (bgImage) => {
-  return {background: bgImage ? 'rgba(245, 245, 245, 0.4)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '300', width: '471px', position: 'relative', height: '35px', padding: '8px', borderRadius: '2px'}
+  return {background: bgImage ? 'rgba(245, 245, 245, 0.1)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '300', width: '471px', position: 'relative', height: '35px', padding: '8px', borderRadius: '2px', borderBottom: '1px solid white'}
 }
 
 export const eventWarningStyle = (bgImage) => {

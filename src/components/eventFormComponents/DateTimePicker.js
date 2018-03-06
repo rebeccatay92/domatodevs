@@ -11,11 +11,11 @@ import moment from 'moment'
 import Radium from 'radium'
 
 const dayStyle = {
-  background: 'rgba(245, 245, 245, 0.4)', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 300, textAlign: 'center', padding: '8px', height: '35px', width: '83px', borderRadius: '2px'
+  background: 'rgba(245, 245, 245, 0.1)', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 300, textAlign: 'center', padding: '8px', height: '35px', width: '83px', borderRadius: '2px', borderBottom: '1px solid white'
 }
 
 const timeStyle = {
-  background: 'rgba(245, 245, 245, 0.4)', marginLeft: '8px', fontWeight: '300', fontSize: '16px', outline: 'none', border: 'none', textAlign: 'center', padding: '8px', height: '35px', verticalAlign: 'top', width: '83px', letterSpacing: '-1px', borderRadius: '2px'
+  background: 'rgba(245, 245, 245, 0.1)', marginLeft: '8px', fontWeight: '300', fontSize: '16px', outline: 'none', border: 'none', textAlign: 'center', padding: '8px', height: '35px', verticalAlign: 'top', width: '83px', letterSpacing: '-1px', borderRadius: '2px', borderBottom: '1px solid white'
 }
 
 class DateTimePicker extends Component {
