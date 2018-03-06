@@ -5,6 +5,8 @@ import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPla
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
+import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
+
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 // import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
@@ -48,7 +50,8 @@ class MapCreateEventPopup extends Component {
       endTime: null,
       description: '', // except transport
       arrivalGooglePlaceData: {}, // only for transport
-      eventObj: null
+      eventObj: null,
+      showAllOpeningHours: false
     }
   }
 
@@ -220,6 +223,10 @@ class MapCreateEventPopup extends Component {
     }
   }
 
+  toggleOpeningHoursInfo () {
+    this.setState({showAllOpeningHours: !this.state.showAllOpeningHours}, () => console.log('state', this.state.showAllOpeningHours))
+  }
+
   render () {
     var place = this.state.googlePlaceData
     if (!place.placeId) return <span>Loading</span>
@@ -231,14 +238,16 @@ class MapCreateEventPopup extends Component {
           {/* OPENING HOURS */}
           <div>
             <h5 style={{display: 'inline-block', fontSize: '12px', marginRight: '10px'}}>Opening hours: </h5>
-            {place.openingHoursText &&
-              <select>
-                {place.openingHoursText.length && place.openingHoursText.map((text, index) => {
-                  return (
-                    <option key={index}>{text}</option>
-                  )
-                })}
-              </select>
+            {place.openingHoursText && place.openingHoursText.length &&
+              <div style={{display: 'inline-block'}} onClick={() => this.toggleOpeningHoursInfo()}>
+                <h5 style={{display: 'inline-block', cursor: 'pointer', fontSize: '12px'}} className={'ignoreOpeningHoursDropdownArrow'}>
+                  Find day of week
+                  <i className='material-icons' style={{verticalAlign: 'middle'}}>arrow_drop_down</i>
+                </h5>
+                {this.state.showAllOpeningHours &&
+                  <MapOpeningHoursDropdown textArr={place.openingHoursText} toggleOpeningHoursInfo={() => this.toggleOpeningHoursInfo()} outsideClickIgnoreClass={'ignoreOpeningHoursDropdownArrow'} />
+                }
+              </div>
             }
             {!place.openingHoursText &&
               <h5 style={{display: 'inline-block', fontSize: '12px'}}>Not Available</h5>
