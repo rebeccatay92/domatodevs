@@ -307,7 +307,7 @@ class CreateFlightForm extends Component {
 
   render () {
     return (
-      <div style={createFlightFormContainerStyle}>
+      <div className='flightFormContainer' style={createFlightFormContainerStyle}>
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>
 

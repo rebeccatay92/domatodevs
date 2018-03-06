@@ -194,7 +194,7 @@ export const createEventFormContainerStyle = {position: 'inline-block', width: t
 // Create Flight Form Styles
 // export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
 
-export const createFlightFormContainerStyle = {position: 'inline-block', width: '1290px', height: '869px', color: 'white', margin: '0 auto'}
+export const createFlightFormContainerStyle = {position: 'inline-block', width: '1290px', height: '869px', color: 'white', margin: `calc(50vh - ${869 / 2}px) auto`}
 
 // export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
 // height 100% since attachments is no longer at bottom
