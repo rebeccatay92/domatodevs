@@ -189,7 +189,7 @@ export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'po
 // Create Event Form Styles
 // export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
 
-export const createEventFormContainerStyle = {position: 'inline-block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: '0 auto'}
+export const createEventFormContainerStyle = {position: 'inline-block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: `calc(50vh - ${totalHeight / 2}px) auto`}
 
 // Create Flight Form Styles
 // export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
