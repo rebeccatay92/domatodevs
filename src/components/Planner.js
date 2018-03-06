@@ -15,6 +15,7 @@ const _ = require('lodash')
 class Planner extends Component {
   constructor (props) {
     super(props)
+    this.handleScroll = (e) => this.handleScroll(e)
 
     this.state = {
       draggable: true
@@ -117,11 +118,11 @@ class Planner extends Component {
   }
 
   componentDidMount () {
-    document.addEventListener('scroll', (e) => this.handleScroll(e))
+    document.addEventListener('scroll', this.handleScroll)
   }
 
   componentWillUnmount () {
-    document.removeEventListener('scroll', (e) => this.handleScroll(e))
+    document.removeEventListener('scroll', this.handleScroll)
   }
 
   handleScroll (e) {
@@ -132,7 +133,8 @@ class Planner extends Component {
     }
 
     var div = document.querySelector('#timeline-top')
-    var divOffset = offset(div)
+    var divOffset
+    divOffset = offset(div)
     const days = this.props.data.findItinerary.days
     let obj = {}
     for (var i = 1; i <= days; i++) {
