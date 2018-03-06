@@ -41,9 +41,8 @@ class Map extends Component {
       searchMarkers: [],
       plannerMarkers: [], // filtered planner markers. eg markers for days 1,2,5
       isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null,
-      isPlannerInfoBoxOpen: false,
-      clickedPlannerMarkerIndex: null
+      clickedSearchMarkerIndex: null
+      // planner marker index, isOpen just takes from redux currentlyFocusedEvent, and calculates currentlyFocusedMarker on render
     }
   }
 
@@ -270,28 +269,6 @@ class Map extends Component {
     if (nextProps.daysFilterArr !== this.props.daysFilterArr) {
       this.applyDaysFilter(nextProps.daysFilterArr)
     }
-    if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
-      // focus marker has changed. set isPlannerInfoBoxOpen and clickedPlannerMarkerIndex.
-      var focus = nextProps.currentlyFocusedEvent
-      // console.log('focus', focus)
-      // force redraw on infoBoxClearance
-      this.setState({isPlannerInfoBoxOpen: false})
-      if (focus.modelId) {
-        var foundIndex = this.state.plannerMarkers.findIndex(e => {
-          return (e.modelId === focus.modelId && e.eventType === focus.eventType && e.flightInstanceId === focus.flightInstanceId && e.day === focus.day && e.start === focus.start && e.loadSequence === focus.loadSequence)
-        })
-        console.log('foundindex', foundIndex)
-        this.setState({
-          isPlannerInfoBoxOpen: true,
-          clickedPlannerMarkerIndex: foundIndex
-        })
-      } else {
-        this.setState({
-          isPlannerInfoBoxOpen: false,
-          clickedPlannerMarkerIndex: null
-        })
-      }
-    }
     if (nextProps.events !== this.props.events) {
       var stillDragging = _.find(nextProps.events, function (e) {
         return (e.fromReducer)
@@ -351,19 +328,15 @@ class Map extends Component {
     })
   }
 
-  // CLICKED PLANNER MARKER INDEX IS ALL DAYS. CHANGING DAYS FILTER WILL CHANGE INDEX FOR CURRENTLY FOCUSED. IF WANT TO KEEP TO CURRENT FOCUS, RE-CALCULATE WHAT THE INDEX IS
 
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
+    // console.log('clicked checkbox day', clickedDay)
+
     // if unchecking a day, and focusEvent is inside. clear the focusevent.
-    console.log('clicked checkbox day', clickedDay)
-
-    // if (this.props.currentlyFocusedEvent.day === clickedDay) {
-    //   this.props.clearCurrentlyFocusedEvent()
-    // }
-
-    // always clear focus first
-    this.props.clearCurrentlyFocusedEvent()
+    if (this.props.currentlyFocusedEvent.day === clickedDay) {
+      this.props.clearCurrentlyFocusedEvent()
+    }
 
     this.props.toggleDaysFilter(clickedDay)
   }
@@ -413,20 +386,24 @@ class Map extends Component {
     })
     var marker = this.state.plannerMarkers[index]
 
-    if (this.state.clickedPlannerMarkerIndex !== index) {
-      // construct currentEventObj and dispatch setCurrentlyFocusedEvent
-      var currentEventObj = {
-        modelId: marker.modelId,
-        eventType: marker.eventType,
-        flightInstanceId: marker.flightInstanceId,
-        day: marker.day,
-        start: marker.start,
-        loadSequence: marker.loadSequence
-      }
-      this.props.setCurrentlyFocusedEvent(currentEventObj)
-    } else {
-      // clicking on a focused marker will toggle it to off state. dispatch clear focus event
+    // check if clicked marker is already the currentlyFocusedEvent
+    var clickedPlannerMarkerEventObj = {
+      modelId: marker.modelId,
+      eventType: marker.eventType,
+      flightInstanceId: marker.flightInstanceId,
+      day: marker.day,
+      start: marker.start,
+      loadSequence: marker.loadSequence
+    }
+
+    var isIdentical = _.isEqual(clickedPlannerMarkerEventObj, this.props.currentlyFocusedEvent)
+
+    if (isIdentical) {
       this.props.clearCurrentlyFocusedEvent()
+    } else {
+      // clear focus event and reset to trigger infobox redraw
+      this.props.clearCurrentlyFocusedEvent()
+      this.props.setCurrentlyFocusedEvent(clickedPlannerMarkerEventObj)
     }
   }
 
@@ -444,8 +421,21 @@ class Map extends Component {
   }
 
   render () {
-    // console.log('render planner markers', this.state.plannerMarkers)
-    // console.log('render clickedPlannerMarkerIndex', this.state.clickedPlannerMarkerIndex)
+    if (this.props.currentlyFocusedEvent) {
+      var focus = this.props.currentlyFocusedEvent
+      var currentlyFocusedMarker = _.find(this.state.plannerMarkers, function (e) {
+        return (
+          e.modelId === focus.modelId &&
+          e.eventType === focus.eventType &&
+          e.day === focus.day &&
+          e.start === focus.start &&
+          e.loadSequence === focus.loadSequence &&
+          e.flightInstanceId === focus.flightInstanceId
+        )
+      })
+      // console.log('currentlyFocusedMarker', currentlyFocusedMarker)
+    }
+
     return (
       <GoogleMap ref={node => { this.map = node }}
         center={this.state.center}
@@ -524,10 +514,12 @@ class Map extends Component {
         }
 
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
+          var currentlyFocusedEvent = this.props.currentlyFocusedEvent
+          var isCurrentlyFocusedEvent = (event.modelId === currentlyFocusedEvent.modelId && event.eventType === currentlyFocusedEvent.eventType && event.day === currentlyFocusedEvent.day && event.start === currentlyFocusedEvent.start && event.loadSequence === currentlyFocusedEvent.loadSequence && event.flightInstanceId === currentlyFocusedEvent.flightInstanceId)
           return (
-            <MarkerWithLabel key={index} position={{lat: event.displayPosition.latitude, lng: event.displayPosition.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
+            <MarkerWithLabel key={index} position={{lat: event.displayPosition.latitude, lng: event.displayPosition.longitude}} opacity={0} labelAnchor={isCurrentlyFocusedEvent ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={isCurrentlyFocusedEvent ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={isCurrentlyFocusedEvent ? 2 : 1}>
               <div>
-                <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+                <div style={isCurrentlyFocusedEvent ? clickedMarkerSize : unclickedMarkerSize}>
                   {event.imageUrl &&
                     <img width='100%' height='100%' src={event.imageUrl} />
                   }
@@ -540,8 +532,9 @@ class Map extends Component {
           )
         })}
 
-        {this.state.isPlannerInfoBoxOpen &&
-          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].displayPosition.latitude, this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+        {/* currentlyFocusedEvent only holds modelId etc. currentlyFocusedMarker is the entire plannerMarker obj matching the currentlyFocusedEvent (has displayPosition) */}
+        {currentlyFocusedMarker &&
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox'>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
