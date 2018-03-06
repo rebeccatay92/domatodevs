@@ -130,18 +130,18 @@ class LocationSearch extends Component {
       }
       return (
         <div style={{position: 'relative', display: 'inline-block'}}>
-          <p style={{position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>{locationTitle[this.props.eventType]}</p>
+          <p style={{position: 'relative', fontWeight: '300', fontSize: '1.48148148148vh', margin: '0 0 1.48148148148vh 0'}}>{locationTitle[this.props.eventType]}</p>
           <input key='location' id='locationInput' className='left-panel-input' rows='1' autoComplete='off' name='search' value={this.state.search} placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(0)} />
           {/* <i className='material-icons' onClick={() => this.props.toggleMap()} style={{fontSize: '50px', cursor: 'pointer'}}>place</i> */}
 
           {this.state.selecting && this.state.results.length > 0 &&
             <div style={{...locationDropdownStyle, ...{overflowY: 'none', maxHeight: '1000px'}}}>
-              <div className='placeSearchResults' style={{overflowY: 'auto', display: 'inline-block', maxHeight: '216px', width: '100%'}}>
+              <div className='placeSearchResults' style={{overflowY: 'auto', display: 'inline-block', maxHeight: '20vh', width: '100%'}}>
                 {this.state.results.map((indiv, i) => {
                   return <GooglePlaceResult result={indiv} selectLocation={(location) => this.selectLocation(location)} key={i} />
                 })}
               </div>
-              {this.state.results.length > 0 && <div style={{textAlign: 'left', paddingLeft: '8px'}}>
+              {this.state.results.length > 0 && <div style={{textAlign: 'left', paddingLeft: '0.41666666666vw'}}>
                 <img style={{width: '30%', opacity: '0.5'}} src={`${process.env.PUBLIC_URL}/img/poweredByGoogle.png`} />
               </div>}
             </div>

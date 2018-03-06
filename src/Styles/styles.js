@@ -8,9 +8,9 @@ const backgroundColor = '#FFFFFF'
 const tableWidth = 1006
 
 // Create event form dimensions
-const totalWidth = 1007
-const totalHeight = 858
-const leftPanelWidth = 535
+const totalWidth = 1007 / 1920 * 100
+const totalHeight = 858 / 1080 * 100
+const leftPanelWidth = 535 / 1920 * 100
 // const totalWidth = 1415
 // const totalHeight = 919
 // const leftPanelWidth = 919
@@ -187,7 +187,7 @@ export const columnValueContainerStyle = (columnType) => {
 export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', position: 'absolute', right: '0px', top: '28px', height: '14px', ':hover': {color: primaryColor}}
 
 // Create Event Form Styles
-export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
+export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}vw)`, top: `calc(50% - ${totalHeight / 2}vh)`, width: totalWidth + 'vw', height: totalHeight + 'vh', zIndex: 999, color: 'white'}
 
 // Create Flight Form Styles
 export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
@@ -196,14 +196,14 @@ export const createFlightFormContainerStyle = {backgroundColor: 'transparent', p
 // height 100% since attachments is no longer at bottom
 export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '100%'}
 export const createEventFormLeftPanelStyle = (url, type) => {
-  return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? '494px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', padding: '32px'}
+  return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? '494px' : leftPanelWidth + 'vw', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', padding: '2.96296296296vh 1.66666666667vw'}
 }
 export const createEventFormRightPanelStyle = (type) => {
-  return {width: type === 'flight' ? '796px' : rightPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', color: mainFontColor}
+  return {width: type === 'flight' ? '796px' : rightPanelWidth + 'vw', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', color: mainFontColor}
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#3C3A44', opacity: '0.7'}
 export const eventDescriptionStyle = (bgImage) => {
-  return {background: bgImage ? 'rgba(245, 245, 245, 0.4)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '300', width: '471px', position: 'relative', height: '35px', padding: '8px', borderRadius: '2px'}
+  return {background: bgImage ? 'rgba(245, 245, 245, 0.1)' : 'inherit', outline: 'none', border: 'none', borderBottom: '1px solid white', fontSize: '1.48148148148vh', fontWeight: '300', width: '24.53125vw', position: 'relative', height: '3.24074074074vh', padding: '0.74074074074vh 0.41666666666vw', borderRadius: '2px'}
 }
 
 export const eventWarningStyle = (bgImage) => {
@@ -213,32 +213,32 @@ export const eventWarningStyle = (bgImage) => {
 export const foodTypeStyle = (bgImage) => {
   return {background: bgImage ? 'none' : 'inherit', outline: 'none', border: 'none', textAlign: 'center', fontSize: '24px', fontWeight: '300', width: '150px', position: 'relative', ':hover': { boxShadow: '0 1px 0 #FFF' }}
 }
-export const eventDescContainerStyle = {width: 'fit-content', marginTop: '16px', position: 'relative'}
+export const eventDescContainerStyle = {width: 'fit-content', marginTop: '1.48148148148vh', position: 'relative'}
 export const foodTypeContainerStyle = {width: '150px', margin: '0 auto'}
 export const attachmentsStyle = {width: '100%', background: 'transparent', display: 'inline-block', marginTop: '5px'}
 
-export const bookingNotesContainerStyle = {width: '100%', height: '100%', background: 'white', padding: '24px'}
+export const bookingNotesContainerStyle = {width: '100%', height: '100%', background: 'white', padding: '2.22222222222vh 1.25vw'}
 
 // LocationSelection.js styles
 export const locationSelectionInputStyle = (marginTop, type) => {
-  return {fontSize: '16px', width: type === 'flight' ? '100%' : '471px', background: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', outline: 'none', height: '35px', padding: '8px', fontWeight: '300', borderRadius: '2px'}
+  return {fontSize: '1.48148148148vh', width: type === 'flight' ? '100%' : '24.53125vw', background: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', outline: 'none', height: '3.24074074074vh', padding: '0.74074074074vh 0.41666666666vw', fontWeight: '300', borderRadius: '2px'}
 }
-export const locationDropdownStyle = {width: '471px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2'}
+export const locationDropdownStyle = {width: '24.53125vw', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2'}
 
-export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
+export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}vw)`, top: `calc(50% - ${totalHeight / 2}vh)`, width: leftPanelWidth + 'vw', height: totalHeight + 'vh', zIndex: 999, color: 'black'}
 
 // POSITION FIXED, MOVE FURTHER RIGHT
 export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 398px - 247px)', top: `calc(50% - 434.5px)`, width: '796px', height: '869px', zIndex: 999, color: 'black'}
 
 // DateTimePicker.js styles
-export const dateTimePickerContainerStyle = {position: 'relative', whiteSpace: 'noWrap', marginTop: '16px'}
+export const dateTimePickerContainerStyle = {position: 'relative', whiteSpace: 'noWrap', marginTop: '1.48148148148vh'}
 
 // BookingDetails.js styles
 export const labelStyle = {
-  fontSize: '13px',
+  fontSize: '1.2037037037vh',
   display: 'block',
-  margin: '5px',
-  lineHeight: '26px'
+  margin: '0.46296296296vh 0.26041666666vw',
+  lineHeight: '2.40740740741vh'
 }
 
 // Attachments.js styles

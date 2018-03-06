@@ -4,13 +4,13 @@ class ScheduleOfEvents extends Component {
   render () {
     const datesArr = this.props.dates || this.props.daysArr
     return (
-      <div className='scheduleOfEvents' style={{position: 'relative', overflowY: 'scroll', height: '397px', marginTop: '48px'}}>
+      <div className='scheduleOfEvents' style={{position: 'relative', overflowY: 'scroll', height: '36.7592592593vh', marginTop: '4.44444444444vh'}}>
         {datesArr.map((date, i) => {
           return (
             <div key={i}>
               <p>
-                <span style={{fontSize: '24px', fontWeight: '300'}}>Day {i + 1}</span>
-                {this.props.dates && <span style={{fontSize: '16px', fontWeight: '300', marginLeft: '8px'}}>{date.toDateString().toUpperCase()}</span>}
+                <span style={{fontSize: '2.22222222222vh', fontWeight: '300'}}>Day {i + 1}</span>
+                {this.props.dates && <span style={{fontSize: '1.48148148148vh', fontWeight: '300', marginLeft: '0.41666666666vw'}}>{date.toDateString().toUpperCase()}</span>}
               </p>
               {this.props.events.filter(event => {
                 return event.day === i + 1
@@ -43,9 +43,9 @@ class ScheduleOfEvents extends Component {
                   }
                 }
                 return (
-                  <p key={i} style={{fontWeight: '300', fontSize: '16px', margin: isLast ? '0 0 24px 0 ' : '0 0 16px 0'}}>
+                  <p key={i} style={{fontWeight: '300', fontSize: '1.48148148148vh', margin: isLast ? '0 0 2.22222222222vh 0 ' : '0 0 1.48148148148vh 0'}}>
                     <span>{time}</span>
-                    <span style={{marginLeft: '16px'}}>{location}</span>
+                    <span style={{marginLeft: '0.83333333333vw'}}>{location}</span>
                     <span> - {description}</span>
                   </p>
                 )

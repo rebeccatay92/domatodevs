@@ -276,10 +276,10 @@ class CreateActivityForm extends Component {
           <div style={createEventFormLeftPanelStyle(this.state.backgroundImage)}>
             <div style={greyTintStyle} />
 
-            <span style={{position: 'relative', paddingBottom: '8px', fontSize: '55px', fontWeight: '100', display: 'inline'}}>ACTIVITY</span>
+            <span style={{position: 'relative', paddingBottom: '0.74074074074vh', fontSize: '5.09259259259vh', fontWeight: '100', display: 'inline'}}>ACTIVITY</span>
 
             <div style={eventDescContainerStyle}>
-              <p style={{color: 'white', position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Description</p>
+              <p style={{color: 'white', position: 'relative', fontWeight: '300', fontSize: '1.48148148148vh', margin: '0 0 1.48148148148vh 0'}}>Description</p>
               <input className='left-panel-input' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
             <div style={eventDescContainerStyle}>
@@ -300,7 +300,7 @@ class CreateActivityForm extends Component {
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
           <div style={createEventFormRightPanelStyle()}>
             <div style={bookingNotesContainerStyle}>
-              <h4 style={{fontSize: '24px', margin: '0 0 16px 0', fontWeight: '300'}}>Booking Details</h4>
+              <h4 style={{fontSize: '2.22222222222vh', margin: '0 0 1.48148148148vh 0', fontWeight: '300'}}>Booking Details</h4>
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} />
               {this.state.googlePlaceData.name &&
                 <LocationAlias handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Location in  ${this.state.googlePlaceData.name}`} />

@@ -11,11 +11,11 @@ import moment from 'moment'
 import Radium from 'radium'
 
 const dayStyle = {
-  background: 'rgba(245, 245, 245, 0.4)', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 300, textAlign: 'center', padding: '8px', height: '35px', width: '83px', borderRadius: '2px'
+  background: 'rgba(245, 245, 245, 0.1)', border: 'none', borderBottom: '1px solid white', outline: 'none', fontSize: '1.48148148148vh', fontWeight: 300, textAlign: 'center', padding: '0.74074074074vh 0.41666666666vw', height: '3.24074074074vh', width: '4.32291666667vw', borderRadius: '2px'
 }
 
 const timeStyle = {
-  background: 'rgba(245, 245, 245, 0.4)', marginLeft: '8px', fontWeight: '300', fontSize: '16px', outline: 'none', border: 'none', textAlign: 'center', padding: '8px', height: '35px', verticalAlign: 'top', width: '83px', letterSpacing: '-1px', borderRadius: '2px'
+  background: 'rgba(245, 245, 245, 0.1)', marginLeft: '0.41666666666vw', fontWeight: '300', fontSize: '1.48148148148vh', outline: 'none', border: 'none', borderBottom: '1px solid white', textAlign: 'center', padding: '0.74074074074vh 0.41666666666vw', height: '3.24074074074vh', verticalAlign: 'top', width: '4.32291666667vw', letterSpacing: '-1px', borderRadius: '2px'
 }
 
 class DateTimePicker extends Component {
@@ -178,8 +178,8 @@ class DateTimePicker extends Component {
     } else {
       return (
         <div style={dateTimePickerContainerStyle}>
-          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '21px'}}>
-            <p style={{fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>Start Time</p>
+          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '1.09375vw'}}>
+            <p style={{fontWeight: '300', fontSize: '1.48148148148vh', margin: '0 0 1.48148148148vh 0'}}>Start Time</p>
             {!this.props.dates &&
               <select key={'startDaySelect'} name='startDay' onChange={(e) => this.handleChange(e, 'startDay')} value={this.props.startDay} style={dayStyle}>
                 {this.props.daysArr.map((day, i) => {
@@ -195,8 +195,8 @@ class DateTimePicker extends Component {
             <input key='startTime' style={timeStyle} type='time' name='startTime' value={this.state.startTime} onChange={(e) => this.handleChange(e, 'startTime')} />
           </div>
 
-          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '32px'}}>
-            <p style={{fontWeight: '300', fontSize: '16px', margin: '0 0 16px 0'}}>End Time</p>
+          <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '1.66666666667vw'}}>
+            <p style={{fontWeight: '300', fontSize: '1.48148148148vh', margin: '0 0 1.48148148148vh 0'}}>End Time</p>
             {!this.props.dates &&
               <select key={'endDaySelect'} name='endDay' onChange={(e) => this.handleChange(e, 'endDay')} value={this.props.endDay} style={dayStyle}>
                 {this.props.daysArr.map((day, i) => {
