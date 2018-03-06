@@ -54,7 +54,8 @@ class MapCreateEventPopup extends Component {
 
   handleSubmit () {
     // console.log('create event', this.state.eventType)
-    // console.log('state', this.state)
+    console.log('HANDLE SUBMIT STATE', this.state)
+
     var newEvent = {
       ItineraryId: this.props.ItineraryId,
       startDay: this.state.startDay,
