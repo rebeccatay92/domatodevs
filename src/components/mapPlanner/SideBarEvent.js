@@ -4,10 +4,13 @@ import Radium from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { DropTarget, DragSource } from 'react-dnd'
 import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity, initializePlanner } from '../../actions/plannerActions'
+import { setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 import { queryItinerary } from '../../apollo/itinerary'
 import ActivityInfo from '../ActivityInfo'
 
 import { timelineStyle, eventBoxStyle, timelineColumnStyle, dateTableFirstHeaderStyle, mapPlannerEventBoxStyle, createEventTextStyle, activityIconStyle, createEventBoxStyle, createEventPickOneStyle, createEventBoxContainerStyle, plannerBlurredBackgroundStyle, expandedEventIconsBoxStyle, expandedEventIconsStyle, expandedEventBoxStyle, expandedEventBoxImageContainerStyle, expandedEventBoxImageStyle, expandedEventBoxTextBoxStyle } from '../../Styles/styles'
+
+const _ = require('lodash')
 
 const plannerActivitySource = {
   beginDrag (props) {
@@ -49,6 +52,9 @@ const plannerActivityTarget = {
     // if (monitor.getItemType() === 'activity') {
     //   props.deleteActivityFromBucket(monitor.getItem())
     // }
+
+    // if drag and drop happens clear the currentlyFocusedEvent
+    props.clearCurrentlyFocusedEvent()
   }
 }
 
@@ -71,8 +77,45 @@ class SideBarEvent extends Component {
   constructor (props) {
     super(props)
 
-    this.state = {}
+    this.state = {
+      hover: false,
+      isCurrentFocus: false
+    }
   }
+
+  // keep isCurrentFocus in sync with redux state currentlyFocusedEvent
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
+      var currentEventObj = this.makeCurrentEventObj(this.props.event)
+      var isCurrentFocus = _.isEqual(currentEventObj, nextProps.currentlyFocusedEvent)
+      this.setState({isCurrentFocus: isCurrentFocus})
+    }
+  }
+
+  makeCurrentEventObj (event) {
+    return {
+      modelId: event.modelId,
+      eventType: event.type,
+      day: event.day,
+      loadSequence: event.loadSequence,
+      start: event.start,
+      flightInstanceId: event.type === 'Flight' ? event.Flight.FlightInstance.id : null
+    }
+  }
+
+  setCurrentlyFocusedEvent () {
+    var currentlyClickedEvent = this.makeCurrentEventObj(this.props.event)
+    this.props.setCurrentlyFocusedEvent(currentlyClickedEvent)
+  }
+
+  toggleCurrentlyFocusedEvent () {
+    if (this.state.isCurrentFocus) {
+      this.props.clearCurrentlyFocusedEvent()
+    } else {
+      this.setCurrentlyFocusedEvent()
+    }
+  }
+
   render () {
     const { connectDropTarget, connectDragSource, connectDragPreview, getItem } = this.props
     let minHeight
@@ -83,7 +126,7 @@ class SideBarEvent extends Component {
     if (this.props.event.type) type = this.props.event.type
 
     let eventBox = (
-      <tr onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
+      <tr onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})} onClick={() => this.toggleCurrentlyFocusedEvent()} style={{background: this.state.isCurrentFocus || this.state.hover ? '#ffc588' : '#FAFAFA'}}>
         <td>
           {connectDragPreview(<div style={mapPlannerEventBoxStyle(this.props.event, minHeight, getItem || {})} key={this.props.event.modelId}>
             {this.state.hover && !this.state.expanded && this.props.event.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 1, position: 'absolute', top: '22px', right: '8%', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a'}}}>drag_handle</i>)}
@@ -221,18 +264,31 @@ class SideBarEvent extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    //DATE OR DAY?
     hoverOverActivity: (index, date) => {
       dispatch(hoverOverActivity(index, date))
     },
     dropActivity: (activity, index) => {
       dispatch(dropActivity(activity, index))
     },
-    plannerActivityHoverOverActivity: (index, activity, date) => {
-      dispatch(plannerActivityHoverOverActivity(index, activity, date))
+    plannerActivityHoverOverActivity: (index, activity, day) => {
+      dispatch(plannerActivityHoverOverActivity(index, activity, day))
     },
     initializePlanner: (activities) => {
       dispatch(initializePlanner(activities))
+    },
+    setCurrentlyFocusedEvent: (currentlyFocusedEvent) => {
+      dispatch(setCurrentlyFocusedEvent(currentlyFocusedEvent))
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
@@ -244,6 +300,6 @@ const options = {
   })
 }
 
-export default connect(null, mapDispatchToProps)(compose(
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options)
 )(DragSource('plannerActivity', plannerActivitySource, collectSource)(DropTarget(['activity', 'plannerActivity'], plannerActivityTarget, collectTarget)(Radium(SideBarEvent)))))

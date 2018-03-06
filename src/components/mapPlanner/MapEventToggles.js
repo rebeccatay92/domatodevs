@@ -8,7 +8,7 @@ const backgroundColor = '#FAFAFA'
 
 var iconNotSelectedStyle = {
   display: 'inline-block',
-  width: '25%',
+  width: '20%',
   fontSize: '24px',
   cursor: 'pointer',
   WebkitTextFillColor: backgroundColor,
@@ -16,7 +16,7 @@ var iconNotSelectedStyle = {
 }
 var iconSelectedStyle = {
   display: 'inline-block',
-  width: '25%',
+  width: '20%',
   fontSize: '24px',
   cursor: 'pointer',
   WebkitTextFillColor: backgroundColor,
@@ -31,16 +31,16 @@ class MapEventToggles extends Component {
   render () {
     return (
       <div>
-        <div key={'mapeventtoggle1'} style={this.props.eventType === 'activity' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('activity')}>
+        <div key={'mapeventtoggle1'} style={this.props.eventType === 'Activity' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('Activity')}>
           <i className='material-icons'>directions_run</i>
         </div>
-        <div key={'mapeventtoggle2'} style={this.props.eventType === 'food' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('food')}>
+        <div key={'mapeventtoggle2'} style={this.props.eventType === 'Food' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('Food')}>
           <i className='material-icons'>restaurant</i>
         </div>
-        <div key={'mapeventtoggle3'} style={this.props.eventType === 'lodging' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('lodging')}>
+        <div key={'mapeventtoggle3'} style={this.props.eventType === 'Lodging' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('Lodging')}>
           <i className='material-icons'>hotel</i>
         </div>
-        <div key={'mapeventtoggle4'} style={this.props.eventType === 'landtransport' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('landtransport')}>
+        <div key={'mapeventtoggle4'} style={this.props.eventType === 'LandTransport' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.props.changeEventType('LandTransport')}>
           <i className='material-icons'>local_car_wash</i>
         </div>
       </div>

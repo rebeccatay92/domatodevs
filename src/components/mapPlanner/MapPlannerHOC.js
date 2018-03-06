@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
+import { connect } from 'react-redux'
+import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+
+import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
 import CustomControl from '../location/CustomControl'
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
@@ -10,10 +13,13 @@ import MapCreateEventPopup from './MapCreateEventPopup'
 
 const _ = require('lodash')
 
-// searchMarkerStyle = {}
-// searchMarkerClickedStyle = {}
 const unclickedMarkerSize = {width: '40px', height: '40px'}
 const clickedMarkerSize = {width: '60px', height: '60px'}
+
+const clickedSearchMarkerStyle = {borderRadius: '50%', border: '3px solid red', boxShadow: '0 0 0 3px white', backgroundColor: 'red', cursor: 'pointer'}
+const unclickedSearchMarkerStyle = {borderRadius: '50%', border: '3px solid red', backgroundColor: 'red', cursor: 'pointer'}
+const clickedPlannerMarkerStyle = {borderRadius: '50%', border: '3px solid orange', boxShadow: '0 0 0 3px white', backgroundColor: 'orange'}
+const unclickedPlannerMarkerStyle = {borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}
 
 class Map extends Component {
   constructor (props) {
@@ -24,14 +30,12 @@ class Map extends Component {
       center: {lat: 0, lng: 0},
       mapOptions: {
         minZoom: 2,
-        maxZoom: 16,
+        maxZoom: 17,
         fullscreenControl: false,
         mapTypeControl: false,
         streetViewControl: false,
-        gestureHandling: 'cooperative',
         clickableIcons: false
       },
-      daysFilter: [], // arr of days to show eg [1,2,5]
       allEvents: [], // entire this.props.events arr
       eventsArr: [], // manipulated arr to extract location
       searchMarkers: [],
@@ -39,8 +43,7 @@ class Map extends Component {
       isSearchInfoBoxOpen: false,
       clickedSearchMarkerIndex: null,
       isPlannerInfoBoxOpen: false,
-      clickedPlannerMarkerIndex: null,
-      eventType: '' // activity, food, lodging, transport
+      clickedPlannerMarkerIndex: null
     }
   }
 
@@ -58,11 +61,16 @@ class Map extends Component {
   }
 
   onPlacesChanged () {
-    // called only by search box
     if (!this.searchBox) return
+    //  clear out old clicked state
+    this.setState({
+      isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null
+    })
+
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
-    console.log('places', places)
+    // console.log('places', places)
     if (places.length === 0) {
       console.log('no results')
       return
@@ -89,7 +97,7 @@ class Map extends Component {
       center: nextCenter,
       searchMarkers: nextMarkers
     })
-    this.map.fitBounds(bounds)
+    this.map.fitBounds(bounds, 150)
   }
 
   clearSearch () {
@@ -100,6 +108,9 @@ class Map extends Component {
         isSearchInfoBoxOpen: false,
         clickedSearchMarkerIndex: null
       })
+    } else {
+      // if there were no search markers, clearing search should not rezoom on planner markers
+      return
     }
 
     // if search was cleared, but planner has markers, refitBounds
@@ -109,22 +120,21 @@ class Map extends Component {
   }
 
   onSearchMarkerClicked (index) {
-    var marker = this.state.searchMarkers[index]
-    // console.log('marker ref', this.searchMarker)
-    // console.log('zindex', this.searchMarker.getZIndex())
-    // console.log('marker', marker)
-    this.map.panTo(marker.position)
-    this.setState({center: marker.position})
+    // clear planner focusEvent if any
+    this.props.clearCurrentlyFocusedEvent()
 
-    if (this.state.searchMarkers.length && index !== this.state.clickedSearchMarkerIndex) {
+    // force redraw infoBoxClearance for searchInfoBox
+    this.setState({
+      isSearchInfoBoxOpen: false
+    })
+
+    if (this.state.clickedSearchMarkerIndex !== index) {
       this.setState({
-        eventType: 'activity',
         isSearchInfoBoxOpen: true,
         clickedSearchMarkerIndex: index
       })
     } else {
       this.setState({
-        eventType: '',
         isSearchInfoBoxOpen: false,
         clickedSearchMarkerIndex: null
       })
@@ -139,67 +149,61 @@ class Map extends Component {
     window.google.maps.event.addDomListener(infobox, 'dblclick', e => {
       stopPropagation(e)
     })
-    window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
-      this.setState({
-        mapOptions: {
-          minZoom: 2,
-          maxZoom: 16,
-          fullscreenControl: false,
-          mapTypeControl: false,
-          streetViewControl: false,
-          gestureHandling: 'none',
-          clickableIcons: false
-        }
-      })
-    })
-    window.google.maps.event.addDomListener(infobox, 'mouseleave', e => {
-      this.setState({
-        mapOptions: {
-          minZoom: 2,
-          maxZoom: 16,
-          fullscreenControl: false,
-          mapTypeControl: false,
-          streetViewControl: false,
-          gestureHandling: 'cooperative',
-          clickableIcons: false
-        }
-      })
-    })
+    // window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
+    //   this.setState({
+    //     mapOptions: {
+    //       minZoom: 2,
+    //       maxZoom: 17,
+    //       fullscreenControl: false,
+    //       mapTypeControl: false,
+    //       streetViewControl: false,
+    //       clickableIcons: false
+    //     }
+    //   })
+    // })
+    // window.google.maps.event.addDomListener(infobox, 'mouseleave', e => {
+    //   this.setState({
+    //     mapOptions: {
+    //       minZoom: 2,
+    //       maxZoom: 17,
+    //       fullscreenControl: false,
+    //       mapTypeControl: false,
+    //       streetViewControl: false,
+    //       clickableIcons: false
+    //     }
+    //   })
+    // })
   }
 
   // CLOSE BOX BUT SEARCH MARKERS STILL MOUNTED
   closeSearchPopup () {
     this.setState({
       isSearchInfoBoxOpen: false,
-      eventType: '',
-      mapOptions: {
-        minZoom: 2,
-        maxZoom: 16,
-        fullscreenControl: false,
-        mapTypeControl: false,
-        streetViewControl: false,
-        gestureHandling: 'cooperative',
-        clickableIcons: false
-      }
+      clickedSearchMarkerIndex: null
+      // mapOptions: {
+      //   minZoom: 2,
+      //   maxZoom: 17,
+      //   fullscreenControl: false,
+      //   mapTypeControl: false,
+      //   streetViewControl: false,
+      //   clickableIcons: false
+      // }
     })
   }
 
-  changeEventType (type) {
-    this.setState({eventType: type})
-  }
-
-  // on first mount (props.events has already been passed)
-  componentDidMount () {
-    // console.log('on map mount', this.props)
-    // this.setState({allEvents: this.props.events})
-
+  // constructs obj structure. no marker position offseting
+  constructEventsArrFromPropsEvents (propsEventsArr) {
     // extract locations to plot. eventsArrObj
-    // modelId: int, eventType: str, day: int, start:bool, location: obj, row: eventType
-    var eventsArr = this.props.events.map(e => {
+    // modelId: id, eventType: str, flightInstanceId: id, day: int, start:bool, location: obj, row: eventType
+    // modelId is FlightBookingId and eventType is Flight
+    var eventsArr = propsEventsArr.map(e => {
       var temp = {
         modelId: e.modelId,
         eventType: e.type,
+        // flightInstanceId is extra differentiator because modelId=FlightBookingId, eventType=Flight refers to multiple rows/markers.
+        flightInstanceId: e.type === 'Flight' ? e.Flight.FlightInstance.id : null,
         day: e.day,
+        loadSequence: e.loadSequence,
         start: e.start,
         event: e[`${e.type}`] // Activity/Flight etc
       }
@@ -223,21 +227,120 @@ class Map extends Component {
       temp.imageUrl = location.imageUrl
       return temp
     })
+    return eventsArr
+  }
+
+  componentDidMount () {
+    var eventsArr = this.constructEventsArrFromPropsEvents(this.props.events)
+    // console.log('eventsArr before marker offset', eventsArr)
+
+    var comparisonArr = []
+    var finalEventsArr = eventsArr.map(event => {
+      var position = {latitude: event.location.latitude, longitude: event.location.longitude}
+
+      // use lodash check uniqueness of positions
+      var positionMatch = _.find(comparisonArr, function (e) {
+        return (e.latitude === position.latitude && e.longitude === position.longitude)
+      })
+
+      if (!positionMatch) {
+        comparisonArr.push(position)
+        event.displayPosition = position
+      } else {
+        var offsetPosition = {
+          latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
+          longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
+        }
+        comparisonArr.push(offsetPosition)
+        event.displayPosition = offsetPosition
+      }
+      return event
+    })
+    console.log('final events arr', finalEventsArr)
 
     this.setState({
       allEvents: this.props.events,
-      eventsArr: eventsArr,
-      daysFilter: []
+      eventsArr: finalEventsArr
     }, () => {
-      this.applyDaysFilter()
+      this.applyDaysFilter(this.props.daysFilterArr)
     })
   }
 
-  applyDaysFilter () {
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.daysFilterArr !== this.props.daysFilterArr) {
+      this.applyDaysFilter(nextProps.daysFilterArr)
+    }
+    if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
+      // focus marker has changed. set isPlannerInfoBoxOpen and clickedPlannerMarkerIndex.
+      var focus = nextProps.currentlyFocusedEvent
+      // console.log('focus', focus)
+      // force redraw on infoBoxClearance
+      this.setState({isPlannerInfoBoxOpen: false})
+      if (focus.modelId) {
+        // find plannerMarkerIndex
+        var foundIndex = this.state.plannerMarkers.findIndex(e => {
+          return (e.modelId === focus.modelId && e.eventType === focus.eventType && e.flightInstanceId === focus.flightInstanceId && e.day === focus.day && e.start === focus.start && e.loadSequence === focus.loadSequence)
+        })
+        this.setState({
+          isPlannerInfoBoxOpen: true,
+          clickedPlannerMarkerIndex: foundIndex
+        })
+      } else {
+        this.setState({
+          isPlannerInfoBoxOpen: false,
+          clickedPlannerMarkerIndex: null
+        })
+      }
+    }
+    if (nextProps.events !== this.props.events) {
+      var stillDragging = _.find(nextProps.events, function (e) {
+        return (e.fromReducer)
+      })
+      if (!stillDragging) {
+        // console.log('nextProps', nextProps.events)
+        var eventsArr = this.constructEventsArrFromPropsEvents(nextProps.events)
+
+        var comparisonArr = []
+        var finalEventsArr = eventsArr.map(event => {
+          var position = {latitude: event.location.latitude, longitude: event.location.longitude}
+
+          // use lodash check uniqueness of positions
+          var positionMatch = _.find(comparisonArr, function (e) {
+            return (e.latitude === position.latitude && e.longitude === position.longitude)
+          })
+
+          if (!positionMatch) {
+            comparisonArr.push(position)
+            event.displayPosition = position
+          } else {
+            var offsetPosition = {
+              latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
+              longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
+            }
+            comparisonArr.push(offsetPosition)
+            event.displayPosition = offsetPosition
+          }
+          return event
+        })
+        console.log('final events arr', finalEventsArr)
+
+        this.setState({
+          allEvents: nextProps.events,
+          eventsArr: finalEventsArr
+        }, () => {
+          this.applyDaysFilter(nextProps.daysFilterArr)
+        })
+      }
+    }
+  }
+
+  applyDaysFilter (daysFilterArr) {
     var plannerMarkers = this.state.eventsArr.filter(e => {
-      return this.state.daysFilter.includes(e.day)
+      return daysFilterArr.includes(e.day)
     })
-    this.setState({plannerMarkers: plannerMarkers}, () => {
+    this.setState({
+      plannerMarkers: plannerMarkers
+    }, () => {
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
@@ -248,38 +351,28 @@ class Map extends Component {
 
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
-
-    var daysFilter = JSON.parse(JSON.stringify(this.state.daysFilter))
-
-    if (daysFilter.includes(clickedDay)) {
-      var newDaysArr = daysFilter.filter(e => {
-        return e !== clickedDay
-      })
-    } else {
-      newDaysArr = daysFilter.concat([clickedDay])
+    // if unchecking a day, and focusEvent is inside. clear the focusevent.
+    if (this.props.currentlyFocusedEvent.day === clickedDay) {
+      this.props.clearCurrentlyFocusedEvent()
     }
-    this.setState({daysFilter: newDaysArr}, () => {
-      // after changing days filter, reapplying filter on markers
-      this.applyDaysFilter()
-    })
+    this.props.toggleDaysFilter(clickedDay)
   }
 
   // refitBounds only takes 1 type
   refitBounds (markerArr, type) {
     if (!markerArr.length) return
-    // console.log('refit bounds')
     if (type === 'planner') {
       var newBounds = new window.google.maps.LatLngBounds()
       markerArr.forEach(marker => {
         newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
       })
-      this.map.fitBounds(newBounds, 100)
+      this.map.fitBounds(newBounds, 150)
     } else if (type === 'search') {
       newBounds = new window.google.maps.LatLngBounds()
       this.state.searchMarkers.forEach(marker => {
         newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
       })
-      this.map.fitBounds(newBounds, 100)
+      this.map.fitBounds(newBounds, 150)
     }
   }
 
@@ -299,21 +392,31 @@ class Map extends Component {
     this.state.plannerMarkers.forEach(marker => {
       newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
     })
-    this.map.fitBounds(newBounds, 100)
+    this.map.fitBounds(newBounds, 150)
   }
 
   onPlannerMarkerClicked (index) {
-    console.log('planner marker clicked')
+    // clear clicked state in search
+    this.setState({
+      isSearchInfoBoxOpen: false,
+      clickedSearchMarkerIndex: null
+    })
     var marker = this.state.plannerMarkers[index]
-    this.map.panTo(marker.position)
-    this.setState({center: marker.position})
+
     if (this.state.clickedPlannerMarkerIndex !== index) {
-      console.log('another marker clicked')
+      // construct currentEventObj and dispatch setCurrentlyFocusedEvent
+      var currentEventObj = {
+        modelId: marker.modelId,
+        eventType: marker.eventType,
+        flightInstanceId: marker.flightInstanceId,
+        day: marker.day,
+        start: marker.start,
+        loadSequence: marker.loadSequence
+      }
+      this.props.setCurrentlyFocusedEvent(currentEventObj)
     } else {
-      this.setState({
-        isPlannerInfoBoxOpen: false,
-        clickedPlannerMarkerIndex: null
-      })
+      // clicking on a focused marker will toggle it to off state. dispatch clear focus event
+      this.props.clearCurrentlyFocusedEvent()
     }
   }
 
@@ -335,7 +438,7 @@ class Map extends Component {
             {this.props.daysArr.map((day, i) => {
               return (
                 <label style={{display: 'block', fontSize: '18px'}} key={`day${i}`}>
-                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.state.daysFilter.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
+                  <input type='checkbox' style={{width: '20px', height: '20px'}} checked={this.props.daysFilterArr.includes(day)} onChange={(e) => this.changeDayCheckbox(e)} value={day} />
                   Day {day}
                 </label>
               )
@@ -368,7 +471,7 @@ class Map extends Component {
 
         {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
           return (
-            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid red', backgroundColor: 'red', cursor: 'pointer'}} onClick={() => this.onSearchMarkerClicked(index)}>
+            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedSearchMarkerIndex === index ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} onClick={() => this.onSearchMarkerClicked(index)} zIndex={this.state.clickedSearchMarkerIndex === index ? 2 : 1}>
               <div>
                 <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
                   {marker.place.imageUrl &&
@@ -378,38 +481,50 @@ class Map extends Component {
                     <div style={{width: '100%', height: '100%', background: 'white'}} />
                   }
                 </div>
-                {this.state.isSearchInfoBoxOpen && this.state.clickedSearchMarkerIndex === index &&
-                <InfoBox ref={node => { this.infoBox = node }} position={marker.position} options={{closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', marginTop: '60px'}}} onDomReady={() => this.onInfoBoxDomReady()}>
-                  <div id='infobox'>
-                    <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
-                      <i className='material-icons'>location_on</i>
-                      <i className='material-icons'>delete</i>
-                    </div>
-                    <div>
-                      <MapCreateEventPopup eventType={this.state.eventType} ItineraryId={this.props.ItineraryId} closeSearchPopup={() => this.closeSearchPopup()} changeEventType={type => this.changeEventType(type)} />
-                    </div>
-                  </div>
-                </InfoBox>
-              }
               </div>
             </MarkerWithLabel>
           )
         })}
 
+        {this.state.isSearchInfoBoxOpen &&
+          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+            <div id='infobox' style={{width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)'}}>
+              <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                <i className='material-icons'>location_on</i>
+                <i className='material-icons'>delete</i>
+              </div>
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} />
+            </div>
+          </InfoBox>
+        }
+
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           return (
-            <MarkerWithLabel key={index} position={{lat: event.location.latitude, lng: event.location.longitude}} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={{borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}} onClick={() => this.onPlannerMarkerClicked(index)}>
-              <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
-                {event.imageUrl &&
-                  <img width='100%' height='100%' src={event.imageUrl} />
-                }
-                {!event.imageUrl &&
-                  <div style={{width: '100%', height: '100%', background: 'white'}} />
-                }
+            <MarkerWithLabel key={index} position={{lat: event.displayPosition.latitude, lng: event.displayPosition.longitude}} opacity={0} labelAnchor={this.state.clickedPlannerMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedPlannerMarkerIndex === index ? clickedPlannerMarkerStyle : unclickedPlannerMarkerStyle} onClick={() => this.onPlannerMarkerClicked(index)} zIndex={this.state.clickedPlannerMarkerIndex === index ? 2 : 1}>
+              <div>
+                <div style={this.state.clickedPlannerMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+                  {event.imageUrl &&
+                    <img width='100%' height='100%' src={event.imageUrl} />
+                  }
+                  {!event.imageUrl &&
+                    <div style={{width: '100%', height: '100%', background: 'white'}} />
+                  }
+                </div>
               </div>
             </MarkerWithLabel>
           )
         })}
+
+        {this.state.isPlannerInfoBoxOpen &&
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].displayPosition.latitude, this.state.plannerMarkers[this.state.clickedPlannerMarkerIndex].displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+            <div id='infobox'>
+              <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
+                <i className='material-icons'>location_on</i>
+                <i className='material-icons'>delete</i>
+              </div>
+            </div>
+          </InfoBox>
+        }
       </GoogleMap>
     )
   }
@@ -430,9 +545,29 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner daysArr={this.props.daysArr} events={this.props.events} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
 
-export default withRouter(MapPlannerHOC)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleDaysFilter: (dayInt) => {
+      dispatch(toggleDaysFilter(dayInt))
+    },
+    setCurrentlyFocusedEvent: (currentEventObj) => {
+      dispatch(setCurrentlyFocusedEvent(currentEventObj))
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
+    }
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+    mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr,
+    currentlyFocusedEvent: state.currentlyFocusedEvent
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MapPlannerHOC))

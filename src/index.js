@@ -13,6 +13,8 @@ import { plannerTimelineReducer } from './reducers/plannerTimelineReducer'
 import { plannerTimelineDayReducer } from './reducers/plannerTimelineDayReducer'
 import { cloudStorageReducer } from './reducers/cloudStorageReducer'
 import { spinnerReducer } from './reducers/spinnerReducer'
+import { mapPlannerCurrentFocusReducer } from './reducers/mapPlannerCurrentFocusReducer'
+import { mapPlannerDaysFilterReducer } from './reducers/mapPlannerDaysFilterReducer'
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
 
@@ -44,6 +46,8 @@ const store = createStore(combineReducers({
   token: userReducer,
   cloudStorageToken: cloudStorageReducer,
   showSpinner: spinnerReducer,
+  currentlyFocusedEvent: mapPlannerCurrentFocusReducer,
+  mapPlannerDaysFilterArr: mapPlannerDaysFilterReducer,
   apollo: client.reducer()
 }),
 {},

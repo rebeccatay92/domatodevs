@@ -20,6 +20,7 @@ export const deleteActivity = (activity) => {
   }
 }
 
+// DATE OR DAY?
 export const hoverOverActivity = (index, date) => {
   return {
     type: 'HOVER_OVER_ACTIVITY',
