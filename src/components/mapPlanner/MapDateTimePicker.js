@@ -32,7 +32,7 @@ class MapDateTimePicker extends Component {
         this.props.handleChange(dayInt, 'startDay')
         if (dateUnix > this.state.endDate.unix()) {
           this.setState({endDate: moment(e._d)})
-          this.props.handleChange('endDay', dayInt)
+          this.props.handleChange(dayInt, 'endDay')
         }
       } else if (field === 'endDate') {
         this.props.handleChange(dayInt, 'endDay')

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
+import moment from 'moment'
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
@@ -51,7 +52,8 @@ class MapCreateEventPopup extends Component {
       description: '', // except transport
       arrivalGooglePlaceData: {}, // only for transport
       eventObj: null,
-      showAllOpeningHours: false
+      showAllOpeningHours: false,
+      openingHoursStr: ''
     }
   }
 
@@ -179,10 +181,36 @@ class MapCreateEventPopup extends Component {
         var googlePlaceData = constructGooglePlaceDataObj(place)
         googlePlaceData
         .then(resolved => {
-          this.setState({googlePlaceData: resolved})
+          this.setState({googlePlaceData: resolved}, () => {
+            this.findOpeningHoursText()
+          })
         })
       }
     })
+  }
+
+  findOpeningHoursText () {
+    // datesArr here is in secs, not millisecs. cannot use helper.
+    if (this.props.datesArr) {
+      var dayInt = this.state.startDay
+      var dateUnix = this.props.datesArr[dayInt - 1]
+      var momentObj = moment.unix(dateUnix)
+      var dayStr = momentObj.format('dddd')
+      if (this.state.googlePlaceData.openingHoursText) {
+        var textArr = this.state.googlePlaceData.openingHoursText.filter(e => {
+          return e.indexOf(dayStr) > -1
+        })
+        var openingHoursStr = textArr[0]
+      }
+    } else {
+      if (this.state.googlePlaceData.openingHoursText) {
+        textArr = this.state.googlePlaceData.openingHoursText.filter(e => {
+          return e.indexOf('Monday') > -1
+        })
+        openingHoursStr = textArr[0]
+      }
+    }
+    this.setState({openingHoursStr: openingHoursStr})
   }
 
   changeEventType (type) {
@@ -197,26 +225,22 @@ class MapCreateEventPopup extends Component {
     } else {
       this.setState({
         [field]: e
+      }, () => {
+        if (field === 'startDay') {
+          this.findOpeningHoursText()
+        }
       })
     }
   }
 
   componentDidUpdate (prevProps, prevState) {
-
-    // unneeded if applydaysfilter is done here.
-    // if (this.props.mapEventsArr !== prevProps.mapEventsArr) {
-    //   if (this.props.mapEventsArr.length > prevProps.mapEventsArr.length) {
-    //     console.log('parent event arr successfully updated')
-    //   }
-    // }
-
     if (this.props.plannerMarkers !== prevProps.plannerMarkers) {
       var isCreatedEventInPlannerMarkers = _.find(this.props.plannerMarkers, function (e) {
         return (e.modelId === prevState.eventObj.modelId)
       })
       if (isCreatedEventInPlannerMarkers) {
-        console.log('isCreatedEventInPlannerMarkers', isCreatedEventInPlannerMarkers)
-        console.log('plannerMarkers', this.props.plannerMarkers)
+        // console.log('isCreatedEventInPlannerMarkers', isCreatedEventInPlannerMarkers)
+        // console.log('plannerMarkers', this.props.plannerMarkers)
         this.props.searchCreateEventSuccess(prevState.eventObj)
         this.props.setCurrentlyFocusedEvent(prevState.eventObj)
       }
@@ -240,10 +264,10 @@ class MapCreateEventPopup extends Component {
             <h5 style={{display: 'inline-block', fontSize: '12px', marginRight: '10px'}}>Opening hours: </h5>
             {place.openingHoursText && place.openingHoursText.length &&
               <div style={{display: 'inline-block'}} onClick={() => this.toggleOpeningHoursInfo()}>
-                <h5 style={{display: 'inline-block', cursor: 'pointer', fontSize: '12px'}} className={'ignoreOpeningHoursDropdownArrow'}>
-                  Find day of week
-                  <i className='material-icons' style={{verticalAlign: 'middle'}}>arrow_drop_down</i>
-                </h5>
+                <div style={{display: 'inline-block', cursor: 'pointer', width: '180px'}} className={'ignoreOpeningHoursDropdownArrow'}>
+                  <span style={{fontSize: '10px'}}>{this.state.openingHoursStr}</span>
+                  <i className='material-icons' style={{display: 'inline-block', verticalAlign: 'middle', align: 'right'}}>arrow_drop_down</i>
+                </div>
                 {this.state.showAllOpeningHours &&
                   <MapOpeningHoursDropdown textArr={place.openingHoursText} toggleOpeningHoursInfo={() => this.toggleOpeningHoursInfo()} outsideClickIgnoreClass={'ignoreOpeningHoursDropdownArrow'} />
                 }

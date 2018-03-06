@@ -82,10 +82,14 @@ export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
     address: googlePlaceData.address,
     telephone: googlePlaceData.telephone
   }
+  // datesArr here is from /planner route. unix in millisecs
   if (datesArr) {
     var dateUnix = datesArr[dayInt - 1]
+    // console.log('dateUnix', dateUnix)
     var momentTime = moment.utc(dateUnix)
+    // console.log('momentTime', momentTime)
     var momentDayStr = momentTime.format('dddd')
+    // console.log('momentDayStr', momentDayStr)
     if (googlePlaceData.openingHoursText) {
       var textArr = googlePlaceData.openingHoursText.filter(e => {
         return e.indexOf(momentDayStr) > -1
@@ -101,6 +105,6 @@ export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
       locationDetails.openingHours = textArr[0]
     }
   }
-  console.log(locationDetails);
+  console.log('in helper', locationDetails)
   return locationDetails
 }
