@@ -41,7 +41,11 @@ class IntuitiveActivityInput extends Component {
   resetState () {
     this.setState({
       googlePlaceData: {name: ''},
-      search: ''
+      search: '',
+      description: '',
+      endDate: '',
+      startTime: '',
+      endTime: ''
     })
   }
 
@@ -173,7 +177,12 @@ class IntuitiveActivityInput extends Component {
     })
 
     this.resetState()
-    this.props.toggleIntuitiveInput()
+    // this.props.toggleIntuitiveInput()
+    this.setState({
+      justCreated: true
+    }, () => this.setState({
+      justCreated: false
+    }))
   }
 
   componentDidMount () {
@@ -186,26 +195,45 @@ class IntuitiveActivityInput extends Component {
       <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', padding: '10px 0'}}}>
         <div style={{display: 'inline-block'}}>
           {this.state.descRequired && this.state.locRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Description or Location Required)</span>}
-          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} />
+          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} inputFocus={(e) => this.props.inputFocus(e)} inputBlur={(e) => this.props.inputBlur(e)} focus={this.state.justCreated} />
         </div>
         <div style={{display: 'inline-block'}}>
           <div>
-            <input type='text' placeholder='Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} />
+            <input type='text' placeholder='Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} value={this.state.description} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
           </div>
         </div>
         <div style={{display: 'inline-block'}}>
           <div style={{position: 'relative'}}>
-            {!this.state.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingStartTime: true})} />}
-            {(this.state.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={(e) => this.setState({editingStartTime: false})} />}
-            {!this.state.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingEndTime: true})} />}
-            {(this.state.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={(e) => this.setState({editingEndTime: false})} />}
-            {!this.state.endDate && !this.state.editingEndDate && <input type='text' placeholder='End Date' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingEndDate: true})} />}
+            {!this.state.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              this.setState({editingStartTime: true})
+              this.props.inputFocus(e)
+            }} />}
+            {(this.state.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={(e) => {
+              this.setState({editingStartTime: false})
+              this.props.inputBlur(e)
+            }} />}
+            {!this.state.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              this.setState({editingEndTime: true})
+              this.props.inputFocus(e)
+            }} />}
+            {(this.state.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={(e) => {
+              this.setState({editingEndTime: false})
+              this.props.inputBlur(e)
+            }} />}
+            {!this.state.endDate && !this.state.editingEndDate && <input type='text' placeholder='End Date' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              this.setState({editingEndDate: true})
+              this.props.inputFocus(e)
+            }} />}
             {(this.state.endDate || this.state.editingEndDate) && <div style={{display: 'inline-block', width: '86px', marginLeft: '8px'}} className='quickInputCalender'>
               <DatePicker
                 autoFocus
                 selected={this.state.endDate}
                 onChange={(e) => this.setState({endDate: moment(e._d)})}
-                onBlur={(e) => this.setState({editingEndDate: false})}
+                onBlur={(e) => {
+                  this.setState({editingEndDate: false})
+                  this.props.inputBlur(e)
+                }}
+                onFocus={(e) => this.props.inputFocus(e)}
                 minDate={moment(this.props.date)}
                 maxDate={moment(this.props.dates[this.props.dates.length - 1])}
               />

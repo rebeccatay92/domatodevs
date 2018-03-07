@@ -204,7 +204,7 @@ class FlightSearchParameters extends Component {
 
         {/* NEED TO STYLE MARGIN TOP HERE / INSIDE AIRPORTSEARCH */}
         <div style={{position: 'relative'}}>
-          <div style={{...eventDescContainerStyle, ...{width: '100%'}}}>
+          <div style={{...eventDescContainerStyle, ...{width: '100%'}, ...this.props.searching && {marginTop: '8px'}}}>
             <p style={{position: 'relative', fontWeight: '300', fontSize: '16px', margin: '0 0 8px 0'}}>Departure</p>
             <AirportSearch currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
           </div>
@@ -258,8 +258,8 @@ class FlightSearchParameters extends Component {
           </select>
         </div>
         {this.props.searching &&
-          <div style={{textAlign: 'right', marginRight: '20px'}} onClick={() => this.handleFlightSearch()}>
-            <h5>Search again</h5>
+          <div onClick={() => this.handleFlightSearch()}>
+            <span style={{position: 'absolute', right: 0, bottom: '4px', fontSize: '12px', fontWeight: 300, cursor: 'pointer'}}>Search again</span>
           </div>
         }
         <hr style={{display: 'block', height: '1px', margin: '32px 0', opacity: '0.3'}} />

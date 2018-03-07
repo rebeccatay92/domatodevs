@@ -187,10 +187,14 @@ export const columnValueContainerStyle = (columnType) => {
 export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', position: 'absolute', right: '0px', top: '28px', height: '14px', ':hover': {color: primaryColor}}
 
 // Create Event Form Styles
-export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
+// export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
+
+export const createEventFormContainerStyle = {position: 'inline-block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: `calc(50vh - ${totalHeight / 2}px) auto`}
 
 // Create Flight Form Styles
-export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
+// export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
+
+export const createFlightFormContainerStyle = {position: 'inline-block', width: '1290px', height: '869px', color: 'white', margin: `calc(50vh - ${869 / 2}px) auto`}
 
 // export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
 // height 100% since attachments is no longer at bottom
@@ -203,7 +207,7 @@ export const createEventFormRightPanelStyle = (type) => {
 }
 export const greyTintStyle = {position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, background: '#3C3A44', opacity: '0.7'}
 export const eventDescriptionStyle = (bgImage) => {
-  return {background: bgImage ? 'rgba(245, 245, 245, 0.4)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '300', width: '471px', position: 'relative', height: '35px', padding: '8px', borderRadius: '2px'}
+  return {background: bgImage ? 'rgba(245, 245, 245, 0.1)' : 'inherit', outline: 'none', border: 'none', fontSize: '16px', fontWeight: '300', width: '471px', position: 'relative', height: '35px', padding: '8px', borderRadius: '2px', borderBottom: '1px solid white'}
 }
 
 export const eventWarningStyle = (bgImage) => {
@@ -225,10 +229,14 @@ export const locationSelectionInputStyle = (marginTop, type) => {
 }
 export const locationDropdownStyle = {width: '471px', maxHeight: '250px', overflowY: 'auto', background: 'white', position: 'absolute', zIndex: '2'}
 
-export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
+// export const locationMapContainerStyle = {backgroundColor: 'white', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: leftPanelWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'black'}
+
+export const locationMapContainerStyle = {position: 'absolute', width: leftPanelWidth + 'px', height: totalHeight + 'px', color: 'black'}
 
 // POSITION FIXED, MOVE FURTHER RIGHT
-export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 398px - 247px)', top: `calc(50% - 434.5px)`, width: '796px', height: '869px', zIndex: 999, color: 'black'}
+// export const flightMapContainerStyle = {backgroundColor: 'white', position: 'fixed', right: 'calc(50% - 398px - 247px)', top: `calc(50% - 434.5px)`, width: '796px', height: '869px', zIndex: 999, color: 'black'}
+
+export const flightMapContainerStyle = {position: 'absolute', width: '796px', height: '869px', color: 'black', zIndex: '1000', left: 494 - 32 + 'px', top: '-221.67px'}
 
 // DateTimePicker.js styles
 export const dateTimePickerContainerStyle = {position: 'relative', whiteSpace: 'noWrap', marginTop: '16px'}

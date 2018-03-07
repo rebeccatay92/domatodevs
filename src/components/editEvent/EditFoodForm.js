@@ -380,7 +380,7 @@ class EditFoodForm extends Component {
 
   render () {
     return (
-      <div style={createEventFormContainerStyle}>
+      <div className='eventFormContainer' style={createEventFormContainerStyle}>
 
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>

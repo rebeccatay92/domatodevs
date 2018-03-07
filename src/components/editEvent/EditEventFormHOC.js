@@ -20,7 +20,7 @@ class EditEventFormHOC extends Component {
   render () {
     const EditEventForm = this.components[this.props.eventType]
     return (
-      <div>
+      <div style={{backgroundColor: 'transparent', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
         <Style rules={{
           html: {
             overflowY: 'hidden'
