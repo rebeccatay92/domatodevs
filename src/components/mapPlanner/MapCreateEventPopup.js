@@ -7,7 +7,7 @@ import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
-import MapArrivalSearchResult from './MapArrivalSearchResult'
+import MapArrivalSearchDropdown from './MapArrivalSearchDropdown'
 
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 // import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
@@ -276,9 +276,17 @@ class MapCreateEventPopup extends Component {
   searchArrivalLocation (queryStr) {
     // console.log('search by str', queryStr)
 
-    // trim whitespace. dont send req if there are no chars
+    // clear old results first
+    this.setState({arrivalSearchResults: []})
+
+    // trim whitespace. dont send req if there are no chars. also close dropdown
     queryStr = _.trim(queryStr)
-    if (!queryStr.length) return
+    if (!queryStr.length) {
+      this.setState({
+        isArrivalSearching: false
+      })
+      return
+    }
     // var request = {
     //   bounds: LatLngBounds, LatLngBoundsLiteral,
     //   location: LatLng, LatLngLiteral,
@@ -318,6 +326,18 @@ class MapCreateEventPopup extends Component {
     })
   }
 
+  closeSearchDropdown () {
+    this.setState({
+      isArrivalSearching: false
+    })
+  }
+
+  onArrivalSearchFocus () {
+    this.setState({
+      isArrivalSearching: true
+    })
+  }
+
   render () {
     var place = this.state.googlePlaceData
     if (!place.placeId) return <span>Loading</span>
@@ -348,20 +368,22 @@ class MapCreateEventPopup extends Component {
           {/* DESCRIPTION OR LOCATION INPUT */}
           <div style={{width: '100%'}}>
             {this.state.eventType !== 'LandTransport' &&
-              <input type='text' placeholder='Description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+            <div>
+              <h5 style={{fontSize: '12px'}}>Description</h5>
+              <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+            </div>
             }
             {/* IF TRANSPORT USE TEXT SEARCH FOR ARRIVAL LOCATION */}
             {this.state.eventType === 'LandTransport' &&
               <div>
-                <input type='text' placeholder='Arrival Location' value={this.state.arrivalSearch} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+                <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
+                <input type='text' placeholder='Search for an arrival location' value={this.state.arrivalSearch} onFocus={() => this.onArrivalSearchFocus()} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} className={'ignoreArrivalSearchInput'} />
 
                 {/* DROPDOWN STYLING IS BROKEN. NEED TO BE SAME WIDTH, PADDING AS INPUT FIELD */}
                 {this.state.isArrivalSearching && this.state.arrivalSearchResults.length > 0 &&
                   <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
-                    {/* NOT SAME COMPONENT AS GOOGLEPLACERESULT. SELECTLOCATION USES MAP PLACES SERVICE GETDETAILS INSTEAD OF JS API PLACESDETAILS*/}
-                    {this.state.arrivalSearchResults.map((result, i) => {
-                      return <MapArrivalSearchResult key={i} result={result} selectArrivalLocation={(place) => this.selectArrivalLocation(place)} />
-                    })}
+                    {/* NOT SAME COMPONENT AS LOCATIONSEARCH/GOOGLEPLACERESULT. USES MAP PLACES SERVICE GETDETAILS INSTEAD OF JS API PLACESDETAILS */}
+                    <MapArrivalSearchDropdown outsideClickIgnoreClass={'ignoreArrivalSearchInput'} arrivalSearchResults={this.state.arrivalSearchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectArrivalLocation={(place) => this.selectArrivalLocation(place)} />
                   </div>
                 }
               </div>

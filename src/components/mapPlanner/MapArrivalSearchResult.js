@@ -3,7 +3,7 @@ import Radium from 'radium'
 
 class MapArrivalSearchResult extends Component {
   selectArrivalLocation () {
-    // console.log('clicked result', this.props.result)
+    console.log('clicked result', this.props.result)
     var request = {placeId: this.props.result.place_id}
     var service = new window.google.maps.places.PlacesService(document.createElement('div'))
     service.getDetails(request, (place, status) => {
