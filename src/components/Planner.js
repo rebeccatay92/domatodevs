@@ -25,6 +25,7 @@ const getDates = (startDate, days) => {
 class Planner extends Component {
   constructor (props) {
     super(props)
+    this.handleScrollBound = (e) => this.handleScroll(e)
 
     this.state = {
       draggable: true
@@ -98,22 +99,23 @@ class Planner extends Component {
   }
 
   componentDidMount () {
-    document.addEventListener('scroll', (e) => this.handleScroll(e))
+    document.addEventListener('scroll', this.handleScrollBound)
   }
 
   componentWillUnmount () {
-    document.removeEventListener('scroll', (e) => this.handleScroll(e))
+    document.removeEventListener('scroll', this.handleScrollBound)
   }
 
   handleScroll (e) {
     function offset (el) {
-      const rect = el.getBoundingClientRect(),
-        scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const rect = el.getBoundingClientRect()
+        // scrollTop = window.pageYOffset || document.documentElement.scrollTop
       return { top: rect.top }
     }
 
     var div = document.querySelector('#timeline-top')
-    var divOffset = offset(div)
+    var divOffset
+    divOffset = offset(div)
     const days = this.props.data.findItinerary.days
     let obj = {}
     for (var i = 1; i <= days; i++) {

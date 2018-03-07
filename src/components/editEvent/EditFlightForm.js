@@ -6,7 +6,7 @@ import moment from 'moment'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { Button } from 'react-bootstrap'
 
-import { labelStyle, createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
+import { labelStyle, createFlightFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
 
 import EditFormAirhobParams from '../eventFormComponents/EditFormAirhobParams'
 import FlightDetailsContainerRework from '../eventFormComponents/FlightDetailsContainerRework'
@@ -537,7 +537,7 @@ class EditFlightForm extends Component {
 
   render () {
     return (
-      <div style={createEventFormContainerStyle}>
+      <div className='flightFormContainer' style={createFlightFormContainerStyle}>
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
         <div style={createEventFormBoxShadow}>
 
