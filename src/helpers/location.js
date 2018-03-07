@@ -82,7 +82,7 @@ export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
     address: googlePlaceData.address,
     telephone: googlePlaceData.telephone
   }
-  // datesArr here is from /planner route. unix in millisecs
+  // datesArr here needs to be unix in millisecs
   if (datesArr) {
     var dateUnix = datesArr[dayInt - 1]
     // console.log('dateUnix', dateUnix)

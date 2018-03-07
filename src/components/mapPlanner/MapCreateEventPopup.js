@@ -21,6 +21,8 @@ import { createFood } from '../../apollo/food'
 import { createLodging } from '../../apollo/lodging'
 import { createLandTransport } from '../../apollo/landtransport'
 
+import CreateActivityForm from '../createEvent/CreateActivityForm'
+
 const _ = require('lodash')
 
 const defaultBackgrounds = {
@@ -58,7 +60,8 @@ class MapCreateEventPopup extends Component {
       // SEARCH ARRIVAL LOCATION FOR TRANSPORT ONLY
       isArrivalSearching: false,
       arrivalSearch: '', // str to search for arrival locations
-      arrivalSearchResults: []
+      arrivalSearchResults: [],
+      openForm: false
     }
   }
 
@@ -173,6 +176,9 @@ class MapCreateEventPopup extends Component {
 
   toggleCreateEventForm () {
     console.log('open create event form', this.state.eventType)
+    this.setState({
+      openForm: true
+    })
   }
 
   componentDidMount () {
@@ -359,6 +365,11 @@ class MapCreateEventPopup extends Component {
   render () {
     var place = this.state.googlePlaceData
     if (!place.placeId) return <span>Loading</span>
+    if (this.state.openForm) {
+      return (
+        <CreateActivityForm ItineraryId={this.props.ItineraryId} day={1} date={null} dates={null} daysArr={this.props.daysArr} />
+      )
+    }
     return (
       <div>
         <div style={{width: '100%'}}>

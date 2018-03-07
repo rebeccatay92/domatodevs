@@ -18,6 +18,9 @@ class CreateEventFormHOC extends Component {
     }
   }
   render () {
+    console.log('this.props.dates arr', this.props.dates)
+    console.log('this.props.date', this.props.date)
+
     const CreateEventForm = this.components[this.props.eventType]
     return (
       <div>
@@ -26,6 +29,7 @@ class CreateEventFormHOC extends Component {
             overflowY: 'hidden'
           }
         }} />
+        {/* DATES ARR HERE IS JS DATE OBJECT. PROP.DATE IS MILLISECS */}
         <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} eventType={this.props.eventType} toggleCreateEventType={() => this.props.toggleCreateEventType()} />
       </div>
     )

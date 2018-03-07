@@ -236,7 +236,7 @@ class CreateActivityForm extends Component {
   }
 
   componentDidMount () {
-    console.log(this.state);
+    console.log(this.state)
     this.props.retrieveCloudStorageToken()
 
     this.props.cloudStorageToken.then(obj => {
