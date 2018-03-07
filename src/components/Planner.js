@@ -25,7 +25,7 @@ const getDates = (startDate, days) => {
 class Planner extends Component {
   constructor (props) {
     super(props)
-    this.handleScroll = (e) => this.handleScroll(e)
+    this.handleScrollBound = (e) => this.handleScroll(e)
 
     this.state = {
       draggable: true
@@ -99,11 +99,11 @@ class Planner extends Component {
   }
 
   componentDidMount () {
-    document.addEventListener('scroll', this.handleScroll)
+    document.addEventListener('scroll', this.handleScrollBound)
   }
 
   componentWillUnmount () {
-    document.removeEventListener('scroll', this.handleScroll)
+    document.removeEventListener('scroll', this.handleScrollBound)
   }
 
   handleScroll (e) {
