@@ -220,6 +220,15 @@ class MapCreateEventPopup extends Component {
 
   changeEventType (type) {
     this.setState({eventType: type})
+
+    if (type !== 'LandTransport') {
+      this.setState({
+        arrivalSearch: '',
+        isArrivalSearching: false,
+        arrivalSearchResults: [],
+        arrivalGooglePlaceData: {}
+      })
+    }
   }
 
   handleChange (e, field) {
@@ -326,6 +335,15 @@ class MapCreateEventPopup extends Component {
     })
   }
 
+  clearSearch () {
+    this.setState({
+      isArrivalSearching: false,
+      arrivalSearchResults: [],
+      arrivalSearch: '',
+      arrivalGooglePlaceData: {}
+    })
+  }
+
   closeSearchDropdown () {
     this.setState({
       isArrivalSearching: false
@@ -368,18 +386,18 @@ class MapCreateEventPopup extends Component {
           {/* DESCRIPTION OR LOCATION INPUT */}
           <div style={{width: '100%'}}>
             {this.state.eventType !== 'LandTransport' &&
-            <div>
-              <h5 style={{fontSize: '12px'}}>Description</h5>
-              <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
-            </div>
+              <div>
+                <h5 style={{fontSize: '12px'}}>Description</h5>
+                <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+              </div>
             }
-            {/* IF TRANSPORT USE TEXT SEARCH FOR ARRIVAL LOCATION */}
+            {/* IF TRANSPORT USE PLACESSERVICE FOR ARRIVAL LOCATION */}
             {this.state.eventType === 'LandTransport' &&
               <div>
                 <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
-                <input type='text' placeholder='Search for an arrival location' value={this.state.arrivalSearch} onFocus={() => this.onArrivalSearchFocus()} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} className={'ignoreArrivalSearchInput'} />
-
-                {/* DROPDOWN STYLING IS BROKEN. NEED TO BE SAME WIDTH, PADDING AS INPUT FIELD */}
+                <input type='text' placeholder='Search for an arrival location' value={this.state.arrivalSearch} onFocus={() => this.onArrivalSearchFocus()} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreArrivalSearchInput'} />
+                <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
+                {/* DROPDOWN STYLING IS BROKEN. NEED TO BE SAME WIDTH AS INPUT FIELD */}
                 {this.state.isArrivalSearching && this.state.arrivalSearchResults.length > 0 &&
                   <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
                     {/* NOT SAME COMPONENT AS LOCATIONSEARCH/GOOGLEPLACERESULT. USES MAP PLACES SERVICE GETDETAILS INSTEAD OF JS API PLACESDETAILS */}
