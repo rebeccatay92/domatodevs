@@ -543,6 +543,7 @@ class Map extends Component {
             </div>
           </InfoBox>
         }
+
       </GoogleMap>
     )
   }

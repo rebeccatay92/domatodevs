@@ -7,6 +7,7 @@ import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
+import MapArrivalSearchResult from './MapArrivalSearchResult'
 
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 // import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
@@ -53,7 +54,11 @@ class MapCreateEventPopup extends Component {
       arrivalGooglePlaceData: {}, // only for transport
       eventObj: null,
       showAllOpeningHours: false,
-      openingHoursStr: ''
+      openingHoursStr: '',
+      // SEARCH ARRIVAL LOCATION FOR TRANSPORT ONLY
+      isArrivalSearching: false,
+      arrivalSearch: '', // str to search for arrival locations
+      arrivalSearchResults: []
     }
   }
 
@@ -174,7 +179,7 @@ class MapCreateEventPopup extends Component {
     var request = {placeId: this.props.placeId}
     var service = new window.google.maps.places.PlacesService(document.createElement('div'))
     service.getDetails(request, (place, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+      if (status === 'OK') {
         if (place.photos && place.photos[0]) {
           place.imageUrl = place.photos[0].getUrl({maxWidth: 200})
         }
@@ -231,10 +236,19 @@ class MapCreateEventPopup extends Component {
         }
       })
     }
+    if (field === 'arrivalSearch') {
+      this.setState({
+        arrivalSearch: e.target.value,
+        isArrivalSearching: true
+      })
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if (this.props.plannerMarkers !== prevProps.plannerMarkers) {
+    // event has been created -> state here will have eventObj. wait for parent to add new event to plannerMarkers -> trigger here.
+
+    // if plannerMarkers change due to changing day checkbox (but popup is open) -> eventobj here is null. do not _.find
+    if (this.props.plannerMarkers !== prevProps.plannerMarkers && prevState.eventObj) {
       var isCreatedEventInPlannerMarkers = _.find(this.props.plannerMarkers, function (e) {
         return (e.modelId === prevState.eventObj.modelId)
       })
@@ -249,6 +263,59 @@ class MapCreateEventPopup extends Component {
 
   toggleOpeningHoursInfo () {
     this.setState({showAllOpeningHours: !this.state.showAllOpeningHours}, () => console.log('state', this.state.showAllOpeningHours))
+  }
+
+  customDebounce () {
+    var queryStr = this.state.arrivalSearch
+    clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      this.searchArrivalLocation(queryStr)
+    }, 500)
+  }
+
+  searchArrivalLocation (queryStr) {
+    // console.log('search by str', queryStr)
+
+    // trim whitespace. dont send req if there are no chars
+    queryStr = _.trim(queryStr)
+    if (!queryStr.length) return
+    // var request = {
+    //   bounds: LatLngBounds, LatLngBoundsLiteral,
+    //   location: LatLng, LatLngLiteral,
+    //   query: string,
+    //   radius: numberMetres,
+    //   type: string
+    // }
+    var request = {
+      query: queryStr,
+      location: {
+        lat: this.state.googlePlaceData.latitude,
+        lng: this.state.googlePlaceData.longitude
+      }
+    }
+    var service = new window.google.maps.places.PlacesService(document.createElement('div'))
+    service.textSearch(request, (resultsArr, status, pagination) => {
+      // console.log('status', status)
+      if (status === 'OK') {
+        // console.log('results', resultsArr)
+        this.setState({arrivalSearchResults: resultsArr})
+      }
+    })
+  }
+
+  selectArrivalLocation (place) {
+    // will receive place (with imageUrl) from dropdown result, constructGooglePlaceDataObj with helper. set to arrivalGooglePlaceData
+    // console.log('in popup', place)
+    var arrivalGooglePlaceData = constructGooglePlaceDataObj(place)
+
+    arrivalGooglePlaceData
+    .then(resolved => {
+      this.setState({
+        arrivalGooglePlaceData: resolved,
+        isArrivalSearching: false,
+        arrivalSearch: resolved.name
+      }, () => console.log('state', this.state))
+    })
   }
 
   render () {
@@ -266,7 +333,7 @@ class MapCreateEventPopup extends Component {
               <div style={{display: 'inline-block'}} onClick={() => this.toggleOpeningHoursInfo()}>
                 <div style={{display: 'inline-block', cursor: 'pointer', width: '180px'}} className={'ignoreOpeningHoursDropdownArrow'}>
                   <span style={{fontSize: '10px'}}>{this.state.openingHoursStr}</span>
-                  <i className='material-icons' style={{display: 'inline-block', verticalAlign: 'middle', align: 'right'}}>arrow_drop_down</i>
+                  <i className='material-icons' style={{display: 'inline-block', verticalAlign: 'middle', float: 'right'}}>arrow_drop_down</i>
                 </div>
                 {this.state.showAllOpeningHours &&
                   <MapOpeningHoursDropdown textArr={place.openingHoursText} toggleOpeningHoursInfo={() => this.toggleOpeningHoursInfo()} outsideClickIgnoreClass={'ignoreOpeningHoursDropdownArrow'} />
@@ -283,8 +350,21 @@ class MapCreateEventPopup extends Component {
             {this.state.eventType !== 'LandTransport' &&
               <input type='text' placeholder='Description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
             }
+            {/* IF TRANSPORT USE TEXT SEARCH FOR ARRIVAL LOCATION */}
             {this.state.eventType === 'LandTransport' &&
-              <div>arrival location</div>
+              <div>
+                <input type='text' placeholder='Arrival Location' value={this.state.arrivalSearch} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+
+                {/* DROPDOWN STYLING IS BROKEN. NEED TO BE SAME WIDTH, PADDING AS INPUT FIELD */}
+                {this.state.isArrivalSearching && this.state.arrivalSearchResults.length > 0 &&
+                  <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
+                    {/* NOT SAME COMPONENT AS GOOGLEPLACERESULT. SELECTLOCATION USES MAP PLACES SERVICE GETDETAILS INSTEAD OF JS API PLACESDETAILS*/}
+                    {this.state.arrivalSearchResults.map((result, i) => {
+                      return <MapArrivalSearchResult key={i} result={result} selectArrivalLocation={(place) => this.selectArrivalLocation(place)} />
+                    })}
+                  </div>
+                }
+              </div>
             }
           </div>
 
