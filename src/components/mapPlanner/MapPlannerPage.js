@@ -6,6 +6,8 @@ import { initializePlanner } from '../../actions/plannerActions'
 import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
 import MapPlannerHOC from './MapPlannerHOC'
+import CreateEventFormHOC from '../createEvent/CreateEventFormHOC'
+
 const _ = require('lodash')
 
 const backgroundColor = '#FAFAFA'
@@ -38,6 +40,7 @@ class MapPlannerPage extends Component {
           <MapPlannerHOC ItineraryId={this.props.match.params.itineraryId} events={this.props.events} days={this.state.days} daysArr={this.state.daysArr} datesArr={this.state.datesArr} />
         </div>
         {/* <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div> */}
+        {/* <CreateEventFormHOC ItineraryId={this.props.ItineraryId} day={1} date={null} dates={null} daysArr={this.state.daysArr} eventType={'Activity'} /> */}
       </div>
     )
   }

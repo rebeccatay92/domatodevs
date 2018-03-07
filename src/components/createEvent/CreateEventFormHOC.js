@@ -18,8 +18,8 @@ class CreateEventFormHOC extends Component {
     }
   }
   render () {
-    console.log('this.props.dates arr', this.props.dates)
-    console.log('this.props.date', this.props.date)
+    // console.log('this.props.dates arr', this.props.dates)
+    // console.log('this.props.date', this.props.date)
 
     const CreateEventForm = this.components[this.props.eventType]
     return (

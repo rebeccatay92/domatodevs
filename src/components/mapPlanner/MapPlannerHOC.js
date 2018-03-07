@@ -10,6 +10,7 @@ import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
 import MarkerWithLabel from 'react-google-maps/lib/components/addons/MarkerWithLabel'
 
 import MapCreateEventPopup from './MapCreateEventPopup'
+import CreateEventFormHOC from '../createEvent/CreateEventFormHOC'
 
 const _ = require('lodash')
 

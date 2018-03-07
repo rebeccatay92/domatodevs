@@ -21,7 +21,7 @@ import { createFood } from '../../apollo/food'
 import { createLodging } from '../../apollo/lodging'
 import { createLandTransport } from '../../apollo/landtransport'
 
-import CreateActivityForm from '../createEvent/CreateActivityForm'
+import CreateEventFormHOC from '../createEvent/CreateEventFormHOC'
 
 const _ = require('lodash')
 
@@ -365,11 +365,6 @@ class MapCreateEventPopup extends Component {
   render () {
     var place = this.state.googlePlaceData
     if (!place.placeId) return <span>Loading</span>
-    if (this.state.openForm) {
-      return (
-        <CreateActivityForm ItineraryId={this.props.ItineraryId} day={1} date={null} dates={null} daysArr={this.props.daysArr} />
-      )
-    }
     return (
       <div>
         <div style={{width: '100%'}}>
@@ -430,6 +425,10 @@ class MapCreateEventPopup extends Component {
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.props.closeSearchPopup()}>Cancel</Button>
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleCreateEventForm()} >More</Button>
         </div>
+
+        {this.state.openForm &&
+          <CreateEventFormHOC ItineraryId={this.props.ItineraryId} day={1} date={null} dates={null} daysArr={this.props.daysArr} eventType={'Activity'} />
+        }
       </div>
     )
   }
