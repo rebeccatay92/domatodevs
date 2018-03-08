@@ -79,8 +79,8 @@ class MapDateTimePicker extends Component {
       })
       if (this.props.datesArr) {
         this.setState({
-          startDate: moment.unix(this.props.datesArr[this.props.startDay]),
-          endDate: moment.unix(this.props.datesArr[this.props.endDay])
+          startDate: moment.unix(this.props.datesArr[this.props.startDay - 1]),
+          endDate: moment.unix(this.props.datesArr[this.props.endDay - 1])
         })
       }
     }
@@ -105,7 +105,6 @@ class MapDateTimePicker extends Component {
   }
 
   render () {
-    console.log(this.state)
     return (
       <div style={{width: '100%', marginTop: '10px', marginBottom: '10px'}}>
 

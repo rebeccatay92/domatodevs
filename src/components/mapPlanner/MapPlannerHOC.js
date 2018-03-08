@@ -434,7 +434,7 @@ class Map extends Component {
           e.flightInstanceId === focus.flightInstanceId
         )
       })
-      // console.log('currentlyFocusedMarker', currentlyFocusedMarker)
+      console.log('currentlyFocusedMarker', currentlyFocusedMarker)
     }
 
     return (
@@ -541,7 +541,7 @@ class Map extends Component {
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapEditEventPopup marker={currentlyFocusedMarker} daysArr={this.props.daysArr} datesArr={this.props.datesArr} />
+              <MapEditEventPopup marker={currentlyFocusedMarker} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} />
             </div>
           </InfoBox>
         }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
@@ -8,10 +8,27 @@ import MapLocationSearchDropdown from './MapLocationSearchDropdown'
 import MapEventToggles from './MapEventToggles'
 
 import { constructGooglePlaceDataObj } from '../../helpers/location'
+import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
 
 import moment from 'moment'
 import { Button } from 'react-bootstrap'
+
+import { graphql, compose } from 'react-apollo'
+import { queryItinerary } from '../../apollo/itinerary'
+import { changingLoadSequence } from '../../apollo/changingLoadSequence'
+import { updateActivity } from '../../apollo/activity'
+import { updateFood } from '../../apollo/food'
+import { updateLodging } from '../../apollo/lodging'
+import { updateLandTransport } from '../../apollo/landtransport'
+
 const _ = require('lodash')
+
+const apolloUpdateEventNaming = {
+  'Activity': 'updateActivity',
+  'Food': 'updateFood',
+  'Lodging': 'updateLodging',
+  'LandTransport': 'updateLandTransport'
+}
 
 const mapInfoBoxButtonStyle = {marginRight: '8px', marginBottom: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '30px', fontSize: '12px', padding: '6px'}
 
@@ -38,14 +55,71 @@ class MapEditEventPopup extends Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (this.props.marker !== nextProps.marker) {
+      var marker = nextProps.marker
+      var eventType = marker.eventType
+
+      if (eventType !== 'Flight') {
+        var event = marker.event
+      } else {
+        event = marker.event.FlightInstance
+      }
+      // console.log('marker', marker)
+      // console.log('event row', event)
+
+      var startDay = event.startDay
+      var endDay = event.endDay
+      var startTime = event.startTime
+      var endTime = event.endTime
+      if (eventType === 'Activity' || eventType === 'Food' || eventType === 'Lodging') {
+        var description = event.description
+        var googlePlaceData = marker.location
+      }
+      if (eventType === 'LandTransport' || eventType === 'Flight') {
+        // check marker start is true or false to assign either departure or arrival to location.
+        if (marker.start) {
+          googlePlaceData = event.departureLocation
+          var start = true
+          var searchStr = event.arrivalLocation.name
+          var locationSearchIsFor = 'arrival'
+        } else {
+          googlePlaceData = event.arrivalLocation
+          start = false
+          searchStr = event.departureLocation.name
+          locationSearchIsFor = 'departure'
+        }
+        var arrivalGooglePlaceData = event.arrivalLocation
+        var departureGooglePlaceData = event.departureLocation
+      }
+
+      this.setState({
+        eventType,
+        startDay,
+        endDay,
+        startTime,
+        endTime,
+        description,
+        googlePlaceData,
+        arrivalGooglePlaceData,
+        departureGooglePlaceData,
+        start,
+        locationSearchIsFor: locationSearchIsFor || '',
+        searchStr: searchStr || ''
+      }, () => {
+        this.findOpeningHoursText()
+      })
+    }
+  }
+
   componentDidMount () {
     var marker = this.props.marker
     var eventType = marker.eventType
 
     if (eventType !== 'Flight') {
-      var event = this.props.marker.event
+      var event = marker.event
     } else {
-      event = this.props.marker.event.FlightInstance
+      event = marker.event.FlightInstance
     }
     // console.log('marker', marker)
     // console.log('event row', event)
@@ -132,12 +206,111 @@ class MapEditEventPopup extends Component {
   }
 
   handleSubmit () {
-    console.log('state', this.state)
+    // console.log('state', this.state)
+    // im not gonna bother comparing fields against props to see if it has changed
+    var temp = {
+      id: this.props.marker.modelId,
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      startTime: this.state.startTime,
+      endTime: this.state.startTime
+    }
+    if (this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') {
+      temp.description = this.state.description
+    }
+    if (this.state.eventType === 'LandTransport') {
+      if (this.state.locationSearchIsFor === 'arrival') {
+        // attach googlePlaceData only if the id is missing (ie new selection)
+        if (!this.state.arrivalGooglePlaceData.id) {
+          temp.arrivalGooglePlaceData = this.state.arrivalGooglePlaceData
+        }
+      } else {
+        if (!this.state.departureGooglePlaceData.id) {
+          temp.departureGooglePlaceData = this.state.departureGooglePlaceData
+        }
+      }
+    }
+    console.log('temp', temp)
 
-    // var commonFields = ['startDay', 'endDay', 'startTime', 'endTime']
-    // var updatedEvent = {
-    //   id: this.props.modelId
-    // }
+    // CONSTRUCT OBJ TO SEND TO LOAD SEQ HELPER
+    var helperObj = {
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime
+    }
+    if (this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') {
+      helperObj.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+    if (this.state.eventType === 'LandTransport') {
+      helperObj.departureUtcOffset = this.state.departureGooglePlaceData.utcOffset
+      helperObj.arrivalUtcOffset = this.state.arrivalGooglePlaceData.utcOffset
+    }
+    console.log('helperObj', helperObj)
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, this.state.eventType, temp.id, helperObj)
+    console.log('helperOutput', helperOutput)
+
+    if (this.state.eventType === 'LandTransport' || this.state.eventType === 'Lodging') {
+      temp.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+      temp.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    } if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
+      temp.loadSequence = helperOutput.updateEvent.loadSequence
+    }
+
+    var loadSequenceChanges = helperOutput.loadSequenceInput
+    if (loadSequenceChanges.length) {
+      this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
+    }
+
+    var apolloNamespace = apolloUpdateEventNaming[this.state.eventType]
+    // console.log('namespace', apolloNamespace)
+
+    this.props[`${apolloNamespace}`]({
+      variables: helperOutput.temp,
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: {id: this.props.ItineraryId}
+      }]
+    })
+    .then(resolved => {
+      var modelId = resolved.data[`${apolloNamespace}`].id
+      var eventType = this.state.eventType
+      var start = this.state.start
+      // day depends on whether this is start or end row
+      // load seq also depends on start or end row
+      if (eventType === 'Activity' || eventType === 'Food' || eventType) {
+        var day = temp.startDay
+        var loadSequence = temp.startDay
+      }
+      if (eventType === 'Lodging' || eventType === 'LandTransport') {
+        day = start ? temp.startDay : temp.endDay
+        loadSequence = start ? temp.startDay : temp.endDay
+      }
+
+      var eventObj = {
+        modelId,
+        eventType,
+        day,
+        loadSequence,
+        start,
+        flightInstanceId: null
+      }
+      this.setState({eventObj: eventObj}, () => {
+        console.log('set state eventObj', this.state.eventObj)
+      })
+
+      // SET UP DAYS FILTER TO MATCH UPDATE EVENT DAY
+      if (!this.props.daysFilterArr.includes(eventObj.day)) {
+        this.props.toggleDaysFilter(eventObj.day)
+      }
+    })
+    .catch(err => {
+      console.log('err', err)
+    })
   }
 
   handleChange (e, field) {
@@ -323,12 +496,22 @@ class MapEditEventPopup extends Component {
   }
 }
 
+
 const mapDispatchToProps = (dispatch) => {
   return {
-    clearCurrentlyFocusedEvent: () => {
-      dispatch(clearCurrentlyFocusedEvent())
+    toggleDaysFilter: (dayInt) => {
+      dispatch(toggleDaysFilter(dayInt))
+    },
+    setCurrentlyFocusedEvent: (currentEventObj) => {
+      dispatch(setCurrentlyFocusedEvent(currentEventObj))
     }
   }
 }
 
-export default connect(null, mapDispatchToProps)(MapEditEventPopup)
+export default connect(null, mapDispatchToProps)(compose(
+  graphql(updateActivity, {name: 'updateActivity'}),
+  graphql(updateFood, {name: 'updateFood'}),
+  graphql(updateLodging, {name: 'updateLodging'}),
+  graphql(updateLandTransport, {name: 'updateLandTransport'}),
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'})
+)(MapEditEventPopup))
