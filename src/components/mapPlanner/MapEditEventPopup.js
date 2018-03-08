@@ -132,8 +132,12 @@ class MapEditEventPopup extends Component {
   }
 
   handleSubmit () {
-    // save edits. send apollo req
-    console.log('save edits')
+    console.log('state', this.state)
+
+    // var commonFields = ['startDay', 'endDay', 'startTime', 'endTime']
+    // var updatedEvent = {
+    //   id: this.props.modelId
+    // }
   }
 
   handleChange (e, field) {

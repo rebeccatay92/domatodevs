@@ -71,14 +71,18 @@ class MapDateTimePicker extends Component {
       })
     }
 
-    // initialize date time for map planner popup
-    if (this.props.datesArr && this.props.formType === 'edit') {
+    // initialize dates / time for map planner popup
+    if (this.props.formType === 'edit') {
       this.setState({
-        startDate: moment.unix(this.props.datesArr[this.props.startDay]),
-        endDate: moment.unix(this.props.datesArr[this.props.endDay]),
         startTime: moment.unix(this.props.startTimeUnix).utc().format('HH:mm'),
         endTime: moment.unix(this.props.endTimeUnix).utc().format('HH:mm')
       })
+      if (this.props.datesArr) {
+        this.setState({
+          startDate: moment.unix(this.props.datesArr[this.props.startDay]),
+          endDate: moment.unix(this.props.datesArr[this.props.endDay])
+        })
+      }
     }
   }
 
@@ -101,6 +105,7 @@ class MapDateTimePicker extends Component {
   }
 
   render () {
+    console.log(this.state)
     return (
       <div style={{width: '100%', marginTop: '10px', marginBottom: '10px'}}>
 
