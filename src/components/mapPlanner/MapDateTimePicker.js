@@ -39,7 +39,6 @@ class MapDateTimePicker extends Component {
       }
     }
     if (field === 'startTime' || field === 'endTime') {
-      this.setState({[field]: e.target.value})
       // calculate unix for parent state
       if (e.target.value) {
         var timeStr = e.target.value
@@ -70,6 +69,34 @@ class MapDateTimePicker extends Component {
         startDate: moment.unix(this.props.datesArr[0]),
         endDate: moment.unix(this.props.datesArr[0])
       })
+    }
+
+    // initialize date time for map planner popup
+    if (this.props.datesArr && this.props.formType === 'edit') {
+      this.setState({
+        startDate: moment.unix(this.props.datesArr[this.props.startDay]),
+        endDate: moment.unix(this.props.datesArr[this.props.endDay]),
+        startTime: moment.unix(this.props.startTimeUnix).utc().format('HH:mm'),
+        endTime: moment.unix(this.props.endTimeUnix).utc().format('HH:mm')
+      })
+    }
+  }
+
+  // receive unix from parent. convert to HH:mm str for internal state
+  componentWillReceiveProps (nextProps) {
+    // set default start time string
+    // receive startTime, endTime unix as props. set the str
+    if (this.props.startTimeUnix !== nextProps.startTimeUnix) {
+      var startTimeUnix = nextProps.startTimeUnix
+      var momentObj = moment.unix(startTimeUnix).utc()
+      var timestr = momentObj.format('HH:mm')
+      this.setState({startTime: timestr})
+    }
+    if (this.props.endTimeUnix !== nextProps.endTimeUnix) {
+      var endTimeUnix = nextProps.endTimeUnix
+      momentObj = moment.unix(endTimeUnix).utc()
+      timestr = momentObj.format('HH:mm')
+      this.setState({endTime: timestr})
     }
   }
 

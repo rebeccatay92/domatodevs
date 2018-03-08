@@ -4,8 +4,10 @@ import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
-// import MapArrivalSearchDropdown from './MapArrivalSearchDropdown'
+import MapLocationSearchDropdown from './MapLocationSearchDropdown'
 import MapEventToggles from './MapEventToggles'
+
+import { constructGooglePlaceDataObj } from '../../helpers/location'
 
 import moment from 'moment'
 import { Button } from 'react-bootstrap'
@@ -28,7 +30,11 @@ class MapEditEventPopup extends Component {
       endTime: null,
       description: '', // activity, food, lodging
       showAllOpeningHours: false, // openingHours dropdown toggle
-      openingHoursStr: ''
+      openingHoursStr: '',
+      locationSearchIsFor: '',
+      isLocationSearching: false,
+      searchStr: '',
+      searchResults: []
     }
   }
 
@@ -57,9 +63,13 @@ class MapEditEventPopup extends Component {
       if (marker.start) {
         googlePlaceData = event.departureLocation
         var start = true
+        var searchStr = event.arrivalLocation.name
+        var locationSearchIsFor = 'arrival'
       } else {
         googlePlaceData = event.arrivalLocation
         start = false
+        searchStr = event.departureLocation.name
+        locationSearchIsFor = 'departure'
       }
       var arrivalGooglePlaceData = event.arrivalLocation
       var departureGooglePlaceData = event.departureLocation
@@ -75,7 +85,9 @@ class MapEditEventPopup extends Component {
       googlePlaceData,
       arrivalGooglePlaceData,
       departureGooglePlaceData,
-      start
+      start,
+      locationSearchIsFor: locationSearchIsFor || '',
+      searchStr: searchStr || ''
     }, () => {
       this.findOpeningHoursText()
     })
@@ -124,6 +136,102 @@ class MapEditEventPopup extends Component {
     console.log('save edits')
   }
 
+  handleChange (e, field) {
+    if (field === 'description') {
+      this.setState({
+        description: e.target.value
+      })
+    } else {
+      this.setState({
+        [field]: e
+      }, () => {
+        if (field === 'startDay') {
+          this.findOpeningHoursText()
+        }
+      })
+    }
+    if (field === 'searchStr') {
+      this.setState({
+        searchStr: e.target.value,
+        isLocationSearching: true
+      })
+    }
+  }
+
+  clearSearch () {
+    this.setState({
+      isLocationSearching: false,
+      searchResults: [],
+      searchStr: '',
+      // which data to clear depends on start:true/false
+      [`${this.state.locationSearchIsFor}GooglePlaceData`]: {}
+    })
+  }
+
+  closeSearchDropdown () {
+    this.setState({
+      isLocationSearching: false
+    })
+  }
+
+  onSearchFocus () {
+    this.setState({
+      isLocationSearching: true
+    })
+  }
+
+  customDebounce () {
+    var queryStr = this.state.searchStr
+    clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      this.searchLocation(queryStr)
+    }, 500)
+  }
+
+  searchLocation (queryStr) {
+    // clear old results first
+    this.setState({searchResults: []})
+
+    // trim whitespace. dont send req if there are no chars. also close dropdown
+    queryStr = _.trim(queryStr)
+    if (!queryStr.length) {
+      this.setState({
+        isLocationSearching: false
+      })
+      return
+    }
+
+    var request = {
+      query: queryStr,
+      location: {
+        lat: this.state.googlePlaceData.latitude,
+        lng: this.state.googlePlaceData.longitude
+      }
+    }
+    var service = new window.google.maps.places.PlacesService(document.createElement('div'))
+    service.textSearch(request, (resultsArr, status, pagination) => {
+      // console.log('status', status)
+      if (status === 'OK') {
+        // console.log('results', resultsArr)
+        this.setState({searchResults: resultsArr})
+      }
+    })
+  }
+
+  selectLocation (place) {
+    // console.log('arrival or departure', this.state.locationSearchIsFor)
+    var googlePlaceData = constructGooglePlaceDataObj(place)
+
+    googlePlaceData
+    .then(resolved => {
+      this.setState({
+        [`${this.state.locationSearchIsFor}GooglePlaceData`]: resolved,
+        isLocationSearching: false,
+        searchStr: resolved.name
+      }, () => console.log('state', this.state))
+    })
+  }
+
   render () {
     if (!this.state.googlePlaceData) return <span>Loading</span>
     var place = this.state.googlePlaceData
@@ -170,24 +278,33 @@ class MapEditEventPopup extends Component {
               </div>
             }
 
-            {/* {this.state.eventType === 'LandTransport' &&
+            {this.state.eventType === 'LandTransport' &&
               <div>
-                <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
-                <input type='text' placeholder='Search for an arrival location' value={this.state.arrivalSearch} onFocus={() => this.onArrivalSearchFocus()} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreArrivalSearchInput'} />
+
+                {/* LABEL FOR LOCATION SEARCH */}
+                {this.state.locationSearchIsFor === 'arrival' &&
+                  <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
+                }
+                {!this.state.lcoationSearchIsFor === 'departure' &&
+                  <h5 style={{fontSize: '12px'}}>Departure Location</h5>
+                }
+
+                <input type='text' placeholder={`Search for location`} value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreLocationSearchInput'} />
                 <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
 
-                {this.state.isArrivalSearching && this.state.arrivalSearchResults.length > 0 &&
+                {this.state.isLocationSearching && this.state.searchResults.length > 0 &&
                   <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
 
-                    <MapArrivalSearchDropdown outsideClickIgnoreClass={'ignoreArrivalSearchInput'} arrivalSearchResults={this.state.arrivalSearchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectArrivalLocation={(place) => this.selectArrivalLocation(place)} />
+                    <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreLocationSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
                   </div>
                 }
               </div>
-            } */}
+            }
           </div>
 
           {/* START / END DATE/DAY/TIME */}
-          {/* <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} /> */}
+          <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} formType={'edit'} />
+
         </div>
 
         <MapEventToggles formType={'edit'} eventType={this.state.eventType} />

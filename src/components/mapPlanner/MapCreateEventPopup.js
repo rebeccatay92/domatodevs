@@ -52,6 +52,8 @@ class MapCreateEventPopup extends Component {
       endDay: 1,
       startTime: null, // unix secs
       endTime: null,
+      startTimeStr: '', // str to pass to DateTimePicker to display.
+      endTimeStr: '',
       description: '', // except transport
       arrivalGooglePlaceData: {}, // only for transport
       eventObj: null,
@@ -329,9 +331,9 @@ class MapCreateEventPopup extends Component {
   selectLocation (place) {
     // will receive place (with imageUrl) from dropdown result, constructGooglePlaceDataObj with helper. set to arrivalGooglePlaceData
     // console.log('in popup', place)
-    var arrivalGooglePlaceData = constructGooglePlaceDataObj(place)
+    var googlePlaceData = constructGooglePlaceDataObj(place)
 
-    arrivalGooglePlaceData
+    googlePlaceData
     .then(resolved => {
       this.setState({
         arrivalGooglePlaceData: resolved,
@@ -401,13 +403,13 @@ class MapCreateEventPopup extends Component {
             {this.state.eventType === 'LandTransport' &&
               <div>
                 <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
-                <input type='text' placeholder='Search for an arrival location' value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreArrivalSearchInput'} />
+                <input type='text' placeholder='Search for an arrival location' value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreLocationSearchInput'} />
                 <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
                 {/* DROPDOWN STYLING IS BROKEN. NEED TO BE SAME WIDTH AS INPUT FIELD */}
                 {this.state.isLocationSearching && this.state.searchResults.length > 0 &&
                   <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
                     {/* NOT SAME COMPONENT AS LOCATIONSEARCH/GOOGLEPLACERESULT. USES MAP PLACES SERVICE GETDETAILS INSTEAD OF JS API PLACESDETAILS */}
-                    <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreArrivalSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
+                    <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreLocationSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
                   </div>
                 }
               </div>
@@ -415,7 +417,7 @@ class MapCreateEventPopup extends Component {
           </div>
 
           {/* START / END DATE/DAY/TIME */}
-          <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} />
+          <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} />
         </div>
 
         <MapEventToggles formType={'create'} eventType={this.state.eventType} changeEventType={(type) => this.changeEventType(type)} />
