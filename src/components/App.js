@@ -14,6 +14,7 @@ import { generateCloudStorageToken } from '../actions/cloudStorageActions'
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
 import PlannerPage from './PlannerPage'
+import ReadPage from './read/ReadPage'
 import Navbar from './Navbar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
 
@@ -60,6 +61,7 @@ class App extends Component {
           )} />
           <Route path='/planner/:itineraryId' component={PlannerPage} />
           <Route path='/map/:itineraryId' component={MapPlannerPage} />
+          <Route path='/blog' component={ReadPage} />
           {this.props.showSpinner && (
             <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
               <div style={{position: 'fixed', top: 'calc(50% - 35px)', left: 'calc(50% - 35px)', height: '70px', width: '70px'}}>
