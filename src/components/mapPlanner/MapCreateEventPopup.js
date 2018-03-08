@@ -277,7 +277,7 @@ class MapCreateEventPopup extends Component {
   }
 
   toggleOpeningHoursInfo () {
-    this.setState({showAllOpeningHours: !this.state.showAllOpeningHours}, () => console.log('state', this.state.showAllOpeningHours))
+    this.setState({showAllOpeningHours: !this.state.showAllOpeningHours})
   }
 
   customDebounce () {
@@ -418,7 +418,7 @@ class MapCreateEventPopup extends Component {
           <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} />
         </div>
 
-        <MapEventToggles eventType={this.state.eventType} changeEventType={(type) => this.changeEventType(type)} />
+        <MapEventToggles formType={'create'} eventType={this.state.eventType} changeEventType={(type) => this.changeEventType(type)} />
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
           <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Submit</Button>

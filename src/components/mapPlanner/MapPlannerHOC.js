@@ -11,6 +11,7 @@ import MarkerWithLabel from 'react-google-maps/lib/components/addons/MarkerWithL
 
 import MapCreateEventPopup from './MapCreateEventPopup'
 import CreateEventFormHOC from '../createEvent/CreateEventFormHOC'
+import MapEditEventPopup from './MapEditEventPopup'
 
 const _ = require('lodash')
 
@@ -256,7 +257,7 @@ class Map extends Component {
       }
       return event
     })
-    console.log('final events arr', finalEventsArr)
+    // console.log('final events arr', finalEventsArr)
 
     this.setState({
       allEvents: this.props.events,
@@ -320,7 +321,6 @@ class Map extends Component {
     this.setState({
       plannerMarkers: plannerMarkers
     }, () => {
-      console.log('SET STATE PLANNER MARKERS BASED ON DAYS FILTER')
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
@@ -328,7 +328,6 @@ class Map extends Component {
       }
     })
   }
-
 
   changeDayCheckbox (e) {
     var clickedDay = parseInt(e.target.value)
@@ -421,6 +420,7 @@ class Map extends Component {
     // zoom, center on focused event?
   }
 
+
   render () {
     if (this.props.currentlyFocusedEvent) {
       var focus = this.props.currentlyFocusedEvent
@@ -503,7 +503,7 @@ class Map extends Component {
         })}
 
         {this.state.isSearchInfoBoxOpen &&
-          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-200, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox' style={{width: '450px', height: '280px', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)'}}>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
@@ -535,12 +535,13 @@ class Map extends Component {
 
         {/* currentlyFocusedEvent only holds modelId etc. currentlyFocusedMarker is the entire plannerMarker obj matching the currentlyFocusedEvent (has displayPosition) */}
         {currentlyFocusedMarker &&
-          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '384px', height: '243px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-192, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '450px', height: '280px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox'>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
+              <MapEditEventPopup ItineraryId={this.props.ItineraryId} marker={currentlyFocusedMarker} daysArr={this.props.daysArr} datesArr={this.props.datesArr} />
             </div>
           </InfoBox>
         }
@@ -585,6 +586,7 @@ const mapDispatchToProps = (dispatch) => {
     }
   }
 }
+
 const mapStateToProps = (state) => {
   return {
     mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr,
