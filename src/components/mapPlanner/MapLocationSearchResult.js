@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import Radium from 'radium'
 
-class MapArrivalSearchResult extends Component {
-  selectArrivalLocation () {
+class MapLocationSearchResult extends Component {
+  selectLocation () {
     console.log('clicked result', this.props.result)
     var request = {placeId: this.props.result.place_id}
     var service = new window.google.maps.places.PlacesService(document.createElement('div'))
@@ -12,14 +12,14 @@ class MapArrivalSearchResult extends Component {
           place.imageUrl = place.photos[0].getUrl({maxWidth: 200})
         }
         // console.log('place with imageUrl', place)
-        this.props.selectArrivalLocation(place)
+        this.props.selectLocation(place)
       }
     })
   }
 
   render () {
     return (
-      <span onClick={() => this.selectArrivalLocation()} style={{width: '100%', padding: '8px', display: 'block', fontSize: '12px', ':hover': {backgroundColor: 'rgb(210, 210, 210)'}}}>
+      <span onClick={() => this.selectLocation()} style={{width: '100%', padding: '8px', display: 'block', fontSize: '12px', ':hover': {backgroundColor: 'rgb(210, 210, 210)'}}}>
         <span style={{display: 'inline-block'}}>
           <span style={{color: '#3C3A44', display: 'inline', padding: '5px'}}>
             {this.props.result.name}
@@ -33,4 +33,4 @@ class MapArrivalSearchResult extends Component {
   }
 }
 
-export default Radium(MapArrivalSearchResult)
+export default Radium(MapLocationSearchResult)

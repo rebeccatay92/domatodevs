@@ -4,7 +4,7 @@ import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
-import MapArrivalSearchDropdown from './MapArrivalSearchDropdown'
+// import MapArrivalSearchDropdown from './MapArrivalSearchDropdown'
 import MapEventToggles from './MapEventToggles'
 
 import moment from 'moment'
@@ -130,6 +130,7 @@ class MapEditEventPopup extends Component {
     return (
       <div>
         <div style={{width: '100%'}}>
+          {/* LOCATION NAME LABEL */}
           {typeof (this.state.start) === 'boolean' && this.state.start &&
             <span style={{fontSize: '16px'}}>{place.name} (Departure)</span>
           }
@@ -162,12 +163,12 @@ class MapEditEventPopup extends Component {
           {/* DESCRIPTION OR LOCATION INPUT */}
 
           <div style={{width: '100%'}}>
-            {/* {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
+            {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
               <div>
                 <h5 style={{fontSize: '12px'}}>Description</h5>
-                <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+                <input type='text' placeholder='Optional description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
               </div>
-            } */}
+            }
 
             {/* {this.state.eventType === 'LandTransport' &&
               <div>
@@ -192,7 +193,7 @@ class MapEditEventPopup extends Component {
         <MapEventToggles formType={'edit'} eventType={this.state.eventType} />
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
-          <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Submit</Button>
+          <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.closePlannerPopup()}>Cancel</Button>
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleEditEventForm()} >More</Button>
         </div>

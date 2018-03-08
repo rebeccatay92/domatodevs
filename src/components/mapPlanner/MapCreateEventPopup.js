@@ -7,7 +7,7 @@ import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
-import MapArrivalSearchDropdown from './MapArrivalSearchDropdown'
+import MapLocationSearchDropdown from './MapLocationSearchDropdown'
 
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 // import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
@@ -58,9 +58,9 @@ class MapCreateEventPopup extends Component {
       showAllOpeningHours: false,
       openingHoursStr: '',
       // SEARCH ARRIVAL LOCATION FOR TRANSPORT ONLY
-      isArrivalSearching: false,
-      arrivalSearch: '', // str to search for arrival locations
-      arrivalSearchResults: [],
+      isLocationSearching: false,
+      searchStr: '', // str to search for arrival locations
+      searchResults: [],
       openForm: false
     }
   }
@@ -229,9 +229,9 @@ class MapCreateEventPopup extends Component {
 
     if (type !== 'LandTransport') {
       this.setState({
-        arrivalSearch: '',
-        isArrivalSearching: false,
-        arrivalSearchResults: [],
+        searchStr: '',
+        isLocationSearching: false,
+        searchResults: [],
         arrivalGooglePlaceData: {}
       })
     }
@@ -251,10 +251,10 @@ class MapCreateEventPopup extends Component {
         }
       })
     }
-    if (field === 'arrivalSearch') {
+    if (field === 'searchStr') {
       this.setState({
-        arrivalSearch: e.target.value,
-        isArrivalSearching: true
+        searchStr: e.target.value,
+        isLocationSearching: true
       })
     }
   }
@@ -281,24 +281,24 @@ class MapCreateEventPopup extends Component {
   }
 
   customDebounce () {
-    var queryStr = this.state.arrivalSearch
+    var queryStr = this.state.searchStr
     clearTimeout(this.timeout)
     this.timeout = setTimeout(() => {
-      this.searchArrivalLocation(queryStr)
+      this.searchLocation(queryStr)
     }, 500)
   }
 
-  searchArrivalLocation (queryStr) {
+  searchLocation (queryStr) {
     // console.log('search by str', queryStr)
 
     // clear old results first
-    this.setState({arrivalSearchResults: []})
+    this.setState({searchResults: []})
 
     // trim whitespace. dont send req if there are no chars. also close dropdown
     queryStr = _.trim(queryStr)
     if (!queryStr.length) {
       this.setState({
-        isArrivalSearching: false
+        isLocationSearching: false
       })
       return
     }
@@ -321,12 +321,12 @@ class MapCreateEventPopup extends Component {
       // console.log('status', status)
       if (status === 'OK') {
         // console.log('results', resultsArr)
-        this.setState({arrivalSearchResults: resultsArr})
+        this.setState({searchResults: resultsArr})
       }
     })
   }
 
-  selectArrivalLocation (place) {
+  selectLocation (place) {
     // will receive place (with imageUrl) from dropdown result, constructGooglePlaceDataObj with helper. set to arrivalGooglePlaceData
     // console.log('in popup', place)
     var arrivalGooglePlaceData = constructGooglePlaceDataObj(place)
@@ -335,30 +335,30 @@ class MapCreateEventPopup extends Component {
     .then(resolved => {
       this.setState({
         arrivalGooglePlaceData: resolved,
-        isArrivalSearching: false,
-        arrivalSearch: resolved.name
+        isLocationSearching: false,
+        searchStr: resolved.name
       }, () => console.log('state', this.state))
     })
   }
 
   clearSearch () {
     this.setState({
-      isArrivalSearching: false,
-      arrivalSearchResults: [],
-      arrivalSearch: '',
+      isLocationSearching: false,
+      searchResults: [],
+      searchStr: '',
       arrivalGooglePlaceData: {}
     })
   }
 
   closeSearchDropdown () {
     this.setState({
-      isArrivalSearching: false
+      isLocationSearching: false
     })
   }
 
-  onArrivalSearchFocus () {
+  onSearchFocus () {
     this.setState({
-      isArrivalSearching: true
+      isLocationSearching: true
     })
   }
 
@@ -394,20 +394,20 @@ class MapCreateEventPopup extends Component {
             {this.state.eventType !== 'LandTransport' &&
               <div>
                 <h5 style={{fontSize: '12px'}}>Description</h5>
-                <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+                <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} value={this.state.description} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
               </div>
             }
             {/* IF TRANSPORT USE PLACESSERVICE FOR ARRIVAL LOCATION */}
             {this.state.eventType === 'LandTransport' &&
               <div>
                 <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
-                <input type='text' placeholder='Search for an arrival location' value={this.state.arrivalSearch} onFocus={() => this.onArrivalSearchFocus()} onChange={(e) => this.handleChange(e, 'arrivalSearch')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreArrivalSearchInput'} />
+                <input type='text' placeholder='Search for an arrival location' value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreArrivalSearchInput'} />
                 <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
                 {/* DROPDOWN STYLING IS BROKEN. NEED TO BE SAME WIDTH AS INPUT FIELD */}
-                {this.state.isArrivalSearching && this.state.arrivalSearchResults.length > 0 &&
+                {this.state.isLocationSearching && this.state.searchResults.length > 0 &&
                   <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
                     {/* NOT SAME COMPONENT AS LOCATIONSEARCH/GOOGLEPLACERESULT. USES MAP PLACES SERVICE GETDETAILS INSTEAD OF JS API PLACESDETAILS */}
-                    <MapArrivalSearchDropdown outsideClickIgnoreClass={'ignoreArrivalSearchInput'} arrivalSearchResults={this.state.arrivalSearchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectArrivalLocation={(place) => this.selectArrivalLocation(place)} />
+                    <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreArrivalSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
                   </div>
                 }
               </div>
