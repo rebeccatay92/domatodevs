@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { toggleDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
@@ -59,8 +59,7 @@ class MapCreateEventPopup extends Component {
       // SEARCH ARRIVAL LOCATION FOR TRANSPORT ONLY
       isLocationSearching: false,
       searchStr: '', // str to search for arrival locations
-      searchResults: [],
-      openForm: false
+      searchResults: []
     }
   }
 
@@ -175,9 +174,16 @@ class MapCreateEventPopup extends Component {
 
   toggleCreateEventForm () {
     console.log('open create event form', this.state.eventType)
-    this.setState({
-      openForm: true
-    })
+    // construct openCreateFormParams, dispatch redux setOpenCreateFormParams
+    var params = {
+      eventType: this.state.eventType,
+      defaultStartDay: this.state.startDay,
+      defaultEndDay: this.state.endDay,
+      defaultStartTime: this.state.startTime,
+      defaultEndTime: this.state.endTime,
+      defaultGooglePlaceData: this.state.googlePlaceData
+    }
+    this.props.setOpenCreateFormParams(params)
   }
 
   componentDidMount () {
@@ -373,10 +379,6 @@ class MapCreateEventPopup extends Component {
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.props.closeSearchPopup()}>Cancel</Button>
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleCreateEventForm()} >More</Button>
         </div>
-
-        {this.state.openForm &&
-          <CreateEventFormHOC ItineraryId={this.props.ItineraryId} day={1} date={null} dates={null} daysArr={this.props.daysArr} eventType={'Activity'} />
-        }
       </div>
     )
   }
@@ -389,6 +391,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setCurrentlyFocusedEvent: (currentEventObj) => {
       dispatch(setCurrentlyFocusedEvent(currentEventObj))
+    },
+    setOpenCreateFormParams: (params) => {
+      dispatch(setOpenCreateFormParams(params))
     }
   }
 }

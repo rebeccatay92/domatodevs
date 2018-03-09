@@ -30,17 +30,25 @@ class MapPlannerPage extends Component {
       )
     }
     return (
-      <div style={{marginTop: '60px', height: 'calc(100vh - 60px)', width: '1920px'}}>
-        <div style={{display: 'inline-block', verticalAlign: 'top', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor, overflow: 'hidden'}}>
-          <div style={{overflowY: 'scroll', width: '107%', height: '100%', paddingRight: '7%'}}>
-            <SideBarPlanner itinerary={this.props.data.findItinerary} itineraryId={this.props.match.params.itineraryId} events={this.props.events} days={this.state.days} daysArr={this.state.daysArr} datesArr={this.state.datesArr} />
+      <div>
+        <div style={{marginTop: '60px', height: 'calc(100vh - 60px)', width: '1920px'}}>
+          <div style={{display: 'inline-block', verticalAlign: 'top', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor, overflow: 'hidden'}}>
+            <div style={{overflowY: 'scroll', width: '107%', height: '100%', paddingRight: '7%'}}>
+              <SideBarPlanner itinerary={this.props.data.findItinerary} itineraryId={this.props.match.params.itineraryId} events={this.props.events} days={this.state.days} daysArr={this.state.daysArr} datesArr={this.state.datesArr} />
+            </div>
           </div>
+          <div style={{display: 'inline-block', verticalAlign: 'top', left: '15%', width: '50%', height: 'calc(100vh - 60px)'}}>
+            <MapPlannerHOC ItineraryId={this.props.match.params.itineraryId} events={this.props.events} days={this.state.days} daysArr={this.state.daysArr} datesArr={this.state.datesArr} />
+          </div>
+          {/* <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div> */}
         </div>
-        <div style={{display: 'inline-block', verticalAlign: 'top', left: '15%', width: '50%', height: 'calc(100vh - 60px)'}}>
-          <MapPlannerHOC ItineraryId={this.props.match.params.itineraryId} events={this.props.events} days={this.state.days} daysArr={this.state.daysArr} datesArr={this.state.datesArr} />
+
+        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR, DATE AS JS DATE OBj. ALSO PASS MARKER LOCATION AS GOOGLEPLACEDATA, DEPARTURE GOOGLEPLACEDATA */}
+        <div>
+          {this.props.openCreateForm &&
+            <CreateEventFormHOC ItineraryId={this.props.match.params.itineraryId} day={1} date={null} dates={null} daysArr={this.state.daysArr} eventType={'Activity'} />
+          }
         </div>
-        {/* <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div> */}
-        {/* <CreateEventFormHOC ItineraryId={this.props.ItineraryId} day={1} date={null} dates={null} daysArr={this.state.daysArr} eventType={'Activity'} /> */}
       </div>
     )
   }
@@ -105,7 +113,8 @@ const options = {
 
 const mapStateToProps = (state) => {
   return {
-    events: state.plannerActivities
+    events: state.plannerActivities,
+    openCreateFormParams: state.openCreateFormParams
   }
 }
 

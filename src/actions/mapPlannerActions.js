@@ -17,3 +17,10 @@ export const toggleDaysFilter = (dayInt) => {
     dayInt
   }
 }
+
+export const setOpenCreateFormParams = (params) => {
+  return {
+    type: 'SET_OPEN_CREATE_FORM_PARAMS',
+    params
+  }
+}

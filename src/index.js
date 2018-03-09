@@ -15,6 +15,7 @@ import { cloudStorageReducer } from './reducers/cloudStorageReducer'
 import { spinnerReducer } from './reducers/spinnerReducer'
 import { mapPlannerCurrentFocusReducer } from './reducers/mapPlannerCurrentFocusReducer'
 import { mapPlannerDaysFilterReducer } from './reducers/mapPlannerDaysFilterReducer'
+import { mapPlannerOpenCreateFormReducer } from './reducers/mapPlannerOpenCreateFormReducer'
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
 
@@ -48,6 +49,7 @@ const store = createStore(combineReducers({
   showSpinner: spinnerReducer,
   currentlyFocusedEvent: mapPlannerCurrentFocusReducer,
   mapPlannerDaysFilterArr: mapPlannerDaysFilterReducer,
+  openCreateFormParams: mapPlannerOpenCreateFormReducer,
   apollo: client.reducer()
 }),
 {},
