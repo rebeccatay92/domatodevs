@@ -95,7 +95,8 @@ class SideBarEvent extends Component {
     // }
 
     // dont compare nextProps to this.props. currently focused event may hv changed before nextProps.event.
-    if (nextProps.currentlyFocusedEvent) {
+    if (nextProps.currentlyFocusedEvent.modelId) {
+      // console.log(nextProps.currentlyFocusedEvent)
       var currentEventObj = this.makeCurrentEventObj(nextProps.event)
       var isCurrentFocus = _.isEqual(currentEventObj, nextProps.currentlyFocusedEvent)
       this.setState({isCurrentFocus: isCurrentFocus})

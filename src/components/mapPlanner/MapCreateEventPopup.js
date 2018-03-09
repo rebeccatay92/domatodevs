@@ -2,12 +2,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
-import moment from 'moment'
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
 import MapDateTimePicker from './MapDateTimePicker'
-import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
 import MapLocationSearchDropdown from './MapLocationSearchDropdown'
+import MapPopupOpeningHours from './MapPopupOpeningHours'
 
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 // import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
@@ -57,8 +56,6 @@ class MapCreateEventPopup extends Component {
       description: '', // except transport
       arrivalGooglePlaceData: {}, // only for transport
       eventObj: null,
-      showAllOpeningHours: false,
-      openingHoursStr: '',
       // SEARCH ARRIVAL LOCATION FOR TRANSPORT ONLY
       isLocationSearching: false,
       searchStr: '', // str to search for arrival locations
@@ -69,7 +66,7 @@ class MapCreateEventPopup extends Component {
 
   handleSubmit () {
     // console.log('create event', this.state.eventType)
-    console.log('HANDLE SUBMIT STATE', this.state)
+    // console.log('HANDLE SUBMIT STATE', this.state)
 
     var newEvent = {
       ItineraryId: this.props.ItineraryId,
@@ -194,36 +191,10 @@ class MapCreateEventPopup extends Component {
         var googlePlaceData = constructGooglePlaceDataObj(place)
         googlePlaceData
           .then(resolved => {
-            this.setState({googlePlaceData: resolved}, () => {
-              this.findOpeningHoursText()
-            })
+            this.setState({googlePlaceData: resolved})
           })
       }
     })
-  }
-
-  findOpeningHoursText () {
-    // datesArr here is in secs, not millisecs. cannot use helper.
-    if (this.props.datesArr) {
-      var dayInt = this.state.startDay
-      var dateUnix = this.props.datesArr[dayInt - 1]
-      var momentObj = moment.unix(dateUnix)
-      var dayStr = momentObj.format('dddd')
-      if (this.state.googlePlaceData.openingHoursText) {
-        var textArr = this.state.googlePlaceData.openingHoursText.filter(e => {
-          return e.indexOf(dayStr) > -1
-        })
-        var openingHoursStr = textArr[0]
-      }
-    } else {
-      if (this.state.googlePlaceData.openingHoursText) {
-        textArr = this.state.googlePlaceData.openingHoursText.filter(e => {
-          return e.indexOf('Monday') > -1
-        })
-        openingHoursStr = textArr[0]
-      }
-    }
-    this.setState({openingHoursStr: openingHoursStr})
   }
 
   changeEventType (type) {
@@ -247,10 +218,6 @@ class MapCreateEventPopup extends Component {
     } else {
       this.setState({
         [field]: e
-      }, () => {
-        if (field === 'startDay') {
-          this.findOpeningHoursText()
-        }
       })
     }
     if (field === 'searchStr') {
@@ -276,10 +243,6 @@ class MapCreateEventPopup extends Component {
         this.props.setCurrentlyFocusedEvent(prevState.eventObj)
       }
     }
-  }
-
-  toggleOpeningHoursInfo () {
-    this.setState({showAllOpeningHours: !this.state.showAllOpeningHours})
   }
 
   customDebounce () {
@@ -334,13 +297,13 @@ class MapCreateEventPopup extends Component {
     var googlePlaceData = constructGooglePlaceDataObj(place)
 
     googlePlaceData
-    .then(resolved => {
-      this.setState({
-        arrivalGooglePlaceData: resolved,
-        isLocationSearching: false,
-        searchStr: resolved.name
-      }, () => console.log('state', this.state))
-    })
+      .then(resolved => {
+        this.setState({
+          arrivalGooglePlaceData: resolved,
+          isLocationSearching: false,
+          searchStr: resolved.name
+        }, () => console.log('state', this.state))
+      })
   }
 
   clearSearch () {
@@ -372,24 +335,7 @@ class MapCreateEventPopup extends Component {
         <div style={{width: '100%'}}>
           <h5 style={{fontSize: '16px'}}>{place.name}</h5>
 
-          {/* OPENING HOURS */}
-          <div>
-            <h5 style={{display: 'inline-block', fontSize: '12px', marginRight: '10px'}}>Opening hours: </h5>
-            {place.openingHoursText && place.openingHoursText.length &&
-              <div style={{display: 'inline-block'}} onClick={() => this.toggleOpeningHoursInfo()}>
-                <div style={{display: 'inline-block', cursor: 'pointer', width: '180px'}} className={'ignoreOpeningHoursDropdownArrow'}>
-                  <span style={{fontSize: '10px'}}>{this.state.openingHoursStr}</span>
-                  <i className='material-icons' style={{display: 'inline-block', verticalAlign: 'middle', float: 'right'}}>arrow_drop_down</i>
-                </div>
-                {this.state.showAllOpeningHours &&
-                  <MapOpeningHoursDropdown textArr={place.openingHoursText} toggleOpeningHoursInfo={() => this.toggleOpeningHoursInfo()} outsideClickIgnoreClass={'ignoreOpeningHoursDropdownArrow'} />
-                }
-              </div>
-            }
-            {!place.openingHoursText &&
-              <h5 style={{display: 'inline-block', fontSize: '12px'}}>Not Available</h5>
-            }
-          </div>
+          <MapPopupOpeningHours datesArr={this.props.datesArr} dayInt={this.state.startDay} googlePlaceData={this.state.googlePlaceData} />
 
           {/* DESCRIPTION OR LOCATION INPUT */}
           <div style={{width: '100%'}}>

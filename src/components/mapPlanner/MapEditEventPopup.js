@@ -3,14 +3,13 @@ import { connect } from 'react-redux'
 import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
-import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
 import MapLocationSearchDropdown from './MapLocationSearchDropdown'
 import MapEventToggles from './MapEventToggles'
+import MapPopupOpeningHours from './MapPopupOpeningHours'
 
 import { constructGooglePlaceDataObj } from '../../helpers/location'
 import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
 
-import moment from 'moment'
 import { Button } from 'react-bootstrap'
 
 import { graphql, compose } from 'react-apollo'
@@ -46,8 +45,6 @@ class MapEditEventPopup extends Component {
       startTime: null,
       endTime: null,
       description: '', // activity, food, lodging
-      showAllOpeningHours: false, // openingHours dropdown toggle
-      openingHoursStr: '',
       locationSearchIsFor: '',
       isLocationSearching: false,
       searchStr: '',
@@ -107,8 +104,6 @@ class MapEditEventPopup extends Component {
         start,
         locationSearchIsFor: locationSearchIsFor || '',
         searchStr: searchStr || ''
-      }, () => {
-        this.findOpeningHoursText()
       })
     }
   }
@@ -163,38 +158,7 @@ class MapEditEventPopup extends Component {
       start,
       locationSearchIsFor: locationSearchIsFor || '',
       searchStr: searchStr || ''
-    }, () => {
-      this.findOpeningHoursText()
     })
-  }
-
-  toggleOpeningHoursInfo () {
-    this.setState({showAllOpeningHours: !this.state.showAllOpeningHours})
-  }
-
-  findOpeningHoursText () {
-    // datesArr here is in secs, not millisecs. cannot use helper.
-    if (this.props.datesArr) {
-      var dayInt = this.state.startDay
-      var dateUnix = this.props.datesArr[dayInt - 1]
-      var momentObj = moment.unix(dateUnix)
-      var dayStr = momentObj.format('dddd')
-      if (this.state.googlePlaceData.openingHoursText) {
-        var textArr = this.state.googlePlaceData.openingHoursText.filter(e => {
-          return e.indexOf(dayStr) > -1
-        })
-        var openingHoursStr = textArr[0]
-      }
-    } else {
-      if (this.state.googlePlaceData.openingHoursText) {
-        textArr = this.state.googlePlaceData.openingHoursText.filter(e => {
-          return e.indexOf('Monday') > -1
-        })
-        openingHoursStr = textArr[0]
-      }
-    }
-    // console.log('str', openingHoursStr)
-    this.setState({openingHoursStr: openingHoursStr})
   }
 
   closePlannerPopup () {
@@ -344,10 +308,6 @@ class MapEditEventPopup extends Component {
     } else {
       this.setState({
         [field]: e
-      }, () => {
-        if (field === 'startDay') {
-          this.findOpeningHoursText()
-        }
       })
     }
     if (field === 'searchStr') {
@@ -449,25 +409,8 @@ class MapEditEventPopup extends Component {
           }
 
           {/* OPENING HOURS */}
-          <div>
-            <h5 style={{display: 'inline-block', fontSize: '12px', marginRight: '10px'}}>Opening hours: </h5>
-            {place.openingHoursText && place.openingHoursText.length &&
-              <div style={{display: 'inline-block'}} onClick={() => this.toggleOpeningHoursInfo()}>
-                <div style={{display: 'inline-block', cursor: 'pointer', width: '180px'}} className={'ignoreOpeningHoursDropdownArrow'}>
-                  <span style={{fontSize: '10px'}}>{this.state.openingHoursStr}</span>
-                  <i className='material-icons' style={{display: 'inline-block', verticalAlign: 'middle', float: 'right'}}>arrow_drop_down</i>
-                </div>
-                {this.state.showAllOpeningHours &&
-                  <MapOpeningHoursDropdown textArr={place.openingHoursText} toggleOpeningHoursInfo={() => this.toggleOpeningHoursInfo()} outsideClickIgnoreClass={'ignoreOpeningHoursDropdownArrow'} />
-                }
-              </div>
-            }
-            {!place.openingHoursText &&
-              <h5 style={{display: 'inline-block', fontSize: '12px'}}>Not Available</h5>
-            }
-          </div>
 
-          {/* NON FLIGHT - DESCRIPTION / LOCATION / DATETIMEPICKER */}
+          <MapPopupOpeningHours datesArr={this.props.datesArr} dayInt={this.state.startDay} googlePlaceData={this.state.googlePlaceData} />
 
           <div style={{width: '100%'}}>
             {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
@@ -484,7 +427,7 @@ class MapEditEventPopup extends Component {
                 {this.state.locationSearchIsFor === 'arrival' &&
                   <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
                 }
-                {!this.state.lcoationSearchIsFor === 'departure' &&
+                {!this.state.locationSearchIsFor === 'departure' &&
                   <h5 style={{fontSize: '12px'}}>Departure Location</h5>
                 }
 
@@ -499,15 +442,12 @@ class MapEditEventPopup extends Component {
                 }
               </div>
             }
-
           </div>
 
-          {/* START / END DATE/DAY/TIME */}
           <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} formType={'edit'} />
 
           <MapEventToggles formType={'edit'} eventType={this.state.eventType} />
         </div>
-
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
           <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
