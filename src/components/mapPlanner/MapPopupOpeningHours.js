@@ -37,9 +37,7 @@ class MapPopupOpeningHours extends Component {
         openingHoursStr = textArr[0]
       }
     }
-    this.setState({openingHoursStr: openingHoursStr}, () => {
-      console.log('str', openingHoursStr)
-    })
+    this.setState({openingHoursStr: openingHoursStr})
   }
 
   componentDidMount () {

@@ -49,7 +49,8 @@ class MapEditEventPopup extends Component {
       isLocationSearching: false,
       searchStr: '',
       searchResults: [],
-      eventObj: null
+      eventObj: null, // currentlyFocusedEvent params. not the row in db.
+      eventRowInDb: null //store the FlightInstance, Activity etc row
     }
   }
 
@@ -103,7 +104,8 @@ class MapEditEventPopup extends Component {
         departureGooglePlaceData,
         start,
         locationSearchIsFor: locationSearchIsFor || '',
-        searchStr: searchStr || ''
+        searchStr: searchStr || '',
+        eventRowInDb: event
       })
     }
   }
@@ -118,7 +120,7 @@ class MapEditEventPopup extends Component {
       event = marker.event.FlightInstance
     }
     // console.log('marker', marker)
-    // console.log('event row', event)
+    console.log('event row', event)
 
     var startDay = event.startDay
     var endDay = event.endDay
@@ -157,7 +159,8 @@ class MapEditEventPopup extends Component {
       departureGooglePlaceData,
       start,
       locationSearchIsFor: locationSearchIsFor || '',
-      searchStr: searchStr || ''
+      searchStr: searchStr || '',
+      eventRowInDb: event
     })
   }
 
@@ -394,63 +397,85 @@ class MapEditEventPopup extends Component {
   render () {
     if (!this.state.googlePlaceData) return <span>Loading</span>
     var place = this.state.googlePlaceData
+
     return (
       <div>
-        <div style={{width: '100%'}}>
-          {/* LOCATION NAME LABEL */}
-          {typeof (this.state.start) === 'boolean' && this.state.start &&
-            <span style={{fontSize: '16px'}}>{place.name} (Departure)</span>
-          }
-          {typeof (this.state.start) === 'boolean' && !this.state.start &&
-            <span style={{fontSize: '16px'}}>{place.name} (Arrival)</span>
-          }
-          {typeof (this.state.start) !== 'boolean' &&
-            <span style={{fontSize: '16px'}}>{place.name}</span>
-          }
+        {/* LOCATION NAME LABEL */}
+        {typeof (this.state.start) === 'boolean' && this.state.start &&
+          <span style={{fontSize: '16px'}}>{place.name} (Departure)</span>
+        }
+        {typeof (this.state.start) === 'boolean' && !this.state.start &&
+          <span style={{fontSize: '16px'}}>{place.name} (Arrival)</span>
+        }
+        {typeof (this.state.start) !== 'boolean' &&
+          <span style={{fontSize: '16px'}}>{place.name}</span>
+        }
 
-          {/* OPENING HOURS */}
+        <MapPopupOpeningHours datesArr={this.props.datesArr} dayInt={this.state.startDay} googlePlaceData={this.state.googlePlaceData} />
 
-          <MapPopupOpeningHours datesArr={this.props.datesArr} dayInt={this.state.startDay} googlePlaceData={this.state.googlePlaceData} />
+        {/* DESCRIPTION / LOCATION SEARCH */}
 
-          <div style={{width: '100%'}}>
-            {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
-              <div>
-                <h5 style={{fontSize: '12px'}}>Description</h5>
-                <input type='text' placeholder='Optional description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
-              </div>
+        {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
+          <div>
+            <h5 style={{fontSize: '12px'}}>Description</h5>
+            <input type='text' placeholder='Optional description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
+          </div>
+        }
+
+        {this.state.eventType === 'LandTransport' &&
+          <div>
+
+            {/* LABEL FOR LOCATION SEARCH */}
+            {this.state.locationSearchIsFor === 'arrival' &&
+              <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
+            }
+            {!this.state.locationSearchIsFor === 'departure' &&
+              <h5 style={{fontSize: '12px'}}>Departure Location</h5>
             }
 
-            {this.state.eventType === 'LandTransport' &&
-              <div>
+            <input type='text' placeholder={`Search for location`} value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreLocationSearchInput'} />
+            <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
 
-                {/* LABEL FOR LOCATION SEARCH */}
-                {this.state.locationSearchIsFor === 'arrival' &&
-                  <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
-                }
-                {!this.state.locationSearchIsFor === 'departure' &&
-                  <h5 style={{fontSize: '12px'}}>Departure Location</h5>
-                }
+            {this.state.isLocationSearching && this.state.searchResults.length > 0 &&
+              <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
 
-                <input type='text' placeholder={`Search for location`} value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreLocationSearchInput'} />
-                <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
-
-                {this.state.isLocationSearching && this.state.searchResults.length > 0 &&
-                  <div style={{width: '100%', padding: '6px', maxHeight: '120px', overflowY: 'scroll', background: 'white', position: 'absolute', zIndex: '2', border: '1px solid grey'}}>
-
-                    <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreLocationSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
-                  </div>
-                }
+                <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreLocationSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
               </div>
             }
           </div>
+        }
 
+        {this.state.eventType !== 'Flight' &&
           <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} formType={'edit'} />
-
+        }
+        {this.state.eventType !== 'Flight' &&
           <MapEventToggles formType={'edit'} eventType={this.state.eventType} />
-        </div>
+        }
+
+        {this.state.eventType === 'Flight' &&
+          <div>
+            <h5>Flight Details</h5>
+            {this.state.start &&
+              <div>
+                <h5>Arrival airport: {this.state.eventRowInDb.arrivalLocation.name}</h5>
+                <h5>Flight no: {this.state.eventRowInDb.flightNumber}</h5>
+                <h5>Departure Terminal: {this.state.eventRowInDb.departureTerminal}</h5>
+              </div>
+            }
+            {!this.state.start &&
+              <div>
+                <h5>Departure airport: {this.state.eventRowInDb.departureLocation.name}</h5>
+                <h5>Flight no: {this.state.eventRowInDb.flightNumber}</h5>
+                <h5>Arrival Terminal: {this.state.eventRowInDb.arrivalTerminal}</h5>
+              </div>
+            }
+          </div>
+        }
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
-          <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
+          {this.state.eventType !== 'Flight' &&
+            <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
+          }
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.closePlannerPopup()}>Cancel</Button>
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleEditEventForm()} >More</Button>
         </div>

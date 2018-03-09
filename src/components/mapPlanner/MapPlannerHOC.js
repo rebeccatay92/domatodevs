@@ -148,6 +148,7 @@ class Map extends Component {
     }
     var infobox = document.querySelector('#infobox')
     window.google.maps.event.addDomListener(infobox, 'dblclick', e => {
+      // console.log('dblclick')
       stopPropagation(e)
     })
     // window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
@@ -322,7 +323,6 @@ class Map extends Component {
     this.setState({
       plannerMarkers: plannerMarkers
     }, () => {
-      console.log('apply days filter setState plannerMarkers')
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
