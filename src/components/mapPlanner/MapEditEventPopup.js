@@ -20,6 +20,7 @@ import { updateFood } from '../../apollo/food'
 import { updateLodging } from '../../apollo/lodging'
 import { updateLandTransport } from '../../apollo/landtransport'
 
+import moment from 'moment'
 const _ = require('lodash')
 
 const apolloUpdateEventNaming = {
@@ -50,7 +51,7 @@ class MapEditEventPopup extends Component {
       searchStr: '',
       searchResults: [],
       eventObj: null, // currentlyFocusedEvent params. not the row in db.
-      eventRowInDb: null //store the FlightInstance, Activity etc row
+      eventRowInDb: null // store the FlightInstance, Activity etc row
     }
   }
 
@@ -397,7 +398,17 @@ class MapEditEventPopup extends Component {
   render () {
     if (!this.state.googlePlaceData) return <span>Loading</span>
     var place = this.state.googlePlaceData
-
+    var eventType = this.state.eventType
+    if (this.props.datesArr) {
+      var startTime = moment.unix(this.state.eventRowInDb.startTime).utc().format('hh:mm A')
+      // console.log('startTime', startTime)
+      var endTime = moment.unix(this.state.eventRowInDb.endTime).utc().format('hh:mm A')
+      // console.log('endTime', endTime)
+      var startDate = moment.unix(this.props.datesArr[this.state.startDay - 1]).format('ddd DD/MM/YYYY')
+      // console.log('startDate', startDate)
+      var endDate = moment.unix(this.props.datesArr[this.state.endDay - 1]).format('ddd DD/MM/YYYY')
+      // console.log('endDate', endDate)
+    }
     return (
       <div>
         {/* LOCATION NAME LABEL */}
@@ -415,14 +426,14 @@ class MapEditEventPopup extends Component {
 
         {/* DESCRIPTION / LOCATION SEARCH */}
 
-        {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
+        {(eventType === 'Activity' || eventType === 'Food' || eventType === 'Lodging') &&
           <div>
             <h5 style={{fontSize: '12px'}}>Description</h5>
             <input type='text' placeholder='Optional description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
           </div>
         }
 
-        {this.state.eventType === 'LandTransport' &&
+        {eventType === 'LandTransport' &&
           <div>
 
             {/* LABEL FOR LOCATION SEARCH */}
@@ -445,14 +456,14 @@ class MapEditEventPopup extends Component {
           </div>
         }
 
-        {this.state.eventType !== 'Flight' &&
+        {eventType !== 'Flight' &&
           <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} formType={'edit'} />
         }
-        {this.state.eventType !== 'Flight' &&
+        {eventType !== 'Flight' &&
           <MapEventToggles formType={'edit'} eventType={this.state.eventType} />
         }
 
-        {this.state.eventType === 'Flight' &&
+        {eventType === 'Flight' &&
           <div>
             <h5>Flight Details</h5>
             {this.state.start &&
@@ -460,6 +471,7 @@ class MapEditEventPopup extends Component {
                 <h5>Arrival airport: {this.state.eventRowInDb.arrivalLocation.name}</h5>
                 <h5>Flight no: {this.state.eventRowInDb.flightNumber}</h5>
                 <h5>Departure Terminal: {this.state.eventRowInDb.departureTerminal}</h5>
+                <h5>Departure Time: {startTime}, {startDate}</h5>
               </div>
             }
             {!this.state.start &&
@@ -467,13 +479,14 @@ class MapEditEventPopup extends Component {
                 <h5>Departure airport: {this.state.eventRowInDb.departureLocation.name}</h5>
                 <h5>Flight no: {this.state.eventRowInDb.flightNumber}</h5>
                 <h5>Arrival Terminal: {this.state.eventRowInDb.arrivalTerminal}</h5>
+                <h5>Arrival Time: {endTime}, {endDate}</h5>
               </div>
             }
           </div>
         }
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
-          {this.state.eventType !== 'Flight' &&
+          {eventType !== 'Flight' &&
             <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
           }
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.closePlannerPopup()}>Cancel</Button>

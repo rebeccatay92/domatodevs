@@ -10,6 +10,7 @@ import ActivityInfo from '../ActivityInfo'
 
 import { timelineStyle, eventBoxStyle, timelineColumnStyle, dateTableFirstHeaderStyle, mapPlannerEventBoxStyle, createEventTextStyle, activityIconStyle, createEventBoxStyle, createEventPickOneStyle, createEventBoxContainerStyle, plannerBlurredBackgroundStyle, expandedEventIconsBoxStyle, expandedEventIconsStyle, expandedEventBoxStyle, expandedEventBoxImageContainerStyle, expandedEventBoxImageStyle, expandedEventBoxTextBoxStyle } from '../../Styles/styles'
 
+import moment from 'moment'
 const _ = require('lodash')
 
 const plannerActivitySource = {
@@ -179,6 +180,14 @@ class SideBarEvent extends Component {
     const errorIcon = (this.props.event.timelineClash || this.props.event.inBetweenStartEndRow) && <i onMouseEnter={() => this.setState({showClashes: true})} onMouseLeave={() => this.setState({showClashes: false})} className='material-icons' style={{position: 'absolute', top: '-2px', marginLeft: '4px', color: 'red'}}>error</i>
 
     const errorBox = this.state.showClashes && errorIcon && <span style={{display: 'block', position: 'absolute', width: 'fit-content', left: this.props.event.type === 'Food' || this.props.event.type === 'Activity' ? '117px' : '72px', top: '11px', backgroundColor: 'white', zIndex: 1, color: 'black', boxShadow: '0px 1px 5px 2px rgba(0, 0, 0, .2)'}}>{this.props.event.timelineClash && <span style={{display: 'block', padding: '8px'}}>Timing Clash</span>}{this.props.event.inBetweenStartEndRow && <span style={{display: 'block', padding: '8px'}}>Event happens between a flight/transport</span>}</span>
+
+    // USING MOMENT AND UNIX (SECS)
+    // console.log('startTime', this.props.event[type].startTime)
+    // // console.log('timestr', moment.unix(this.props.event[type].startTime).format('hh:mm A'))
+    // var startUnix = this.props.event[type].startTime
+    // console.log('startUnix', startUnix)
+    // var momentObj = moment.unix(startUnix)
+    // console.log('momentObj', momentObj.utc().format('hh:mm A DD/MM/YYYY'))
 
     let startTime = new Date(this.props.event[type].startTime * 1000).toGMTString().substring(17, 22)
     if (type === 'Flight') startTime = new Date(this.props.event[type].FlightInstance.startTime * 1000).toGMTString().substring(17, 22)
