@@ -144,36 +144,36 @@ class MapCreateEventPopup extends Component {
         variables: {id: this.props.ItineraryId}
       }]
     })
-    .then(resolved => {
-      // console.log('returning', resolved)
-      var modelId = resolved.data[`${apolloNamespace}`].id
-      var day = newEvent.startDay
-      var eventType = this.state.eventType
-      if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
-        var loadSequence = helperOutput.newEvent.loadSequence
-        var start = null
-      } else if (this.state.eventType === 'Lodging' || this.state.eventType === 'LandTransport') {
-        loadSequence = helperOutput.newEvent.startLoadSequence
-        start = true
-      }
-      var eventObj = {
-        modelId,
-        eventType,
-        day,
-        loadSequence,
-        start,
-        flightInstanceId: null
-      }
-      this.setState({eventObj: eventObj}, () => console.log('set state eventObj'))
+      .then(resolved => {
+        // console.log('returning', resolved)
+        var modelId = resolved.data[`${apolloNamespace}`].id
+        var day = newEvent.startDay
+        var eventType = this.state.eventType
+        if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
+          var loadSequence = helperOutput.newEvent.loadSequence
+          var start = null
+        } else if (this.state.eventType === 'Lodging' || this.state.eventType === 'LandTransport') {
+          loadSequence = helperOutput.newEvent.startLoadSequence
+          start = true
+        }
+        var eventObj = {
+          modelId,
+          eventType,
+          day,
+          loadSequence,
+          start,
+          flightInstanceId: null
+        }
+        this.setState({eventObj: eventObj}, () => console.log('set state eventObj'))
 
-      // set day filter first before setCurrentlyFocusedEvent. DAYS FILTER MUST CORRESPOND WITH THE DAY OF NEWLY CREATED EVENT.
-      if (!this.props.daysFilterArr.includes(eventObj.day)) {
-        this.props.toggleDaysFilter(eventObj.day)
-      }
-    })
-    .catch(err => {
-      console.log('err', err)
-    })
+        // set day filter first before setCurrentlyFocusedEvent. DAYS FILTER MUST CORRESPOND WITH THE DAY OF NEWLY CREATED EVENT.
+        if (!this.props.daysFilterArr.includes(eventObj.day)) {
+          this.props.toggleDaysFilter(eventObj.day)
+        }
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   toggleCreateEventForm () {
@@ -193,11 +193,11 @@ class MapCreateEventPopup extends Component {
         }
         var googlePlaceData = constructGooglePlaceDataObj(place)
         googlePlaceData
-        .then(resolved => {
-          this.setState({googlePlaceData: resolved}, () => {
-            this.findOpeningHoursText()
+          .then(resolved => {
+            this.setState({googlePlaceData: resolved}, () => {
+              this.findOpeningHoursText()
+            })
           })
-        })
       }
     })
   }

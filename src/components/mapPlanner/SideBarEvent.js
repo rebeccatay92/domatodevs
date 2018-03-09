@@ -83,10 +83,20 @@ class SideBarEvent extends Component {
     }
   }
 
-  // keep isCurrentFocus in sync with redux state currentlyFocusedEvent
+  // keep isCurrentFocus in sync with redux state currentlyFocusedEvent. highlighted event in sidebar === currentlyFocusedEvent (marker clicked)
   componentWillReceiveProps (nextProps) {
-    if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
-      var currentEventObj = this.makeCurrentEventObj(this.props.event)
+    // if (nextProps.currentlyFocusedEvent !== this.props.currentlyFocusedEvent) {
+    //   console.log('currentFocusedEvent has changed', nextProps.currentlyFocusedEvent)
+    //   var currentEventObj = this.makeCurrentEventObj(nextProps.event)
+    //   console.log('sidebar currentEventObj', currentEventObj)
+    //   var isCurrentFocus = _.isEqual(currentEventObj, nextProps.currentlyFocusedEvent)
+    //   console.log('isCurrentFocus', isCurrentFocus)
+    //   this.setState({isCurrentFocus: isCurrentFocus})
+    // }
+
+    // dont compare nextProps to this.props. currently focused event may hv changed before nextProps.event.
+    if (nextProps.currentlyFocusedEvent) {
+      var currentEventObj = this.makeCurrentEventObj(nextProps.event)
       var isCurrentFocus = _.isEqual(currentEventObj, nextProps.currentlyFocusedEvent)
       this.setState({isCurrentFocus: isCurrentFocus})
     }

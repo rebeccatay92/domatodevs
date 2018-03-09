@@ -272,6 +272,7 @@ class Map extends Component {
       this.applyDaysFilter(nextProps.daysFilterArr)
     }
     if (nextProps.events !== this.props.events) {
+      // console.log('events arr changed', nextProps.events)
       var stillDragging = _.find(nextProps.events, function (e) {
         return (e.fromReducer)
       })
@@ -321,6 +322,7 @@ class Map extends Component {
     this.setState({
       plannerMarkers: plannerMarkers
     }, () => {
+      console.log('apply days filter setState plannerMarkers')
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
         this.refitBounds(this.state.searchMarkers, 'search')
       } else {
@@ -541,7 +543,7 @@ class Map extends Component {
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapEditEventPopup marker={currentlyFocusedMarker} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} />
+              <MapEditEventPopup ItineraryId={this.props.ItineraryId} marker={currentlyFocusedMarker} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} daysFilterArr={this.props.daysFilterArr} plannerMarkers={this.state.plannerMarkers} />
             </div>
           </InfoBox>
         }

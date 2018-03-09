@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { toggleDaysFilter, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
 import MapOpeningHoursDropdown from './MapOpeningHoursDropdown'
@@ -51,7 +51,8 @@ class MapEditEventPopup extends Component {
       locationSearchIsFor: '',
       isLocationSearching: false,
       searchStr: '',
-      searchResults: []
+      searchResults: [],
+      eventObj: null
     }
   }
 
@@ -213,7 +214,7 @@ class MapEditEventPopup extends Component {
       startDay: this.state.startDay,
       endDay: this.state.endDay,
       startTime: this.state.startTime,
-      endTime: this.state.startTime
+      endTime: this.state.endTime
     }
     if (this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') {
       temp.description = this.state.description
@@ -230,7 +231,7 @@ class MapEditEventPopup extends Component {
         }
       }
     }
-    console.log('temp', temp)
+    // console.log('temp', temp)
 
     // CONSTRUCT OBJ TO SEND TO LOAD SEQ HELPER
     var helperObj = {
@@ -246,9 +247,9 @@ class MapEditEventPopup extends Component {
       helperObj.departureUtcOffset = this.state.departureGooglePlaceData.utcOffset
       helperObj.arrivalUtcOffset = this.state.arrivalGooglePlaceData.utcOffset
     }
-    console.log('helperObj', helperObj)
+    // console.log('helperObj', helperObj)
     var helperOutput = updateEventLoadSeqAssignment(this.props.events, this.state.eventType, temp.id, helperObj)
-    console.log('helperOutput', helperOutput)
+    // console.log('helperOutput', helperOutput)
 
     if (this.state.eventType === 'LandTransport' || this.state.eventType === 'Lodging') {
       temp.startLoadSequence = helperOutput.updateEvent.startLoadSequence
@@ -256,6 +257,8 @@ class MapEditEventPopup extends Component {
     } if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
       temp.loadSequence = helperOutput.updateEvent.loadSequence
     }
+
+    // console.log('update temp obj to send backend', temp)
 
     var loadSequenceChanges = helperOutput.loadSequenceInput
     if (loadSequenceChanges.length) {
@@ -270,35 +273,32 @@ class MapEditEventPopup extends Component {
     // console.log('namespace', apolloNamespace)
 
     this.props[`${apolloNamespace}`]({
-      variables: helperOutput.temp,
+      variables: temp,
       refetchQueries: [{
         query: queryItinerary,
         variables: {id: this.props.ItineraryId}
       }]
-    })
-    .then(resolved => {
-      var modelId = resolved.data[`${apolloNamespace}`].id
+    }).then(resolved => {
+      // console.log('resolved', resolved)
       var eventType = this.state.eventType
-      var start = this.state.start
+      var eventObj = {
+        modelId: resolved.data[`${apolloNamespace}`].id,
+        eventType: eventType,
+        flightInstanceId: null // flight instance not editable from here
+      }
+      if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
+        eventObj.start = null
+        eventObj.day = temp.startDay
+        eventObj.loadSequence = temp.loadSequence
+      }
       // day depends on whether this is start or end row
       // load seq also depends on start or end row
-      if (eventType === 'Activity' || eventType === 'Food' || eventType) {
-        var day = temp.startDay
-        var loadSequence = temp.startDay
-      }
-      if (eventType === 'Lodging' || eventType === 'LandTransport') {
-        day = start ? temp.startDay : temp.endDay
-        loadSequence = start ? temp.startDay : temp.endDay
+      if (this.state.eventType === 'Lodging' || this.state.eventType === 'LandTransport') {
+        eventObj.start = this.state.start
+        eventObj.day = this.state.start ? temp.startDay : temp.endDay
+        eventObj.loadSequence = this.state.start ? temp.startLoadSequence : temp.endLoadSequence
       }
 
-      var eventObj = {
-        modelId,
-        eventType,
-        day,
-        loadSequence,
-        start,
-        flightInstanceId: null
-      }
       this.setState({eventObj: eventObj}, () => {
         console.log('set state eventObj', this.state.eventObj)
       })
@@ -307,11 +307,34 @@ class MapEditEventPopup extends Component {
       if (!this.props.daysFilterArr.includes(eventObj.day)) {
         this.props.toggleDaysFilter(eventObj.day)
       }
-    })
-    .catch(err => {
+
+      // I DONT KNOW WHICH WILL COMPLETE FIRST, SETDAYSFILTERARR, SETSTATEPLANNER MARKERS IN PARENT COMPONENT.
+      setTimeout(this.props.setCurrentlyFocusedEvent(eventObj), 1000)
+
+    }).catch(err => {
       console.log('err', err)
     })
   }
+
+  // HOW TO CHECK PLANNER MARKERS PROPS HAVE UPDATED CORRECTLY WITH EDITED EVENT?
+  // componentDidUpdate (prevProps, prevState) {
+  //   console.log('prevProps.plannerMarkers', prevProps.plannerMarkers, 'this.props', this.props.plannerMarkers)
+  //   // var plannerMarkersArrEqual = _.isEqual(this.props.plannerMarkers, prevProps.plannerMarkers)
+  //   if (prevState.eventObj) {
+  //     console.log('eventobj', prevState.eventObj)
+  //     var isUpdatedEventInPlannerMarkers = _.find(prevProps.plannerMarkers, function (e) {
+  //       return (
+  //         e.modelId === prevState.eventObj.modelId &&
+  //         e.eventType === prevState.eventObj.eventType &&
+  //         e.day === prevState.eventObj.day &&
+  //         e.loadSequence === prevState.eventObj.loadSequence &&
+  //         e.start === prevState.eventObj.start &&
+  //         e.flightInstanceId === prevState.eventObj.flightInstanceId
+  //       )
+  //     })
+  //     console.log('isUpdatedEventInPlannerMarkers', isUpdatedEventInPlannerMarkers)
+  //   }
+  // }
 
   handleChange (e, field) {
     if (field === 'description') {
@@ -496,7 +519,6 @@ class MapEditEventPopup extends Component {
   }
 }
 
-
 const mapDispatchToProps = (dispatch) => {
   return {
     toggleDaysFilter: (dayInt) => {
@@ -504,6 +526,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setCurrentlyFocusedEvent: (currentEventObj) => {
       dispatch(setCurrentlyFocusedEvent(currentEventObj))
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
   }
 }
