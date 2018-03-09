@@ -50,11 +50,11 @@ class MapEventToggles extends Component {
         <div key={'mapeventtoggle4'} style={this.props.eventType === 'LandTransport' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.changeEventType('LandTransport')}>
           <i className='material-icons'>local_car_wash</i>
         </div>
-        {this.props.formType === 'edit' &&
+        {/* {this.props.formType === 'edit' &&
           <div key={'mapeventtoggle5'} style={this.props.eventType === 'Flight' ? iconSelectedStyle : iconNotSelectedStyle} onClick={() => this.changeEventType('Flight')}>
             <i className='material-icons'>airplanemode_active</i>
           </div>
-        }
+        } */}
       </div>
     )
   }

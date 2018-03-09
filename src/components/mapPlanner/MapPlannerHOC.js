@@ -436,7 +436,7 @@ class Map extends Component {
           e.flightInstanceId === focus.flightInstanceId
         )
       })
-      console.log('currentlyFocusedMarker', currentlyFocusedMarker)
+      // console.log('currentlyFocusedMarker', currentlyFocusedMarker)
     }
 
     return (

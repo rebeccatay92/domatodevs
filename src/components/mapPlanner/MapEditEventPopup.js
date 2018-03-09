@@ -421,15 +421,14 @@ class MapEditEventPopup extends Component {
   selectLocation (place) {
     // console.log('arrival or departure', this.state.locationSearchIsFor)
     var googlePlaceData = constructGooglePlaceDataObj(place)
-
     googlePlaceData
-    .then(resolved => {
-      this.setState({
-        [`${this.state.locationSearchIsFor}GooglePlaceData`]: resolved,
-        isLocationSearching: false,
-        searchStr: resolved.name
-      }, () => console.log('state', this.state))
-    })
+      .then(resolved => {
+        this.setState({
+          [`${this.state.locationSearchIsFor}GooglePlaceData`]: resolved,
+          isLocationSearching: false,
+          searchStr: resolved.name
+        }, () => console.log('state', this.state))
+      })
   }
 
   render () {
@@ -468,7 +467,7 @@ class MapEditEventPopup extends Component {
             }
           </div>
 
-          {/* DESCRIPTION OR LOCATION INPUT */}
+          {/* NON FLIGHT - DESCRIPTION / LOCATION / DATETIMEPICKER */}
 
           <div style={{width: '100%'}}>
             {(this.state.eventType === 'Activity' || this.state.eventType === 'Food' || this.state.eventType === 'Lodging') &&
@@ -500,14 +499,15 @@ class MapEditEventPopup extends Component {
                 }
               </div>
             }
+
           </div>
 
           {/* START / END DATE/DAY/TIME */}
           <MapDateTimePicker daysArr={this.props.daysArr} datesArr={this.props.datesArr} startDay={this.state.startDay} endDay={this.state.endDay} handleChange={(e, field) => this.handleChange(e, field)} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} formType={'edit'} />
 
+          <MapEventToggles formType={'edit'} eventType={this.state.eventType} />
         </div>
 
-        <MapEventToggles formType={'edit'} eventType={this.state.eventType} />
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
           <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
