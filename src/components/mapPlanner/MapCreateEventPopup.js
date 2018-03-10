@@ -176,6 +176,7 @@ class MapCreateEventPopup extends Component {
     console.log('open create event form', this.state.eventType)
     // construct openCreateFormParams, dispatch redux setOpenCreateFormParams
     var params = {
+      toOpen: true,
       eventType: this.state.eventType,
       defaultStartDay: this.state.startDay,
       defaultEndDay: this.state.endDay,

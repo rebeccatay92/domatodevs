@@ -1,15 +1,9 @@
-export const mapPlannerOpenCreateFormReducer = (state = {eventType: 'Activity', defaultStartDay: 1, defaultEndDay: 1, defaultStartTime: 0, defaultEndTime: 0, defaultGooglePlaceData: {}}, action) => {
-  // switch (action.type) {
-  //   case 'SET_CURRENTLY_FOCUSED_EVENT':
-  //     return action.currentlyFocusedEvent
-  //   case 'CLEAR_CURRENTLY_FOCUSED_EVENT':
-  //     return {modelId: '', eventType: '', flightInstanceId: '', day: 0, start: null, loadSequence: 0}
-  //   default:
-  //     return state
-  // }
+export const mapPlannerOpenCreateFormReducer = (state = {toOpen: false, eventType: 'Activity', defaultStartDay: 1, defaultEndDay: 1, defaultStartTime: 0, defaultEndTime: 0, defaultGooglePlaceData: {}}, action) => {
   switch (action.type) {
     case 'SET_OPEN_CREATE_FORM_PARAMS':
-      return state
+      return action.params
+    case 'CLEAR_OPEN_CREATE_FORM_PARAMS':
+      return {toOpen: false, eventType: 'Activity', defaultStartDay: 1, defaultEndDay: 1, defaultStartTime: 0, defaultEndTime: 0, defaultGooglePlaceData: {}}
     default:
       return state
   }
@@ -17,6 +11,7 @@ export const mapPlannerOpenCreateFormReducer = (state = {eventType: 'Activity', 
 
 /*
 openCreateFormParams (action.params)
+toOpen: false
 eventType
 defaultStartDay
 defaultEndDay

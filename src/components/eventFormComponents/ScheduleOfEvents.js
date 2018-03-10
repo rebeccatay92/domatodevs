@@ -6,6 +6,7 @@ class ScheduleOfEvents extends Component {
     return (
       <div className='scheduleOfEvents' style={{position: 'relative', overflowY: 'scroll', height: '397px', marginTop: '48px'}}>
         {datesArr.map((date, i) => {
+          // console.log('schedule date', date)
           return (
             <div key={i}>
               <p>

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../../actions/plannerActions'
+import { clearOpenCreateFormParams } from '../../actions/mapPlannerActions'
 
 import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
@@ -12,6 +13,24 @@ const _ = require('lodash')
 
 const backgroundColor = '#FAFAFA'
 
+function constructDatesArrUnix (startDateUnix, days) {
+  let datesArrUnix = [startDateUnix]
+  while (datesArrUnix.length < days) {
+    datesArrUnix.push(datesArrUnix[datesArrUnix.length - 1] + 86400)
+  }
+  return datesArrUnix
+}
+
+const getDates = (startDate, days) => {
+  let dateArray = []
+  let currentDate = new Date(startDate)
+  while (dateArray.length < days) {
+    dateArray.push(new Date(currentDate))
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+  return dateArray
+}
+
 class MapPlannerPage extends Component {
   constructor (props) {
     super(props)
@@ -19,8 +38,73 @@ class MapPlannerPage extends Component {
       startDate: null,
       days: null,
       datesArr: null, // keep null instead of [] so components know to display day dropdown. DATES ARR IS IN UNIX (SECS) FOR MAPPLANNER
-      daysArr: [] // keep as empty arr. first render needs a daysArr.map
+      daysArr: [], // keep as empty arr. first render needs a daysArr.map,
+      datesArrForForm: null
     }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
+      const allEvents = nextProps.data.findItinerary.events
+      // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
+      // console.log(activitiesWithTimelineErrors)
+      // this.props.initializePlanner(activitiesWithTimelineErrors)
+      this.props.initializePlanner(allEvents)
+
+      var startDate = nextProps.data.findItinerary.startDate
+      var days = nextProps.data.findItinerary.days
+
+      this.setState({startDate: startDate, days: days})
+      if (startDate && days) {
+        var datesArr = constructDatesArrUnix(startDate, days)
+        this.setState({datesArr: datesArr})
+
+        // construct js date obj arr just for eventFormHOC
+        var jsDatesArr = getDates(startDate * 1000, days)
+        // console.log('jsDatesArr', jsDatesArr)
+        // var datesArrForForm = jsDatesArr.map(date => {
+        //   return date.getTime()
+        // })
+        // console.log('datesArrForForm', datesArrForForm)
+        this.setState({datesArrForForm: jsDatesArr})
+      }
+      var daysArr = _.range(1, days + 1)
+      this.setState({daysArr: daysArr})
+    }
+  }
+
+  componentDidMount () {
+    if (this.props.data.findItinerary) {
+      var allEvents = this.props.data.findItinerary.events
+      this.props.initializePlanner(allEvents)
+
+      var startDate = this.props.data.findItinerary.startDate
+      var days = this.props.data.findItinerary.days
+
+      // startDate is unix (secs)
+      this.setState({startDate: startDate, days: days})
+
+      if (startDate && days) {
+        var datesArr = constructDatesArrUnix(startDate, days)
+        this.setState({datesArr: datesArr})
+
+        // construct js date obj arr just for eventFormHOC
+        var jsDatesArr = getDates(startDate * 1000, days)
+        // console.log('js datesArr', jsDatesArr)
+        // var datesArrForForm = jsDatesArr.map(date => {
+        //   return date.getTime()
+        // })
+        // console.log('datesArrForForm', datesArrForForm)
+        this.setState({datesArrForForm: jsDatesArr})
+      }
+      var daysArr = _.range(1, days + 1)
+      this.setState({daysArr: daysArr})
+    }
+  }
+
+  closeCreateEventForm () {
+    console.log('close create event form')
+    this.props.clearOpenCreateFormParams()
   }
 
   render () {
@@ -43,64 +127,15 @@ class MapPlannerPage extends Component {
           {/* <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div> */}
         </div>
 
-        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR, DATE AS JS DATE OBj. ALSO PASS MARKER LOCATION AS GOOGLEPLACEDATA, DEPARTURE GOOGLEPLACEDATA */}
+        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR, DATE AS JS DATE OBj. ALSO PASS MARKER LOCATION AS GOOGLEPLACEDATA, DEPARTURE GOOGLEPLACEDATA. DATE IS FOR DATETIMEPICKER. DATESARR NEEDED FOR LOCATION DETAILS, DATETIMEPICKER ETC */}
         <div>
-          {this.props.openCreateForm &&
-            <CreateEventFormHOC ItineraryId={this.props.match.params.itineraryId} day={1} date={null} dates={null} daysArr={this.state.daysArr} eventType={'Activity'} />
+          {this.props.openCreateFormParams.toOpen &&
+            <CreateEventFormHOC ItineraryId={this.props.match.params.itineraryId} day={this.props.openCreateFormParams.defaultStartDay} date={this.state.datesArrForForm[this.props.openCreateFormParams.defaultStartDay - 1]} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} eventType={this.props.openCreateFormParams.eventType} toggleCreateEventType={() => this.closeCreateEventForm()} />
           }
         </div>
       </div>
     )
   }
-
-  componentWillReceiveProps (nextProps) {
-    if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
-      const allEvents = nextProps.data.findItinerary.events
-      // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
-      // console.log(activitiesWithTimelineErrors)
-      // this.props.initializePlanner(activitiesWithTimelineErrors)
-      this.props.initializePlanner(allEvents)
-
-      var startDate = nextProps.data.findItinerary.startDate
-      var days = nextProps.data.findItinerary.days
-
-      this.setState({startDate: startDate, days: days})
-      if (startDate && days) {
-        var datesArr = constructDatesArrUnix(startDate, days)
-        this.setState({datesArr: datesArr})
-      }
-      var daysArr = _.range(1, days + 1)
-      this.setState({daysArr: daysArr})
-    }
-  }
-
-  componentDidMount () {
-    if (this.props.data.findItinerary) {
-      var allEvents = this.props.data.findItinerary.events
-      this.props.initializePlanner(allEvents)
-
-      var startDate = this.props.data.findItinerary.startDate
-      var days = this.props.data.findItinerary.days
-
-      // startDate is unix (secs)
-      this.setState({startDate: startDate, days: days})
-
-      if (startDate && days) {
-        var datesArr = constructDatesArrUnix(startDate, days)
-        this.setState({datesArr: datesArr})
-      }
-      var daysArr = _.range(1, days + 1)
-      this.setState({daysArr: daysArr})
-    }
-  }
-}
-
-function constructDatesArrUnix (startDateUnix, days) {
-  let datesArrUnix = [startDateUnix]
-  while (datesArrUnix.length < days) {
-    datesArrUnix.push(datesArrUnix[datesArrUnix.length - 1] + 86400)
-  }
-  return datesArrUnix
 }
 
 const options = {
@@ -122,6 +157,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initializePlanner: (activities) => {
       dispatch(initializePlanner(activities))
+    },
+    clearOpenCreateFormParams: () => {
+      dispatch(clearOpenCreateFormParams())
     }
   }
 }

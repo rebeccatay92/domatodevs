@@ -24,3 +24,9 @@ export const setOpenCreateFormParams = (params) => {
     params
   }
 }
+
+export const clearOpenCreateFormParams = () => {
+  return {
+    type: 'CLEAR_OPEN_CREATE_FORM_PARAMS'
+  }
+}
