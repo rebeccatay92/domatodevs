@@ -114,14 +114,18 @@ class DateTimePicker extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.startTimeUnix !== nextProps.startTimeUnix) {
       var startTimeUnix = nextProps.startTimeUnix
+      console.log('starttimeunix', startTimeUnix)
       var momentObj = moment.unix(startTimeUnix).utc()
       var timestr = momentObj.format('HH:mm')
+      console.log('starttime str', timestr)
       this.setState({startTime: timestr})
     }
     if (this.props.endTimeUnix !== nextProps.endTimeUnix) {
       var endTimeUnix = nextProps.endTimeUnix
+      console.log('endTimeUnix', endTimeUnix)
       momentObj = moment.unix(endTimeUnix).utc()
       timestr = momentObj.format('HH:mm')
+      console.log('endtime str', timestr)
       this.setState({endTime: timestr})
     }
   }
@@ -142,6 +146,7 @@ class DateTimePicker extends Component {
     }
   }
 
+  // INTUITIVE INPUT NO LONGER USE DATETIMEPICKER. NO MORE CHECKINTIME, PROPS.TYPE
   render () {
     if (this.props.intuitiveInput) {
       return (

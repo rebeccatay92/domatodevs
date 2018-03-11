@@ -88,7 +88,6 @@ class MapDateTimePicker extends Component {
 
   // receive unix from parent. convert to HH:mm str for internal state
   componentWillReceiveProps (nextProps) {
-    // set default start time string
     // receive startTime, endTime unix as props. set the str
     if (this.props.startTimeUnix !== nextProps.startTimeUnix) {
       var startTimeUnix = nextProps.startTimeUnix

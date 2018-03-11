@@ -36,8 +36,8 @@ class CreateActivityForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      startDay: this.props.day,
-      endDay: this.props.day,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -248,8 +248,34 @@ class CreateActivityForm extends Component {
 
     // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
 
-    var defaultUnix = latestTime(this.props.events, this.props.day)
-    this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
+    if (this.props.defaultGooglePlaceData.placeId) {
+      this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
+    }
+
+    // CONSTRUCTOR INITIALIZED STARTDAY, ENDDAY TO 1.
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+
+    // SET START AND END TIME DEPENDING ON DEFAULTS
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+
+    // if no time values at all set as latest time
+    if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
+      var defaultUnix = latestTime(this.props.events, this.props.day)
+      this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
