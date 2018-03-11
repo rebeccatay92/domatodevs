@@ -182,7 +182,9 @@ class MapCreateEventPopup extends Component {
       defaultEndDay: this.state.endDay,
       defaultStartTime: this.state.startTime,
       defaultEndTime: this.state.endTime,
-      defaultGooglePlaceData: this.state.googlePlaceData
+      defaultDescription: this.state.description,
+      defaultGooglePlaceData: this.state.googlePlaceData,
+      defaultArrivalGooglePlaceData: this.state.arrivalGooglePlaceData
     }
     this.props.setOpenCreateFormParams(params)
   }

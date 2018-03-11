@@ -127,7 +127,7 @@ class MapPlannerPage extends Component {
           {/* <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div> */}
         </div>
 
-        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR, DATE AS JS DATE OBj. ALSO PASS MARKER LOCATION AS GOOGLEPLACEDATA, DEPARTURE GOOGLEPLACEDATA. DATE IS FOR DATETIMEPICKER. DATESARR NEEDED FOR LOCATION DETAILS, DATETIMEPICKER ETC */}
+        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR, DATE AS JS DATE OBJS. DEFAULTGOOGLEPLACEDATA IS MARKER LOCATION. */}
         <div>
           {this.props.openCreateFormParams.toOpen &&
             <CreateEventFormHOC ItineraryId={this.props.match.params.itineraryId} day={this.props.openCreateFormParams.defaultStartDay} date={this.state.datesArrForForm[this.props.openCreateFormParams.defaultStartDay - 1]} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} eventType={this.props.openCreateFormParams.eventType} toggleCreateEventType={() => this.closeCreateEventForm()} />
