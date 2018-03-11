@@ -17,11 +17,10 @@ class CreateEventFormHOC extends Component {
       Flight: CreateFlightForm
     }
   }
+  // JS DATE OBJS FOR DATES/DATE
   render () {
-    // should be js date objects
     // console.log('HOC this.props.dates arr', this.props.dates)
     // console.log('HOC this.props.date', this.props.date)
-
     const CreateEventForm = this.components[this.props.eventType]
     return (
       <div style={{backgroundColor: 'transparent', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
@@ -30,8 +29,7 @@ class CreateEventFormHOC extends Component {
             overflowY: 'hidden'
           }
         }} />
-        {/* DATES ARR HERE IS JS DATE OBJECT. PROP.DATE IS MILLISECS */}
-        <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} eventType={this.props.eventType} toggleCreateEventType={() => this.props.toggleCreateEventType()} />
+        <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} eventType={this.props.eventType} toggleCreateEventType={() => this.props.toggleCreateEventType()} defaultStartDay={this.props.defaultStartDay} defaultEndDay={this.props.defaultEndDay} defaultStartTime={this.props.defaultStartTime} defaultEndTime={this.props.defaultEndTime} defaultDescription={this.props.defaultDescription} defaultGooglePlaceData={this.props.defaultGooglePlaceData} defaultArrivalGooglePlaceData={this.props.defaultArrivalGooglePlaceData} />
       </div>
     )
   }

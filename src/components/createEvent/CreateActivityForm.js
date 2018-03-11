@@ -236,7 +236,8 @@ class CreateActivityForm extends Component {
   }
 
   componentDidMount () {
-    console.log(this.state)
+    // console.log('mount state', this.state)
+    console.log('mount props', this.props)
     this.props.retrieveCloudStorageToken()
 
     this.props.cloudStorageToken.then(obj => {
@@ -247,6 +248,16 @@ class CreateActivityForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
+    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
+
+    // only find latestTime if neither default start/end time is provided
+    // if (this.props.defaultStartTime) {
+    //   this.setState({defaultTime: this.props.defaultStartTime})
+    //   this.setState({startTime: this.props.defaultStartTime, endTime: this.props.defaultStartTime})
+    // }
+    // if (this.props.defaultEndTime) {
+    //
+    // }
     var defaultUnix = latestTime(this.props.events, this.props.day)
     var defaultTime = moment.utc(defaultUnix * 1000).format('HH:mm')
     this.setState({defaultTime: defaultTime})
