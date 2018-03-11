@@ -32,7 +32,6 @@ import { validateIntervals } from '../../helpers/intervalValidationTesting'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}activityDefaultBackground.jpg`
 
-
 class CreateActivityForm extends Component {
   constructor (props) {
     super(props)
@@ -249,15 +248,6 @@ class CreateActivityForm extends Component {
 
     // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
 
-    // only find latestTime if neither default start/end time is provided
-    // if (this.props.defaultStartTime) {
-    //   this.setState({defaultTime: this.props.defaultStartTime})
-    //   this.setState({startTime: this.props.defaultStartTime, endTime: this.props.defaultStartTime})
-    // }
-    // if (this.props.defaultEndTime) {
-    //
-    // }
-
     var defaultUnix = latestTime(this.props.events, this.props.day)
     this.setState({startTime: defaultUnix, endTime: defaultUnix})
   }
@@ -294,8 +284,8 @@ class CreateActivityForm extends Component {
             <div style={eventDescContainerStyle}>
               <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
             </div>
-            {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} daysArr={this.props.daysArr} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} />
+
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} daysArr={this.props.daysArr} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} />
 
             {this.state.openingHoursValidation &&
               <div>

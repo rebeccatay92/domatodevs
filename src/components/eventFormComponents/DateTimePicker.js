@@ -25,7 +25,7 @@ class DateTimePicker extends Component {
       // THESE ARE FOR RENDER PURPOSES ONLY. DAY AND TIME(UNIX) STILL KEPT IN PARENT COMPONENT FOR FORM SUBMISSION
       dates: [],
       date: '',
-      startDate: null,
+      startDate: null, // moment obj
       endDate: null,
       startTime: '', // '10:00AM'
       endTime: ''
@@ -126,27 +126,16 @@ class DateTimePicker extends Component {
     }
   }
 
+  // INTUITIVEINPUTS NO LONGER USE DATETIMEPICKER. IE. THIS.PROPS.TYPES NOT NEEDED.
   componentDidMount () {
     // only set up state with dates if this.props.dates is present
     console.log('this.props', this.props)
-    // if dates are present in create form/smart input, default start and end day to the date form is opened.
-    if (this.props.dates && this.props.formType !== 'edit') {
+    // start and end day are defaulted to day form is opened in (for create), and db days (for edit)
+    if (this.props.dates) {
       this.setState({
         dates: this.props.dates.map(e => {
           return moment(e).unix()
         }),
-        date: (new Date(this.props.date)).toISOString().substring(0, 10),
-        // this.props.types === checkInTime / checkOutTime from IntuitiveLodgingInput
-        startDate: this.props.type ? moment.utc(new Date(this.props.date)) : moment(new Date(this.props.date)),
-        endDate: this.props.type ? moment.utc(new Date(this.props.date)) : moment(new Date(this.props.date))
-      })
-    } else if (this.props.dates && this.props.formType === 'edit') {
-      // if dates are present and edit form is opened
-      this.setState({
-        dates: this.props.dates.map(e => {
-          return moment(e).unix()
-        }),
-        date: (new Date(this.props.date)).toISOString().substring(0, 10),
         startDate: moment(new Date(this.props.dates[this.props.startDay - 1])),
         endDate: moment(new Date(this.props.dates[this.props.endDay - 1]))
       })
