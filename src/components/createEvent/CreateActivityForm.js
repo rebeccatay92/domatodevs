@@ -176,8 +176,8 @@ class CreateActivityForm extends Component {
 
   resetState () {
     this.setState({
-      startDay: this.props.startDay,
-      endDay: this.props.endDay,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -247,11 +247,12 @@ class CreateActivityForm extends Component {
     this.setState({currency: currencyList[0]})
 
     // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
-
     if (this.props.defaultDescription) {
       this.setState({description: this.props.defaultDescription})
     }
-    if (this.props.defaultGooglePlaceData.placeId) {
+
+    // if open within planner defaultGooglePlaceData = undefined
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
       this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
     }
 

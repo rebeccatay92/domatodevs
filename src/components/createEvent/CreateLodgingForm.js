@@ -36,8 +36,8 @@ class CreateLodgingForm extends Component {
     super(props)
     this.state = {
       ItineraryId: this.props.ItineraryId,
-      startDay: this.props.day,
-      endDay: this.props.day,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -154,8 +154,8 @@ class CreateLodgingForm extends Component {
 
   resetState () {
     this.setState({
-      startDay: this.props.startDay,
-      endDay: this.props.endDay,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -223,8 +223,36 @@ class CreateLodgingForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
-    var defaultUnix = latestTime(this.props.events, this.props.day)
-    this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
+
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
+
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
+      this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
+    }
+
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+
+    // SET START AND END TIME DEPENDING ON DEFAULTS
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+
+    // if no time values at all set as latest time
+    if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
+      var defaultUnix = latestTime(this.props.events, this.props.day)
+      this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {

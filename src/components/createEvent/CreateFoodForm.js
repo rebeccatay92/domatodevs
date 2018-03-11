@@ -36,9 +36,8 @@ class CreateFoodForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      // ItineraryId: this.props.ItineraryId,
-      startDay: this.props.day,
-      endDay: this.props.day,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -174,8 +173,8 @@ class CreateFoodForm extends Component {
 
   resetState () {
     this.setState({
-      startDay: this.props.startDay,
-      endDay: this.props.endDay,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -243,8 +242,26 @@ class CreateFoodForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
-    var defaultUnix = latestTime(this.props.events, this.props.day)
-    this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    // INITIALIZE STATE TO DEFAULTS (IF PASSED FROM MAP POPUP)
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
+      this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
+    }
+
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+
+    // if no time values at all set as latest time
+    if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
+      var defaultUnix = latestTime(this.props.events, this.props.day)
+      this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
