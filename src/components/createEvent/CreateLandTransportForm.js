@@ -42,7 +42,6 @@ class CreateLandTransportForm extends Component {
       arrivalLocationAlias: '',
       departureNotes: '',
       arrivalNotes: '',
-      defaultTime: null, // 24 hr str 'HH:mm'
       // start and end time need to be unix
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
@@ -257,15 +256,6 @@ class CreateLandTransportForm extends Component {
 
     // find latest time for that day and assign to start/endTime
     var defaultUnix = latestTime(this.props.events, this.props.day)
-
-    // time is at utc 0
-    var defaultTime = moment.utc(defaultUnix * 1000).format('HH:mm')
-    // datepicker take 'hh:mm' 24 hr format
-
-    // set default time string that datepicker uses
-    this.setState({defaultTime: defaultTime})
-
-    // set default start and end unix for saving
     this.setState({startTime: defaultUnix, endTime: defaultUnix})
   }
 
@@ -302,7 +292,7 @@ class CreateLandTransportForm extends Component {
             </div>
 
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
 
             <ScheduleOfEvents dates={this.props.dates} events={this.props.events} />
 

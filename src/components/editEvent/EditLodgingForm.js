@@ -308,8 +308,6 @@ class EditLodgingForm extends Component {
 
     var startTime = this.props.event.startTime
     var endTime = this.props.event.endTime
-    var defaultStartTime = moment.utc(this.props.event.startTime * 1000).format('HH:mm')
-    var defaultEndTime = moment.utc(this.props.event.endTime * 1000).format('HH:mm')
 
     // INSTANTIATE STATE TO BE WHATEVER WAS IN DB
     console.log('event', this.props.event)
@@ -318,8 +316,6 @@ class EditLodgingForm extends Component {
       endDay: this.props.event.endDay,
       startTime: startTime, // unix or null for all day
       endTime: endTime,
-      defaultStartTime: defaultStartTime, // 'HH:mm' string
-      defaultEndTime: defaultEndTime,
       description: this.props.event.description,
       locationAlias: this.props.event.locationAlias || '',
       currency: this.props.event.currency,
@@ -351,7 +347,7 @@ class EditLodgingForm extends Component {
               <input className='left-panel-input' placeholder='Input Description' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.props.event.startDay} endDay={this.props.event.endDay} defaultStartTime={this.state.defaultStartTime} defaultEndTime={this.state.defaultEndTime} daysArr={this.props.daysArr} formType={'edit'} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.props.event.startDay} endDay={this.props.event.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} formType={'edit'} />
 
             {this.state.openingHoursValidation &&
               <div>

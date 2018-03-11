@@ -51,8 +51,6 @@ class MapCreateEventPopup extends Component {
       endDay: 1,
       startTime: null, // unix secs
       endTime: null,
-      startTimeStr: '', // str to pass to DateTimePicker to display.
-      endTimeStr: '',
       description: '', // except transport
       arrivalGooglePlaceData: {}, // only for transport
       eventObj: null,

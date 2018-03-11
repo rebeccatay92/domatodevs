@@ -42,7 +42,6 @@ class CreateLodgingForm extends Component {
       locationAlias: '',
       description: '',
       notes: '',
-      defaultTime: null,
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
       cost: 0,
@@ -225,8 +224,6 @@ class CreateLodgingForm extends Component {
     this.setState({currency: currencyList[0]})
 
     var defaultUnix = latestTime(this.props.events, this.props.day)
-    var defaultTime = moment.utc(defaultUnix * 1000).format('HH:mm')
-    this.setState({defaultTime: defaultTime})
     this.setState({startTime: defaultUnix, endTime: defaultUnix})
   }
 
@@ -258,7 +255,7 @@ class CreateLodgingForm extends Component {
               <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
             </div>
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
 
             <ScheduleOfEvents dates={this.props.dates} events={this.props.events} />
 

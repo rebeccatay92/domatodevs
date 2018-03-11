@@ -340,8 +340,6 @@ class EditLandTransportForm extends Component {
 
     var startTime = this.props.event.startTime
     var endTime = this.props.event.endTime
-    var defaultStartTime = moment.utc(this.props.event.startTime * 1000).format('HH:mm')
-    var defaultEndTime = moment.utc(this.props.event.endTime * 1000).format('HH:mm')
 
     // INSTANTIATE STATE TO BE WHATEVER WAS IN DB
     console.log('event', this.props.event)
@@ -350,8 +348,6 @@ class EditLandTransportForm extends Component {
       endDay: this.props.event.endDay,
       startTime: startTime, // unix or null for all day
       endTime: endTime,
-      defaultStartTime: defaultStartTime, // 'HH:mm' string
-      defaultEndTime: defaultEndTime,
       departureLocationAlias: this.props.event.departureLocationAlias || '',
       arrivalLocationAlias: this.props.event.arrivalLocationAlias || '',
       currency: this.props.event.currency,
@@ -383,7 +379,7 @@ class EditLandTransportForm extends Component {
             </div>
 
             {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.props.event.startDay} endDay={this.props.event.endDay} defaultStartTime={this.state.defaultStartTime} defaultEndTime={this.state.defaultEndTime} daysArr={this.props.daysArr} formType={'edit'} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.props.event.startDay} endDay={this.props.event.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} formType={'edit'} />
           </div>
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}

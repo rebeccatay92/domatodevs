@@ -43,15 +43,11 @@ class DateTimePicker extends Component {
       this.props.handleSelect(field, day, time)
     }
     if (field === 'startTime' || field === 'endTime') {
-      // convert time in '10:00AM' string to Int
-      // time is relative to 1970 1st jan
+      // convert time in '10:00AM' string to unix
 
-      // console.log('value', e.target.value, 'type', typeof (e.target.value))
-
-      this.setState({
-        [field]: e.target.value
-      })
-
+      // this.setState({
+      //   [field]: e.target.value
+      // })
       if (e.target.value) {
         var timeStr = e.target.value
         if (field === 'startTime') {
@@ -114,25 +110,20 @@ class DateTimePicker extends Component {
     }
   }
 
-  // updating state '' for start/end time with default time props
+  // converting time props (unix) into str
   componentWillReceiveProps (nextProps) {
-    // default time props was passed down as a string
-    // DEFAULT TIME FOR CREATE FORM
-    if (this.props.defaultTime !== nextProps.defaultTime) {
-      this.setState({startTime: nextProps.defaultTime, endTime: nextProps.defaultTime})
+    if (this.props.startTimeUnix !== nextProps.startTimeUnix) {
+      var startTimeUnix = nextProps.startTimeUnix
+      var momentObj = moment.unix(startTimeUnix).utc()
+      var timestr = momentObj.format('HH:mm')
+      this.setState({startTime: timestr})
     }
-
-    // DEFAULT START/END TIME FOR EDIT FORM
-    if (this.props.defaultStartTime !== nextProps.defaultStartTime) {
-      this.setState({startTime: nextProps.defaultStartTime})
+    if (this.props.endTimeUnix !== nextProps.endTimeUnix) {
+      var endTimeUnix = nextProps.endTimeUnix
+      momentObj = moment.unix(endTimeUnix).utc()
+      timestr = momentObj.format('HH:mm')
+      this.setState({endTime: timestr})
     }
-    if (this.props.defaultEndTime !== nextProps.defaultEndTime) {
-      this.setState({endTime: nextProps.defaultEndTime})
-    }
-
-    // if (this.props.formType === 'edit') {
-    //   console.log('props', nextProps)
-    // }
   }
 
   componentDidMount () {
