@@ -37,3 +37,17 @@ export const clearOpenCreateFormParams = () => {
     type: 'CLEAR_OPEN_CREATE_FORM_PARAMS'
   }
 }
+
+export const setSearchInputStr = (str) => {
+  return {
+    type: 'SET_SEARCH_INPUT_STR',
+    str
+  }
+}
+
+export const setSearchMarkerArr = (arr) => {
+  return {
+    type: 'SET_SEARCH_MARKER_ARR',
+    arr
+  }
+}

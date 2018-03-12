@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent, setSearchMarkerArr, setSearchInputStr } from '../../actions/mapPlannerActions'
 
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
@@ -62,15 +62,29 @@ class Map extends Component {
 
   onPlacesChanged () {
     if (!this.searchBox) return
+
+    // console.log('search box', this.searchBox)
+    // very hackish way but i got the query str out to set redux state.
+    var secretSearchBox = this.searchBox.state.__SECRET_SEARCH_BOX_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
+    // console.log('secretSearchBox')
+    var secretPlaces = secretSearchBox.gm_accessors_.places
+    // console.log('secretPlaces', secretPlaces)
+    var secretString = secretPlaces.Jc.formattedPrediction
+    // console.log('secretString', secretString)
+    // sync redux search str with query prediction str
+    this.props.setSearchInputStr(secretString)
+
+
     //  clear out old clicked state
-    this.setState({
-      isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null
-    })
+    // this.setState({
+    //   isSearchInfoBoxOpen: false,
+    //   clickedSearchMarkerIndex: null
+    // })
 
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
     // console.log('places', places)
+
     if (places.length === 0) {
       console.log('no results')
       return
@@ -94,14 +108,25 @@ class Map extends Component {
     const nextCenter = _.get(nextMarkers, '0.position', this.state.center)
 
     this.setState({
-      center: nextCenter,
-      searchMarkers: nextMarkers
+      center: nextCenter
+      // searchMarkers: nextMarkers
     })
+
+    // set redux state with markers arr, comprising of (place, position)
+    this.props.setSearchMarkerArr(nextMarkers)
+
     this.map.fitBounds(bounds, 150)
   }
 
+  onSearchStrChange (e) {
+    // set redux state searchInputStr to input field value
+    this.props.setSearchInputStr(e.target.value)
+  }
+
   clearSearch () {
-    this.searchInput.value = ''
+    // this.searchInput.value = ''
+    this.props.setSearchInputStr('')
+
     if (this.state.searchMarkers.length) {
       this.setState({
         searchMarkers: [],
@@ -480,14 +505,14 @@ class Map extends Component {
           </CustomControl>
         }
 
-        <SearchBox ref={node => { this.searchBox = node }} bounds={this.state.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={() => this.onPlacesChanged()} >
+        <SearchBox ref={node => { this.searchBox = node }} bounds={this.state.bounds} controlPosition={window.google.maps.ControlPosition.TOP_LEFT} onPlacesChanged={() => this.onPlacesChanged()}>
           <div>
-            <input ref={node => { this.searchInput = node }} type='text' placeholder='Search for location' style={{boxSizing: `border-box`, border: `1px solid transparent`, width: `300px`, height: `30px`, marginTop: `10px`, marginLeft: '10px', padding: `0 12px`, borderRadius: `3px`, boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: `none`, textOverflow: `ellipses`}} />
+            <input ref={node => { this.searchInput = node }} onChange={(e) => this.onSearchStrChange(e)} value={this.props.mapPlannerSearch.searchInputStr} type='text' placeholder='Search for location' style={{boxSizing: `border-box`, border: `1px solid transparent`, width: `300px`, height: `30px`, marginTop: `10px`, marginLeft: '10px', padding: `0 12px`, borderRadius: `3px`, boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: `none`, textOverflow: `ellipses`}} />
             <button onClick={() => this.clearSearch()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginLeft: '10px'}}>Clear</button>
           </div>
         </SearchBox>
 
-        {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
+        {/* {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
           return (
             <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedSearchMarkerIndex === index ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} onClick={() => this.onSearchMarkerClicked(index)} zIndex={this.state.clickedSearchMarkerIndex === index ? 2 : 1}>
               <div>
@@ -502,9 +527,23 @@ class Map extends Component {
               </div>
             </MarkerWithLabel>
           )
+        })} */}
+
+        {/* markers come from redux state. need to check if clicked or not */}
+        {this.props.searchMarkerArr.length && this.props.searchMarkerArr.map((marker, index) => {
+          return <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={unclickedSearchMarkerStyle} zIndex={1} >
+            <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+              {marker.place.imageUrl &&
+                <img width='100%' height='100%' src={marker.place.imageUrl} />
+              }
+              {!marker.place.imageUrl &&
+                <div style={{width: '100%', height: '100%', background: 'white'}} />
+              }
+            </div>
+          </MarkerWithLabel>
         })}
 
-        {this.state.isSearchInfoBoxOpen &&
+        {/* {this.state.isSearchInfoBoxOpen &&
           <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox' style={{width: '450px', height: '280px', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)'}}>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
@@ -514,7 +553,7 @@ class Map extends Component {
               <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} mapEventsArr={this.state.eventsArr} plannerMarkers={this.state.plannerMarkers} daysFilterArr={this.props.daysFilterArr} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} searchCreateEventSuccess={(eventObj) => this.searchCreateEventSuccess(eventObj)} />
             </div>
           </InfoBox>
-        }
+        } */}
 
         {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
           var currentlyFocusedEvent = this.props.currentlyFocusedEvent
@@ -570,7 +609,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} mapPlannerSearch={this.props.mapPlannerSearch} setSearchInputStr={(str) => this.props.setSearchInputStr(str)} setSearchMarkerArr={(arr) => this.props.setSearchMarkerArr(arr)} searchMarkerArr={this.props.mapPlannerSearch.searchMarkerArr} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
@@ -585,6 +624,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     clearCurrentlyFocusedEvent: () => {
       dispatch(clearCurrentlyFocusedEvent())
+    },
+    setSearchInputStr: (str) => {
+      dispatch(setSearchInputStr(str))
+    },
+    setSearchMarkerArr: (arr) => {
+      dispatch(setSearchMarkerArr(arr))
     }
   }
 }
@@ -592,7 +637,8 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
   return {
     mapPlannerDaysFilterArr: state.mapPlannerDaysFilterArr,
-    currentlyFocusedEvent: state.currentlyFocusedEvent
+    currentlyFocusedEvent: state.currentlyFocusedEvent,
+    mapPlannerSearch: state.mapPlannerSearch
   }
 }
 
