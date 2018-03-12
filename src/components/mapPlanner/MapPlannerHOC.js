@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent, setSearchMarkerArr, setSearchInputStr } from '../../actions/mapPlannerActions'
+import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent, setSearchMarkerArr, setSearchInputStr, setFocusedSearchMarker, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
 
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps'
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox'
@@ -39,10 +39,7 @@ class Map extends Component {
       },
       allEvents: [], // entire this.props.events arr
       eventsArr: [], // manipulated arr to extract location
-      searchMarkers: [],
-      plannerMarkers: [], // filtered planner markers. eg markers for days 1,2,5
-      isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null
+      plannerMarkers: [] // filtered planner markers. eg markers for days 1,2,5
       // planner marker index, isOpen just takes from redux currentlyFocusedEvent, and calculates currentlyFocusedMarker on render
     }
   }
@@ -63,23 +60,12 @@ class Map extends Component {
   onPlacesChanged () {
     if (!this.searchBox) return
 
-    // console.log('search box', this.searchBox)
-    // very hackish way but i got the query str out to set redux state.
+    // very hackish way but i got the query prediction out to set redux state.
     var secretSearchBox = this.searchBox.state.__SECRET_SEARCH_BOX_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-    // console.log('secretSearchBox')
     var secretPlaces = secretSearchBox.gm_accessors_.places
-    // console.log('secretPlaces', secretPlaces)
     var secretString = secretPlaces.Jc.formattedPrediction
-    // console.log('secretString', secretString)
     // sync redux search str with query prediction str
     this.props.setSearchInputStr(secretString)
-
-
-    //  clear out old clicked state
-    // this.setState({
-    //   isSearchInfoBoxOpen: false,
-    //   clickedSearchMarkerIndex: null
-    // })
 
     const places = this.searchBox.getPlaces()
     const bounds = new window.google.maps.LatLngBounds()
@@ -109,7 +95,6 @@ class Map extends Component {
 
     this.setState({
       center: nextCenter
-      // searchMarkers: nextMarkers
     })
 
     // set redux state with markers arr, comprising of (place, position)
@@ -124,23 +109,14 @@ class Map extends Component {
   }
 
   clearSearch () {
-    // this.searchInput.value = ''
     this.props.setSearchInputStr('')
 
-    if (this.state.searchMarkers.length) {
-      this.setState({
-        searchMarkers: [],
-        isSearchInfoBoxOpen: false,
-        clickedSearchMarkerIndex: null
-      })
-    } else {
-      // if there were no search markers, clearing search should not rezoom on planner markers
-      return
-    }
+    if (this.props.mapPlannerSearch.searchMarkerArr.length) {
+      this.props.setSearchMarkerArr([])
 
-    // if search was cleared, but planner has markers, refitBounds
-    if (this.state.plannerMarkers.length) {
-      this.refitBounds(this.state.plannerMarkers, 'planner')
+      if (this.state.plannerMarkers.length) {
+        this.refitBounds(this.state.plannerMarkers, 'planner')
+      }
     }
   }
 
@@ -148,21 +124,19 @@ class Map extends Component {
     // clear planner focusEvent if any
     this.props.clearCurrentlyFocusedEvent()
 
-    // force redraw infoBoxClearance for searchInfoBox
-    this.setState({
-      isSearchInfoBoxOpen: false
-    })
+    // compare clicked marker vs focused marker place id. if same, clear focus. if different, set focus
+    // marker ={place: {}, position: {}}
+    var clickedMarker = this.props.searchMarkerArr[index]
+    var clickedPlaceId = clickedMarker.place.place_id
 
-    if (this.state.clickedSearchMarkerIndex !== index) {
-      this.setState({
-        isSearchInfoBoxOpen: true,
-        clickedSearchMarkerIndex: index
-      })
+    var reduxMarker = this.props.focusedSearchMarker
+    var reduxPlaceId = _.get(reduxMarker, 'place.place_id', '')
+
+    if (clickedPlaceId === reduxPlaceId) {
+      this.props.clearFocusedSearchMarker()
     } else {
-      this.setState({
-        isSearchInfoBoxOpen: false,
-        clickedSearchMarkerIndex: null
-      })
+      this.props.clearFocusedSearchMarker() // force redraw on infobox
+      this.props.setFocusedSearchMarker(clickedMarker)
     }
   }
 
@@ -203,18 +177,7 @@ class Map extends Component {
 
   // CLOSE BOX BUT SEARCH MARKERS STILL MOUNTED
   closeSearchPopup () {
-    this.setState({
-      isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null
-      // mapOptions: {
-      //   minZoom: 2,
-      //   maxZoom: 17,
-      //   fullscreenControl: false,
-      //   mapTypeControl: false,
-      //   streetViewControl: false,
-      //   clickableIcons: false
-      // }
-    })
+    this.props.clearFocusedSearchMarker()
   }
 
   // constructs obj structure. no marker position offseting
@@ -350,7 +313,7 @@ class Map extends Component {
       plannerMarkers: plannerMarkers
     }, () => {
       if (!plannerMarkers.length && this.state.searchMarkers.length) {
-        this.refitBounds(this.state.searchMarkers, 'search')
+        this.refitBounds(this.props.searchMarkerArr, 'search')
       } else {
         this.refitBounds(this.state.plannerMarkers, 'planner')
       }
@@ -388,7 +351,7 @@ class Map extends Component {
   }
 
   focusSearchMarkers () {
-    this.refitBounds(this.state.searchMarkers, 'search')
+    this.refitBounds(this.props.searchMarkerArr, 'search')
   }
 
   focusPlannerMarkers () {
@@ -397,7 +360,7 @@ class Map extends Component {
 
   fitBothSearchPlannerMarkers () {
     var newBounds = new window.google.maps.LatLngBounds()
-    this.state.searchMarkers.forEach(marker => {
+    this.props.searchMarkerArr.forEach(marker => {
       newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
     })
     this.state.plannerMarkers.forEach(marker => {
@@ -408,10 +371,8 @@ class Map extends Component {
 
   onPlannerMarkerClicked (index) {
     // clear clicked state in search
-    this.setState({
-      isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null
-    })
+    this.props.clearFocusedSearchMarker()
+
     var marker = this.state.plannerMarkers[index]
 
     // check if clicked marker is already the currentlyFocusedEvent
@@ -437,12 +398,8 @@ class Map extends Component {
 
   searchCreateEventSuccess (eventObj) {
     // clear search, close search box
-    this.searchInput.value = ''
-    this.setState({
-      searchMarkers: [],
-      isSearchInfoBoxOpen: false,
-      clickedSearchMarkerIndex: null
-    })
+    this.props.setSearchInputStr('')
+    this.props.clearFocusedSearchMarker()
     // apply days filter done in search popup. (if new event has different day from filterArr). we apply days filter to include new event -> else cannot setCurrentlyFocusedEvent (depends on clickedPlannerMarkerIndex, which itself depends on daysFilterArr)
 
     // zoom, center on focused event?
@@ -463,7 +420,6 @@ class Map extends Component {
       })
       // console.log('currentlyFocusedMarker', currentlyFocusedMarker)
     }
-
     return (
       <GoogleMap ref={node => { this.map = node }}
         center={this.state.center}
@@ -495,7 +451,7 @@ class Map extends Component {
         </CustomControl>
 
         {/* REFITBOUNDS TOGGLE BWTN SEARCH/PLANNER/ALL. HOW TO DEAL WITH BUCKET!!! */}
-        {this.state.plannerMarkers.length && this.state.searchMarkers.length &&
+        {this.state.plannerMarkers.length && this.props.searchMarkerArr.length &&
           <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_BOTTOM}>
             <div style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', width: '100px', marginTop: '10px', marginRight: '10px', background: 'white'}}>
               <button style={{display: 'block', width: '100%'}} onClick={() => this.focusSearchMarkers()}>Focus search</button>
@@ -512,27 +468,13 @@ class Map extends Component {
           </div>
         </SearchBox>
 
-        {/* {this.state.searchMarkers.length && this.state.searchMarkers.map((marker, index) => {
-          return (
-            <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={this.state.clickedSearchMarkerIndex === index ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={this.state.clickedSearchMarkerIndex === index ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} onClick={() => this.onSearchMarkerClicked(index)} zIndex={this.state.clickedSearchMarkerIndex === index ? 2 : 1}>
-              <div>
-                <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
-                  {marker.place.imageUrl &&
-                    <img width='100%' height='100%' src={marker.place.imageUrl} />
-                  }
-                  {!marker.place.imageUrl &&
-                    <div style={{width: '100%', height: '100%', background: 'white'}} />
-                  }
-                </div>
-              </div>
-            </MarkerWithLabel>
-          )
-        })} */}
-
-        {/* markers come from redux state. need to check if clicked or not */}
-        {this.props.searchMarkerArr.length && this.props.searchMarkerArr.map((marker, index) => {
-          return <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={new window.google.maps.Point(20, 20)} labelStyle={unclickedSearchMarkerStyle} zIndex={1} >
-            <div style={this.state.clickedSearchMarkerIndex === index ? clickedMarkerSize : unclickedMarkerSize}>
+        {/* markers come from redux state. check if clicked or not */}
+        {this.props.searchMarkerArr.map((marker, index) => {
+          var markerPlaceId = _.get(marker, 'place.place_id')
+          var reduxPlaceId = _.get(this.props.focusedSearchMarker, 'place.place_id', '')
+          var isCorrectSearchFocus = (markerPlaceId === reduxPlaceId)
+          return <MarkerWithLabel ref={node => { this.searchMarker = node }} key={index} position={marker.position} opacity={0} labelAnchor={isCorrectSearchFocus ? new window.google.maps.Point(30, 30) : new window.google.maps.Point(20, 20)} labelStyle={isCorrectSearchFocus ? clickedSearchMarkerStyle : unclickedSearchMarkerStyle} zIndex={isCorrectSearchFocus ? 2 : 1} onClick={() => this.onSearchMarkerClicked(index)}>
+            <div style={isCorrectSearchFocus ? clickedMarkerSize : unclickedMarkerSize}>
               {marker.place.imageUrl &&
                 <img width='100%' height='100%' src={marker.place.imageUrl} />
               }
@@ -543,19 +485,19 @@ class Map extends Component {
           </MarkerWithLabel>
         })}
 
-        {/* {this.state.isSearchInfoBoxOpen &&
-          <InfoBox ref={node => { this.infoBox = node }} position={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+        {this.props.focusedSearchMarker &&
+          <InfoBox ref={node => { this.infoBox = node }} position={this.props.focusedSearchMarker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox' style={{width: '450px', height: '280px', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)'}}>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} mapEventsArr={this.state.eventsArr} plannerMarkers={this.state.plannerMarkers} daysFilterArr={this.props.daysFilterArr} placeId={this.state.searchMarkers[this.state.clickedSearchMarkerIndex].place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} searchCreateEventSuccess={(eventObj) => this.searchCreateEventSuccess(eventObj)} />
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} mapEventsArr={this.state.eventsArr} plannerMarkers={this.state.plannerMarkers} daysFilterArr={this.props.daysFilterArr} placeId={this.props.focusedSearchMarker.place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} searchCreateEventSuccess={(eventObj) => this.searchCreateEventSuccess(eventObj)} />
             </div>
           </InfoBox>
-        } */}
+        }
 
-        {this.state.plannerMarkers.length && this.state.plannerMarkers.map((event, index) => {
+        {this.state.plannerMarkers.map((event, index) => {
           var currentlyFocusedEvent = this.props.currentlyFocusedEvent
           var isCurrentlyFocusedEvent = (event.modelId === currentlyFocusedEvent.modelId && event.eventType === currentlyFocusedEvent.eventType && event.day === currentlyFocusedEvent.day && event.start === currentlyFocusedEvent.start && event.loadSequence === currentlyFocusedEvent.loadSequence && event.flightInstanceId === currentlyFocusedEvent.flightInstanceId)
           return (
@@ -609,7 +551,7 @@ class MapPlannerHOC extends Component {
 
   render () {
     return (
-      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} mapPlannerSearch={this.props.mapPlannerSearch} setSearchInputStr={(str) => this.props.setSearchInputStr(str)} setSearchMarkerArr={(arr) => this.props.setSearchMarkerArr(arr)} searchMarkerArr={this.props.mapPlannerSearch.searchMarkerArr} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
+      <MapPlanner ItineraryId={this.props.ItineraryId} daysArr={this.props.daysArr} datesArr={this.props.datesArr} events={this.props.events} mapPlannerSearch={this.props.mapPlannerSearch} setSearchInputStr={(str) => this.props.setSearchInputStr(str)} setSearchMarkerArr={(arr) => this.props.setSearchMarkerArr(arr)} setFocusedSearchMarker={(marker) => this.props.setFocusedSearchMarker(marker)} clearFocusedSearchMarker={() => this.props.clearFocusedSearchMarker()} searchMarkerArr={this.props.mapPlannerSearch.searchMarkerArr} focusedSearchMarker={this.props.mapPlannerSearch.focusedSearchMarker} daysFilterArr={this.props.mapPlannerDaysFilterArr} currentlyFocusedEvent={this.props.currentlyFocusedEvent} toggleDaysFilter={dayInt => this.props.toggleDaysFilter(dayInt)} setCurrentlyFocusedEvent={currentEventObj => this.props.setCurrentlyFocusedEvent(currentEventObj)} clearCurrentlyFocusedEvent={() => this.props.clearCurrentlyFocusedEvent()} returnToPlanner={() => this.returnToPlanner()} googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&v=3.31&libraries=geometry,drawing,places`} loadingElement={<div style={{ height: `100%` }} />} containerElement={<div style={{ height: `100%` }} />} mapElement={<div style={{ height: `100%` }} />} />
     )
   }
 }
@@ -630,6 +572,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     setSearchMarkerArr: (arr) => {
       dispatch(setSearchMarkerArr(arr))
+    },
+    setFocusedSearchMarker: (marker) => {
+      dispatch(setFocusedSearchMarker(marker))
+    },
+    clearFocusedSearchMarker: () => {
+      dispatch(clearFocusedSearchMarker())
     }
   }
 }

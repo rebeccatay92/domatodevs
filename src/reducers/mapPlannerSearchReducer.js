@@ -12,6 +12,14 @@ export const mapPlannerSearchReducer = (state = {
       return Object.assign({}, state, {
         searchMarkerArr: action.arr
       })
+    case 'SET_FOCUSED_SEARCH_MARKER':
+      return Object.assign({}, state, {
+        focusedSearchMarker: action.marker
+      })
+    case 'CLEAR_FOCUSED_SEARCH_MARKER':
+      return Object.assign({}, state, {
+        focusedSearchMarker: null
+      })
     default:
       return state
   }
@@ -22,5 +30,5 @@ search redux state
 searchInputStr: String
 searchMarkerArr: Array
 focusedSearchMarker: Object in searchMarkerArr
-focusedSearchMarker: {position, placeinfo}
+focusedSearchMarker: marker obj {position, placeinfo}
 */

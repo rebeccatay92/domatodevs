@@ -51,3 +51,16 @@ export const setSearchMarkerArr = (arr) => {
     arr
   }
 }
+
+export const setFocusedSearchMarker = (marker) => {
+  return {
+    type: 'SET_FOCUSED_SEARCH_MARKER',
+    marker
+  }
+}
+
+export const clearFocusedSearchMarker = () => {
+  return {
+    type: 'CLEAR_FOCUSED_SEARCH_MARKER'
+  }
+}
