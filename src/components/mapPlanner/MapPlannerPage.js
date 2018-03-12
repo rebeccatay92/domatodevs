@@ -112,9 +112,9 @@ class MapPlannerPage extends Component {
 
     // set days filter, setCurrentlyFocusedEvent, clear search markers, clearOpenCreateFormParams
 
-    // this.props.includeDayInDaysFilter(eventObj.day)
-    // this.props.clearOpenCreateFormParams()
-    // this.props.setCurrentlyFocusedEvent()
+    this.props.includeDayInDaysFilter(eventObj.day)
+    this.props.clearOpenCreateFormParams()
+    this.props.setCurrentlyFocusedEvent(eventObj)
   }
 
   mapCreateEventFormCancel () {
