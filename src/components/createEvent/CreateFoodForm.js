@@ -159,16 +159,33 @@ class CreateFoodForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createFood.id,
+          eventType: 'Food',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.loadSequence
+        }
+        this.resetState()
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleCreateEventType()
   }
 
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {

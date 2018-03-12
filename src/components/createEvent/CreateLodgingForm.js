@@ -140,6 +140,23 @@ class CreateLodgingForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createLodging.id,
+          eventType: 'Lodging',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.startLoadSequence
+        }
+        this.resetState()
+
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
     })
 
     this.resetState()
@@ -149,7 +166,11 @@ class CreateLodgingForm extends Component {
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {

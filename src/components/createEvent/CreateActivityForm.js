@@ -165,7 +165,7 @@ class CreateActivityForm extends Component {
     }).then(resolved => {
       if (this.props.openedFromMap) {
         var focusEventObj = {
-          modelId: resolved.data.createActivity,
+          modelId: resolved.data.createActivity.id,
           eventType: 'Activity',
           flightInstanceId: null,
           day: helperOutput.newEvent.startDay,
@@ -175,7 +175,6 @@ class CreateActivityForm extends Component {
         this.resetState()
         this.props.mapCreateEventFormSuccess(focusEventObj)
       } else {
-        // if planner route
         this.resetState()
         this.props.toggleCreateEventType()
       }
@@ -188,7 +187,6 @@ class CreateActivityForm extends Component {
     if (this.props.openedFromMap) {
       this.props.mapCreateEventFormCancel()
     } else {
-      // planner route
       this.props.toggleCreateEventType()
     }
   }

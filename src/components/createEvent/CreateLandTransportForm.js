@@ -157,6 +157,22 @@ class CreateLandTransportForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createLandTransport.id,
+          eventType: 'LandTransport',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.startLoadSequence
+        }
+        this.resetState()
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
     })
 
     this.resetState()
@@ -166,7 +182,11 @@ class CreateLandTransportForm extends Component {
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {

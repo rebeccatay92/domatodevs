@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../../actions/plannerActions'
-import { includeDayInDaysFilter, clearOpenCreateFormParams, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, clearOpenCreateFormParams, setCurrentlyFocusedEvent, setSearchInputStr, setSearchMarkerArr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
 
 import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
@@ -102,15 +102,13 @@ class MapPlannerPage extends Component {
     }
   }
 
-  // closeCreateEventForm () {
-  //   console.log('close create event form')
-  //   this.props.clearOpenCreateFormParams()
-  // }
-
   mapCreateEventFormSuccess (eventObj) {
-    console.log('focusEventObj', eventObj)
+    // console.log('focusEventObj', eventObj)
 
-    // set days filter, setCurrentlyFocusedEvent, clear search markers, clearOpenCreateFormParams
+    // set days filter, setCurrentlyFocusedEvent, clear search markers, clearOpenCreateFormParams. omg so much redux.
+    this.props.setSearchInputStr('')
+    this.props.setSearchMarkerArr([])
+    this.props.clearFocusedSearchMarker()
 
     this.props.includeDayInDaysFilter(eventObj.day)
     this.props.clearOpenCreateFormParams()
@@ -180,6 +178,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     includeDayInDaysFilter: (dayInt) => {
       dispatch(includeDayInDaysFilter(dayInt))
+    },
+    setSearchMarkerArr: (arr) => {
+      dispatch(setSearchMarkerArr(arr))
+    },
+    setSearchInputStr: (str) => {
+      dispatch(setSearchInputStr(str))
+    },
+    clearFocusedSearchMarker: () => {
+      dispatch(clearFocusedSearchMarker())
     }
   }
 }

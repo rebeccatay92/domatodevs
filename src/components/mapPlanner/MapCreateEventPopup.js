@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { includeDayInDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams, setSearchInputStr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
@@ -19,8 +19,6 @@ import { createActivity } from '../../apollo/activity'
 import { createFood } from '../../apollo/food'
 import { createLodging } from '../../apollo/lodging'
 import { createLandTransport } from '../../apollo/landtransport'
-
-import CreateEventFormHOC from '../createEvent/CreateEventFormHOC'
 
 const _ = require('lodash')
 
@@ -244,7 +242,10 @@ class MapCreateEventPopup extends Component {
       if (isCreatedEventInPlannerMarkers) {
         // console.log('isCreatedEventInPlannerMarkers', isCreatedEventInPlannerMarkers)
         // console.log('plannerMarkers', this.props.plannerMarkers)
-        this.props.searchCreateEventSuccess(prevState.eventObj)
+        // this.props.searchCreateEventSuccess(prevState.eventObj)
+        this.props.setSearchInputStr('')
+        this.props.clearFocusedSearchMarker()
+
         this.props.setCurrentlyFocusedEvent(prevState.eventObj)
       }
     }
@@ -393,6 +394,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     includeDayInDaysFilter: (dayInt) => {
       dispatch(includeDayInDaysFilter(dayInt))
+    },
+    setSearchInputStr: (str) => {
+      dispatch(setSearchInputStr(str))
+    },
+    clearFocusedSearchMarker: () => {
+      dispatch(clearFocusedSearchMarker())
     }
   }
 }

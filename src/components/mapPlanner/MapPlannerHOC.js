@@ -312,7 +312,7 @@ class Map extends Component {
     this.setState({
       plannerMarkers: plannerMarkers
     }, () => {
-      if (!plannerMarkers.length && this.state.searchMarkers.length) {
+      if (!plannerMarkers.length && this.props.searchMarkerArr.length) {
         this.refitBounds(this.props.searchMarkerArr, 'search')
       } else {
         this.refitBounds(this.state.plannerMarkers, 'planner')
@@ -343,7 +343,7 @@ class Map extends Component {
       this.map.fitBounds(newBounds, 150)
     } else if (type === 'search') {
       newBounds = new window.google.maps.LatLngBounds()
-      this.state.searchMarkers.forEach(marker => {
+      this.props.searchMarkerArr.forEach(marker => {
         newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
       })
       this.map.fitBounds(newBounds, 150)
@@ -394,15 +394,6 @@ class Map extends Component {
       this.props.clearCurrentlyFocusedEvent()
       this.props.setCurrentlyFocusedEvent(clickedPlannerMarkerEventObj)
     }
-  }
-
-  searchCreateEventSuccess (eventObj) {
-    // clear search, close search box
-    this.props.setSearchInputStr('')
-    this.props.clearFocusedSearchMarker()
-    // apply days filter done in search popup. (if new event has different day from filterArr). we apply days filter to include new event -> else cannot setCurrentlyFocusedEvent (depends on clickedPlannerMarkerIndex, which itself depends on daysFilterArr)
-
-    // zoom, center on focused event?
   }
 
   render () {
@@ -492,7 +483,7 @@ class Map extends Component {
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
               </div>
-              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} mapEventsArr={this.state.eventsArr} plannerMarkers={this.state.plannerMarkers} daysFilterArr={this.props.daysFilterArr} placeId={this.props.focusedSearchMarker.place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} searchCreateEventSuccess={(eventObj) => this.searchCreateEventSuccess(eventObj)} />
+              <MapCreateEventPopup ItineraryId={this.props.ItineraryId} events={this.props.events} mapEventsArr={this.state.eventsArr} plannerMarkers={this.state.plannerMarkers} daysFilterArr={this.props.daysFilterArr} placeId={this.props.focusedSearchMarker.place.place_id} daysArr={this.props.daysArr} datesArr={this.props.datesArr} closeSearchPopup={() => this.closeSearchPopup()} />
             </div>
           </InfoBox>
         }
