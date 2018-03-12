@@ -162,16 +162,35 @@ class CreateActivityForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
-    })
-
-    this.resetState()
-    this.props.toggleCreateEventType()
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createActivity,
+          eventType: 'Activity',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.loadSequence
+        }
+        this.resetState()
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        // if planner route
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
+    }) // close .then
   }
 
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      // planner route
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {

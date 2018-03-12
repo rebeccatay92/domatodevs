@@ -29,7 +29,8 @@ class CreateEventFormHOC extends Component {
             overflowY: 'hidden'
           }
         }} />
-        <CreateEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} eventType={this.props.eventType} toggleCreateEventType={() => this.props.toggleCreateEventType()} defaultStartDay={this.props.defaultStartDay} defaultEndDay={this.props.defaultEndDay} defaultStartTime={this.props.defaultStartTime} defaultEndTime={this.props.defaultEndTime} defaultDescription={this.props.defaultDescription} defaultGooglePlaceData={this.props.defaultGooglePlaceData} defaultArrivalGooglePlaceData={this.props.defaultArrivalGooglePlaceData} />
+        {/* OPENED FROM MAP IS A BOOLEAN PROP PASSED ONLY BY MAPPLANNERPAGE */}
+        <CreateEventForm openedFromMap={this.props.openedFromMap} ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} eventType={this.props.eventType} toggleCreateEventType={() => this.props.toggleCreateEventType()} defaultStartDay={this.props.defaultStartDay} defaultEndDay={this.props.defaultEndDay} defaultStartTime={this.props.defaultStartTime} defaultEndTime={this.props.defaultEndTime} defaultDescription={this.props.defaultDescription} defaultGooglePlaceData={this.props.defaultGooglePlaceData} defaultArrivalGooglePlaceData={this.props.defaultArrivalGooglePlaceData} mapCreateEventFormSuccess={(eventObj) => this.props.mapCreateEventFormSuccess(eventObj)} mapCreateEventFormCancel={() => this.props.mapCreateEventFormCancel()} />
       </div>
     )
   }

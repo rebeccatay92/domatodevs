@@ -10,7 +10,6 @@ import InfoBox from 'react-google-maps/lib/components/addons/InfoBox'
 import MarkerWithLabel from 'react-google-maps/lib/components/addons/MarkerWithLabel'
 
 import MapCreateEventPopup from './MapCreateEventPopup'
-// import CreateEventFormHOC from '../createEvent/CreateEventFormHOC'
 import MapEditEventPopup from './MapEditEventPopup'
 
 const _ = require('lodash')
@@ -271,7 +270,7 @@ class Map extends Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.daysFilterArr !== this.props.daysFilterArr) {
       this.applyDaysFilter(nextProps.daysFilterArr)
-    }
+    } // close daysFilterArr
     if (nextProps.events !== this.props.events) {
       // console.log('events arr changed', nextProps.events)
       var stillDragging = _.find(nextProps.events, function (e) {
@@ -313,7 +312,9 @@ class Map extends Component {
           // console.log('COMPONENT WILL RECEIVE PROPS DONE')
         })
       }
-    }
+    } //  close events
+
+    // if receiving redux props (searchCreateEventForm success) 
   }
 
   applyDaysFilter (daysFilterArr) {
