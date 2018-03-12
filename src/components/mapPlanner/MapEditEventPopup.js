@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { toggleDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
 import MapLocationSearchDropdown from './MapLocationSearchDropdown'
@@ -272,13 +272,10 @@ class MapEditEventPopup extends Component {
       })
 
       // SET UP DAYS FILTER TO MATCH UPDATE EVENT DAY
-      if (!this.props.daysFilterArr.includes(eventObj.day)) {
-        this.props.toggleDaysFilter(eventObj.day)
-      }
+      this.props.includeDayInDaysFilter(eventObj.day)
 
       // I DONT KNOW WHICH WILL COMPLETE FIRST, SETDAYSFILTERARR, SETSTATEPLANNER MARKERS IN PARENT COMPONENT.
       setTimeout(this.props.setCurrentlyFocusedEvent(eventObj), 1000)
-
     }).catch(err => {
       console.log('err', err)
     })
@@ -499,8 +496,8 @@ class MapEditEventPopup extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleDaysFilter: (dayInt) => {
-      dispatch(toggleDaysFilter(dayInt))
+    includeDayInDaysFilter: (dayInt) => {
+      dispatch(includeDayInDaysFilter(dayInt))
     },
     setCurrentlyFocusedEvent: (currentEventObj) => {
       dispatch(setCurrentlyFocusedEvent(currentEventObj))

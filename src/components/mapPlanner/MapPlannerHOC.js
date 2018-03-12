@@ -314,7 +314,7 @@ class Map extends Component {
       }
     } //  close events
 
-    // if receiving redux props (searchCreateEventForm success) 
+    // if receiving redux props (searchCreateEventForm success)
   }
 
   applyDaysFilter (daysFilterArr) {
@@ -422,7 +422,6 @@ class Map extends Component {
 
     // zoom, center on focused event?
   }
-
 
   render () {
     if (this.props.currentlyFocusedEvent) {

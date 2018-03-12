@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { toggleDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
@@ -161,9 +161,7 @@ class MapCreateEventPopup extends Component {
         this.setState({eventObj: eventObj}, () => console.log('set state eventObj'))
 
         // set day filter first before setCurrentlyFocusedEvent. DAYS FILTER MUST CORRESPOND WITH THE DAY OF NEWLY CREATED EVENT.
-        if (!this.props.daysFilterArr.includes(eventObj.day)) {
-          this.props.toggleDaysFilter(eventObj.day)
-        }
+        this.props.includeDayInDaysFilter(eventObj.day)
       })
       .catch(err => {
         console.log('err', err)
@@ -387,14 +385,14 @@ class MapCreateEventPopup extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleDaysFilter: (dayInt) => {
-      dispatch(toggleDaysFilter(dayInt))
-    },
     setCurrentlyFocusedEvent: (currentEventObj) => {
       dispatch(setCurrentlyFocusedEvent(currentEventObj))
     },
     setOpenCreateFormParams: (params) => {
       dispatch(setOpenCreateFormParams(params))
+    },
+    includeDayInDaysFilter: (dayInt) => {
+      dispatch(includeDayInDaysFilter(dayInt))
     }
   }
 }

@@ -18,6 +18,13 @@ export const toggleDaysFilter = (dayInt) => {
   }
 }
 
+export const includeDayInDaysFilter = (dayInt) => {
+  return {
+    type: 'INCLUDE_DAY_IN_DAYS_FILTER',
+    dayInt
+  }
+}
+
 export const setOpenCreateFormParams = (params) => {
   return {
     type: 'SET_OPEN_CREATE_FORM_PARAMS',

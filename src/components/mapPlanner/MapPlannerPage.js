@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../../actions/plannerActions'
-import { clearOpenCreateFormParams, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, clearOpenCreateFormParams, setCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
@@ -111,6 +111,8 @@ class MapPlannerPage extends Component {
     console.log('focusEventObj', eventObj)
 
     // set days filter, setCurrentlyFocusedEvent, clear search markers, clearOpenCreateFormParams
+
+    // this.props.includeDayInDaysFilter(eventObj.day)
     // this.props.clearOpenCreateFormParams()
     // this.props.setCurrentlyFocusedEvent()
   }
@@ -175,6 +177,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setCurrentlyFocusedEvent: (eventObj) => {
       dispatch(setCurrentlyFocusedEvent(eventObj))
+    },
+    includeDayInDaysFilter: (dayInt) => {
+      dispatch(includeDayInDaysFilter(dayInt))
     }
   }
 }
