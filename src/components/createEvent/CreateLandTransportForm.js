@@ -275,10 +275,10 @@ class CreateLandTransportForm extends Component {
     this.setState({currency: currencyList[0]})
 
     // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
-
+    console.log('PROPS', this.props)
     // if open within planner defaultGooglePlaceData = undefined
-    if (this.props.defaultDepartureGooglePlaceData && this.props.defaultDepartureGooglePlaceData.placeId) {
-      this.setState({departureGooglePlaceData: this.props.defaultDepartureGooglePlaceData})
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
+      this.setState({departureGooglePlaceData: this.props.defaultGooglePlaceData})
     }
     if (this.props.defaultArrivalGooglePlaceData && this.props.defaultArrivalGooglePlaceData.placeId) {
       this.setState({arrivalGooglePlaceData: this.props.defaultArrivalGooglePlaceData})

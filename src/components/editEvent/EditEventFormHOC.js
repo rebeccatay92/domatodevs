@@ -26,7 +26,8 @@ class EditEventFormHOC extends Component {
             overflowY: 'hidden'
           }
         }} />
-        <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} events={this.props.events} toggleEditEventType={() => this.props.toggleEditEventType()} />
+        {/* REMOVE PROPS EVENTS, DATE */}
+        <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} toggleEditEventType={() => this.props.toggleEditEventType()} mapEditEventFormSuccess={() => this.props.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.props.mapEditEventFormCancel()} />
       </div>
     )
   }

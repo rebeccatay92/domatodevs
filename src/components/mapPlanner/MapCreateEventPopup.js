@@ -166,7 +166,7 @@ class MapCreateEventPopup extends Component {
       })
   }
 
-  toggleCreateEventForm () {
+  openCreateEventForm () {
     console.log('open create event form', this.state.eventType)
     // construct openCreateFormParams, dispatch redux setOpenCreateFormParams
     var params = {
@@ -377,7 +377,7 @@ class MapCreateEventPopup extends Component {
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>
           <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Submit</Button>
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.props.closeSearchPopup()}>Cancel</Button>
-          <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleCreateEventForm()} >More</Button>
+          <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.openCreateEventForm()} >More</Button>
         </div>
       </div>
     )

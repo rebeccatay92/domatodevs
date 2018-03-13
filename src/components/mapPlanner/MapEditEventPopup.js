@@ -170,8 +170,15 @@ class MapEditEventPopup extends Component {
     this.props.clearCurrentlyFocusedEvent()
   }
 
-  toggleEditEventForm () {
-    console.log('open edit form')
+  openEditEventForm () {
+    console.log('open edit event form', this.state.eventType)
+    // construct openEditFormParams, dispatch redux
+    // do we copy edited fields over, or initialize with db values?
+    // var params = {
+    //   toOpen: true,
+    //   eventType: this.state.eventType,
+    //   defaultStartDay:
+    // }
   }
 
   handleSubmit () {
@@ -487,7 +494,7 @@ class MapEditEventPopup extends Component {
             <Button bsStyle='danger' style={mapInfoBoxButtonStyle} onClick={() => this.handleSubmit()}>Save</Button>
           }
           <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.closePlannerPopup()}>Cancel</Button>
-          <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.toggleEditEventForm()} >More</Button>
+          <Button bsStyle='default' style={mapInfoBoxButtonStyle} onClick={() => this.openEditEventForm()}>More</Button>
         </div>
       </div>
     )

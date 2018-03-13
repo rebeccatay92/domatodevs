@@ -64,3 +64,16 @@ export const clearFocusedSearchMarker = () => {
     type: 'CLEAR_FOCUSED_SEARCH_MARKER'
   }
 }
+
+export const setOpenEditFormParams = (params) => {
+  return {
+    type: 'SET_OPEN_EDIT_FORM_PARAMS',
+    params
+  }
+}
+
+export const clearOpenEditFormParams = () => {
+  return {
+    type: 'CLEAR_OPEN_EDIT_FORM_PARAMS'
+  }
+}
