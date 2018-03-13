@@ -113,7 +113,7 @@ class Map extends Component {
 
     if (this.props.mapPlannerSearch.searchMarkerArr.length) {
       this.props.setSearchMarkerArr([])
-
+      this.props.clearFocusedSearchMarker()
       if (this.state.plannerMarkers.length) {
         this.refitBounds(this.state.plannerMarkers, 'planner')
       }

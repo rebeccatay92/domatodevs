@@ -173,12 +173,22 @@ class MapEditEventPopup extends Component {
   openEditEventForm () {
     console.log('open edit event form', this.state.eventType)
     // construct openEditFormParams, dispatch redux
-    // do we copy edited fields over, or initialize with db values?
-    // var params = {
-    //   toOpen: true,
-    //   eventType: this.state.eventType,
-    //   defaultStartDay:
-    // }
+    // copy edited fields over into form.
+    // with the exception of flight.
+    if (this.state.eventType !== 'Flight') {
+      var params = {
+        toOpen: true,
+        eventType: this.state.eventType,
+        defaultStartDay: this.state.startDay,
+        defaultEndDay: this.state.endDay,
+        defaultStartTime: this.state.startTime,
+        defaultEndTime: this.state.endTime,
+        defaultDescription: this.state.description,
+        defaultGooglePlaceData: this.state.googlePlaceData,
+        defaultDepartureGooglePlaceData: this.state.departureGooglePlaceData,
+        defaultArrivalGooglePlaceData: this.state.arrivalGooglePlaceData
+      }
+    }
   }
 
   handleSubmit () {
