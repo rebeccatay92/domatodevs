@@ -196,7 +196,7 @@ class PlannerActivity extends Component {
             </div>
 
             {this.state.createEventType &&
-              <CreateEventFormHOC eventType={this.state.createEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.handleCreateEventClick()} />
+              <CreateEventFormHOC eventType={this.state.createEventType} ItineraryId={this.props.itineraryId} day={this.props.day} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.handleCreateEventClick()} />
             }
           </td>
           {this.state.createEventType && <td style={plannerBlurredBackgroundStyle} />}

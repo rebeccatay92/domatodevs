@@ -263,6 +263,12 @@ class CreateActivityForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
+    // initialize day to whatever day form was opened in
+    this.setState({
+      startDay: this.props.day,
+      endDay: this.props.day
+    })
+
     // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
     if (this.props.defaultDescription) {
       this.setState({description: this.props.defaultDescription})
@@ -273,7 +279,7 @@ class CreateActivityForm extends Component {
       this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
     }
 
-    // CONSTRUCTOR INITIALIZED STARTDAY, ENDDAY TO 1.
+    // change day to values in map popup form (if exist)
     if (this.props.defaultStartDay) {
       this.setState({startDay: this.props.defaultStartDay})
     }
@@ -291,7 +297,8 @@ class CreateActivityForm extends Component {
 
     // if no time values at all set as latest time
     if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
-      var defaultUnix = latestTime(this.props.events, this.props.day)
+      var defaultUnix = latestTime(this.props.events, this.state.startDay)
+      console.log('calculate latest unix', defaultUnix)
       this.setState({startTime: defaultUnix, endTime: defaultUnix})
     }
   }

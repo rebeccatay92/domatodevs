@@ -101,24 +101,37 @@ class DateTimePicker extends Component {
 
   // converting time props (unix) into str
   componentWillReceiveProps (nextProps) {
+    // console.log('DATETIMEPICKER WILL RECEIVE PROPS', nextProps)
     if (this.props.startTimeUnix !== nextProps.startTimeUnix) {
       var startTimeUnix = nextProps.startTimeUnix
       var momentObj = moment.unix(startTimeUnix).utc()
       var timestr = momentObj.format('HH:mm')
+      // console.log('start timestr', timestr)
       this.setState({startTime: timestr})
     }
     if (this.props.endTimeUnix !== nextProps.endTimeUnix) {
       var endTimeUnix = nextProps.endTimeUnix
       momentObj = moment.unix(endTimeUnix).utc()
       timestr = momentObj.format('HH:mm')
+      // console.log('end time str', timestr)
       this.setState({endTime: timestr})
+    }
+    if (this.props.startDay !== nextProps.startDay) {
+      this.setState({
+        startDate: moment(new Date(nextProps.dates[nextProps.startDay - 1]))
+      })
+    }
+    if (this.props.endDay !== nextProps.endDay) {
+      this.setState({
+        endDate: moment(new Date(nextProps.dates[nextProps.endDay - 1]))
+      })
     }
   }
 
   // INTUITIVEINPUTS NO LONGER USE DATETIMEPICKER. IE. THIS.PROPS.TYPES NOT NEEDED.
   componentDidMount () {
     // only set up state with dates if this.props.dates is present
-    console.log('this.props', this.props)
+    // console.log('this.props', this.props)
     if (this.props.dates) {
       this.setState({
         dates: this.props.dates.map(e => {
@@ -132,6 +145,7 @@ class DateTimePicker extends Component {
 
   // INTUITIVE INPUT NO LONGER USE DATETIMEPICKER. NO MORE CHECKINTIME, PROPS.TYPE. ONLY REGULAR FORMS USE THIS COMPONENT
   render () {
+    // console.log('DATETIMEPICKER', this.props)
     return (
       <div style={dateTimePickerContainerStyle}>
         <div className='planner-date-picker' style={{display: 'inline-block', marginRight: '21px'}}>

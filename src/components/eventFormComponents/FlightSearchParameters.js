@@ -188,7 +188,7 @@ class FlightSearchParameters extends Component {
       })
       this.setState({datesArr: datesArr}, () => console.log('props dates was passed', this.state))
 
-      this.setState({departureDate: moment.unix(this.props.date / 1000)})
+      this.setState({departureDate: moment.unix(this.props.dates[this.props.day - 1] / 1000)})
     }
   }
 

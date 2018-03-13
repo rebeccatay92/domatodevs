@@ -244,8 +244,13 @@ class CreateLodgingForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
-    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
+    // initialize day to whatever day form was opened in
+    this.setState({
+      startDay: this.props.day,
+      endDay: this.props.day
+    })
 
+    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
     if (this.props.defaultDescription) {
       this.setState({description: this.props.defaultDescription})
     }
@@ -271,7 +276,7 @@ class CreateLodgingForm extends Component {
 
     // if no time values at all set as latest time
     if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
-      var defaultUnix = latestTime(this.props.events, this.props.day)
+      var defaultUnix = latestTime(this.props.events, this.state.startDay)
       this.setState({startTime: defaultUnix, endTime: defaultUnix})
     }
   }

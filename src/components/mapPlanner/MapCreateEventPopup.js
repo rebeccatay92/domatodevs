@@ -180,6 +180,7 @@ class MapCreateEventPopup extends Component {
       defaultGooglePlaceData: this.state.googlePlaceData,
       defaultArrivalGooglePlaceData: this.state.arrivalGooglePlaceData
     }
+    // console.log('openCreateFormParams', params)
     this.props.setOpenCreateFormParams(params)
   }
 

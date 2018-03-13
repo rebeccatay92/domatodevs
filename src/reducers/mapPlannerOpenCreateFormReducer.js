@@ -3,8 +3,8 @@ export const mapPlannerOpenCreateFormReducer = (state = {
   eventType: 'Activity',
   defaultStartDay: 1,
   defaultEndDay: 1,
-  defaultStartTime: 0,
-  defaultEndTime: 0,
+  defaultStartTime: null, // not unix 0 (12am)
+  defaultEndTime: null,
   defaultDescription: '',
   defaultGooglePlaceData: {},
   defaultArrivalGooglePlaceData: {}

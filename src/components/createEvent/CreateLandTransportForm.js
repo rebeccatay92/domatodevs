@@ -274,8 +274,13 @@ class CreateLandTransportForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
+    // initialize day to whatever day form was opened in
+    this.setState({
+      startDay: this.props.day,
+      endDay: this.props.day
+    })
+
     // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
-    console.log('PROPS', this.props)
     // if open within planner defaultGooglePlaceData = undefined
     if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
       this.setState({departureGooglePlaceData: this.props.defaultGooglePlaceData})
@@ -301,7 +306,7 @@ class CreateLandTransportForm extends Component {
 
     // if no time values at all set as latest time
     if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
-      var defaultUnix = latestTime(this.props.events, this.props.day)
+      var defaultUnix = latestTime(this.props.events, this.state.startDay)
       this.setState({startTime: defaultUnix, endTime: defaultUnix})
     }
   }
