@@ -36,13 +36,13 @@ class TransportLocationSelection extends Component {
     return (
       <div style={{position: 'relative'}}>
         <div style={{...eventDescContainerStyle, ...{position: 'relative'}}}>
-          <LocationSearch eventType={this.props.eventType} selectLocation={place => this.selectLocation(place, 'departure')} toggleMap={() => this.toggleMap('departure')} currentLocation={this.props.departureLocation} />
+          <LocationSearch placeholder={'Search for a departure location'} eventType={this.props.eventType} selectLocation={place => this.selectLocation(place, 'departure')} toggleMap={() => this.toggleMap('departure')} currentLocation={this.props.departureLocation} />
           {/* DEPARTURE PLACEHOLDER OVERFLOW NOT SEEN */}
           {this.props.departureLocation.placeId && <LocationDetails locationDetails={this.props.departureLocationDetails} />}
         </div>
 
         <div style={{...eventDescContainerStyle, ...{position: 'relative'}}}>
-          <LocationSearch eventType={this.props.eventType + 'End'} selectLocation={place => this.selectLocation(place, 'arrival')} toggleMap={() => this.toggleMap('arrival')} currentLocation={this.props.arrivalLocation} />
+          <LocationSearch placeholder={'Search for an arrival location'} eventType={this.props.eventType + 'End'} selectLocation={place => this.selectLocation(place, 'arrival')} toggleMap={() => this.toggleMap('arrival')} currentLocation={this.props.arrivalLocation} />
           {this.props.arrivalLocation.placeId && <LocationDetails locationDetails={this.props.arrivalLocationDetails} />}
         </div>
 

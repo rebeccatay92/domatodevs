@@ -32,8 +32,8 @@ class EditLandTransportForm extends Component {
     super(props)
     this.state = {
       id: this.props.event.id,
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null,
       endTime: null,
       departureLocationAlias: '',
@@ -171,10 +171,25 @@ class EditLandTransportForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.updateLandTransport.id,
+          eventType: 'LandTransport',
+          flightInstanceId: null,
+          day: updatesObj.startDay,
+          start: true,
+          loadSequence: updatesObj.startLoadSequence
+        }
+        // console.log('updated. new focusEvent', focusEventObj)
+        this.resetState()
+        this.props.mapEditEventFormSuccess(focusEventObj)
+      } else {
+        // from planner route
+        this.resetState()
+        this.props.toggleEditEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
   }
 
   closeForm () {
@@ -208,8 +223,8 @@ class EditLandTransportForm extends Component {
 
   resetState () {
     this.setState({
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null,
       endTime: null,
       departureLocationAlias: '',
@@ -365,6 +380,37 @@ class EditLandTransportForm extends Component {
       arrivalGooglePlaceData: this.props.event.arrivalLocation,
       attachments: this.props.event.attachments
     }, () => console.log('edit form did mount', this.state))
+
+    // OVERRIDE WITH MAP POPUP VALUES (IF EXIST)
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+    // if popup cleared location. here should set googlePlaceData to {}. even though db instantiated with location row.
+
+    if (this.props.defaultDepartureGooglePlaceData && this.props.defaultDepartureGooglePlaceData.placeId) {
+      this.setState({departureGooglePlaceData: this.props.defaultDepartureGooglePlaceData})
+    } else if (this.props.defaultDepartureGooglePlaceData && !this.props.defaultDepartureGooglePlaceData.placeId) {
+      // if map popup cleared departure location
+      console.log('map popup cleared departure location')
+      this.setState({departureGooglePlaceData: {}})
+    }
+
+    if (this.props.defaultArrivalGooglePlaceData && this.props.defaultArrivalGooglePlaceData.placeId) {
+      this.setState({arrivalGooglePlaceData: this.props.defaultArrivalGooglePlaceData})
+    } else if (this.props.defaultArrivalGooglePlaceData && !this.props.defaultArrivalGooglePlaceData.placeId) {
+      // if map popup cleared arrival location
+      console.log('map popup cleared arrival location')
+      this.setState({arrivalGooglePlaceData: {}})
+    }
   }
 
   render () {
@@ -382,7 +428,7 @@ class EditLandTransportForm extends Component {
               <TransportLocationSelection selectLocation={(place, type) => this.selectLocation(place, type)} departureLocation={this.state.departureGooglePlaceData} arrivalLocation={this.state.arrivalGooglePlaceData} departureLocationDetails={this.state.departureLocationDetails} arrivalLocationDetails={this.state.arrivalLocationDetails} />
             </div>
 
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.props.event.startDay} endDay={this.props.event.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
           </div>
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}

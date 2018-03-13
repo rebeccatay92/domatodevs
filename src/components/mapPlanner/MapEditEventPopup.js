@@ -189,6 +189,7 @@ class MapEditEventPopup extends Component {
         defaultDepartureGooglePlaceData: this.state.departureGooglePlaceData,
         defaultArrivalGooglePlaceData: this.state.arrivalGooglePlaceData
       }
+      // console.log('params', params)
       this.props.setOpenEditFormParams(params)
     }
   }

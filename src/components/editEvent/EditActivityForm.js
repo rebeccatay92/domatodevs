@@ -36,8 +36,8 @@ class EditActivityForm extends Component {
     super(props)
     this.state = {
       id: this.props.event.id, // activity id
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
       locationAlias: '',
@@ -191,10 +191,25 @@ class EditActivityForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.updateActivity.id,
+          eventType: 'Activity',
+          flightInstanceId: null,
+          day: updatesObj.startDay,
+          start: null,
+          loadSequence: updatesObj.loadSequence
+        }
+        // console.log('updated. new focusEvent', focusEventObj)
+        this.resetState()
+        this.props.mapEditEventFormSuccess(focusEventObj)
+      } else {
+        // from planner route
+        this.resetState()
+        this.props.toggleEditEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
   }
 
   // changes are not saved. remove all holderNewAttachments. ignore holderDeleteAttachments
@@ -208,6 +223,7 @@ class EditActivityForm extends Component {
     }
   }
 
+  // IF DELETE EVENT FROM MAP ROUTE, NEED TO CLEAR PLANNER FOCUS, CLEAR OPENEDITFORMPARAMS.
   deleteEvent () {
     var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, 'Activity', this.state.id)
 
@@ -231,8 +247,8 @@ class EditActivityForm extends Component {
 
   resetState () {
     this.setState({
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null,
       endTime: null,
       locationAlias: '',
@@ -385,6 +401,21 @@ class EditActivityForm extends Component {
     }, () => console.log('edit form did mount', this.state))
 
     // FURTHER INSTANTIATE STATE IF FORM WAS OPENED FROM MAP. OVERIRDE VALUES WITH WHATEVER EDITS WERE MADE.
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
   }
 
   render () {
@@ -405,7 +436,7 @@ class EditActivityForm extends Component {
               <input className='left-panel-input' placeholder='Input Description' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
 
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.props.event.startDay} endDay={this.props.event.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
 
             {this.state.openingHoursValidation &&
               <div>

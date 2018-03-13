@@ -26,9 +26,8 @@ class EditEventFormHOC extends Component {
             overflowY: 'hidden'
           }
         }} />
-        {/* REMOVE PROPS EVENTS, DATE */}
-        {/* remove props day */}
-        <EditEventForm openedFromMap={this.props.openedFromMap} ItineraryId={this.props.ItineraryId} day={this.props.day} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} toggleEditEventType={() => this.props.toggleEditEventType()} mapEditEventFormSuccess={() => this.props.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.props.mapEditEventFormCancel()} />
+        {/* REMOVE PROPS EVENTS, DATE, DAY */}
+        <EditEventForm openedFromMap={this.props.openedFromMap} ItineraryId={this.props.ItineraryId} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} toggleEditEventType={() => this.props.toggleEditEventType()} mapEditEventFormSuccess={(eventObj) => this.props.mapEditEventFormSuccess(eventObj)} mapEditEventFormCancel={() => this.props.mapEditEventFormCancel()} defaultStartDay={this.props.defaultStartDay} defaultEndDay={this.props.defaultEndDay} defaultStartTime={this.props.defaultStartTime} defaultEndTime={this.props.defaultEndTime} defaultDescription={this.props.defaultDescription} defaultGooglePlaceData={this.props.defaultDescription} defaultDepartureGooglePlaceData={this.props.defaultDepartureGooglePlaceData} defaultArrivalGooglePlaceData={this.props.defaultArrivalGooglePlaceData} />
       </div>
     )
   }

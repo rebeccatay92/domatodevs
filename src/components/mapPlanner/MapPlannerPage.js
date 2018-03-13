@@ -121,8 +121,12 @@ class MapPlannerPage extends Component {
     this.props.clearOpenCreateFormParams()
   }
 
-  mapEditEventFormSuccess () {
-    console.log('edit event form success')
+  mapEditEventFormSuccess (eventObj) {
+    console.log('edit event form success. eventObj = ', eventObj)
+
+    this.props.includeDayInDaysFilter(eventObj.day)
+    this.props.clearOpenEditFormParams()
+    this.props.setCurrentlyFocusedEvent(eventObj)
   }
 
   mapEditEventFormCancel () {
@@ -131,7 +135,7 @@ class MapPlannerPage extends Component {
   }
 
   render () {
-    console.log('PROPS', this.props.openEditFormParams)
+    // console.log('PROPS', this.props.openEditFormParams)
     if (this.props.data.loading) {
       return (
         <h1 style={{marginTop: '60px'}}>Loading</h1>
@@ -151,16 +155,17 @@ class MapPlannerPage extends Component {
           {/* <div style={{display: 'inline-block', verticalAlign: 'top', right: '0', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor}}>BUCKET</div> */}
         </div>
 
-        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR AS JS DATE OBJS. DEFAULTGOOGLEPLACEDATA IS MARKER LOCATION. */}
+        {/* <MORE> FORMS ARE ANCHORED HERE. PASS DATES ARR AS JS DATE OBJS. DEFAULTGOOGLEPLACEDATA IS MARKER LOCATION. CREATE FORM ONLY NEEDS PROPS.DAY, BUT NOT PROPS.DATE */}
         <div>
           {this.props.openCreateFormParams.toOpen &&
             <CreateEventFormHOC openedFromMap ItineraryId={this.props.match.params.itineraryId} day={this.props.day} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} eventType={this.props.openCreateFormParams.eventType} defaultStartDay={this.props.openCreateFormParams.defaultStartDay} defaultEndDay={this.props.openCreateFormParams.defaultEndDay} defaultStartTime={this.props.openCreateFormParams.defaultStartTime} defaultEndTime={this.props.openCreateFormParams.defaultEndTime} defaultDescription={this.props.openCreateFormParams.defaultDescription} defaultGooglePlaceData={this.props.openCreateFormParams.defaultGooglePlaceData} defaultArrivalGooglePlaceData={this.props.openCreateFormParams.defaultArrivalGooglePlaceData} mapCreateEventFormSuccess={(eventObj) => this.mapCreateEventFormSuccess(eventObj)} mapCreateEventFormCancel={() => this.mapCreateEventFormCancel()} />
           }
         </div>
+
+        {/* EDIT FORM DOESNT NEED PROPS DAY, PROPS DATE. */}
         <div>
-          {/* HOW TO PASS THIS.PROPS.EVENT TO HOC? */}
           {this.props.openEditFormParams.toOpen &&
-            <EditEventFormHOC openedFromMap eventType={this.props.openEditFormParams.eventType} ItineraryId={this.props.match.params.itineraryId} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} event={this.props.openEditFormParams.eventRow} mapEditEventFormSuccess={() => this.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.mapEditEventFormCancel()} />
+            <EditEventFormHOC openedFromMap eventType={this.props.openEditFormParams.eventType} ItineraryId={this.props.match.params.itineraryId} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} event={this.props.openEditFormParams.eventRow} mapEditEventFormSuccess={(eventObj) => this.mapEditEventFormSuccess(eventObj)} mapEditEventFormCancel={() => this.mapEditEventFormCancel()} defaultStartDay={this.props.openEditFormParams.defaultStartDay} defaultEndDay={this.props.openEditFormParams.defaultEndDay} defaultStartTime={this.props.openEditFormParams.defaultStartTime} defaultEndTime={this.props.openEditFormParams.defaultEndTime} defaultDescription={this.props.openEditFormParams.defaultDescription} defaultGooglePlaceData={this.props.openEditFormParams.defaultDescription} defaultDepartureGooglePlaceData={this.props.openEditFormParams.defaultDepartureGooglePlaceData} defaultArrivalGooglePlaceData={this.props.openEditFormParams.defaultArrivalGooglePlaceData} />
           }
         </div>
       </div>
