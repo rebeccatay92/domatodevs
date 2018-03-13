@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { initializePlanner } from '../../actions/plannerActions'
-import { includeDayInDaysFilter, clearOpenCreateFormParams, setCurrentlyFocusedEvent, setSearchInputStr, setSearchMarkerArr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, clearOpenCreateFormParams, setCurrentlyFocusedEvent, setSearchInputStr, setSearchMarkerArr, clearFocusedSearchMarker, clearOpenEditFormParams } from '../../actions/mapPlannerActions'
 
 import { queryItinerary } from '../../apollo/itinerary'
 import SideBarPlanner from './SideBarPlanner'
@@ -127,9 +127,11 @@ class MapPlannerPage extends Component {
 
   mapEditEventFormCancel () {
     console.log('edit event form cancel')
+    this.props.clearOpenEditFormParams()
   }
 
   render () {
+    console.log('PROPS', this.props.openEditFormParams)
     if (this.props.data.loading) {
       return (
         <h1 style={{marginTop: '60px'}}>Loading</h1>
@@ -156,8 +158,9 @@ class MapPlannerPage extends Component {
           }
         </div>
         <div>
+          {/* HOW TO PASS THIS.PROPS.EVENT TO HOC? */}
           {this.props.openEditFormParams.toOpen &&
-            <EditEventFormHOC openedFromMap ItineraryId={this.props.match.params.itineraryId} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} mapEditEventFormSuccess={() => this.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.mapEditEventFormCancel()} />
+            <EditEventFormHOC openedFromMap eventType={this.props.openEditFormParams.eventType} ItineraryId={this.props.match.params.itineraryId} dates={this.state.datesArrForForm} daysArr={this.state.daysArr} event={this.props.openEditFormParams.eventRow} mapEditEventFormSuccess={() => this.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.mapEditEventFormCancel()} />
           }
         </div>
       </div>
@@ -203,6 +206,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     clearFocusedSearchMarker: () => {
       dispatch(clearFocusedSearchMarker())
+    },
+    clearOpenEditFormParams: () => {
+      dispatch(clearOpenEditFormParams())
     }
   }
 }

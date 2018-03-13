@@ -1,6 +1,7 @@
 export const mapPlannerOpenEditFormReducer = (state = {
   toOpen: false,
   eventType: 'Activity',
+  eventRow: {},
   defaultStartDay: 1,
   defaultEndDay: 1,
   defaultStartTime: 0,
@@ -17,6 +18,7 @@ export const mapPlannerOpenEditFormReducer = (state = {
       return {
         toOpen: false,
         eventType: 'Activity',
+        eventRow: {},
         defaultStartDay: 1,
         defaultEndDay: 1,
         defaultStartTime: 0,
@@ -35,6 +37,7 @@ export const mapPlannerOpenEditFormReducer = (state = {
 openEditFormParams
 toOpen: false,
 eventType
+eventRow: {} //eventRow in db. eg Activity
 defaultStartDay
 defaultEndDay
 defaultStartTime

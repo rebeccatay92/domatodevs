@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { includeDayInDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent, setOpenEditFormParams } from '../../actions/mapPlannerActions'
 
 import MapDateTimePicker from './MapDateTimePicker'
 import MapLocationSearchDropdown from './MapLocationSearchDropdown'
@@ -179,6 +179,7 @@ class MapEditEventPopup extends Component {
       var params = {
         toOpen: true,
         eventType: this.state.eventType,
+        eventRow: this.state.eventRowInDb,
         defaultStartDay: this.state.startDay,
         defaultEndDay: this.state.endDay,
         defaultStartTime: this.state.startTime,
@@ -188,6 +189,7 @@ class MapEditEventPopup extends Component {
         defaultDepartureGooglePlaceData: this.state.departureGooglePlaceData,
         defaultArrivalGooglePlaceData: this.state.arrivalGooglePlaceData
       }
+      this.props.setOpenEditFormParams(params)
     }
   }
 
@@ -521,6 +523,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     clearCurrentlyFocusedEvent: () => {
       dispatch(clearCurrentlyFocusedEvent())
+    },
+    setOpenEditFormParams: (params) => {
+      dispatch(setOpenEditFormParams(params))
     }
   }
 }

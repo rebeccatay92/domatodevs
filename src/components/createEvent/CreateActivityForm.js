@@ -298,7 +298,7 @@ class CreateActivityForm extends Component {
     // if no time values at all set as latest time
     if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
       var defaultUnix = latestTime(this.props.events, this.state.startDay)
-      console.log('calculate latest unix', defaultUnix)
+      // console.log('calculate latest unix', defaultUnix)
       this.setState({startTime: defaultUnix, endTime: defaultUnix})
     }
   }

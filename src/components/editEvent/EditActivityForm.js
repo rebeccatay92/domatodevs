@@ -201,7 +201,11 @@ class EditActivityForm extends Component {
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
     this.resetState()
-    this.props.toggleEditEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapEditEventFormCancel()
+    } else {
+      this.props.toggleEditEventType()
+    }
   }
 
   deleteEvent () {
@@ -379,6 +383,8 @@ class EditActivityForm extends Component {
       attachments: this.props.event.attachments,
       allDayEvent: this.props.event.allDayEvent
     }, () => console.log('edit form did mount', this.state))
+
+    // FURTHER INSTANTIATE STATE IF FORM WAS OPENED FROM MAP. OVERIRDE VALUES WITH WHATEVER EDITS WERE MADE.
   }
 
   render () {

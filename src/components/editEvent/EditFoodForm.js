@@ -193,7 +193,11 @@ class EditFoodForm extends Component {
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
     this.resetState()
-    this.props.toggleEditEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapEditEventFormCancel()
+    } else {
+      this.props.toggleEditEventType()
+    }
   }
 
   deleteEvent () {

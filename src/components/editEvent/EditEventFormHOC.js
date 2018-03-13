@@ -27,7 +27,8 @@ class EditEventFormHOC extends Component {
           }
         }} />
         {/* REMOVE PROPS EVENTS, DATE */}
-        <EditEventForm ItineraryId={this.props.ItineraryId} day={this.props.day} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} toggleEditEventType={() => this.props.toggleEditEventType()} mapEditEventFormSuccess={() => this.props.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.props.mapEditEventFormCancel()} />
+        {/* remove props day */}
+        <EditEventForm openedFromMap={this.props.openedFromMap} ItineraryId={this.props.ItineraryId} day={this.props.day} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.event} toggleEditEventType={() => this.props.toggleEditEventType()} mapEditEventFormSuccess={() => this.props.mapEditEventFormSuccess()} mapEditEventFormCancel={() => this.props.mapEditEventFormCancel()} />
       </div>
     )
   }
