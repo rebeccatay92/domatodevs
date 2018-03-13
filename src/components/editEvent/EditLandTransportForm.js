@@ -3,6 +3,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -217,8 +218,12 @@ class EditLandTransportForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        this.props.clearCurrentlyFocusedEvent()
+      }
+      this.closeForm()
     })
-    this.closeForm()
   }
 
   resetState () {
@@ -497,6 +502,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     retrieveCloudStorageToken: () => {
       dispatch(retrieveCloudStorageToken())
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
   }
 }
