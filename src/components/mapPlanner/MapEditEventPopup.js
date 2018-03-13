@@ -191,6 +191,15 @@ class MapEditEventPopup extends Component {
       }
       // console.log('params', params)
       this.props.setOpenEditFormParams(params)
+    } else {
+      // if flight, just open the edit form. nothing to copy over
+      params = {
+        toOpen: true,
+        eventType: 'Flight',
+        eventRow: this.state.eventRowInDb // flightInstanceRow
+      }
+      // console.log('params', params)
+      this.props.setOpenEditFormParams(params)
     }
   }
 

@@ -123,7 +123,6 @@ class MapPlannerPage extends Component {
 
   mapEditEventFormSuccess (eventObj) {
     console.log('edit event form success. eventObj = ', eventObj)
-
     this.props.includeDayInDaysFilter(eventObj.day)
     this.props.clearOpenEditFormParams()
     this.props.setCurrentlyFocusedEvent(eventObj)
