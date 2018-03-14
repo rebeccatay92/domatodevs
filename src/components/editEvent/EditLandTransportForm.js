@@ -77,32 +77,38 @@ class EditLandTransportForm extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field !== 'cost') {
+      this.setState({
+        [field]: e.target.value
+      })
+    } else {
+      this.setState({
+        cost: parseInt(e.target.value, 10)
+      })
+    }
   }
 
   handleSubmit () {
     console.log('submit state', this.state)
 
     var updatesObj = {
-      id: this.state.id
+      id: this.state.id,
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime,
+      currency: this.state.currency,
+      cost: this.state.cost,
+      departureLocationAlias: this.state.departureLocationAlias,
+      arrivalLocationAlias: this.state.arrivalLocationAlias,
+      bookedThrough: this.state.bookedThrough,
+      bookingConfirmation: this.state.bookingConfirmation,
+      bookingStatus: this.state.bookingConfirmation ? true : false,
+      backgroundImage: this.state.backgroundImage,
+      departureNotes: this.state.departureNotes,
+      arrivalNotes: this.state.arrivalNotes
     }
-    var fieldsToCheck = ['departureLocationAlias', 'arrivalLocationAlias', 'startDay', 'endDay', 'currency', 'cost', 'bookedThrough', 'bookingConfirmation', 'notes', 'backgroundImage', 'startTime', 'endTime']
-    fieldsToCheck.forEach(field => {
-      if (this.props.event[field] !== this.state[field]) {
-        updatesObj[field] = this.state[field]
-      }
-    })
-    // if cost was updated, it is a str. make int.
-    if (updatesObj.cost) {
-      updatesObj.cost = parseInt(updatesObj.cost, 10)
-    }
-    // then manually add booking status, googlePlaceData, attachments
-    var bookingStatus = this.state.bookingConfirmation ? true : false
-    if (bookingStatus !== this.props.event.bookingStatus) {
-      updatesObj.bookingStatus = bookingStatus
-    }
+
     // if location changed, it doesnt contain the id field
     if (!this.state.departureGooglePlaceData.id) {
       updatesObj.departureGooglePlaceData = this.state.departureGooglePlaceData
@@ -138,34 +144,55 @@ class EditLandTransportForm extends Component {
     console.log('handlesubmit', updatesObj)
 
     // check if updatesObj has fields other than id. if yes, then send to backend
-    if (Object.keys(updatesObj).length <= 1) {
-      this.resetState()
-      this.props.toggleEditEventType()
+    // if (Object.keys(updatesObj).length <= 1) {
+    //   this.resetState()
+    //   this.props.toggleEditEventType()
+    // }
+    //
+    // // if time or day changes, reassign load seq
+    // if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.departureGooglePlaceData || updatesObj.arrivalGooglePlaceData) {
+    //   var updateEvent = {
+    //     startDay: this.state.startDay,
+    //     endDay: this.state.endDay,
+    //     startTime: this.state.startTime,
+    //     endTime: this.state.endTime,
+    //     departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
+    //     arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
+    //   }
+    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, updateEvent)
+    //   console.log('helperOutput', helperOutput)
+    //   updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    //   updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    //   var loadSequenceInput = helperOutput.loadSequenceInput
+    //   if (loadSequenceInput.length) {
+    //     this.props.changingLoadSequence({
+    //       variables: {
+    //         input: loadSequenceInput
+    //       }
+    //     })
+    //   }
+    // }
+
+    var loadSequenceHelperParams = {
+      startDay: updatesObj.startDay,
+      endDay: updatesObj.endDay,
+      startTime: updatesObj.startTime,
+      endTime: updatesObj.endTime,
+      departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
+      arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
+    }
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, loadSequenceHelperParams)
+    updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    var loadSequenceChanges = helperOutput.loadSequenceInput
+    if (loadSequenceChanges.length) {
+      this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
     }
 
-    // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.departureGooglePlaceData || updatesObj.arrivalGooglePlaceData) {
-      var updateEvent = {
-        startDay: this.state.startDay,
-        endDay: this.state.endDay,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
-        arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
-      }
-      var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, updateEvent)
-      console.log('helperOutput', helperOutput)
-      updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
-      updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
-      var loadSequenceInput = helperOutput.loadSequenceInput
-      if (loadSequenceInput.length) {
-        this.props.changingLoadSequence({
-          variables: {
-            input: loadSequenceInput
-          }
-        })
-      }
-    }
     this.props.updateLandTransport({
       variables: updatesObj,
       refetchQueries: [{
@@ -177,10 +204,16 @@ class EditLandTransportForm extends Component {
         var focusEventObj = {
           modelId: resolved.data.updateLandTransport.id,
           eventType: 'LandTransport',
-          flightInstanceId: null,
-          day: updatesObj.startDay,
-          start: true,
-          loadSequence: updatesObj.startLoadSequence
+          flightInstanceId: null
+        }
+        if (this.props.currentlyFocusedEvent.start) {
+          focusEventObj.day = updatesObj.startDay
+          focusEventObj.start = true
+          focusEventObj.loadSequence = updatesObj.startLoadSequence
+        } else {
+          focusEventObj.day = updatesObj.endDay
+          focusEventObj.start = false
+          focusEventObj.loadSequence = updatesObj.endLoadSequence
         }
         // console.log('updated. new focusEvent', focusEventObj)
         this.resetState()
@@ -494,7 +527,8 @@ class EditLandTransportForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    cloudStorageToken: state.cloudStorageToken,
+    currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 

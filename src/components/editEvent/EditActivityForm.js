@@ -71,30 +71,33 @@ class EditActivityForm extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field !== 'cost') {
+      this.setState({
+        [field]: e.target.value
+      })
+    } else {
+      this.setState({
+        cost: parseInt(e.target.value, 10)
+      })
+    }
   }
 
   handleSubmit () {
+    // always construct for day, time so load seq is always assigned.
     var updatesObj = {
-      id: this.state.id
-    }
-    // remove openingHoursValidation from backend if planner can use openingHours helper ok
-    var fieldsToCheck = ['locationAlias', 'startDay', 'endDay', 'description', 'currency', 'cost', 'bookedThrough', 'bookingConfirmation', 'notes', 'backgroundImage', 'openingHoursValidation', 'startTime', 'endTime']
-    fieldsToCheck.forEach(field => {
-      if (this.props.event[field] !== this.state[field]) {
-        updatesObj[field] = this.state[field]
-      }
-    })
-    // if cost was updated, it is a str. make int.
-    if (updatesObj.cost) {
-      updatesObj.cost = parseInt(updatesObj.cost, 10)
-    }
-    // then manually add booking status, googlePlaceData, attachments, allDayEvent
-    var bookingStatus = this.state.bookingConfirmation ? true : false
-    if (bookingStatus !== this.props.event.bookingStatus) {
-      updatesObj.bookingStatus = bookingStatus
+      id: this.state.id,
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      description: this.state.description,
+      currency: this.state.currency,
+      cost: this.state.cost,
+      locationAlias: this.state.locationAlias,
+      bookedThrough: this.state.bookedThrough,
+      bookingConfirmation: this.state.bookingConfirmation,
+      bookingStatus: this.state.bookingConfirmation ? true : false,
+      notes: this.state.notes,
+      backgroundImage: this.state.backgroundImage,
+      openingHoursValidation: this.state.openingHoursValidation
     }
     // if location changed, it doesnt contain the id field, updatesObj will hv googlePlaceData and the utc offset
     if (!this.state.googlePlaceData.id) {
@@ -111,6 +114,14 @@ class EditActivityForm extends Component {
       updatesObj.removeAttachments = this.state.holderDeleteAttachments.map(e => {
         return e.id
       })
+    }
+
+    // how to check if start/end time is all day event or not? if all day event -> componentdidmount set state to null, even if db has value.
+    if (this.props.event.startTime !== this.state.startTime) {
+      updatesObj.startTime = this.state.startTime
+    }
+    if (this.props.event.endTime !== this.state.endTime) {
+      updatesObj.endTime = this.state.endTime
     }
 
     // if allDayEvent, and time happens to change to exactly identical unix as what was saved, fieldsToCheck doesnt detect change. hence check if state is not null (since onComponentMount will set state to null if allDayEvent)
@@ -150,42 +161,63 @@ class EditActivityForm extends Component {
     console.log('handlesubmit', updatesObj)
 
     // check if updatesObj has fields other than id. if yes, then send to backend
-    if (Object.keys(updatesObj).length <= 1) {
-      this.resetState()
-      this.props.toggleEditEventType()
-    }
+    // if (Object.keys(updatesObj).length <= 1) {
+    //   this.resetState()
+    //   this.props.toggleEditEventType()
+    // }
 
     // if time or day changes, reassign load seq. if googlePlaceData changes, run anyway (utcOffset might change)
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
-      // if googlePlaceData was changed, utc comes from there, else stay the same as what was in db
-      var utcOffset = null
-      if (updatesObj.googlePlaceData) {
-        utcOffset = updatesObj.googlePlaceData.utcOffset
-      } else {
-        utcOffset = this.props.event.utcOffset
-      }
+    // if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+    //   // if googlePlaceData was changed, utc comes from there, else stay the same as what was in db
+    //   var utcOffset = null
+    //   if (updatesObj.googlePlaceData) {
+    //     utcOffset = updatesObj.googlePlaceData.utcOffset
+    //   } else {
+    //     utcOffset = this.props.event.utcOffset
+    //   }
+    //
+    //   var updateEvent = {
+    //     startDay: this.state.startDay,
+    //     endDay: this.state.endDay,
+    //     startTime: this.state.startTime,
+    //     endTime: this.state.endTime,
+    //     utcOffset: utcOffset
+    //   }
+    //   console.log('updateEvent before helper', updateEvent)
+    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, updateEvent)
+    //   console.log('helperOutput', helperOutput)
+    //
+    //   updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
+    //   var loadSequenceInput = helperOutput.loadSequenceInput
+    //   if (loadSequenceInput.length) {
+    //     this.props.changingLoadSequence({
+    //       variables: {
+    //         input: loadSequenceInput
+    //       }
+    //     })
+    //   }
+    // }
 
-      var updateEvent = {
-        startDay: this.state.startDay,
-        endDay: this.state.endDay,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        utcOffset: utcOffset
-      }
-      console.log('updateEvent before helper', updateEvent)
-      var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, updateEvent)
-      console.log('helperOutput', helperOutput)
-
-      updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
-      var loadSequenceInput = helperOutput.loadSequenceInput
-      if (loadSequenceInput.length) {
-        this.props.changingLoadSequence({
-          variables: {
-            input: loadSequenceInput
-          }
-        })
-      }
+    // always run load seq assignment even if day, time, location didnt change
+    var loadSequenceHelperParams = {
+      startDay: updatesObj.startDay,
+      endDay: updatesObj.endDay,
+      // either user input or helper added times
+      startTime: updatesObj.startTime,
+      endTime: updatesObj.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, loadSequenceHelperParams)
+    updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
+    var loadSequenceChanges = helperOutput.loadSequenceInput
+    if (loadSequenceChanges.length) {
+      this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
+    }
+
     this.props.updateActivity({
       variables: updatesObj,
       refetchQueries: [{

@@ -39,7 +39,8 @@ class EditLodgingForm extends Component {
       endTime: null, // if setstate, will change to unix
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       cost: 0,
       currency: '',
       currencyList: [],
@@ -70,30 +71,36 @@ class EditLodgingForm extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field !== 'cost') {
+      this.setState({
+        [field]: e.target.value
+      })
+    } else {
+      this.setState({
+        cost: parseInt(e.target.value, 10)
+      })
+    }
   }
 
   handleSubmit () {
     var updatesObj = {
-      id: this.state.id
+      id: this.state.id,
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime,
+      description: this.state.description,
+      currency: this.state.currency,
+      cost: this.state.cost,
+      locationAlias: this.state.locationAlias,
+      bookedThrough: this.state.bookedThrough,
+      bookingConfirmation: this.state.bookingConfirmation,
+      bookingStatus: this.state.bookingConfirmation ? true : false,
+      backgroundImage: this.state.backgroundImage,
+      departureNotes: this.state.departureNotes,
+      arrivalNotes: this.state.arrivalNotes
     }
-    var fieldsToCheck = ['locationAlias', 'startDay', 'endDay', 'description', 'currency', 'cost', 'bookedThrough', 'bookingConfirmation', 'notes', 'backgroundImage', 'startTime', 'endTime']
-    fieldsToCheck.forEach(field => {
-      if (this.props.event[field] !== this.state[field]) {
-        updatesObj[field] = this.state[field]
-      }
-    })
-    // if cost was updated, it is a str. make int.
-    if (updatesObj.cost) {
-      updatesObj.cost = parseInt(updatesObj.cost, 10)
-    }
-    // then manually add booking status, googlePlaceData, attachments
-    var bookingStatus = this.state.bookingConfirmation ? true : false
-    if (bookingStatus !== this.props.event.bookingStatus) {
-      updatesObj.bookingStatus = bookingStatus
-    }
+
     // if location changed, it doesnt contain the id field
     if (!this.state.googlePlaceData.id) {
       updatesObj.googlePlaceData = this.state.googlePlaceData
@@ -124,33 +131,53 @@ class EditLodgingForm extends Component {
     console.log('handlesubmit', updatesObj)
 
     // check if updatesObj has fields other than id. if yes, then send to backend
-    if (Object.keys(updatesObj).length <= 1) {
-      this.resetState()
-      this.props.toggleEditEventType()
-    }
+    // if (Object.keys(updatesObj).length <= 1) {
+    //   this.resetState()
+    //   this.props.toggleEditEventType()
+    // }
 
     // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
-      var updateEvent = {
-        startDay: this.state.startDay,
-        endDay: this.state.endDay,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        utcOffset: this.state.googlePlaceData.utcOffset
-      }
-      var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, updateEvent)
-      console.log('helperOutput', helperOutput)
-      updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
-      updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
-      var loadSequenceInput = helperOutput.loadSequenceInput
-      if (loadSequenceInput.length) {
-        this.props.changingLoadSequence({
-          variables: {
-            input: loadSequenceInput
-          }
-        })
-      }
+    // if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+    //   var updateEvent = {
+    //     startDay: this.state.startDay,
+    //     endDay: this.state.endDay,
+    //     startTime: this.state.startTime,
+    //     endTime: this.state.endTime,
+    //     utcOffset: this.state.googlePlaceData.utcOffset
+    //   }
+    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, updateEvent)
+    //   console.log('helperOutput', helperOutput)
+    //   updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    //   updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    //   var loadSequenceInput = helperOutput.loadSequenceInput
+    //   if (loadSequenceInput.length) {
+    //     this.props.changingLoadSequence({
+    //       variables: {
+    //         input: loadSequenceInput
+    //       }
+    //     })
+    //   }
+    // }
+
+    var loadSequenceHelperParams = {
+      startDay: updatesObj.startDay,
+      endDay: updatesObj.endDay,
+      startTime: updatesObj.startTime,
+      endTime: updatesObj.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, loadSequenceHelperParams)
+    updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    var loadSequenceChanges = helperOutput.loadSequenceInput
+    if (loadSequenceChanges.length) {
+      this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
+    }
+
     this.props.updateLodging({
       variables: updatesObj,
       refetchQueries: [{
@@ -162,10 +189,17 @@ class EditLodgingForm extends Component {
         var focusEventObj = {
           modelId: resolved.data.updateLodging.id,
           eventType: 'Lodging',
-          flightInstanceId: null,
-          day: updatesObj.startDay,
-          start: true,
-          loadSequence: updatesObj.startLoadSequence
+          flightInstanceId: null
+        }
+        // focus obj depends on map currently clicked is start or end row
+        if (this.props.currentlyFocusedEvent.start) {
+          focusEventObj.day = updatesObj.startDay
+          focusEventObj.start = true
+          focusEventObj.loadSequence = updatesObj.startLoadSequence
+        } else {
+          focusEventObj.day = updatesObj.endDay
+          focusEventObj.start = false
+          focusEventObj.loadSequence = updatesObj.endLoadSequence
         }
         // console.log('updated. new focusEvent', focusEventObj)
         this.resetState()
@@ -219,7 +253,8 @@ class EditLodgingForm extends Component {
       endTime: null,
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       cost: 0,
       currency: '',
       currencyList: [],
@@ -345,7 +380,9 @@ class EditLodgingForm extends Component {
       cost: this.props.event.cost,
       bookedThrough: this.props.event.bookedThrough || '',
       bookingConfirmation: this.props.event.bookingConfirmation || '',
-      notes: this.props.event.notes || '',
+      // notes: this.props.event.notes || '',
+      arrivalNotes: this.props.event.arrivalNotes || '',
+      departureNotes: this.props.event.departureNotes || '',
       backgroundImage: this.props.event.backgroundImage,
       googlePlaceData: this.props.event.location,
       attachments: this.props.event.attachments
@@ -436,7 +473,8 @@ class EditLodgingForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    cloudStorageToken: state.cloudStorageToken,
+    currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
