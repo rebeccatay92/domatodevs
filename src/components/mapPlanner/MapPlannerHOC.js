@@ -22,6 +22,10 @@ const unclickedSearchMarkerStyle = {borderRadius: '50%', border: '3px solid red'
 const clickedPlannerMarkerStyle = {borderRadius: '50%', border: '3px solid orange', boxShadow: '0 0 0 3px white', backgroundColor: 'orange'}
 const unclickedPlannerMarkerStyle = {borderRadius: '50%', border: '3px solid orange', backgroundColor: 'orange'}
 
+function stopPropagation (event) {
+  return event.stopPropagation()
+}
+
 class Map extends Component {
   constructor (props) {
     super(props)
@@ -40,7 +44,6 @@ class Map extends Component {
       allEvents: [], // entire this.props.events arr
       eventsArr: [], // manipulated arr to extract location
       plannerMarkers: [] // filtered planner markers. eg markers for days 1,2,5
-      // planner marker index, isOpen just takes from redux currentlyFocusedEvent, and calculates currentlyFocusedMarker on render
     }
   }
 
@@ -104,7 +107,6 @@ class Map extends Component {
   }
 
   onSearchStrChange (e) {
-    // set redux state searchInputStr to input field value
     this.props.setSearchInputStr(e.target.value)
   }
 
@@ -141,9 +143,6 @@ class Map extends Component {
   }
 
   onInfoBoxDomReady () {
-    function stopPropagation (event) {
-      return event.stopPropagation()
-    }
     var infobox = document.querySelector('#infobox')
     window.google.maps.event.addDomListener(infobox, 'dblclick', e => {
       // console.log('dblclick')
@@ -157,7 +156,8 @@ class Map extends Component {
     //       fullscreenControl: false,
     //       mapTypeControl: false,
     //       streetViewControl: false,
-    //       clickableIcons: false
+    //       clickableIcons: false,
+    //       gestureHandling: 'none'
     //     }
     //   })
     // })
@@ -169,9 +169,14 @@ class Map extends Component {
     //       fullscreenControl: false,
     //       mapTypeControl: false,
     //       streetViewControl: false,
-    //       clickableIcons: false
+    //       clickableIcons: false,
+    //       gestureHandling: 'cooperative'
     //     }
     //   })
+    // })
+
+    // window.google.maps.event.addDomListener(infobox, 'click', e => {
+    //   console.log('clicked')
     // })
   }
 
@@ -412,11 +417,7 @@ class Map extends Component {
       // console.log('currentlyFocusedMarker', currentlyFocusedMarker)
     }
     return (
-      <GoogleMap ref={node => { this.map = node }}
-        center={this.state.center}
-        zoom={this.state.zoom} onBoundsChanged={() => this.onBoundsChanged()}
-        options={this.state.mapOptions}
-      >
+      <GoogleMap ref={node => { this.map = node }} center={this.state.center} zoom={this.state.zoom} onBoundsChanged={() => this.onBoundsChanged()} options={this.state.mapOptions}>
         {/* CLOSE MAP */}
         <CustomControl controlPosition={window.google.maps.ControlPosition.RIGHT_TOP}>
           <button onClick={() => this.props.returnToPlanner()} style={{boxSizing: 'border-box', border: '1px solid transparent', borderRadius: '3px', boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`, fontSize: `14px`, outline: 'none', height: '30px', marginTop: '10px', marginRight: '10px'}}>X</button>

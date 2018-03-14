@@ -55,85 +55,25 @@ class MapEditEventPopup extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
-    if (this.props.marker !== nextProps.marker) {
-      var marker = nextProps.marker
-      var eventType = marker.eventType
-
-      if (eventType !== 'Flight') {
-        var event = marker.event
-      } else {
-        event = marker.event.FlightInstance
-      }
-      // console.log('marker', marker)
-      // console.log('event row', event)
-
-      var startDay = event.startDay
-      var endDay = event.endDay
-      var startTime = event.startTime
-      var endTime = event.endTime
-      if (eventType === 'Activity' || eventType === 'Food' || eventType === 'Lodging') {
-        var description = event.description
-        var googlePlaceData = marker.location
-      }
-      if (eventType === 'LandTransport' || eventType === 'Flight') {
-        // check marker start is true or false to assign either departure or arrival to location.
-        if (marker.start) {
-          googlePlaceData = event.departureLocation
-          var start = true
-          var searchStr = event.arrivalLocation.name
-          var locationSearchIsFor = 'arrival'
-        } else {
-          googlePlaceData = event.arrivalLocation
-          start = false
-          searchStr = event.departureLocation.name
-          locationSearchIsFor = 'departure'
-        }
-        var arrivalGooglePlaceData = event.arrivalLocation
-        var departureGooglePlaceData = event.departureLocation
-      }
-
-      this.setState({
-        eventType,
-        startDay,
-        endDay,
-        startTime,
-        endTime,
-        description,
-        googlePlaceData,
-        arrivalGooglePlaceData,
-        departureGooglePlaceData,
-        start,
-        locationSearchIsFor: locationSearchIsFor || '',
-        searchStr: searchStr || '',
-        eventRowInDb: event
-      })
-    }
-  }
-
-  componentDidMount () {
-    var marker = this.props.marker
-    var eventType = marker.eventType
-
+  setStateFromMarkerProp (markerProp) {
+    console.log('set state from marker prop')
+    var eventType = markerProp.eventType
     if (eventType !== 'Flight') {
-      var event = marker.event
+      var event = markerProp.event
     } else {
-      event = marker.event.FlightInstance
+      event = markerProp.event.FlightInstance
     }
-    // console.log('marker', marker)
-    console.log('event row', event)
-
     var startDay = event.startDay
     var endDay = event.endDay
     var startTime = event.startTime
     var endTime = event.endTime
     if (eventType === 'Activity' || eventType === 'Food' || eventType === 'Lodging') {
       var description = event.description
-      var googlePlaceData = marker.location
+      var googlePlaceData = markerProp.location
     }
     if (eventType === 'LandTransport' || eventType === 'Flight') {
       // check marker start is true or false to assign either departure or arrival to location.
-      if (marker.start) {
+      if (markerProp.start) {
         googlePlaceData = event.departureLocation
         var start = true
         var searchStr = event.arrivalLocation.name
@@ -165,16 +105,24 @@ class MapEditEventPopup extends Component {
     })
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (this.props.marker !== nextProps.marker) {
+      var marker = nextProps.marker
+      this.setStateFromMarkerProp(marker)
+    }
+  }
+
+  componentDidMount () {
+    var marker = this.props.marker
+    this.setStateFromMarkerProp(marker)
+  }
+
   closePlannerPopup () {
-    console.log('close planner popup. ie remove focus')
     this.props.clearCurrentlyFocusedEvent()
   }
 
   openEditEventForm () {
     console.log('open edit event form', this.state.eventType)
-    // construct openEditFormParams, dispatch redux
-    // copy edited fields over into form.
-    // with the exception of flight.
     if (this.state.eventType !== 'Flight') {
       var params = {
         toOpen: true,
@@ -189,23 +137,19 @@ class MapEditEventPopup extends Component {
         defaultDepartureGooglePlaceData: this.state.departureGooglePlaceData,
         defaultArrivalGooglePlaceData: this.state.arrivalGooglePlaceData
       }
-      // console.log('params', params)
       this.props.setOpenEditFormParams(params)
     } else {
-      // if flight, just open the edit form. nothing to copy over
       params = {
         toOpen: true,
         eventType: 'Flight',
         eventRow: this.state.eventRowInDb // flightInstanceRow
       }
-      // console.log('params', params)
       this.props.setOpenEditFormParams(params)
     }
   }
 
   handleSubmit () {
     // console.log('state', this.state)
-    // im not gonna bother comparing fields against props to see if it has changed
     var temp = {
       id: this.props.marker.modelId,
       startDay: this.state.startDay,
@@ -276,7 +220,6 @@ class MapEditEventPopup extends Component {
         variables: {id: this.props.ItineraryId}
       }]
     }).then(resolved => {
-      // console.log('resolved', resolved)
       var eventType = this.state.eventType
       var eventObj = {
         modelId: resolved.data[`${apolloNamespace}`].id,

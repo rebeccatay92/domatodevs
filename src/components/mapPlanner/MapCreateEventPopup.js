@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { includeDayInDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams, setSearchInputStr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams, setSearchInputStr, setSearchMarkerArr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
@@ -241,12 +241,11 @@ class MapCreateEventPopup extends Component {
         return (e.modelId === prevState.eventObj.modelId)
       })
       if (isCreatedEventInPlannerMarkers) {
-        // console.log('isCreatedEventInPlannerMarkers', isCreatedEventInPlannerMarkers)
-        // console.log('plannerMarkers', this.props.plannerMarkers)
-        // this.props.searchCreateEventSuccess(prevState.eventObj)
         this.props.setSearchInputStr('')
+        this.props.setSearchMarkerArr([])
         this.props.clearFocusedSearchMarker()
 
+        this.props.clearCurrentlyFocusedEvent() // force redraw on infobox
         this.props.setCurrentlyFocusedEvent(prevState.eventObj)
       }
     }
@@ -299,10 +298,7 @@ class MapCreateEventPopup extends Component {
   }
 
   selectLocation (place) {
-    // will receive place (with imageUrl) from dropdown result, constructGooglePlaceDataObj with helper. set to arrivalGooglePlaceData
-    // console.log('in popup', place)
     var googlePlaceData = constructGooglePlaceDataObj(place)
-
     googlePlaceData
       .then(resolved => {
         this.setState({
@@ -398,6 +394,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setSearchInputStr: (str) => {
       dispatch(setSearchInputStr(str))
+    },
+    setSearchMarkerArr: (arr) => {
+      dispatch(setSearchMarkerArr(arr))
     },
     clearFocusedSearchMarker: () => {
       dispatch(clearFocusedSearchMarker())
