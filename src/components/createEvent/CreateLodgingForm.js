@@ -41,7 +41,8 @@ class CreateLodgingForm extends Component {
       googlePlaceData: {},
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
       cost: 0,
@@ -92,7 +93,8 @@ class CreateLodgingForm extends Component {
       bookingStatus: bookingStatus,
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
-      notes: this.state.notes,
+      arrivalNotes: this.state.arrivalNotes,
+      departureNotes: this.state.departureNotes,
       attachments: this.state.attachments,
       backgroundImage: this.state.backgroundImage
     }
@@ -180,7 +182,8 @@ class CreateLodgingForm extends Component {
       googlePlaceData: {},
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       startTime: null, // should be Int
       endTime: null, // should be Int
       cost: 0,
