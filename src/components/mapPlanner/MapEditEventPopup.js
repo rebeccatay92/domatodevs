@@ -281,7 +281,7 @@ class MapEditEventPopup extends Component {
       var eventObj = {
         modelId: resolved.data[`${apolloNamespace}`].id,
         eventType: eventType,
-        flightInstanceId: null // flight instance not editable from here
+        flightInstanceId: null
       }
       if (this.state.eventType === 'Activity' || this.state.eventType === 'Food') {
         eventObj.start = null

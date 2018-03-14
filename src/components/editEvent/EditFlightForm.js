@@ -188,10 +188,26 @@ class EditFlightForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        // construct focusEventObj here. which flight instance marker to focus?
+        // if no change to flight, dont change the focus? if flight changed. just pick the first departure instance.
+        var flightInstances = updatesObj.flightInstances
+        var focusEventObj = {
+          modelId: resolved.data.updateFlightBooking.id,
+          eventType: 'Flight',
+          flightInstanceId: flightInstances[0].id,
+          day: flightInstances[0].startDay,
+          start: true,
+          loadSequence: flightInstances[0].startLoadSequence
+        }
+        this.props.mapEditEventFormSuccess(focusEventObj)
+        // no need reset state if success, since unmount.
+      } else {
+        this.resetState()
+        this.props.toggleEditEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
   }
 
   closeForm () {
@@ -546,7 +562,7 @@ class EditFlightForm extends Component {
   }
 
   render () {
-    console.log('PROPS', this.props)
+    // console.log('PROPS', this.props)
     return (
       <div className='flightFormContainer' style={createFlightFormContainerStyle}>
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}

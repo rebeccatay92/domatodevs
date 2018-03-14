@@ -28,7 +28,6 @@ import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSe
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}lodgingDefaultBackground.jpg`
 
-
 class EditLodgingForm extends Component {
   constructor (props) {
     super(props)
