@@ -478,8 +478,8 @@ class Map extends Component {
         })}
 
         {this.props.focusedSearchMarker &&
-          <InfoBox ref={node => { this.infoBox = node }} position={this.props.focusedSearchMarker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
-            <div id='infobox' style={{width: '450px', height: '280px', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)'}}>
+          <InfoBox ref={node => { this.infoBox = node }} position={this.props.focusedSearchMarker.position} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '450px', height: '280px', background: 'white', padding: '10px', boxShadow: '0px 2px 5px 2px rgba(0, 0, 0, .2)', overflow: 'visible'}, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+            <div id='infobox'>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
                 <i className='material-icons'>delete</i>
@@ -510,7 +510,7 @@ class Map extends Component {
 
         {/* currentlyFocusedEvent only holds modelId etc. currentlyFocusedMarker is the entire plannerMarker obj matching the currentlyFocusedEvent (has displayPosition) */}
         {currentlyFocusedMarker &&
-          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '450px', height: '280px', position: 'relative', background: 'white', padding: '10px'}, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '450px', height: '280px', position: 'relative', background: 'white', padding: '10px', overflow: 'visible'}, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox'>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>

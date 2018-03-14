@@ -145,7 +145,7 @@ class MapDateTimePicker extends Component {
           </div>
 
           {/* DATE/DAY */}
-          <div style={{display: 'inline-block'}}>
+          <div style={{display: 'inline-block', overflow: 'visible'}}>
             {!this.props.datesArr &&
               <select onChange={e => this.handleChange(e, 'endDay')} value={this.props.endDay} style={mapInfoBoxDayStyle}>
                 {this.props.daysArr.map((day, i) => {
