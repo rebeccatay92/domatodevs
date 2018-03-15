@@ -7,6 +7,11 @@ export const queryBlog = gql`
       title
       published
       textContent
+      views
+      createdAt
+      likes {
+        id
+      }
       user {
         id
         name
@@ -35,6 +40,12 @@ export const queryBlog = gql`
           endDay
           childPosts {
             id
+          }
+          media {
+            type
+            url
+            loadSequence
+            caption
           }
         }
       }

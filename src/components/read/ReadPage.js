@@ -5,17 +5,21 @@ import { readPageStyle } from '../../Styles/styles'
 
 import PostsList from './PostsList'
 import PostTextContent from './PostTextContent'
+import PostMediaContent from './PostMediaContent'
 
 import { initializePosts } from '../../actions/readActions'
 import { queryBlog } from '../../apollo/blog'
 
 class ReadPage extends Component {
   render () {
+    if (this.props.data.loading) {
+      return <span>Loading...</span>
+    }
     return (
       <div style={readPageStyle}>
         <PostsList pages={this.props.pages} />
-        <div style={{width: '50vw', height: 'calc(100vh - 60px)', display: 'inline-block', verticalAlign: 'top', backgroundColor: '#F5F5F5'}}></div>
-        <PostTextContent pages={this.props.pages} />
+        <PostMediaContent pages={this.props.pages} />
+        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogAuthor={this.props.data.findBlog.user.name} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} dateCreated={this.props.data.findBlog.createdAt} />
       </div>
     )
   }
@@ -24,6 +28,7 @@ class ReadPage extends Component {
     if (this.props.data.findBlog !== nextProps.data.findBlog) {
       const allPages = nextProps.data.findBlog.pages
       console.log(allPages)
+      this.props.initializePosts(allPages)
     }
   }
 }
