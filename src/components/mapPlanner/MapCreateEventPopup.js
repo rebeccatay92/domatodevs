@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { includeDayInDaysFilter, setCurrentlyFocusedEvent, setOpenCreateFormParams, setSearchInputStr, setSearchMarkerArr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
+import { includeDayInDaysFilter, setCurrentlyFocusedEvent, clearCurrentlyFocusedEvent, setOpenCreateFormParams, setSearchInputStr, setSearchMarkerArr, clearFocusedSearchMarker } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
 import MapEventToggles from './MapEventToggles'
@@ -385,6 +385,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setCurrentlyFocusedEvent: (currentEventObj) => {
       dispatch(setCurrentlyFocusedEvent(currentEventObj))
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     },
     setOpenCreateFormParams: (params) => {
       dispatch(setOpenCreateFormParams(params))

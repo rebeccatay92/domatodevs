@@ -351,6 +351,35 @@ class Map extends Component {
       })
     }
     this.map.fitBounds(newBounds, 150)
+
+    if (this.props.currentlyFocusedEvent.modelId) {
+      // find clicked marker and construct latlng literal
+      var focus = this.props.currentlyFocusedEvent
+      var currentlyFocusedMarker = _.find(this.state.plannerMarkers, function (e) {
+        return (
+          e.modelId === focus.modelId &&
+          e.eventType === focus.eventType &&
+          e.day === focus.day &&
+          e.start === focus.start &&
+          e.loadSequence === focus.loadSequence &&
+          e.flightInstanceId === focus.flightInstanceId
+        )
+      })
+      var markerLatLngLiteral = {lat: currentlyFocusedMarker.displayPosition.latitude, lng: currentlyFocusedMarker.displayPosition.longitude}
+
+      if (type === 'planner') {
+        this.fitBoundsForInfoBox(markerLatLngLiteral, this.state.plannerMarkers)
+      }
+    }
+
+    if (this.props.mapPlannerSearch.focusedSearchMarker) {
+      var searchMarkerPosition = this.props.mapPlannerSearch.focusedSearchMarker.position
+      // console.log('search marker posiiton', searchMarkerPosition)
+      markerLatLngLiteral = {lat: searchMarkerPosition.lat(), lng: searchMarkerPosition.lng()}
+      if (type === 'search') {
+        this.fitBoundsForInfoBox(markerLatLngLiteral, this.props.searchMarkerArr)
+      }
+    }
   }
 
   focusSearchMarkers () {
@@ -370,6 +399,41 @@ class Map extends Component {
       newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
     })
     this.map.fitBounds(newBounds, 150)
+
+    if (this.props.currentlyFocusedEvent.modelId) {
+      // console.log('reset focus planner marker')
+      var currentlyFocusedEvent = this.props.currentlyFocusedEvent
+      // this.props.clearCurrentlyFocusedEvent()
+      this.props.setCurrentlyFocusedEvent(currentlyFocusedEvent)
+
+      var focus = this.props.currentlyFocusedEvent
+      var currentlyFocusedMarker = _.find(this.state.plannerMarkers, function (e) {
+        return (
+          e.modelId === focus.modelId &&
+          e.eventType === focus.eventType &&
+          e.day === focus.day &&
+          e.start === focus.start &&
+          e.loadSequence === focus.loadSequence &&
+          e.flightInstanceId === focus.flightInstanceId
+        )
+      })
+
+      var markerLatLngLiteral = {lat: currentlyFocusedMarker.displayPosition.latitude, lng: currentlyFocusedMarker.displayPosition.longitude}
+
+      this.fitBoundsForInfoBox(markerLatLngLiteral, this.state.plannerMarkers.concat(this.props.mapPlannerSearch.ssearchMarkerArr))
+    }
+
+    if (this.props.mapPlannerSearch.focusedSearchMarker) {
+      // console.log('reset focus search marker')
+      var focusedSearchMarker = this.props.mapPlannerSearch.focusedSearchMarker
+      // this.props.clearFocusedSearchMarker()
+      this.props.setFocusedSearchMarker(focusedSearchMarker)
+
+      var searchMarkerPosition = this.props.mapPlannerSearch.focusedSearchMarker.position
+      // console.log('search marker posiiton', searchMarkerPosition)
+      markerLatLngLiteral = {lat: searchMarkerPosition.lat(), lng: searchMarkerPosition.lng()}
+      this.fitBoundsForInfoBox(markerLatLngLiteral, this.props.searchMarkerArr.concat(this.state.plannerMarkers))
+    }
   }
 
   onPlannerMarkerClicked (index) {
@@ -396,22 +460,20 @@ class Map extends Component {
       // clear focus event and reset to trigger infobox redraw
       // this.props.clearCurrentlyFocusedEvent()
       this.props.setCurrentlyFocusedEvent(clickedPlannerMarkerEventObj)
+
+      var latlng = {lat: marker.displayPosition.latitude, lng: marker.displayPosition.longitude}
+      this.fitBoundsForInfoBox(latlng, this.state.plannerMarkers)
     }
+  }
 
-    // infobox autopan is disabled for now. manually calculate bounds to include open infobox
-    // console.log('map', this.map)
-
+  // markerLatLngLiteral = {lat: xx, lng: xx}
+  fitBoundsForInfoBox (markerLatLngLiteral, markerArrForBounds) {
     var currentBounds = this.map.getBounds()
     var boundsNE = currentBounds.getNorthEast()
     var boundsSW = currentBounds.getSouthWest()
-
-    // convert to mercator points. find scale px: mercator points
     var projection = this.map.getProjection()
-
     var mercatorNE = projection.fromLatLngToPoint(boundsNE)
     var mercatorSW = projection.fromLatLngToPoint(boundsSW)
-    // console.log('mercatorSW', mercatorSW)
-
     var mapHeightMercator = mercatorSW.y - mercatorNE.y
     if (mercatorNE.x < mercatorSW.x) {
       // find dist from mercator 256 line
@@ -426,19 +488,14 @@ class Map extends Component {
     var pixelToMercatorScaleX = mapWidthMercator / mapWidthPixels
     var pixelToMercatorScaleY = mapHeightMercator / mapHeightPixels
 
-    // find marker latlng, convert to mercator
-    var markerMercator = projection.fromLatLngToPoint(new window.google.maps.LatLng(marker.displayPosition.latitude, marker.displayPosition.longitude))
-
+    // find marker lat lng (search marker or planner marker)
+    var markerMercator = projection.fromLatLngToPoint(new window.google.maps.LatLng(markerLatLngLiteral))
     var markerMercatorX = markerMercator.x
     var markerMercatorY = markerMercator.y
 
-    // given infobox width, height, label gap. find the mercator points of the bottom 2 corners.
     var infoboxLeftEdgeX = markerMercatorX - (225 * pixelToMercatorScaleX)
     var infoboxRightEdgeX = markerMercatorX + (225 * pixelToMercatorScaleX)
     var infoboxBottomEdgeY = markerMercatorY + (140 + 60 + 30 + 30) * pixelToMercatorScaleY
-    // 140 height, 60 label to infobox gap, 30 marker diameter, 30 buffer
-    // convert back to lat lng n extend bounds
-    console.log('infobox bottom edge y value', infoboxBottomEdgeY)
 
     var infoboxBottomLeftCornerMercator = new window.google.maps.Point(infoboxLeftEdgeX, infoboxBottomEdgeY)
     var infoboxBottomRightCornerMercator = new window.google.maps.Point(infoboxRightEdgeX, infoboxBottomEdgeY)
@@ -446,14 +503,6 @@ class Map extends Component {
     var bottomLeftLatLng = projection.fromPointToLatLng(infoboxBottomLeftCornerMercator)
     var bottomRightLatLng = projection.fromPointToLatLng(infoboxBottomRightCornerMercator)
 
-    // console.log('bottom left latlng', bottomLeftLatLng)
-
-    // currentBounds.extend(bottomLeftLatLng)
-    // currentBounds.extend(bottomRightLatLng)
-    // this.map.fitBounds(currentBounds, 0)
-    // zooms out why???
-
-    // if infobox has enough space, dont refit bounds
     var isLeftEdgeInBounds = ((infoboxLeftEdgeX > mercatorSW.x) && (infoboxLeftEdgeX < mercatorNE.x))
     var isRightEdgeInBounds = ((infoboxRightEdgeX > mercatorSW.x) && (infoboxRightEdgeX < mercatorNE.x))
     var isBottomEdgeInBounds = (infoboxBottomEdgeY < mercatorSW.y)
@@ -462,16 +511,14 @@ class Map extends Component {
 
     if (!isLeftEdgeInBounds || !isRightEdgeInBounds || !isBottomEdgeInBounds) {
       var newBounds = new window.google.maps.LatLngBounds()
-      // recalc all bounds (this will keep fitting to this.state.plannerMarkers)
-      // this.state.plannerMarkers.forEach(marker => {
-      //   newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
-      // })
-      // newBounds.extend(boundsNE)
-
-      // this will only extend bounds of the current view (not the entire plannerMarkers arr)
-      // make it slightly smaller than current bounds (else will zoom out by 1 if exactly equal)
-      newBounds.extend({lat: boundsNE.lat() - 0.001, lng: boundsNE.lng() + 0.001})
-      newBounds.extend({lat: boundsSW.lat() + 0.001, lng: boundsSW.lng() - 0.001})
+      // recalc all bounds (fitted to markerArr provided)
+      markerArrForBounds.forEach(marker => {
+        if (marker.location) {
+          newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
+        } else if (marker.position) {
+          newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
+        }
+      })
       newBounds.extend(bottomLeftLatLng)
       newBounds.extend(bottomRightLatLng)
       this.map.fitBounds(newBounds)
