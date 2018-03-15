@@ -145,7 +145,6 @@ class Map extends Component {
   onInfoBoxDomReady () {
     var infobox = document.querySelector('#infobox')
     window.google.maps.event.addDomListener(infobox, 'dblclick', e => {
-      // console.log('dblclick')
       stopPropagation(e)
     })
     // window.google.maps.event.addDomListener(infobox, 'mouseenter', e => {
@@ -302,7 +301,6 @@ class Map extends Component {
           eventsArr: finalEventsArr
         }, () => {
           this.applyDaysFilter(nextProps.daysFilterArr)
-          // console.log('COMPONENT WILL RECEIVE PROPS DONE')
         })
       }
     } //  close events
@@ -340,19 +338,19 @@ class Map extends Component {
   // refitBounds only takes 1 type
   refitBounds (markerArr, type) {
     if (!markerArr.length) return
+
     if (type === 'planner') {
       var newBounds = new window.google.maps.LatLngBounds()
       markerArr.forEach(marker => {
         newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
       })
-      this.map.fitBounds(newBounds, 150)
     } else if (type === 'search') {
       newBounds = new window.google.maps.LatLngBounds()
       this.props.searchMarkerArr.forEach(marker => {
         newBounds.extend({lat: marker.position.lat(), lng: marker.position.lng()})
       })
-      this.map.fitBounds(newBounds, 150)
     }
+    this.map.fitBounds(newBounds, 150)
   }
 
   focusSearchMarkers () {
@@ -396,8 +394,87 @@ class Map extends Component {
       this.props.clearCurrentlyFocusedEvent()
     } else {
       // clear focus event and reset to trigger infobox redraw
-      this.props.clearCurrentlyFocusedEvent()
+      // this.props.clearCurrentlyFocusedEvent()
       this.props.setCurrentlyFocusedEvent(clickedPlannerMarkerEventObj)
+    }
+
+    // infobox autopan is disabled for now. manually calculate bounds to include open infobox
+    // console.log('map', this.map)
+
+    var currentBounds = this.map.getBounds()
+    var boundsNE = currentBounds.getNorthEast()
+    var boundsSW = currentBounds.getSouthWest()
+
+    // convert to mercator points. find scale px: mercator points
+    var projection = this.map.getProjection()
+
+    var mercatorNE = projection.fromLatLngToPoint(boundsNE)
+    var mercatorSW = projection.fromLatLngToPoint(boundsSW)
+    // console.log('mercatorSW', mercatorSW)
+
+    var mapHeightMercator = mercatorSW.y - mercatorNE.y
+    if (mercatorNE.x < mercatorSW.x) {
+      // find dist from mercator 256 line
+      var mapWidthMercator = (mercatorNE.x) + (256 - mercatorSW.x)
+    } else {
+      mapWidthMercator = mercatorNE.x - mercatorSW.x
+    }
+    // console.log('height', mapHeightMercator, 'width', mapWidthMercator)
+    var mapWidthPixels = 1920 / 2
+    var mapHeightPixels = window.innerHeight - 60
+
+    var pixelToMercatorScaleX = mapWidthMercator / mapWidthPixels
+    var pixelToMercatorScaleY = mapHeightMercator / mapHeightPixels
+
+    // find marker latlng, convert to mercator
+    var markerMercator = projection.fromLatLngToPoint(new window.google.maps.LatLng(marker.displayPosition.latitude, marker.displayPosition.longitude))
+
+    var markerMercatorX = markerMercator.x
+    var markerMercatorY = markerMercator.y
+
+    // given infobox width, height, label gap. find the mercator points of the bottom 2 corners.
+    var infoboxLeftEdgeX = markerMercatorX - (225 * pixelToMercatorScaleX)
+    var infoboxRightEdgeX = markerMercatorX + (225 * pixelToMercatorScaleX)
+    var infoboxBottomEdgeY = markerMercatorY + (140 + 60 + 30 + 30) * pixelToMercatorScaleY
+    // 140 height, 60 label to infobox gap, 30 marker diameter, 30 buffer
+    // convert back to lat lng n extend bounds
+    console.log('infobox bottom edge y value', infoboxBottomEdgeY)
+
+    var infoboxBottomLeftCornerMercator = new window.google.maps.Point(infoboxLeftEdgeX, infoboxBottomEdgeY)
+    var infoboxBottomRightCornerMercator = new window.google.maps.Point(infoboxRightEdgeX, infoboxBottomEdgeY)
+
+    var bottomLeftLatLng = projection.fromPointToLatLng(infoboxBottomLeftCornerMercator)
+    var bottomRightLatLng = projection.fromPointToLatLng(infoboxBottomRightCornerMercator)
+
+    // console.log('bottom left latlng', bottomLeftLatLng)
+
+    // currentBounds.extend(bottomLeftLatLng)
+    // currentBounds.extend(bottomRightLatLng)
+    // this.map.fitBounds(currentBounds, 0)
+    // zooms out why???
+
+    // if infobox has enough space, dont refit bounds
+    var isLeftEdgeInBounds = ((infoboxLeftEdgeX > mercatorSW.x) && (infoboxLeftEdgeX < mercatorNE.x))
+    var isRightEdgeInBounds = ((infoboxRightEdgeX > mercatorSW.x) && (infoboxRightEdgeX < mercatorNE.x))
+    var isBottomEdgeInBounds = (infoboxBottomEdgeY < mercatorSW.y)
+
+    console.log('is left, right, bottom edges within bounds?', isLeftEdgeInBounds, isRightEdgeInBounds, isBottomEdgeInBounds)
+
+    if (!isLeftEdgeInBounds || !isRightEdgeInBounds || !isBottomEdgeInBounds) {
+      var newBounds = new window.google.maps.LatLngBounds()
+      // recalc all bounds (this will keep fitting to this.state.plannerMarkers)
+      // this.state.plannerMarkers.forEach(marker => {
+      //   newBounds.extend({lat: marker.location.latitude, lng: marker.location.longitude})
+      // })
+      // newBounds.extend(boundsNE)
+
+      // this will only extend bounds of the current view (not the entire plannerMarkers arr)
+      // make it slightly smaller than current bounds (else will zoom out by 1 if exactly equal)
+      newBounds.extend({lat: boundsNE.lat() - 0.001, lng: boundsNE.lng() + 0.001})
+      newBounds.extend({lat: boundsSW.lat() + 0.001, lng: boundsSW.lng() - 0.001})
+      newBounds.extend(bottomLeftLatLng)
+      newBounds.extend(bottomRightLatLng)
+      this.map.fitBounds(newBounds)
     }
   }
 
@@ -510,7 +587,7 @@ class Map extends Component {
 
         {/* currentlyFocusedEvent only holds modelId etc. currentlyFocusedMarker is the entire plannerMarker obj matching the currentlyFocusedEvent (has displayPosition) */}
         {currentlyFocusedMarker &&
-          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '450px', height: '280px', position: 'relative', background: 'white', padding: '10px', overflow: 'visible'}, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
+          <InfoBox ref={node => { this.infoBox = node }} position={new window.google.maps.LatLng(currentlyFocusedMarker.displayPosition.latitude, currentlyFocusedMarker.displayPosition.longitude)} options={{ disableAutoPan: true, closeBoxURL: ``, enableEventPropagation: true, boxStyle: {width: '450px', height: '280px', position: 'relative', background: 'white', padding: '10px', overflow: 'visible'}, pixelOffset: new window.google.maps.Size(-225, 60), infoBoxClearance: new window.google.maps.Size(170, 170) }} onDomReady={() => this.onInfoBoxDomReady()}>
             <div id='infobox'>
               <div style={{position: 'absolute', right: '0', top: '0', padding: '5px'}}>
                 <i className='material-icons'>location_on</i>
