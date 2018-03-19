@@ -1,6 +1,6 @@
-import { Navbar, FormGroup, FormControl, InputGroup, Button } from 'react-bootstrap'
-import React from 'react'
+import { Navbar, FormGroup, FormControl, InputGroup, Button, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import React from 'react'
 import { primaryColor } from '../Styles/styles'
 
 const dropdownIconStyle = {
@@ -27,7 +27,7 @@ const navbarInstance = (
       <i style={dropdownIconStyle} className='material-icons'>menu</i>
       <i style={bucketLogoStyle} className='material-icons'>delete</i>
     </Navbar.Header>
-    <Navbar.Form style={{margin: '10px 0', marginLeft: '89px', paddingLeft: '0'}}>
+    <Navbar.Form style={{margin: '10px 0', marginLeft: '89px', paddingLeft: '0', display: 'inline-block'}}>
       <FormGroup style={{boxShadow: '2px 2px 10px -1px rgba(0, 0, 0, .2)'}}>
         <InputGroup>
           <FormControl type='text' placeholder='Discover' style={{width: '30vw', borderRadius: '0'}} />
@@ -38,8 +38,15 @@ const navbarInstance = (
       </FormGroup>
       {' '}
     </Navbar.Form>
-    {/* <Link to='/'>Home</Link>
-    <Link to='/itineraries'>Itineraries</Link> */}
+    {/* <Nav bsStyle='pills' pullRight>
+      <Link to={`/signup`}>
+        Sign Up
+      </Link>
+      <Link to={`/login`}>
+        Log In
+      </Link>
+    </Nav> */}
+    {/* <Nav>Log In Auth0</Nav> */}
   </Navbar>
 )
 
