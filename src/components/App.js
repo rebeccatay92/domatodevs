@@ -17,7 +17,7 @@ import ItineraryPage from './itinerary/ItineraryPage'
 import PlannerPage from './PlannerPage'
 import Navbar from './Navbar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
-// import UserSignUpPage from './user/UserSignUpPage'
+import UserProfilePage from './user/UserProfilePage'
 
 import history from './Auth0/history'
 import Callback from './Auth0/Callback'
@@ -60,26 +60,22 @@ class App extends Component {
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
-          {Navbar}
+          <Navbar auth={auth} />
           {/* <div style={{border: '1px solid red', marginTop: '500px'}}>
             <button onClick={() => this.toggleLoginLogout()}>Fake login/logout toggle. User 1's token. change toggleLoginLogout email to your own seeded user 1's.</button>
             <h4>Token: {this.props.token}</h4>
           </div> */}
-
-          {/* <Route exact path='/' component={HomePage} /> */}
           <Route exact path='/' render={(props) => (
             <HomePage auth={auth} {...props} />
           )} />
           <Route path='/itineraries' component={ItineraryPage} />
           <Route path='/planner/:itineraryId' component={PlannerPage} />
           <Route path='/map/:itineraryId' component={MapPlannerPage} />
-          {/* <Route path='/signup' component={UserSignUpPage} /> */}
-          {/* <Route path='/login' component={UserLogInPage} /> */}
           <Route path='/callback' render={(props) => {
             handleAuthentication(props)
             return <Callback {...props} />
           }} />
-
+          <Route path='/user' component={UserProfilePage} />
           {this.props.showSpinner && (
             <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
               <div style={{position: 'fixed', top: 'calc(50% - 35px)', left: 'calc(50% - 35px)', height: '70px', width: '70px'}}>
