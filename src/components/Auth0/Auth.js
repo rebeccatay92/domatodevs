@@ -6,7 +6,8 @@ export default class Auth {
     domain: 'domatodevs.auth0.com',
     clientID: 'y7lfqtXJsvLJUfcsHASjBC5HfD2d8Jyl',
     redirectUri: 'http://localhost:3000/callback',
-    audience: 'https://domatodevs.auth0.com/userinfo',
+    // audience: 'https://domatodevs.auth0.com/userinfo',
+    audience: 'http://localhost:3001', // so access_token is for backend
     responseType: 'token id_token',
     scope: 'openid profile'
   })
@@ -45,8 +46,9 @@ export default class Auth {
   scheduleRenewal () {
     const expiresAt = JSON.parse(localStorage.getItem('expires_at'))
     console.log('expiresAt', expiresAt)
+    if (!expiresAt) return // if no expiresAt (user has logged out. dont renew)
     const delay = expiresAt - Date.now()
-    console.log('delay', delay)
+    // console.log('delay', delay)
     if (delay > 0) {
       console.log('set timeout')
       this.tokenRenewalTimeout = setTimeout(() => {
@@ -75,7 +77,7 @@ export default class Auth {
     localStorage.setItem('access_token', authResult.accessToken)
     localStorage.setItem('id_token', authResult.idToken)
     localStorage.setItem('expires_at', expiresAt)
-
+    localStorage.setItem('user_id', authResult.idTokenPayload.sub)
     // set timeout to silently renew token
     this.scheduleRenewal()
 
@@ -88,6 +90,7 @@ export default class Auth {
     localStorage.removeItem('access_token')
     localStorage.removeItem('id_token')
     localStorage.removeItem('expires_at')
+    localStorage.removeItem('user_id')
     // clear timeout for token renewal
     clearTimeout(this.tokenRenewalTimeout)
     // navigate to the home route

@@ -46,7 +46,7 @@ class HomePage extends Component {
             <h3>ID token claims</h3>
             <h3>{decodedIdToken.name}</h3>
             <h3>{decodedIdToken.sub}</h3>
-            <img src={decodedIdToken.picture} />
+            <img src={decodedIdToken.picture} height={'200px'} width={'200px'} />
           </React.Fragment>
         }
         <button onClick={() => this.getProfile()}>Get user profile</button>

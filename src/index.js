@@ -25,11 +25,23 @@ const networkInterface = createNetworkInterface({
   uri: 'http://localhost:3001/graphql'
 })
 
+// networkInterface.use([{
+//   applyMiddleware (req, next) {
+//     if (!req.options.headers) {
+//       req.options.headers = {
+//         authorization: `Bearer ${window.localStorage.getItem('token')}`
+//       }
+//     }
+//     next()
+//   }
+// }])
+
+// use Auth0 access_token
 networkInterface.use([{
   applyMiddleware (req, next) {
     if (!req.options.headers) {
       req.options.headers = {
-        authorization: `Bearer ${window.localStorage.getItem('token')}`
+        authorization: `Bearer ${window.localStorage.getItem('access_token')}`
       }
     }
     next()
