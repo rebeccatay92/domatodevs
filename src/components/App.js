@@ -7,9 +7,9 @@ import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-import { createToken } from '../apollo/user'
+// import { createToken } from '../apollo/user'
 
-import { initializeUser, logoutUser } from '../actions/userActions'
+// import { initializeUser, logoutUser } from '../actions/userActions'
 import { generateCloudStorageToken } from '../actions/cloudStorageActions'
 
 import HomePage from './HomePage'
@@ -53,7 +53,7 @@ class App extends Component {
 
   componentDidMount () {
     // this.props.initializeUser()
-    // this.props.generateCloudStorageToken()
+    this.props.generateCloudStorageToken()
   }
 
   render () {
@@ -72,8 +72,7 @@ class App extends Component {
           <Route path='/planner/:itineraryId' component={PlannerPage} />
           <Route path='/map/:itineraryId' component={MapPlannerPage} />
           <Route path='/callback' render={(props) => {
-            handleAuthentication(props)
-            return <Callback {...props} />
+            return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />
           }} />
           <Route path='/user' component={UserProfilePage} />
           {this.props.showSpinner && (
@@ -95,7 +94,7 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    token: state.token,
+    // token: state.token,
     cloudStorageToken: state.cloudStorageToken,
     showSpinner: state.showSpinner
   }
@@ -103,12 +102,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    initializeUser: () => {
-      dispatch(initializeUser())
-    },
-    logoutUser: () => {
-      dispatch(logoutUser())
-    },
+    // initializeUser: () => {
+    //   dispatch(initializeUser())
+    // },
+    // logoutUser: () => {
+    //   dispatch(logoutUser())
+    // },
     generateCloudStorageToken: () => {
       dispatch(generateCloudStorageToken())
     }
@@ -116,5 +115,5 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(createToken, {name: 'createToken'})
+  // graphql(createToken, {name: 'createToken'})
 )(App)))

@@ -7,7 +7,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 
 import { plannerReducer } from './reducers/plannerReducer'
 import { bucketReducer } from './reducers/bucketReducer'
-import { userReducer } from './reducers/userReducer'
+// import { userReducer } from './reducers/userReducer'
 import { plannerColumnReducer } from './reducers/plannerColumnReducer'
 import { plannerTimelineReducer } from './reducers/plannerTimelineReducer'
 import { plannerTimelineDayReducer } from './reducers/plannerTimelineDayReducer'
@@ -24,17 +24,6 @@ import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apol
 const networkInterface = createNetworkInterface({
   uri: 'http://localhost:3001/graphql'
 })
-
-// networkInterface.use([{
-//   applyMiddleware (req, next) {
-//     if (!req.options.headers) {
-//       req.options.headers = {
-//         authorization: `Bearer ${window.localStorage.getItem('token')}`
-//       }
-//     }
-//     next()
-//   }
-// }])
 
 // use Auth0 access_token
 networkInterface.use([{
@@ -58,7 +47,7 @@ const store = createStore(combineReducers({
   plannerColumns: plannerColumnReducer,
   plannerTimeline: plannerTimelineReducer,
   plannerTimelineDay: plannerTimelineDayReducer,
-  token: userReducer,
+  // token: userReducer,
   cloudStorageToken: cloudStorageReducer,
   showSpinner: spinnerReducer,
   currentlyFocusedEvent: mapPlannerCurrentFocusReducer,

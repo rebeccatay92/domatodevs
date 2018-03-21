@@ -25,6 +25,10 @@ export default class Auth {
     this.scheduleRenewal()
   }
 
+  componentWillMount () {
+
+  }
+
   login() {
     this.auth0.authorize()
   }
@@ -38,19 +42,19 @@ export default class Auth {
       } else if (err) {
         history.replace('/')
         console.log('ERROR', err)
-        alert(`Error: ${err.error}. Check the console for further details.`)
+        // alert(`Error: ${err.error}. Check the console for further details.`)
       }
     })
   }
 
   scheduleRenewal () {
     const expiresAt = JSON.parse(localStorage.getItem('expires_at'))
-    console.log('expiresAt', expiresAt)
+    // console.log('expiresAt', expiresAt)
     if (!expiresAt) return // if no expiresAt (user has logged out. dont renew)
     const delay = expiresAt - Date.now()
     // console.log('delay', delay)
     if (delay > 0) {
-      console.log('set timeout')
+      // console.log('set timeout')
       this.tokenRenewalTimeout = setTimeout(() => {
         this.renewToken()
       }, delay)
@@ -73,7 +77,7 @@ export default class Auth {
   setSession (authResult) {
     // Set the time that the access token will expire at
     let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime())
-    console.log('AUTH RESULT', authResult)
+    // console.log('AUTH RESULT', authResult)
     localStorage.setItem('access_token', authResult.accessToken)
     localStorage.setItem('id_token', authResult.idToken)
     localStorage.setItem('expires_at', expiresAt)
