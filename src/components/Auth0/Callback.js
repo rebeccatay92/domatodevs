@@ -19,7 +19,6 @@ class Callback extends Component {
   }
 
   render () {
-
     return (
       <div style={callbackStyle}>
         Loading (Callback component)

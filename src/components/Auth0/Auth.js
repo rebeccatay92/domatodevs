@@ -25,10 +25,6 @@ export default class Auth {
     this.scheduleRenewal()
   }
 
-  componentWillMount () {
-
-  }
-
   login() {
     this.auth0.authorize()
   }
@@ -38,11 +34,26 @@ export default class Auth {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
         console.log('AUTHENTICATED')
+
+        fetch('http://localhost:3001/graphql', {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${authResult.accessToken}`
+          },
+          body: JSON.stringify({"query":"{\n\tfindUser(id: \"auth0|5ab1dce98bd5067ff5786507\") {\n\t\tid\n\t\tfullName\n\t\tusername\n\t\temail\n\t\tprofilePic\n\t}\n}"})
+        })
+        .then(response => {
+          console.log('response', response)
+        })
+        .catch(err => {
+          console.log('err', err)
+        })
+
         history.replace('/')
       } else if (err) {
         history.replace('/')
         console.log('ERROR', err)
-        // alert(`Error: ${err.error}. Check the console for further details.`)
       }
     })
   }
@@ -77,7 +88,7 @@ export default class Auth {
   setSession (authResult) {
     // Set the time that the access token will expire at
     let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime())
-    // console.log('AUTH RESULT', authResult)
+    console.log('AUTH RESULT', authResult)
     localStorage.setItem('access_token', authResult.accessToken)
     localStorage.setItem('id_token', authResult.idToken)
     localStorage.setItem('expires_at', expiresAt)

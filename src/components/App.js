@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Router, Route } from 'react-router-dom'
-
+import jwt from 'jsonwebtoken'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { ClipLoader } from 'react-spinners'
@@ -31,25 +31,25 @@ const handleAuthentication = ({location}) => {
 }
 
 class App extends Component {
-  toggleLoginLogout () {
-    if (!this.props.token) {
-      console.log('logging in')
-      this.props.createToken({
-        variables: {
-          email: 'Litzy_Hansen@gmail.com',
-          password: 'password1'
-        }
-      })
-        .then(({data}) => {
-          window.localStorage.setItem('token', data.createToken)
-          this.props.initializeUser()
-        })
-    } else {
-      console.log('logging out')
-      window.localStorage.removeItem('token')
-      this.props.logoutUser()
-    }
-  }
+  // toggleLoginLogout () {
+  //   if (!this.props.token) {
+  //     console.log('logging in')
+  //     this.props.createToken({
+  //       variables: {
+  //         email: 'Litzy_Hansen@gmail.com',
+  //         password: 'password1'
+  //       }
+  //     })
+  //       .then(({data}) => {
+  //         window.localStorage.setItem('token', data.createToken)
+  //         this.props.initializeUser()
+  //       })
+  //   } else {
+  //     console.log('logging out')
+  //     window.localStorage.removeItem('token')
+  //     this.props.logoutUser()
+  //   }
+  // }
 
   componentDidMount () {
     // this.props.initializeUser()
@@ -57,6 +57,9 @@ class App extends Component {
   }
 
   render () {
+    // var id_token = window.localStorage.getItem('id_token')
+    // var decodedIdToken = jwt.decode(id_token)
+    // console.log('APP.JS', decodedIdToken)
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>

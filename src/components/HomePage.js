@@ -2,16 +2,7 @@ import React, { Component } from 'react'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 
-// auth was passed as a prop from App.js into Route '/'
-// import Auth from './Auth0/Auth'
-// const auth = new Auth()
-
 class HomePage extends Component {
-
-  // componentDidMount () {
-  //
-  // }
-
   getProfile () {
     this.props.auth.getProfile()
   }
