@@ -29,10 +29,12 @@ class NavbarInstance extends Component {
 
   componentDidMount () {
     // console.log('auth', this.props.auth)
+    console.log('lock', this.props.lock)
   }
 
   render () {
-    const isAuthenticated = this.props.auth.isAuthenticated()
+    // const isAuthenticated = this.props.auth.isAuthenticated()
+    const isAuthenticated = this.props.lock.isAuthenticated()
     return (
       <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200'}}>
         <Navbar.Header>
@@ -53,12 +55,14 @@ class NavbarInstance extends Component {
         <Nav bsStyle='pills' pullRight>
           {isAuthenticated &&
             <React.Fragment>
-              <NavItem onClick={() => this.props.auth.logout()}>Log Out</NavItem>
+              {/* <NavItem onClick={() => this.props.auth.logout()}>Log Out</NavItem> */}
+              <NavItem onClick={() => this.props.lock.logout()}>Log Out</NavItem>
               <Link to={'/user'}>Your Account</Link>
             </React.Fragment>
           }
           {!isAuthenticated &&
-            <NavItem onClick={() => this.props.auth.login()}>Log In / Sign up</NavItem>
+            // <NavItem onClick={() => this.props.auth.login()}>Log In / Sign up</NavItem>
+            <NavItem onClick={() => this.props.lock.login()}>Log In / Sign up</NavItem>
           }
         </Nav>
       </Navbar>

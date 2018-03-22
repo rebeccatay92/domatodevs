@@ -19,8 +19,10 @@ import UserProfilePage from './user/UserProfilePage'
 import history from './Auth0/history'
 import Callback from './Auth0/Callback'
 import Auth from './Auth0/Auth'
+import Lock from './Auth0/lock'
+
 const auth = new Auth()
-// import lock from './Auth0/lock'
+const lock = new Lock()
 
 
 const handleAuthentication = ({location}) => {
@@ -38,10 +40,10 @@ class App extends Component {
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
-          <Navbar auth={auth} />
+          <Navbar auth={auth} lock={lock} />
           <div style={{marginTop: '60px'}}>
             <Route exact path='/' render={(props) => (
-              <HomePage auth={auth} {...props} />
+              <HomePage auth={auth} lock={lock} {...props} />
             )} />
             <Route path='/callback' render={(props) => {
               return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />

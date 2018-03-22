@@ -19,7 +19,6 @@ export default class Auth {
     this.logout = this.logout.bind(this)
     this.handleAuthentication = this.handleAuthentication.bind(this)
     this.isAuthenticated = this.isAuthenticated.bind(this)
-    // this.getProfile = this.getProfile.bind(this)
     // automatically refresh token on App.js mount
     this.scheduleRenewal()
   }
@@ -105,7 +104,6 @@ export default class Auth {
     localStorage.removeItem('access_token')
     localStorage.removeItem('id_token')
     localStorage.removeItem('expires_at')
-    localStorage.removeItem('user_id')
     // clear timeout for token renewal
     clearTimeout(this.tokenRenewalTimeout)
     // navigate to the home route
@@ -119,13 +117,13 @@ export default class Auth {
     return new Date().getTime() < expiresAt
   }
 
-  getAccessToken () {
-    const accessToken = window.localStorage.getItem('access_token')
-    if (!accessToken) {
-      throw new Error('No access token found')
-    }
-    return accessToken
-  }
+  // getAccessToken () {
+  //   const accessToken = window.localStorage.getItem('access_token')
+  //   if (!accessToken) {
+  //     throw new Error('No access token found')
+  //   }
+  //   return accessToken
+  // }
 
   // getProfile () {
   //   let accessToken = this.getAccessToken()

@@ -13,7 +13,8 @@ class HomePage extends Component {
     var expires_at = window.localStorage.getItem('expires_at')
     var expiresAtString = moment.unix(expires_at / 1000).format('ddd, DD MMM YYYY, hh:mm A')
     // console.log('expires at', expiresAtString)
-    const isAuthenticated = this.props.auth.isAuthenticated()
+    // const isAuthenticated = this.props.auth.isAuthenticated()
+    const isAuthenticated = this.props.lock.isAuthenticated()
     // console.log('isAuthenticated', isAuthenticated)
 
     if (id_token) {
