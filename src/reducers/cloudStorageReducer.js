@@ -5,7 +5,7 @@ export const cloudStorageReducer = (state = {}, action) => {
     case 'GENERATE_CLOUD_STORAGE_TOKEN':
       return retrieveToken()
     case 'RETRIEVE_CLOUD_STORAGE_TOKEN':
-      var currentUnix = Date.now() /1000
+      var currentUnix = Date.now() / 1000
       var tokenObj = state.then(obj => {
         if (currentUnix < (obj.expiry - 1800)) { // half hr buffer
           // console.log('token still valid')

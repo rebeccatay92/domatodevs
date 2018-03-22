@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import { Router, Route } from 'react-router-dom'
-import jwt from 'jsonwebtoken'
+// import jwt from 'jsonwebtoken'
 import { connect } from 'react-redux'
-import { graphql, compose } from 'react-apollo'
+// import { graphql, compose } from 'react-apollo'
 import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-// import { createToken } from '../apollo/user'
-
-// import { initializeUser, logoutUser } from '../actions/userActions'
 import { generateCloudStorageToken } from '../actions/cloudStorageActions'
 
 import HomePage from './HomePage'
@@ -23,6 +20,8 @@ import history from './Auth0/history'
 import Callback from './Auth0/Callback'
 import Auth from './Auth0/Auth'
 const auth = new Auth()
+// import lock from './Auth0/lock'
+
 
 const handleAuthentication = ({location}) => {
   if (/access_token|id_token|error/.test(location.hash)) {
@@ -31,43 +30,15 @@ const handleAuthentication = ({location}) => {
 }
 
 class App extends Component {
-  // toggleLoginLogout () {
-  //   if (!this.props.token) {
-  //     console.log('logging in')
-  //     this.props.createToken({
-  //       variables: {
-  //         email: 'Litzy_Hansen@gmail.com',
-  //         password: 'password1'
-  //       }
-  //     })
-  //       .then(({data}) => {
-  //         window.localStorage.setItem('token', data.createToken)
-  //         this.props.initializeUser()
-  //       })
-  //   } else {
-  //     console.log('logging out')
-  //     window.localStorage.removeItem('token')
-  //     this.props.logoutUser()
-  //   }
-  // }
-
   componentDidMount () {
-    // this.props.initializeUser()
     this.props.generateCloudStorageToken()
   }
 
   render () {
-    // var id_token = window.localStorage.getItem('id_token')
-    // var decodedIdToken = jwt.decode(id_token)
-    // console.log('APP.JS', decodedIdToken)
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar auth={auth} />
-          {/* <div style={{border: '1px solid red', marginTop: '500px'}}>
-            <button onClick={() => this.toggleLoginLogout()}>Fake login/logout toggle. User 1's token. change toggleLoginLogout email to your own seeded user 1's.</button>
-            <h4>Token: {this.props.token}</h4>
-          </div> */}
           <Route exact path='/' render={(props) => (
             <HomePage auth={auth} {...props} />
           )} />
@@ -97,7 +68,6 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    // token: state.token,
     cloudStorageToken: state.cloudStorageToken,
     showSpinner: state.showSpinner
   }
@@ -105,18 +75,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // initializeUser: () => {
-    //   dispatch(initializeUser())
-    // },
-    // logoutUser: () => {
-    //   dispatch(logoutUser())
-    // },
     generateCloudStorageToken: () => {
       dispatch(generateCloudStorageToken())
     }
   }
 }
 
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(compose(
-  // graphql(createToken, {name: 'createToken'})
-)(App)))
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))

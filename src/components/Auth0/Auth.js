@@ -1,4 +1,4 @@
-import auth0 from 'auth0-js'
+import auth0 from 'auth0-js' // AUTH-0 SDK FOR WEB
 import history from './history'
 
 export default class Auth {
@@ -9,9 +9,8 @@ export default class Auth {
     // audience: 'https://domatodevs.auth0.com/userinfo',
     audience: 'http://localhost:3001', // so access_token is for backend
     responseType: 'token id_token',
-    scope: 'openid profile'
+    scope: 'openid profile email'
   })
-
 
   constructor() {
     let tokenRenewalTimeout
@@ -41,10 +40,11 @@ export default class Auth {
             'Content-Type': 'application/json',
             'authorization': `Bearer ${authResult.accessToken}`
           },
-          body: JSON.stringify({"query":"{\n\tfindUser(id: \"auth0|5ab1dce98bd5067ff5786507\") {\n\t\tid\n\t\tfullName\n\t\tusername\n\t\temail\n\t\tprofilePic\n\t}\n}"})
+          body: JSON.stringify({query:`mutation {onAuth0UserAuthentication(idToken: \"${authResult.idToken}\") {,id,fullName,email,username,profilePic}}`})
         })
         .then(response => {
-          console.log('response', response)
+          // console.log('response', response)
+          // console.log('body', response.body)
         })
         .catch(err => {
           console.log('err', err)
