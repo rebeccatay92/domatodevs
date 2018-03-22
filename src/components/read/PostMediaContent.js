@@ -1,31 +1,122 @@
 import React, { Component } from 'react'
+import FullScreenMedia from './FullScreenMedia'
 
 class PostMediaContent extends Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      activePhotoIndex: 0,
+      activePhotoPage: 0,
+      fullScreen: false,
+      galleryMode: false
+    }
+  }
+
+  handleWheel (e, index, length) {
+    // if (e.nativeEvent.wheelDelta > 0) {
+    //   if (index > 0) this.setState({activePhotoIndex: index - 1})
+    // } else {
+    //   if (index < length - 1) this.setState({activePhotoIndex: index + 1})
+    // }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevState.activePhotoIndex === this.state.activePhotoIndex) return
+    if (this.state.activePhotoIndex > this.state.activePhotoPage * 5 + 4) {
+      let newPageNo = this.state.activePhotoPage
+      while (this.state.activePhotoIndex > newPageNo * 5 + 4) {
+        newPageNo++
+      }
+      this.setState({
+        activePhotoPage: newPageNo
+      })
+    } else if (this.state.activePhotoIndex < this.state.activePhotoPage * 5) {
+      let newPageNo = this.state.activePhotoPage
+      while (this.state.activePhotoIndex < newPageNo * 5) {
+        newPageNo--
+      }
+      this.setState({
+        activePhotoPage: newPageNo
+      })
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.pages.activePostIndex !== this.props.pages.activePostIndex) {
+      this.setState({
+        activePhotoIndex: 0,
+        activePhotoPage: 0
+      })
+    }
+  }
+
   render () {
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
+    let fullMediaArr
+    if (post) fullMediaArr = post.Post.media
+    else fullMediaArr = this.props.pages.activePostIndex === 'home' && this.props.blogMedia
+    const mediaArr = fullMediaArr.length > 0 && fullMediaArr.slice(this.state.activePhotoPage * 5, this.state.activePhotoPage * 5 + 5)
     return (
-      <div style={{position: 'fixed', top: '56px', left: '15vw', width: '45vw', height: 'calc(100vh - 60px)', display: 'inline-block', verticalAlign: 'top', backgroundColor: '#F5F5F5'}}>
-        {post && post.Post &&
-          <React.Fragment>
-            <div style={{height: '75vh', display: 'inline-block', position: 'relative'}}>
-              <div style={{position: 'relative', top: '50%', transform: 'translateY(-50%)'}}>
-                <img style={{maxWidth: '100%', maxHeight: '75vh', verticalAlign: 'middle'}} src={post.Post.media[0].url} />
-                <div style={{height: '4vh', width: '6vh', textAlign: 'center', position: 'absolute', lineHeight: '4vh', top: '16px', right: '16px', backgroundColor: 'rgba(60, 58, 68, 0.5)', color: 'white'}}>
-                  1/2
-                </div>
-                <div style={{height: '5vh', textAlign: 'center', position: 'absolute', lineHeight: '5vh', bottom: 0, left: 0, right: 0, color: 'white', backgroundColor: 'rgba(60, 58, 68, 0.5)'}}>
-                  <span>{post.Post.media[0].caption}</span>
+      <React.Fragment>
+        {this.state.fullScreen &&
+          <div style={{zIndex: 999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.9)'}}>
+            <FullScreenMedia url={fullMediaArr[this.state.activePhotoIndex].url} toggleFullScreen={() => this.setState({fullScreen: false})} />
+          </div>
+        }
+        <div style={{position: 'fixed', top: '56px', left: '15vw', width: '45vw', height: 'calc(100vh - 60px)', display: 'inline-block', verticalAlign: 'top', backgroundColor: '#F5F5F5'}}>
+          {fullMediaArr.length > 0 && this.state.galleryMode &&
+            <div style={{position: 'relative', width: '100%'}}>
+              <img src={`${process.env.PUBLIC_URL}/img/closeGallery.png`} className='read-navigation' style={{position: 'absolute', top: '8px', right: '8px', opacity: '0.4', cursor: 'pointer'}} onClick={() => this.setState({galleryMode: false})} />
+              <div style={{maxHeight: 'calc(100vh - 60px)', overflowY: 'scroll', width: 'calc(100% + 17px)', paddingRight: '17px', overscrollBehaviorY: 'contain'}}>
+                <div style={{padding: '5%', width: '45vw'}}>
+                  {fullMediaArr.map((medium, i) => {
+                    return (
+                      <div key={i} style={{display: 'inline-block', width: 'calc(8.1vw - 8px)', height: 'calc(100vh - 75vh - 84px)', margin: '0 8px 8px 0', verticalAlign: 'top'}}>
+                        <div onClick={() => this.setState({activePhotoIndex: i, galleryMode: false})} key={i} style={{display: 'inline-block', height: '100%', backgroundImage: `url(${medium.url})`, backgroundSize: 'cover', width: '100%', textAlign: 'center', cursor: 'pointer'}} />
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
-            <div style={{height: 'calc(100vh - 75vh - 60px)'}}>
-              {post.Post.media.map((medium, i) => {
-                return <img key={i} src={medium.url} style={{maxHeight: '100%'}} />
-              })}
-            </div>
-          </React.Fragment>
-        }
-      </div>
+          }
+          {fullMediaArr.length > 0 && !this.state.galleryMode &&
+            <React.Fragment>
+              <div onWheel={(e) => this.handleWheel(e, this.state.activePhotoIndex, fullMediaArr.length)} style={{height: '75vh', position: 'relative', width: '100%'}}>
+                <i className='material-icons read-navigation' style={{position: 'absolute', top: '8px', right: '8px', opacity: '0.4', fontSize: '16px', cursor: 'pointer'}} onClick={() => this.setState({galleryMode: true})}>zoom_out_map</i>
+                {this.state.activePhotoIndex !== 0 && <i onClick={() => this.setState({activePhotoIndex: this.state.activePhotoIndex - 1})} className='material-icons read-navigation' style={{position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', opacity: '0.4', cursor: 'pointer'}}>chevron_left</i>}
+                {this.state.activePhotoIndex !== fullMediaArr.length - 1 && <i onClick={() => this.setState({activePhotoIndex: this.state.activePhotoIndex + 1})} className='material-icons read-navigation' style={{position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', opacity: '0.4', cursor: 'pointer'}}>chevron_right</i>}
+                <div style={{position: 'relative', top: '50%', transform: 'translateY(-50%)', width: 'fit-content', maxWidth: '90%', margin: '0 auto'}}>
+                  <img style={{maxWidth: '100%', maxHeight: '75vh', verticalAlign: 'middle', cursor: 'pointer'}} src={fullMediaArr[this.state.activePhotoIndex].url} onClick={() => this.setState({fullScreen: true})} />
+                  <div style={{height: '4vh', width: '6vh', textAlign: 'center', position: 'absolute', lineHeight: '4vh', top: '16px', right: '16px', backgroundColor: 'rgba(60, 58, 68, 0.5)', color: 'white'}}>
+                    {this.state.activePhotoIndex + 1}/{fullMediaArr.length}
+                  </div>
+                  <div style={{height: '5vh', textAlign: 'center', position: 'absolute', lineHeight: '5vh', bottom: 0, left: 0, right: 0, color: 'white', backgroundColor: 'rgba(60, 58, 68, 0.5)'}}>
+                    <span>{fullMediaArr[this.state.activePhotoIndex].caption}</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{height: 'calc(100vh - 75vh - 68px)', width: '100%', margin: '8px auto 0 auto', position: 'relative'}}>
+                <div style={{width: '90%', margin: '0 auto', textAlign: 'center'}}>
+                  {mediaArr.map((medium, i) => {
+                    return (
+                      <div key={i} style={{display: 'inline-block', width: 'calc(20% - 8px)', height: 'calc(100vh - 75vh - 60px)', marginRight: '8px', verticalAlign: 'top'}}>
+                        <div onClick={() => this.setState({activePhotoIndex: i + this.state.activePhotoPage * 5})} key={i} style={{display: 'inline-block', height: 'calc(100% - 24px)', backgroundImage: `url(${medium.url})`, backgroundSize: 'cover', width: '100%', textAlign: 'center', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)', cursor: 'pointer', outline: this.state.activePhotoIndex === i + this.state.activePhotoPage * 5 ? '1px solid #ed685a' : 'none'}} />
+                        <div style={{textAlign: 'center', height: '24px', width: '100%', display: 'inline-block'}}>
+                          {this.state.activePhotoIndex === i + this.state.activePhotoPage * 5 && <i className='material-icons' style={{fontSize: '8px', color: '#ed685a', verticalAlign: 'top'}}>lens</i>}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                {this.state.activePhotoPage !== 0 && <i onClick={() => this.setState({activePhotoPage: this.state.activePhotoPage - 1})} className='material-icons read-navigation' style={{position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', opacity: '0.4', cursor: 'pointer'}}>chevron_left</i>}
+                {(this.state.activePhotoPage + 1) * 5 < fullMediaArr.length && <i onClick={() => this.setState({activePhotoPage: this.state.activePhotoPage + 1})} className='material-icons read-navigation' style={{position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', opacity: '0.4', cursor: 'pointer'}}>chevron_right</i>}
+              </div>
+            </React.Fragment>
+          }
+        </div>
+      </React.Fragment>
     )
   }
 }

@@ -8,6 +8,7 @@ export const queryBlog = gql`
       published
       textContent
       views
+      shares
       createdAt
       likes {
         id
@@ -15,6 +16,12 @@ export const queryBlog = gql`
       user {
         id
         name
+      }
+      media {
+        type
+        url
+        loadSequence
+        caption
       }
       pages {
         type
@@ -51,3 +58,9 @@ export const queryBlog = gql`
       }
     }
   }`
+
+export const increaseBlogViews = gql`
+  mutation increaseBlogViews($id: ID!) {
+    increaseBlogViews(id: $id)
+  }
+`

@@ -8,7 +8,7 @@ class PostTextContent extends Component {
     const dateCreatedString = moment(this.props.dateCreated).format('D MMM YYYY')
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     return (
-      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative'}}>
+      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white'}}>
         <div style={{width: '40vw', height: 'calc(100vh - 60px)', display: 'inline-block', padding: '36px'}}>
           {this.props.pages.activePostIndex === 'home' && (
             <span className='blogpostTitle' style={{textTransform: 'uppercase', display: 'block', textAlign: 'center', fontFamily: '\'Roboto\', sans-serif', fontWeight: '100', fontSize: '55px'}}>{this.props.blogTitle}</span>
@@ -22,7 +22,7 @@ class PostTextContent extends Component {
           {this.props.pages.activePostIndex !== 'fin' && <hr style={{margin: '0 auto', width: 'calc(100% / 3)'}} />}
           <div style={{textAlign: 'center', marginBottom: '24px'}}>
             {this.props.pages.activePostIndex === 'home' && <React.Fragment>
-              <span style={{padding: '0 8px'}}>shares</span>
+              <span style={{padding: '0 8px'}}><span style={{fontWeight: 'bold'}}>{this.props.noOfShares}</span> shares</span>
               <span style={{padding: '0 8px'}}><span style={{fontWeight: 'bold'}}>{this.props.noOfLikes}</span> likes</span>
               <span style={{padding: '0 8px'}}><span style={{fontWeight: 'bold'}}>{this.props.noOfViews}</span> views</span>
             </React.Fragment>}
@@ -31,10 +31,10 @@ class PostTextContent extends Component {
             {this.props.pages.activePostIndex === 'home' && <span><span style={{fontSize: '20px'}}>By {this.props.blogAuthor}</span><br /><span>{dateCreatedString}</span></span>}
             {this.props.pages.activePostIndex !== 'home' && this.props.pages.activePostIndex !== 'fin' && post[post.type].location && <span style={{position: 'absolute', bottom: '8px', left: '0'}}><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '14px'}} className='material-icons'>place</i><span style={{verticalAlign: 'middle'}}>{post[post.type].location.name}</span></span>}
             <div style={{position: 'absolute', bottom: '8px', right: '0'}}>
-              {this.props.pages.activePostIndex === 'home' && <span><i style={{verticalAlign: 'middle', WebkitTextStroke: '1px rgba(60, 58, 68, 1)', WebkitTextFillColor: '#FFFFFF', fontSize: '20px', cursor: 'pointer'}} className='material-icons'>thumb_up</i><span style={{padding: '8px'}}>Like</span></span>}
-              {this.props.pages.activePostIndex !== 'home' && this.props.pages.activePostIndex !== 'fin' && <span><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px', cursor: 'pointer', width: '16px'}} className='material-icons'>bookmark_border</i><span style={{padding: '8px'}}>Bookmark</span></span>}
-              {this.props.pages.activePostIndex !== 'home' && this.props.pages.activePostIndex !== 'fin' && <span><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px', cursor: 'pointer'}} className='material-icons'>library_add</i><span style={{padding: '8px'}}>Bucket</span></span>}
-              {this.props.pages.activePostIndex !== 'fin' && <span><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px', cursor: 'pointer'}} className='material-icons'>share</i><span style={{padding: '8px'}}>Share</span></span>}
+              {this.props.pages.activePostIndex === 'home' && <span style={{cursor: 'pointer'}}><i style={{verticalAlign: 'middle', WebkitTextStroke: '1px rgba(60, 58, 68, 1)', WebkitTextFillColor: '#FFFFFF', fontSize: '20px'}} className='material-icons'>thumb_up</i><span style={{padding: '8px'}}>Like</span></span>}
+              {this.props.pages.activePostIndex !== 'home' && this.props.pages.activePostIndex !== 'fin' && <span style={{cursor: 'pointer'}}><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px', width: '16px'}} className='material-icons'>bookmark_border</i><span style={{padding: '8px'}}>Bookmark</span></span>}
+              {this.props.pages.activePostIndex !== 'home' && this.props.pages.activePostIndex !== 'fin' && <span style={{cursor: 'pointer'}}><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px'}} className='material-icons'>library_add</i><span style={{padding: '8px'}}>Bucket</span></span>}
+              {this.props.pages.activePostIndex !== 'fin' && <span style={{cursor: 'pointer'}}><i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px'}} className='material-icons'>share</i><span style={{padding: '8px'}}>Share</span></span>}
               {this.props.pages.activePostIndex !== 'fin' && <i style={{verticalAlign: 'middle', color: 'rgb(60, 58, 68)', fontSize: '20px', cursor: 'pointer'}} className='material-icons'>more_vert</i>}
             </div>
           </div>
@@ -65,10 +65,10 @@ class PostTextContent extends Component {
           </div>
         </div>
         {this.props.pages.activePostIndex !== 'home' && <div style={{position: 'fixed', width: '24px', height: '24px', top: 'calc(50vh - 28px - 12px + 56px)', left: '61vw'}}>
-          <i onClick={() => this.changePage(this.props.pages.activePostIndex, 'last')} className='material-icons read-navigation' style={{cursor: 'pointer', opacity: '0.2'}}>keyboard_arrow_left</i>
+          <i onClick={() => this.changePage(this.props.pages.activePostIndex, 'last')} className='material-icons read-navigation' style={{cursor: 'pointer', opacity: '0.4'}}>keyboard_arrow_left</i>
         </div>}
         {this.props.pages.activePostIndex !== 'fin' && <div style={{position: 'fixed', width: '24px', height: '24px', top: 'calc(50vh - 28px - 12px + 56px)', left: '97vw'}}>
-          <i onClick={() => this.changePage(this.props.pages.activePostIndex, 'next')} className='material-icons read-navigation' style={{cursor: 'pointer', opacity: '0.2'}}>keyboard_arrow_right</i>
+          <i onClick={() => this.changePage(this.props.pages.activePostIndex, 'next')} className='material-icons read-navigation' style={{cursor: 'pointer', opacity: '0.4'}}>keyboard_arrow_right</i>
         </div>}
       </div>
     )
