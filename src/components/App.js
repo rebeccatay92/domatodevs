@@ -39,16 +39,22 @@ class App extends Component {
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar auth={auth} />
-          <Route exact path='/' render={(props) => (
-            <HomePage auth={auth} {...props} />
-          )} />
-          <Route path='/itineraries' component={ItineraryPage} />
-          <Route path='/planner/:itineraryId' component={PlannerPage} />
-          <Route path='/map/:itineraryId' component={MapPlannerPage} />
-          <Route path='/callback' render={(props) => {
-            return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />
-          }} />
-          <Route path='/user' component={UserProfilePage} />
+          <div style={{marginTop: '60px'}}>
+            <Route exact path='/' render={(props) => (
+              <HomePage auth={auth} {...props} />
+            )} />
+            <Route path='/callback' render={(props) => {
+              return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />
+            }} />
+            <Route path='/user' render={(props) => (
+              <UserProfilePage auth={auth} {...props}/>
+            )} />
+            <Route path='/itineraries' render={(props) => (
+              <ItineraryPage auth={auth} {...props} />
+            )} />
+            <Route path='/planner/:itineraryId' component={PlannerPage} />
+            <Route path='/map/:itineraryId' component={MapPlannerPage} />
+          </div>
           {this.props.showSpinner && (
             <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
               <div style={{position: 'fixed', top: 'calc(50% - 35px)', left: 'calc(50% - 35px)', height: '70px', width: '70px'}}>

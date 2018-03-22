@@ -19,7 +19,7 @@ export default class Auth {
     this.logout = this.logout.bind(this)
     this.handleAuthentication = this.handleAuthentication.bind(this)
     this.isAuthenticated = this.isAuthenticated.bind(this)
-    this.getProfile = this.getProfile.bind(this)
+    // this.getProfile = this.getProfile.bind(this)
     // automatically refresh token on App.js mount
     this.scheduleRenewal()
   }
@@ -127,13 +127,13 @@ export default class Auth {
     return accessToken
   }
 
-  getProfile () {
-    let accessToken = this.getAccessToken()
-    this.auth0.client.userInfo(accessToken, (err, profile) => {
-      if (profile) {
-        this.userProfile = profile
-        console.log('user profile', profile)
-      }
-    })
-  }
+  // getProfile () {
+  //   let accessToken = this.getAccessToken()
+  //   this.auth0.client.userInfo(accessToken, (err, profile) => {
+  //     if (profile) {
+  //       this.userProfile = profile
+  //       console.log('user profile', profile)
+  //     }
+  //   })
+  // }
 }

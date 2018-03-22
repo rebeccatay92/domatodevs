@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 
 class HomePage extends Component {
-  getProfile () {
-    this.props.auth.getProfile()
-  }
+  // getProfile () {
+  //   this.props.auth.getProfile()
+  // }
 
   render () {
     var access_token = window.localStorage.getItem('access_token')
@@ -25,7 +25,7 @@ class HomePage extends Component {
     }
 
     return (
-      <div style={{marginTop: '60px'}}>
+      <div>
         <h1>HOMEPAGE</h1>
         <h3>isAuthenticated ===> {isAuthenticated ? 'true' : 'false'}</h3>
         <h3>Access token: {access_token}</h3>
@@ -40,7 +40,7 @@ class HomePage extends Component {
             <img src={decodedIdToken.picture} height={'200px'} width={'200px'} />
           </React.Fragment>
         }
-        <button onClick={() => this.getProfile()}>Get user profile</button>
+        {/* <button onClick={() => this.getProfile()}>Get user profile</button> */}
       </div>
     )
   }

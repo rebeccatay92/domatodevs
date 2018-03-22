@@ -73,10 +73,6 @@ class UpdateItineraryDetails extends Component {
             startDate:
             <input type='date' defaultValue={startDate} onChange={(e) => this.handleChange(e, 'startDate')} />
           </label>
-          {/* <label>
-            endDate:
-            <input type='date' defaultValue={endDate} onChange={(e) => this.handleChange(e, 'endDate')} />
-          </label> */}
           <button type='submit'>Submit changes</button>
         </form>
       </div>

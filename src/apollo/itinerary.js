@@ -498,12 +498,12 @@ export const allItineraries = gql`
       }
       owner {
         id
-        name
+        username
         email
       }
       users {
         id
-        name
+        username
         email
       }
     }
@@ -524,7 +524,7 @@ export const itinerariesByUser = gql`
       # }
       owner {
         id
-        name
+        username
         email
       }
       # users {

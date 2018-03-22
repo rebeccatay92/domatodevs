@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import jwt from 'jsonwebtoken'
+import { graphql, compose } from 'react-apollo'
+import { getUserProfile } from '../../apollo/user'
 
 class UserProfilePage extends Component {
   constructor (props) {
@@ -7,18 +8,23 @@ class UserProfilePage extends Component {
     this.state = {}
   }
   render () {
-    var id_token = window.localStorage.getItem('id_token')
-    var decodedIdToken = jwt.decode(id_token)
-    var userId = decodedIdToken.sub
+    var isAuthenticated = this.props.auth.isAuthenticated()
+    if (!isAuthenticated) return <p>Not logged in</p>
 
-    var user_id = window.localStorage.getItem('user_id')
+    if (this.props.data.loading) return <p>Loading...</p>
+
+    var profile = this.props.data.getUserProfile
     return (
-      <div style={{marginTop: '60px'}}>
-        USER PROFILE
-        <h3>userId: {user_id}</h3>
+      <div>
+        <img src={profile.profilePic} width='200px' height='200px' style={{borderRadius: '50%'}} />
+        <h3>Email address: {profile.email}</h3>
+        <h3>Username: {profile.username}</h3>
+        <h3>Full Name: {profile.fullName}</h3>
       </div>
     )
   }
 }
 
-export default UserProfilePage
+export default compose(
+  (graphql(getUserProfile))
+)(UserProfilePage)

@@ -8,10 +8,13 @@ import Itinerary from './Itinerary'
 
 class ItineraryPage extends Component {
   render () {
+    var isAuthenticated = this.props.auth.isAuthenticated()
+    if (!isAuthenticated) return <p>not logged in</p>
     if (this.props.data.loading) return <p>loading</p>
-    if (!this.props.token) return <p>not logged in</p>
+
     var itinerariesByUser = this.props.data.itinerariesByUser
     if (itinerariesByUser) {
+      // console.log('itinerariesByUser', itinerariesByUser)
       var itineraryList = this.props.data.itinerariesByUser.map(itinerary => {
         return (
           <Itinerary itinerary={itinerary} key={itinerary.id} />
@@ -21,7 +24,6 @@ class ItineraryPage extends Component {
     return (
       <div>
         <h1>ITINERARY PAGE</h1>
-        <h4>Token: {this.props.token}</h4>
         <CreateItineraryForm />
         {itineraryList}
       </div>
@@ -31,7 +33,7 @@ class ItineraryPage extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    token: state.token
+    // token: state.token
   }
 }
 

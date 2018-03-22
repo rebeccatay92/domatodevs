@@ -63,7 +63,7 @@ class Itinerary extends Component {
     return (
       <div style={{border: '1px solid black'}}>
         <Link to={url}>Plan your itinerary</Link>
-        <h3>Owner: {itinerary.owner.name}</h3>
+        <h3>Owner: {itinerary.owner.username}</h3>
         <h3 style={{display: 'inline-block'}}>ItineraryId: {itinerary.id}</h3>
         {/* <div>
           <AddCountry ItineraryId={itinerary.id} />
@@ -78,7 +78,6 @@ class Itinerary extends Component {
         <h3>description: {itinerary.description}</h3>
         <h3 style={{display: 'inline-block'}}>Days: {itinerary.days}</h3>
         <h3 style={{display: 'inline-block'}}>startDate: {startDate}</h3>
-        {/* <h3 style={{display: 'inline-block'}}>endDate: {endDate}</h3> */}
         <button onClick={() => this.toggleUpdateForm()}>Toggle update form</button>
         {this.state.updating &&
           <UpdateItineraryDetails itinerary={itinerary} toggleUpdateForm={() => this.toggleUpdateForm()} />

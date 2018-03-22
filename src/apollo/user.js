@@ -5,3 +5,15 @@ import { gql } from 'react-apollo'
 //     createToken(email: $email, password: $password)
 //   }
 // `
+
+export const getUserProfile = gql`
+  query getUserProfile {
+    getUserProfile {
+      id
+      fullName
+      username
+      email
+      profilePic
+    }
+  }
+`
