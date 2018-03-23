@@ -3,6 +3,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -32,8 +33,8 @@ class EditLandTransportForm extends Component {
     super(props)
     this.state = {
       id: this.props.event.id,
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null,
       endTime: null,
       departureLocationAlias: '',
@@ -76,32 +77,38 @@ class EditLandTransportForm extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field !== 'cost') {
+      this.setState({
+        [field]: e.target.value
+      })
+    } else {
+      this.setState({
+        cost: parseInt(e.target.value, 10)
+      })
+    }
   }
 
   handleSubmit () {
     console.log('submit state', this.state)
 
     var updatesObj = {
-      id: this.state.id
+      id: this.state.id,
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime,
+      currency: this.state.currency,
+      cost: this.state.cost,
+      departureLocationAlias: this.state.departureLocationAlias,
+      arrivalLocationAlias: this.state.arrivalLocationAlias,
+      bookedThrough: this.state.bookedThrough,
+      bookingConfirmation: this.state.bookingConfirmation,
+      bookingStatus: this.state.bookingConfirmation ? true : false,
+      backgroundImage: this.state.backgroundImage,
+      departureNotes: this.state.departureNotes,
+      arrivalNotes: this.state.arrivalNotes
     }
-    var fieldsToCheck = ['departureLocationAlias', 'arrivalLocationAlias', 'startDay', 'endDay', 'currency', 'cost', 'bookedThrough', 'bookingConfirmation', 'notes', 'backgroundImage', 'startTime', 'endTime']
-    fieldsToCheck.forEach(field => {
-      if (this.props.event[field] !== this.state[field]) {
-        updatesObj[field] = this.state[field]
-      }
-    })
-    // if cost was updated, it is a str. make int.
-    if (updatesObj.cost) {
-      updatesObj.cost = parseInt(updatesObj.cost, 10)
-    }
-    // then manually add booking status, googlePlaceData, attachments
-    var bookingStatus = this.state.bookingConfirmation ? true : false
-    if (bookingStatus !== this.props.event.bookingStatus) {
-      updatesObj.bookingStatus = bookingStatus
-    }
+
     // if location changed, it doesnt contain the id field
     if (!this.state.departureGooglePlaceData.id) {
       updatesObj.departureGooglePlaceData = this.state.departureGooglePlaceData
@@ -137,50 +144,96 @@ class EditLandTransportForm extends Component {
     console.log('handlesubmit', updatesObj)
 
     // check if updatesObj has fields other than id. if yes, then send to backend
-    if (Object.keys(updatesObj).length <= 1) {
-      this.resetState()
-      this.props.toggleEditEventType()
+    // if (Object.keys(updatesObj).length <= 1) {
+    //   this.resetState()
+    //   this.props.toggleEditEventType()
+    // }
+    //
+    // // if time or day changes, reassign load seq
+    // if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.departureGooglePlaceData || updatesObj.arrivalGooglePlaceData) {
+    //   var updateEvent = {
+    //     startDay: this.state.startDay,
+    //     endDay: this.state.endDay,
+    //     startTime: this.state.startTime,
+    //     endTime: this.state.endTime,
+    //     departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
+    //     arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
+    //   }
+    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, updateEvent)
+    //   console.log('helperOutput', helperOutput)
+    //   updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    //   updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    //   var loadSequenceInput = helperOutput.loadSequenceInput
+    //   if (loadSequenceInput.length) {
+    //     this.props.changingLoadSequence({
+    //       variables: {
+    //         input: loadSequenceInput
+    //       }
+    //     })
+    //   }
+    // }
+
+    var loadSequenceHelperParams = {
+      startDay: updatesObj.startDay,
+      endDay: updatesObj.endDay,
+      startTime: updatesObj.startTime,
+      endTime: updatesObj.endTime,
+      departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
+      arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
+    }
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, loadSequenceHelperParams)
+    updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    var loadSequenceChanges = helperOutput.loadSequenceInput
+    if (loadSequenceChanges.length) {
+      this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
     }
 
-    // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.departureGooglePlaceData || updatesObj.arrivalGooglePlaceData) {
-      var updateEvent = {
-        startDay: this.state.startDay,
-        endDay: this.state.endDay,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        departureUtcOffset: this.state.departureGooglePlaceData.utcOffset,
-        arrivalUtcOffset: this.state.arrivalGooglePlaceData.utcOffset
-      }
-      var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'LandTransport', this.state.id, updateEvent)
-      console.log('helperOutput', helperOutput)
-      updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
-      updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
-      var loadSequenceInput = helperOutput.loadSequenceInput
-      if (loadSequenceInput.length) {
-        this.props.changingLoadSequence({
-          variables: {
-            input: loadSequenceInput
-          }
-        })
-      }
-    }
     this.props.updateLandTransport({
       variables: updatesObj,
       refetchQueries: [{
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.updateLandTransport.id,
+          eventType: 'LandTransport',
+          flightInstanceId: null
+        }
+        if (this.props.currentlyFocusedEvent.start) {
+          focusEventObj.day = updatesObj.startDay
+          focusEventObj.start = true
+          focusEventObj.loadSequence = updatesObj.startLoadSequence
+        } else {
+          focusEventObj.day = updatesObj.endDay
+          focusEventObj.start = false
+          focusEventObj.loadSequence = updatesObj.endLoadSequence
+        }
+        // console.log('updated. new focusEvent', focusEventObj)
+        this.resetState()
+        this.props.mapEditEventFormSuccess(focusEventObj)
+      } else {
+        // from planner route
+        this.resetState()
+        this.props.toggleEditEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
   }
 
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
     this.resetState()
-    this.props.toggleEditEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapEditEventFormCancel()
+    } else {
+      this.props.toggleEditEventType()
+    }
   }
 
   deleteEvent () {
@@ -198,14 +251,18 @@ class EditLandTransportForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        this.props.clearCurrentlyFocusedEvent()
+      }
+      this.closeForm()
     })
-    this.closeForm()
   }
 
   resetState () {
     this.setState({
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null,
       endTime: null,
       departureLocationAlias: '',
@@ -340,8 +397,6 @@ class EditLandTransportForm extends Component {
 
     var startTime = this.props.event.startTime
     var endTime = this.props.event.endTime
-    var defaultStartTime = moment.utc(this.props.event.startTime * 1000).format('HH:mm')
-    var defaultEndTime = moment.utc(this.props.event.endTime * 1000).format('HH:mm')
 
     // INSTANTIATE STATE TO BE WHATEVER WAS IN DB
     console.log('event', this.props.event)
@@ -350,8 +405,6 @@ class EditLandTransportForm extends Component {
       endDay: this.props.event.endDay,
       startTime: startTime, // unix or null for all day
       endTime: endTime,
-      defaultStartTime: defaultStartTime, // 'HH:mm' string
-      defaultEndTime: defaultEndTime,
       departureLocationAlias: this.props.event.departureLocationAlias || '',
       arrivalLocationAlias: this.props.event.arrivalLocationAlias || '',
       currency: this.props.event.currency,
@@ -365,6 +418,37 @@ class EditLandTransportForm extends Component {
       arrivalGooglePlaceData: this.props.event.arrivalLocation,
       attachments: this.props.event.attachments
     }, () => console.log('edit form did mount', this.state))
+
+    // OVERRIDE WITH MAP POPUP VALUES (IF EXIST)
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+    // if popup cleared location. here should set googlePlaceData to {}. even though db instantiated with location row.
+
+    if (this.props.defaultDepartureGooglePlaceData && this.props.defaultDepartureGooglePlaceData.placeId) {
+      this.setState({departureGooglePlaceData: this.props.defaultDepartureGooglePlaceData})
+    } else if (this.props.defaultDepartureGooglePlaceData && !this.props.defaultDepartureGooglePlaceData.placeId) {
+      // if map popup cleared departure location
+      console.log('map popup cleared departure location')
+      this.setState({departureGooglePlaceData: {}})
+    }
+
+    if (this.props.defaultArrivalGooglePlaceData && this.props.defaultArrivalGooglePlaceData.placeId) {
+      this.setState({arrivalGooglePlaceData: this.props.defaultArrivalGooglePlaceData})
+    } else if (this.props.defaultArrivalGooglePlaceData && !this.props.defaultArrivalGooglePlaceData.placeId) {
+      // if map popup cleared arrival location
+      console.log('map popup cleared arrival location')
+      this.setState({arrivalGooglePlaceData: {}})
+    }
   }
 
   render () {
@@ -382,8 +466,7 @@ class EditLandTransportForm extends Component {
               <TransportLocationSelection selectLocation={(place, type) => this.selectLocation(place, type)} departureLocation={this.state.departureGooglePlaceData} arrivalLocation={this.state.arrivalGooglePlaceData} departureLocationDetails={this.state.departureLocationDetails} arrivalLocationDetails={this.state.arrivalLocationDetails} />
             </div>
 
-            {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.props.event.startDay} endDay={this.props.event.endDay} defaultStartTime={this.state.defaultStartTime} defaultEndTime={this.state.defaultEndTime} daysArr={this.props.daysArr} formType={'edit'} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
           </div>
 
           {/* RIGHT PANEL --- SUBMIT/CANCEL, BOOKINGNOTES */}
@@ -444,7 +527,8 @@ class EditLandTransportForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    cloudStorageToken: state.cloudStorageToken,
+    currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
@@ -452,6 +536,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     retrieveCloudStorageToken: () => {
       dispatch(retrieveCloudStorageToken())
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
   }
 }

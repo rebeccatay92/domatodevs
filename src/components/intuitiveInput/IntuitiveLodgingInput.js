@@ -200,46 +200,7 @@ class IntuitiveLodgingInput extends Component {
             </div> }
           </div>
         </div>
-        {/* <div style={{display: 'inline-block', width: '30%'}}> */}
-          {/* IF DATES ARE PRESENT, USE DATETIMEPICKER */}
-          {/* {this.props.dates &&
-            <DateTimePicker intuitiveInput type='checkInTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
-          } */}
-          {/* ELSE USE DROPDOWN FOR DAYS */}
-          {/* {!this.props.dates &&
-            <div>
-              <select onChange={(e) => this.handleChange(e, 'checkInDay')} value={this.props.checkInDay}>
-                {this.props.daysArr.map((day, i) => {
-                  return (
-                    <option key={i} value={day}>Day {day}</option>
-                  )
-                })}
-              </select>
-              <input type='time' value={this.state.checkInTimeString} onChange={(e) => this.handleChange(e, 'checkInTime')} />
-            </div>
-          }
-        </div> */}
-        {/* <div style={{display: 'inline-block', width: '30%'}}>
-          <div style={{position: 'relative'}}>
-            {this.props.dates &&
-              <DateTimePicker intuitiveInput type='checkOutTime' dates={this.props.dates} date={this.props.date} handleSelect={(type, day, time) => this.handleSelect(type, day, time)} />
-            }
-            {!this.props.dates &&
-              <div>
-                <select onChange={(e) => this.handleChange(e, 'checkOutDay')} value={this.props.checkOutDay}>
-                  {this.props.daysArr.map((day, i) => {
-                    if (day >= this.state.checkInDay) {
-                      return (
-                        <option key={i} value={day}>Day {day}</option>
-                      )
-                    }
-                  })}
-                </select>
-                <input type='time' value={this.state.checkOutTimeString} onChange={(e) => this.handleChange(e, 'checkOutTime')} />
-              </div>
-            }
-          </div>
-        </div> */}
+        {/* DATETIMEPICKER IS NO LONGER USED. IE THIS.PROPS.TYPES===CHECKINTIME IS NOT NEEDED */}
         <div style={{marginTop: '6px', display: 'inline-block', textAlign: 'right', width: '100%'}}>
           <button onClick={() => this.handleSubmit()} style={{marginRight: '8px', backgroundColor: '#ed685a', border: 'none', color: 'white', height: '31px', fontSize: '13px', padding: '8px'}}>Submit</button>
           <button onClick={() => this.props.toggleIntuitiveInput()} style={{marginRight: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>Cancel</button>

@@ -60,7 +60,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     updateEvent.endTimeUtcZero = updateEvent.endTime - (updateEvent.arrivalUtcOffset * 60)
   }
   if (eventModel === 'Flight') {
-    console.log('is flight')
+    // console.log('is flight')
     updateEvent = updateEvent.map(instance => {
       var startUtcOffset = findUtcOffsetAirports(instance.departureIATA)
       var endUtcOffset = findUtcOffsetAirports(instance.arrivalIATA)
@@ -72,7 +72,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     })
   }
 
-  console.log('updateEventObj with timeUtcZero', updateEvent)
+  // console.log('updateEventObj with timeUtcZero', updateEvent)
 
   // reassign load seqs etc
   if (eventModel === 'Activity' || eventModel === 'Food') {
@@ -85,8 +85,8 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
     var dayEvents = allEvents.filter(e => {
       return e.day === updateEvent.startDay
     })
-    console.log('dayevents', dayEvents)
-    console.log('updateEventObj', updateEvent)
+    // console.log('dayevents', dayEvents)
+    // console.log('updateEventObj', updateEvent)
     var displacedRow = dayEvents.find(e => {
       if (typeof (updateEvent.startTime) === 'number') {
         return (e.timeUtcZero >= updateEvent.startTimeUtcZero)
@@ -105,13 +105,13 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
       } else {
         dayEvents.splice(index, 0, 'placeholder')
       }
-      console.log('inserted', dayEvents)
+      // console.log('inserted', dayEvents)
     }
     dayEvents.forEach(event => {
       var correctLoadSeq = dayEvents.indexOf(event) + 1
       if (event.modelId && event.loadSequence !== correctLoadSeq) {
         var inputObj = constructLoadSeqInputObj(event, correctLoadSeq)
-        console.log('INPUT OBJ', inputObj)
+        // console.log('INPUT OBJ', inputObj)
         loadSequenceInput.push(inputObj)
       } else if (event === 'placeholder') {
         updateEvent.loadSequence = correctLoadSeq
@@ -155,7 +155,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
           }
         })
 
-        console.log('type', type, 'displacedRow', displacedRow)
+        // console.log('type', type, 'displacedRow', displacedRow)
         if (!displacedRow) {
           dayEvents.push({start: isStart})
         } else {
@@ -169,7 +169,7 @@ function updateEventLoadSeqAssignment (eventsArr, eventModel, modelId, updateEve
           }
         }
       })
-      console.log('after inserting 2', dayEvents)
+      // console.log('after inserting 2', dayEvents)
 
       dayEvents.forEach(event => {
         var correctLoadSeq = dayEvents.indexOf(event) + 1

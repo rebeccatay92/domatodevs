@@ -25,7 +25,7 @@ class SingleLocationSelection extends Component {
   render () {
     return (
       <div style={{position: 'relative'}}>
-        <LocationSearch eventType={this.props.eventType} selectLocation={place => this.selectLocation(place)} toggleMap={() => this.toggleMap()} currentLocation={this.props.currentLocation} />
+        <LocationSearch placeholder={'Search for a location'} eventType={this.props.eventType} selectLocation={place => this.selectLocation(place)} toggleMap={() => this.toggleMap()} currentLocation={this.props.currentLocation} />
 
         {/* {this.props.currentLocation.placeId && <LocationDetails locationDetails={this.props.locationDetails} />} */}
 

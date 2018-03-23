@@ -67,6 +67,7 @@ class Planner extends Component {
           renderTrackVertical={({style}) =>
             <div style={{ ...style, top: 0, right: 0, width: '10px', height: '100%' }} />
         } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
+        {/* PLANNER HEADER TAKES DATE PROP OF TYPE MILLISECS (GETTIME) */}
         <div>
           {newDates &&
             <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} startDate={newDates[0]} endDate={newDates[newDates.length - 1]} />
@@ -79,9 +80,11 @@ class Planner extends Component {
               // if newDates exists, find date using day
               if (newDates) {
                 var date = newDates[i]
+                // console.log('date in planner', date)
               } else {
                 date = null
               }
+              // DATE BOX TAKES JS DATE OBJ ARR, DATE OBJ.
               return (
                 <DateBox days={days} daysArr={daysArr} timelineAtTop={this.state.timelineAtTop} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={day} date={date} dates={dates} countries={this.props.data.findItinerary.countries} activities={this.props.activities.filter(
                     activity => {

@@ -36,13 +36,13 @@ class CreateLodgingForm extends Component {
     super(props)
     this.state = {
       ItineraryId: this.props.ItineraryId,
-      startDay: this.props.day,
-      endDay: this.props.day,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
-      notes: '',
-      defaultTime: null,
+      arrivalNotes: '',
+      departureNotes: '',
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
       cost: 0,
@@ -93,7 +93,8 @@ class CreateLodgingForm extends Component {
       bookingStatus: bookingStatus,
       bookedThrough: this.state.bookedThrough,
       bookingConfirmation: this.state.bookingConfirmation,
-      notes: this.state.notes,
+      arrivalNotes: this.state.arrivalNotes,
+      departureNotes: this.state.departureNotes,
       attachments: this.state.attachments,
       backgroundImage: this.state.backgroundImage
     }
@@ -141,6 +142,23 @@ class CreateLodgingForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createLodging.id,
+          eventType: 'Lodging',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.startLoadSequence
+        }
+        this.resetState()
+
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
     })
 
     this.resetState()
@@ -150,17 +168,22 @@ class CreateLodgingForm extends Component {
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {
     this.setState({
-      startDay: this.props.startDay,
-      endDay: this.props.endDay,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       startTime: null, // should be Int
       endTime: null, // should be Int
       cost: 0,
@@ -224,10 +247,41 @@ class CreateLodgingForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
-    var defaultUnix = latestTime(this.props.events, this.props.day)
-    var defaultTime = moment.utc(defaultUnix * 1000).format('HH:mm')
-    this.setState({defaultTime: defaultTime})
-    this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    // initialize day to whatever day form was opened in
+    this.setState({
+      startDay: this.props.day,
+      endDay: this.props.day
+    })
+
+    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
+
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
+      this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
+    }
+
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+
+    // SET START AND END TIME DEPENDING ON DEFAULTS
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+
+    // if no time values at all set as latest time
+    if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
+      var defaultUnix = latestTime(this.props.events, this.state.startDay)
+      this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -257,8 +311,8 @@ class CreateLodgingForm extends Component {
             <div style={eventDescContainerStyle}>
               <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
             </div>
-            {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
+
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
 
             <ScheduleOfEvents dates={this.props.dates} events={this.props.events} />
 

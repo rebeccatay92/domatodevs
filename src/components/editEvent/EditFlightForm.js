@@ -4,8 +4,9 @@ import { connect } from 'react-redux'
 import Radium from 'radium'
 import moment from 'moment'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
-import { Button } from 'react-bootstrap'
+import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
+import { Button } from 'react-bootstrap'
 import { labelStyle, createFlightFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
 
 import EditFormAirhobParams from '../eventFormComponents/EditFormAirhobParams'
@@ -187,10 +188,26 @@ class EditFlightForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        // construct focusEventObj here. which flight instance marker to focus?
+        // if no change to flight, dont change the focus? if flight changed. just pick the first departure instance.
+        var flightInstances = updatesObj.flightInstances
+        var focusEventObj = {
+          modelId: resolved.data.updateFlightBooking.id,
+          eventType: 'Flight',
+          flightInstanceId: flightInstances[0].id,
+          day: flightInstances[0].startDay,
+          start: true,
+          loadSequence: flightInstances[0].startLoadSequence
+        }
+        this.props.mapEditEventFormSuccess(focusEventObj)
+        // no need reset state if success, since unmount.
+      } else {
+        this.resetState()
+        this.props.toggleEditEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
   }
 
   closeForm () {
@@ -203,7 +220,12 @@ class EditFlightForm extends Component {
       }
     })
     this.resetState()
-    this.props.toggleEditEventType()
+
+    if (this.props.openedFromMap) {
+      this.props.mapEditEventFormCancel()
+    } else {
+      this.props.toggleEditEventType()
+    }
   }
 
   deleteEvent () {
@@ -222,6 +244,10 @@ class EditFlightForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        this.props.clearCurrentlyFocusedEvent()
+      }
     })
     this.closeForm()
     // close form will remove cloud attachments that are not yet passed to db
@@ -536,6 +562,7 @@ class EditFlightForm extends Component {
   }
 
   render () {
+    // console.log('PROPS', this.props)
     return (
       <div className='flightFormContainer' style={createFlightFormContainerStyle}>
         {/* BOX SHADOW WRAPS LEFT AND RIGHT PANEL ONLY */}
@@ -613,10 +640,11 @@ class EditFlightForm extends Component {
   }
 }
 
+// CHANGE PROPS.EVENT TO BE FLIGHTINSTANCEROW.
 const options = {
   options: props => ({
     variables: {
-      id: props.event.FlightBooking.id
+      id: props.event.FlightBookingId
     }
   })
 }
@@ -632,6 +660,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     retrieveCloudStorageToken: () => {
       dispatch(retrieveCloudStorageToken())
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
   }
 }

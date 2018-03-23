@@ -32,18 +32,16 @@ import { validateIntervals } from '../../helpers/intervalValidationTesting'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}activityDefaultBackground.jpg`
 
-
 class CreateActivityForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      startDay: this.props.day,
-      endDay: this.props.day,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
       notes: '',
-      defaultTime: null,
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
       cost: 0,
@@ -164,22 +162,39 @@ class CreateActivityForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
-    })
-
-    this.resetState()
-    this.props.toggleCreateEventType()
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createActivity.id,
+          eventType: 'Activity',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.loadSequence
+        }
+        this.resetState()
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
+    }) // close .then
   }
 
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {
     this.setState({
-      startDay: this.props.startDay,
-      endDay: this.props.endDay,
+      startDay: 1,
+      endDay: 1,
       googlePlaceData: {},
       locationAlias: '',
       description: '',
@@ -236,7 +251,8 @@ class CreateActivityForm extends Component {
   }
 
   componentDidMount () {
-    console.log(this.state);
+    // console.log('mount state', this.state)
+    console.log('mount props', this.props)
     this.props.retrieveCloudStorageToken()
 
     this.props.cloudStorageToken.then(obj => {
@@ -247,10 +263,44 @@ class CreateActivityForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
-    var defaultUnix = latestTime(this.props.events, this.props.day)
-    var defaultTime = moment.utc(defaultUnix * 1000).format('HH:mm')
-    this.setState({defaultTime: defaultTime})
-    this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    // initialize day to whatever day form was opened in
+    this.setState({
+      startDay: this.props.day,
+      endDay: this.props.day
+    })
+
+    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
+
+    // if open within planner defaultGooglePlaceData = undefined
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
+      this.setState({googlePlaceData: this.props.defaultGooglePlaceData})
+    }
+
+    // change day to values in map popup form (if exist)
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+
+    // SET START AND END TIME DEPENDING ON DEFAULTS
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+
+    // if no time values at all set as latest time
+    if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
+      var defaultUnix = latestTime(this.props.events, this.state.startDay)
+      // console.log('calculate latest unix', defaultUnix)
+      this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -285,8 +335,8 @@ class CreateActivityForm extends Component {
             <div style={eventDescContainerStyle}>
               <SingleLocationSelection selectLocation={place => this.selectLocation(place)} currentLocation={this.state.googlePlaceData} locationDetails={this.state.locationDetails} eventType={this.props.eventType} />
             </div>
-            {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
+
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} daysArr={this.props.daysArr} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} />
 
             {this.state.openingHoursValidation &&
               <div>

@@ -34,15 +34,14 @@ class CreateLandTransportForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      startDay: this.props.day,
-      endDay: this.props.day,
+      startDay: 1,
+      endDay:1,
       departureGooglePlaceData: {},
       arrivalGooglePlaceData: {},
       departureLocationAlias: '',
       arrivalLocationAlias: '',
       departureNotes: '',
       arrivalNotes: '',
-      defaultTime: null, // 24 hr str 'HH:mm'
       // start and end time need to be unix
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
@@ -158,6 +157,22 @@ class CreateLandTransportForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.createLandTransport.id,
+          eventType: 'LandTransport',
+          flightInstanceId: null,
+          day: helperOutput.newEvent.startDay,
+          start: null,
+          loadSequence: helperOutput.newEvent.startLoadSequence
+        }
+        this.resetState()
+        this.props.mapCreateEventFormSuccess(focusEventObj)
+      } else {
+        this.resetState()
+        this.props.toggleCreateEventType()
+      }
     })
 
     this.resetState()
@@ -167,13 +182,17 @@ class CreateLandTransportForm extends Component {
   closeForm () {
     removeAllAttachments(this.state.attachments, this.apiToken)
     this.resetState()
-    this.props.toggleCreateEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapCreateEventFormCancel()
+    } else {
+      this.props.toggleCreateEventType()
+    }
   }
 
   resetState () {
     this.setState({
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       departureGooglePlaceData: {},
       arrivalGooglePlaceData: {},
       departureLocationAlias: '',
@@ -255,18 +274,41 @@ class CreateLandTransportForm extends Component {
     this.setState({currencyList: currencyList})
     this.setState({currency: currencyList[0]})
 
-    // find latest time for that day and assign to start/endTime
-    var defaultUnix = latestTime(this.props.events, this.props.day)
+    // initialize day to whatever day form was opened in
+    this.setState({
+      startDay: this.props.day,
+      endDay: this.props.day
+    })
 
-    // time is at utc 0
-    var defaultTime = moment.utc(defaultUnix * 1000).format('HH:mm')
-    // datepicker take 'hh:mm' 24 hr format
+    // INITIALIZE STATE TO DEFAULT VALUES (IF PASSED FROM MAP POPUP)
+    // if open within planner defaultGooglePlaceData = undefined
+    if (this.props.defaultGooglePlaceData && this.props.defaultGooglePlaceData.placeId) {
+      this.setState({departureGooglePlaceData: this.props.defaultGooglePlaceData})
+    }
+    if (this.props.defaultArrivalGooglePlaceData && this.props.defaultArrivalGooglePlaceData.placeId) {
+      this.setState({arrivalGooglePlaceData: this.props.defaultArrivalGooglePlaceData})
+    }
+    // CONSTRUCTOR INITIALIZED STARTDAY, ENDDAY TO 1.
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
 
-    // set default time string that datepicker uses
-    this.setState({defaultTime: defaultTime})
+    // SET START AND END TIME DEPENDING ON DEFAULTS
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
 
-    // set default start and end unix for saving
-    this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    // if no time values at all set as latest time
+    if (typeof (this.props.defaultStartTime) !== 'number' && typeof (this.props.defaultEndTime) !== 'number') {
+      var defaultUnix = latestTime(this.props.events, this.state.startDay)
+      this.setState({startTime: defaultUnix, endTime: defaultUnix})
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -301,8 +343,7 @@ class CreateLandTransportForm extends Component {
               <TransportLocationSelection selectLocation={(place, type) => this.selectLocation(place, type)} departureLocation={this.state.departureGooglePlaceData} arrivalLocation={this.state.arrivalGooglePlaceData} departureLocationDetails={this.state.departureLocationDetails} arrivalLocationDetails={this.state.arrivalLocationDetails} eventType={this.props.eventType} />
             </div>
 
-            {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.state.startDay} endDay={this.state.endDay} defaultTime={this.state.defaultTime} daysArr={this.props.daysArr} />
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
 
             <ScheduleOfEvents dates={this.props.dates} events={this.props.events} />
 

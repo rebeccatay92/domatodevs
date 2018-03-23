@@ -3,6 +3,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -27,19 +28,19 @@ import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSe
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}lodgingDefaultBackground.jpg`
 
-
 class EditLodgingForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
       id: this.props.event.id,
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null, // if setstate, will change to unix
       endTime: null, // if setstate, will change to unix
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       cost: 0,
       currency: '',
       currencyList: [],
@@ -70,30 +71,36 @@ class EditLodgingForm extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field !== 'cost') {
+      this.setState({
+        [field]: e.target.value
+      })
+    } else {
+      this.setState({
+        cost: parseInt(e.target.value, 10)
+      })
+    }
   }
 
   handleSubmit () {
     var updatesObj = {
-      id: this.state.id
+      id: this.state.id,
+      startDay: this.state.startDay,
+      endDay: this.state.endDay,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime,
+      description: this.state.description,
+      currency: this.state.currency,
+      cost: this.state.cost,
+      locationAlias: this.state.locationAlias,
+      bookedThrough: this.state.bookedThrough,
+      bookingConfirmation: this.state.bookingConfirmation,
+      bookingStatus: this.state.bookingConfirmation ? true : false,
+      backgroundImage: this.state.backgroundImage,
+      departureNotes: this.state.departureNotes,
+      arrivalNotes: this.state.arrivalNotes
     }
-    var fieldsToCheck = ['locationAlias', 'startDay', 'endDay', 'description', 'currency', 'cost', 'bookedThrough', 'bookingConfirmation', 'notes', 'backgroundImage', 'startTime', 'endTime']
-    fieldsToCheck.forEach(field => {
-      if (this.props.event[field] !== this.state[field]) {
-        updatesObj[field] = this.state[field]
-      }
-    })
-    // if cost was updated, it is a str. make int.
-    if (updatesObj.cost) {
-      updatesObj.cost = parseInt(updatesObj.cost, 10)
-    }
-    // then manually add booking status, googlePlaceData, attachments
-    var bookingStatus = this.state.bookingConfirmation ? true : false
-    if (bookingStatus !== this.props.event.bookingStatus) {
-      updatesObj.bookingStatus = bookingStatus
-    }
+
     // if location changed, it doesnt contain the id field
     if (!this.state.googlePlaceData.id) {
       updatesObj.googlePlaceData = this.state.googlePlaceData
@@ -124,49 +131,95 @@ class EditLodgingForm extends Component {
     console.log('handlesubmit', updatesObj)
 
     // check if updatesObj has fields other than id. if yes, then send to backend
-    if (Object.keys(updatesObj).length <= 1) {
-      this.resetState()
-      this.props.toggleEditEventType()
-    }
+    // if (Object.keys(updatesObj).length <= 1) {
+    //   this.resetState()
+    //   this.props.toggleEditEventType()
+    // }
 
     // if time or day changes, reassign load seq
-    if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
-      var updateEvent = {
-        startDay: this.state.startDay,
-        endDay: this.state.endDay,
-        startTime: this.state.startTime,
-        endTime: this.state.endTime,
-        utcOffset: this.state.googlePlaceData.utcOffset
-      }
-      var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, updateEvent)
-      console.log('helperOutput', helperOutput)
-      updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
-      updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
-      var loadSequenceInput = helperOutput.loadSequenceInput
-      if (loadSequenceInput.length) {
-        this.props.changingLoadSequence({
-          variables: {
-            input: loadSequenceInput
-          }
-        })
-      }
+    // if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+    //   var updateEvent = {
+    //     startDay: this.state.startDay,
+    //     endDay: this.state.endDay,
+    //     startTime: this.state.startTime,
+    //     endTime: this.state.endTime,
+    //     utcOffset: this.state.googlePlaceData.utcOffset
+    //   }
+    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, updateEvent)
+    //   console.log('helperOutput', helperOutput)
+    //   updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    //   updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    //   var loadSequenceInput = helperOutput.loadSequenceInput
+    //   if (loadSequenceInput.length) {
+    //     this.props.changingLoadSequence({
+    //       variables: {
+    //         input: loadSequenceInput
+    //       }
+    //     })
+    //   }
+    // }
+
+    var loadSequenceHelperParams = {
+      startDay: updatesObj.startDay,
+      endDay: updatesObj.endDay,
+      startTime: updatesObj.startTime,
+      endTime: updatesObj.endTime,
+      utcOffset: this.state.googlePlaceData.utcOffset
     }
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Lodging', this.state.id, loadSequenceHelperParams)
+    updatesObj.startLoadSequence = helperOutput.updateEvent.startLoadSequence
+    updatesObj.endLoadSequence = helperOutput.updateEvent.endLoadSequence
+    var loadSequenceChanges = helperOutput.loadSequenceInput
+    if (loadSequenceChanges.length) {
+      this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
+    }
+
     this.props.updateLodging({
       variables: updatesObj,
       refetchQueries: [{
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        var focusEventObj = {
+          modelId: resolved.data.updateLodging.id,
+          eventType: 'Lodging',
+          flightInstanceId: null
+        }
+        // focus obj depends on map currently clicked is start or end row
+        if (this.props.currentlyFocusedEvent.start) {
+          focusEventObj.day = updatesObj.startDay
+          focusEventObj.start = true
+          focusEventObj.loadSequence = updatesObj.startLoadSequence
+        } else {
+          focusEventObj.day = updatesObj.endDay
+          focusEventObj.start = false
+          focusEventObj.loadSequence = updatesObj.endLoadSequence
+        }
+        // console.log('updated. new focusEvent', focusEventObj)
+        this.resetState()
+        this.props.mapEditEventFormSuccess(focusEventObj)
+      } else {
+        // from planner route
+        this.resetState()
+        this.props.toggleEditEventType()
+      }
     })
-
-    this.resetState()
-    this.props.toggleEditEventType()
   }
 
   closeForm () {
     removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
     this.resetState()
-    this.props.toggleEditEventType()
+    if (this.props.openedFromMap) {
+      this.props.mapEditEventFormCancel()
+    } else {
+      this.props.toggleEditEventType()
+    }
   }
 
   deleteEvent () {
@@ -184,19 +237,24 @@ class EditLodgingForm extends Component {
         query: queryItinerary,
         variables: { id: this.props.ItineraryId }
       }]
+    }).then(resolved => {
+      if (this.props.openedFromMap) {
+        this.props.clearCurrentlyFocusedEvent()
+      }
+      this.closeForm()
     })
-    this.closeForm()
   }
 
   resetState () {
     this.setState({
-      startDay: 0,
-      endDay: 0,
+      startDay: 1,
+      endDay: 1,
       startTime: null,
       endTime: null,
       locationAlias: '',
       description: '',
-      notes: '',
+      arrivalNotes: '',
+      departureNotes: '',
       cost: 0,
       currency: '',
       currencyList: [],
@@ -308,8 +366,6 @@ class EditLodgingForm extends Component {
 
     var startTime = this.props.event.startTime
     var endTime = this.props.event.endTime
-    var defaultStartTime = moment.utc(this.props.event.startTime * 1000).format('HH:mm')
-    var defaultEndTime = moment.utc(this.props.event.endTime * 1000).format('HH:mm')
 
     // INSTANTIATE STATE TO BE WHATEVER WAS IN DB
     console.log('event', this.props.event)
@@ -318,19 +374,36 @@ class EditLodgingForm extends Component {
       endDay: this.props.event.endDay,
       startTime: startTime, // unix or null for all day
       endTime: endTime,
-      defaultStartTime: defaultStartTime, // 'HH:mm' string
-      defaultEndTime: defaultEndTime,
       description: this.props.event.description,
       locationAlias: this.props.event.locationAlias || '',
       currency: this.props.event.currency,
       cost: this.props.event.cost,
       bookedThrough: this.props.event.bookedThrough || '',
       bookingConfirmation: this.props.event.bookingConfirmation || '',
-      notes: this.props.event.notes || '',
+      // notes: this.props.event.notes || '',
+      arrivalNotes: this.props.event.arrivalNotes || '',
+      departureNotes: this.props.event.departureNotes || '',
       backgroundImage: this.props.event.backgroundImage,
       googlePlaceData: this.props.event.location,
       attachments: this.props.event.attachments
     }, () => console.log('edit form did mount', this.state))
+
+    // OVERRIDE WITH MAP POPUP VALUES (IF EXIST)
+    if (this.props.defaultStartDay) {
+      this.setState({startDay: this.props.defaultStartDay})
+    }
+    if (this.props.defaultEndDay) {
+      this.setState({endDay: this.props.defaultEndDay})
+    }
+    if (typeof (this.props.defaultStartTime) === 'number') {
+      this.setState({startTime: this.props.defaultStartTime})
+    }
+    if (typeof (this.props.defaultEndTime) === 'number') {
+      this.setState({endTime: this.props.defaultEndTime})
+    }
+    if (this.props.defaultDescription) {
+      this.setState({description: this.props.defaultDescription})
+    }
   }
 
   render () {
@@ -350,8 +423,8 @@ class EditLodgingForm extends Component {
             <div style={eventDescContainerStyle}>
               <input className='left-panel-input' placeholder='Input Description' type='text' name='description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} autoComplete='off' style={eventDescriptionStyle(this.state.backgroundImage)} />
             </div>
-            {/* CONTINUE PASSING DATE AND DATESARR DOWN */}
-            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} date={this.props.date} startDay={this.props.event.startDay} endDay={this.props.event.endDay} defaultStartTime={this.state.defaultStartTime} defaultEndTime={this.state.defaultEndTime} daysArr={this.props.daysArr} formType={'edit'} />
+
+            <DateTimePicker updateDayTime={(field, value) => this.updateDayTime(field, value)} dates={this.props.dates} startDay={this.state.startDay} endDay={this.state.endDay} startTimeUnix={this.state.startTime} endTimeUnix={this.state.endTime} daysArr={this.props.daysArr} />
 
             {this.state.openingHoursValidation &&
               <div>
@@ -400,7 +473,8 @@ class EditLodgingForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    cloudStorageToken: state.cloudStorageToken,
+    currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
@@ -408,6 +482,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     retrieveCloudStorageToken: () => {
       dispatch(retrieveCloudStorageToken())
+    },
+    clearCurrentlyFocusedEvent: () => {
+      dispatch(clearCurrentlyFocusedEvent())
     }
   }
 }

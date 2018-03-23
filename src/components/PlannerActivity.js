@@ -137,6 +137,7 @@ class PlannerActivity extends Component {
           {this.props.timeline.events && <PlannerActivityTimeline activity={this.props.activity} doNotShowTime={this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow || this.props.activity[type].allDayEvent} day={this.props.day} start={this.props.activity.start} type={this.props.activity.type} checkout={this.props.activity.type === 'Lodging' && !this.props.activity.start} isLast={this.props.isLast} lastDay={this.props.lastDay} startTime={startTime} endTime={endTime} id={this.props.activity.modelId} draggingItem={getItem} expanded={this.state.expanded} startLocation={!this.props.empty && (this.props.activity[type].location || this.props.activity[type].departureLocation || (this.props.activity[type].FlightInstance && this.props.activity[type].FlightInstance.departureLocation))} endLocation={!this.props.empty && (this.props.activity[type].location || this.props.activity[type].arrivalLocation || (this.props.activity[type].FlightInstance && this.props.activity[type].FlightInstance.arrivalLocation))} />}
         </td>
         <td colSpan={this.state.expanded ? '4' : '1'} style={dateTableFirstHeaderStyle}>
+          {/* HOC TAKES ENTIRE FLIGHT OBJECT. IN HOC EXTRACT ONLY FLIGHTINSTANCEROW TO PASS TO EDITFLIGHTFORM */}
           {this.state.editEventType &&
             <EditEventFormHOC eventType={this.state.editEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.activity[`${this.state.editEventType}`]} toggleEditEventType={() => this.handleEditEventClick()} />
           }
@@ -196,7 +197,7 @@ class PlannerActivity extends Component {
             </div>
 
             {this.state.createEventType &&
-              <CreateEventFormHOC eventType={this.state.createEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.handleCreateEventClick()} />
+              <CreateEventFormHOC eventType={this.state.createEventType} ItineraryId={this.props.itineraryId} day={this.props.day} dates={this.props.dates} daysArr={this.props.daysArr} toggleCreateEventType={() => this.handleCreateEventClick()} />
             }
           </td>
           {this.state.createEventType && <td style={plannerBlurredBackgroundStyle} />}
