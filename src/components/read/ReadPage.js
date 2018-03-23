@@ -15,11 +15,12 @@ class ReadPage extends Component {
     if (this.props.data.loading) {
       return <span>Loading...</span>
     }
+    console.log(this.props.data)
     return (
       <div style={readPageStyle}>
         <PostsList pages={this.props.pages} />
         <PostMediaContent pages={this.props.pages} blogMedia={this.props.data.findBlog.media} />
-        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogAuthor={this.props.data.findBlog.user.name} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} noOfShares={this.props.data.findBlog.shares} dateCreated={this.props.data.findBlog.createdAt} />
+        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogAuthor={this.props.data.findBlog.user.username} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} noOfShares={this.props.data.findBlog.shares} dateCreated={this.props.data.findBlog.createdAt} />
       </div>
     )
   }

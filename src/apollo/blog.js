@@ -15,7 +15,7 @@ export const queryBlog = gql`
       }
       user {
         id
-        name
+        username
       }
       media {
         type
