@@ -87,7 +87,7 @@ class AirportSearch extends Component {
     if (this.props.intuitiveInput) {
       return (
         <div>
-          <input style={{height: '31px', width: '100%', padding: '8px', fontSize: '13px'}} placeholder={this.props.placeholder} name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} />
+          <input style={{height: '31px', width: '100%', padding: '8px', fontSize: '13px'}} placeholder={this.props.placeholder} name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
           {this.state.selecting &&
             <AirportResults intuitiveInput results={this.state.results} selectLocation={(details) => this.selectLocation(details)} />
           }

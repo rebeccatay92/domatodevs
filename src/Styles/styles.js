@@ -189,12 +189,12 @@ export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'po
 // Create Event Form Styles
 // export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
 
-export const createEventFormContainerStyle = {position: 'inline-block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: `calc(50vh - ${totalHeight / 2}px) auto`}
+export const createEventFormContainerStyle = {display: 'block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: `calc(50vh - ${totalHeight / 2}px) auto`}
 
 // Create Flight Form Styles
 // export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
 
-export const createFlightFormContainerStyle = {position: 'inline-block', width: '1290px', height: '869px', color: 'white', margin: `calc(50vh - ${869 / 2}px) auto`}
+export const createFlightFormContainerStyle = {display: 'block', width: '1290px', height: '869px', color: 'white', margin: `calc(50vh - ${869 / 2}px) auto`}
 
 // export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
 // height 100% since attachments is no longer at bottom
@@ -278,4 +278,13 @@ export const mapPlannerDateTableHorizontalLineStyle = isFirstDay => {
 // mapPlanner/SideBarEvent.js styles
 export const mapPlannerEventBoxStyle = (activity, minHeight, draggedItem) => {
   return { lineHeight: '100%', marginRight: '7%', padding: '0', minHeight: '80px', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
+}
+
+// ReadPage.js styles
+export const readPageStyle = {
+  fontFamily: '\'EB Garamond\', serif',
+  color: mainFontColor,
+  width: '1920px',
+  fontWeight: '400',
+  marginTop: '55px'
 }

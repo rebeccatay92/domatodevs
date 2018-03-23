@@ -390,11 +390,11 @@ class IntuitiveFlightInput extends Component {
           <div style={{display: 'inline-block'}}>
             <div style={{width: '331px', display: 'inline-block'}}>
               {this.state.departureRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-              <AirportSearch intuitiveInput currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} />
+              <AirportSearch intuitiveInput currentLocation={this.state.departureLocation} placeholder={'Departure City/Airport'} selectLocation={details => this.selectLocation('departure', details)} inputFocus={(e) => this.props.inputFocus(e)} inputBlur={(e) => this.props.inputBlur(e)} />
             </div>
             <div style={{width: '330px', display: 'inline-block', marginLeft: '8px'}}>
               {this.state.arrivalRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-              <AirportSearch intuitiveInput currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} />
+              <AirportSearch intuitiveInput currentLocation={this.state.arrivalLocation} placeholder={'Arrival City/Airport'} selectLocation={details => this.selectLocation('arrival', details)} inputFocus={(e) => this.props.inputFocus(e)} inputBlur={(e) => this.props.inputBlur(e)} />
             </div>
           </div>
         }
@@ -403,7 +403,7 @@ class IntuitiveFlightInput extends Component {
             <input placeholder='Flight' style={{width: '100%', padding: '8px', fontSize: '13px', height: '31px'}} value={this.state.search} onChange={(e) => this.setState({
               search: e.target.value,
               showFlights: true
-            })} />
+            })} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
             {this.state.showFlights &&
               <div style={{...intuitiveDropdownStyle, ...{top: '32px', width: '330px'}, ...this.state.searching && {minHeight: '50px'}}}>
                 {this.state.searching && <h5 style={{textAlign: 'center'}}>Loading...</h5>}
