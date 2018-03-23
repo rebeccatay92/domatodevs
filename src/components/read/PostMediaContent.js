@@ -57,6 +57,10 @@ class PostMediaContent extends Component {
     if (post) fullMediaArr = post.Post.media
     else fullMediaArr = this.props.pages.activePostIndex === 'home' && this.props.blogMedia
     const mediaArr = fullMediaArr.length > 0 && fullMediaArr.slice(this.state.activePhotoPage * 5, this.state.activePhotoPage * 5 + 5)
+    let emptySpaces = []
+    for (var i = 1; i <= 5 - (fullMediaArr.length % 5); i++) {
+      emptySpaces.push(<div style={{display: 'inline-block', width: 'calc(8.1vw - 6.4px)', height: 'calc(100vh - 75vh - 84px)', marginBottom: '8px', verticalAlign: 'top'}} />)
+    }
     return (
       <React.Fragment>
         {this.state.fullScreen &&
@@ -69,14 +73,15 @@ class PostMediaContent extends Component {
             <div style={{position: 'relative', width: '100%'}}>
               <img src={`${process.env.PUBLIC_URL}/img/closeGallery.png`} className='read-navigation' style={{position: 'absolute', top: '8px', right: '8px', opacity: '0.4', cursor: 'pointer'}} onClick={() => this.setState({galleryMode: false})} />
               <div style={{maxHeight: 'calc(100vh - 60px)', overflowY: 'scroll', width: 'calc(100% + 17px)', paddingRight: '17px', overscrollBehaviorY: 'contain'}}>
-                <div style={{padding: '5%', width: '45vw'}}>
+                <div style={{padding: '5%', width: '45vw', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap'}}>
                   {fullMediaArr.map((medium, i) => {
                     return (
-                      <div key={i} style={{display: 'inline-block', width: 'calc(8.1vw - 8px)', height: 'calc(100vh - 75vh - 84px)', margin: '0 8px 8px 0', verticalAlign: 'top'}}>
+                      <div key={i} style={{display: 'inline-block', width: 'calc(8.1vw - 6.4px)', height: 'calc(100vh - 75vh - 84px)', marginBottom: '8px', verticalAlign: 'top'}}>
                         <div onClick={() => this.setState({activePhotoIndex: i, galleryMode: false})} key={i} style={{display: 'inline-block', height: '100%', backgroundImage: `url(${medium.url})`, backgroundSize: 'cover', width: '100%', textAlign: 'center', cursor: 'pointer'}} />
                       </div>
                     )
                   })}
+                  {emptySpaces}
                 </div>
               </div>
             </div>
@@ -98,10 +103,10 @@ class PostMediaContent extends Component {
                 </div>
               </div>
               <div style={{height: 'calc(100vh - 75vh - 68px)', width: '100%', margin: '8px auto 0 auto', position: 'relative'}}>
-                <div style={{width: '90%', margin: '0 auto', textAlign: 'center'}}>
+                <div style={{margin: '0 auto', display: 'flex', width: `calc(8.1vw * ${mediaArr.length})`, justifyContent: 'space-between'}}>
                   {mediaArr.map((medium, i) => {
                     return (
-                      <div key={i} style={{display: 'inline-block', width: 'calc(20% - 8px)', height: 'calc(100vh - 75vh - 60px)', marginRight: '8px', verticalAlign: 'top'}}>
+                      <div key={i} style={{display: 'inline-block', width: 'calc(8.1vw - 6.4px)', height: 'calc(100vh - 75vh - 60px)', verticalAlign: 'top'}}>
                         <div onClick={() => this.setState({activePhotoIndex: i + this.state.activePhotoPage * 5})} key={i} style={{display: 'inline-block', height: 'calc(100% - 24px)', backgroundImage: `url(${medium.url})`, backgroundSize: 'cover', width: '100%', textAlign: 'center', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)', cursor: 'pointer', outline: this.state.activePhotoIndex === i + this.state.activePhotoPage * 5 ? '1px solid #ed685a' : 'none'}} />
                         <div style={{textAlign: 'center', height: '24px', width: '100%', display: 'inline-block'}}>
                           {this.state.activePhotoIndex === i + this.state.activePhotoPage * 5 && <i className='material-icons' style={{fontSize: '8px', color: '#ed685a', verticalAlign: 'top'}}>lens</i>}
