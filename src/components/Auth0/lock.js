@@ -36,6 +36,23 @@ export default class Lock {
       localStorage.setItem('access_token', authResult.accessToken)
       localStorage.setItem('id_token', authResult.idToken)
       localStorage.setItem('expires_at', expiresAt)
+
+      fetch('http://localhost:3001/graphql', {
+        method:'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': `Bearer ${authResult.accessToken}`
+        },
+        body: JSON.stringify({query:`mutation {onAuth0UserAuthentication(idToken: \"${authResult.idToken}\") {id,fullName,email,username,profilePic}}`})
+      })
+      .then(response => {
+        // console.log('response', response)
+        // console.log('body', response.body)
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
+
       history.replace('/')
     })
     this.scheduleRenewal()

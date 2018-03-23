@@ -39,7 +39,7 @@ export default class Auth {
             'Content-Type': 'application/json',
             'authorization': `Bearer ${authResult.accessToken}`
           },
-          body: JSON.stringify({query:`mutation {onAuth0UserAuthentication(idToken: \"${authResult.idToken}\") {,id,fullName,email,username,profilePic}}`})
+          body: JSON.stringify({query:`mutation {onAuth0UserAuthentication(idToken: \"${authResult.idToken}\") {id,fullName,email,username,profilePic}}`})
         })
         .then(response => {
           // console.log('response', response)
