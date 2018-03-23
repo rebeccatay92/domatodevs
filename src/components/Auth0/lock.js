@@ -139,6 +139,7 @@ export default class Lock {
 
     managementAccessToken
     .then(token => {
+      // console.log('token', token)
       fetch('https://domatodevs.auth0.com/api/v2/tickets/password-change', {
         method: 'POST',
         headers: {
@@ -155,7 +156,7 @@ export default class Lock {
       })
       .then(json => {
         console.log('ticket url', json.ticket)
-        window.open(json.ticket)
+        window.location.assign(json.ticket)
       })
       .catch(err => console.log('err', err))
     })
