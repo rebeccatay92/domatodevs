@@ -3,17 +3,12 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 
 class HomePage extends Component {
-  // getProfile () {
-  //   this.props.auth.getProfile()
-  // }
-
   render () {
     var access_token = window.localStorage.getItem('access_token')
     var id_token = window.localStorage.getItem('id_token')
     var expires_at = window.localStorage.getItem('expires_at')
     var expiresAtString = moment.unix(expires_at / 1000).format('ddd, DD MMM YYYY, hh:mm A')
     // console.log('expires at', expiresAtString)
-    // const isAuthenticated = this.props.auth.isAuthenticated()
     const isAuthenticated = this.props.lock.isAuthenticated()
     // console.log('isAuthenticated', isAuthenticated)
 
@@ -41,7 +36,6 @@ class HomePage extends Component {
             <img src={decodedIdToken.picture} height={'200px'} width={'200px'} />
           </React.Fragment>
         }
-        {/* <button onClick={() => this.getProfile()}>Get user profile</button> */}
       </div>
     )
   }

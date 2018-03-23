@@ -8,7 +8,7 @@ import Itinerary from './Itinerary'
 
 class ItineraryPage extends Component {
   render () {
-    var isAuthenticated = this.props.auth.isAuthenticated()
+    var isAuthenticated = this.props.lock.isAuthenticated()
     if (!isAuthenticated) return <p>not logged in</p>
     if (this.props.data.loading) return <p>loading</p>
 

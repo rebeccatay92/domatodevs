@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 
+// UNUSED FILE. WAS FOR AUTH SDK FOR WEB.
 const callbackStyle = {
   position: 'absolute',
   display: 'flex',

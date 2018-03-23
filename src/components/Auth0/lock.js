@@ -4,8 +4,8 @@ import history from './history'
 
 export default class Lock {
   lock = new Auth0Lock(
-    'y7lfqtXJsvLJUfcsHASjBC5HfD2d8Jyl',
-    'domatodevs.auth0.com',
+    process.env.REACT_APP_AUTH0_CLIENT_ID,
+    process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
     {
       auth: {
         redirectUrl: 'http://localhost:3000/callback',
@@ -16,7 +16,8 @@ export default class Lock {
           scope: 'openid profile email'
         }
       },
-      autoclose: true
+      autoclose: true,
+      rememberLastLogin: true
     }
   )
   constructor (props) {

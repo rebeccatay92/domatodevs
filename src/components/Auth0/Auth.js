@@ -3,8 +3,8 @@ import history from './history'
 
 export default class Auth {
   auth0 = new auth0.WebAuth({
-    domain: 'domatodevs.auth0.com',
-    clientID: 'y7lfqtXJsvLJUfcsHASjBC5HfD2d8Jyl',
+    domain: process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
+    clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
     redirectUri: 'http://localhost:3000/callback',
     // audience: 'https://domatodevs.auth0.com/userinfo',
     audience: 'http://localhost:3001', // so access_token is for backend

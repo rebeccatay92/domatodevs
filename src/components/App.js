@@ -17,19 +17,8 @@ import MapPlannerPage from './mapPlanner/MapPlannerPage'
 import UserProfilePage from './user/UserProfilePage'
 
 import history from './Auth0/history'
-import Callback from './Auth0/Callback'
-import Auth from './Auth0/Auth'
 import Lock from './Auth0/lock'
-
-const auth = new Auth()
 const lock = new Lock()
-
-
-const handleAuthentication = ({location}) => {
-  if (/access_token|id_token|error/.test(location.hash)) {
-    auth.handleAuthentication()
-  }
-}
 
 class App extends Component {
   componentDidMount () {
@@ -40,19 +29,19 @@ class App extends Component {
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
-          <Navbar auth={auth} lock={lock} />
+          <Navbar lock={lock} />
           <div style={{marginTop: '60px'}}>
             <Route exact path='/' render={(props) => (
-              <HomePage auth={auth} lock={lock} {...props} />
+              <HomePage lock={lock} {...props} />
             )} />
-            <Route path='/callback' render={(props) => {
+            {/* <Route path='/callback' render={(props) => {
               return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />
-            }} />
+            }} /> */}
             <Route path='/user' render={(props) => (
-              <UserProfilePage auth={auth} {...props}/>
+              <UserProfilePage lock={lock} {...props} />
             )} />
             <Route path='/itineraries' render={(props) => (
-              <ItineraryPage auth={auth} {...props} />
+              <ItineraryPage lock={lock} {...props} />
             )} />
             <Route path='/planner/:itineraryId' component={PlannerPage} />
             <Route path='/map/:itineraryId' component={MapPlannerPage} />
