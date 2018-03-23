@@ -16,7 +16,8 @@ class UserProfilePage extends Component {
     var profile = this.props.data.getUserProfile
     return (
       <div>
-        <img src={profile.profilePic} width='200px' height='200px' style={{borderRadius: '50%'}} />
+        <img src={profile.profilePic} width='100px' height='100px' style={{borderRadius: '50%'}} />
+        <h3>Username; {profile.username}</h3>
         <h3>Email address: {profile.email}</h3>
         <h3>Full Name: {profile.fullName}</h3>
         <button onClick={() => this.props.lock.changePassword()}>Change password</button>
