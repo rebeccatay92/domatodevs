@@ -21,8 +21,8 @@ class PlannerActivityTimeline extends Component {
 
   renderIcon (string, style) {
     return (
-      <div style={{height: '65px', marginBottom: '-7px', position: 'relative'}}>
-        <div style={{width: 'fit-content', margin: '0 auto', position: 'relative', backgroundColor: '#FFFFFF', top: '26px'}}>
+      <div style={{height: '61px', marginBottom: '-7px', position: 'relative'}}>
+        <div style={{width: '21px', margin: '0 auto', position: 'relative', backgroundColor: '#FFFFFF', top: '22px'}}>
           <i className='material-icons' style={timelineIconStyle}>{string}</i>
         </div>
       </div>
