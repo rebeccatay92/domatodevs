@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Auth0Lock from 'auth0-lock'
 import history from './history'
 
+import request from 'request'
+
 export default class Lock {
   lock = new Auth0Lock(
     process.env.REACT_APP_AUTH0_CLIENT_ID,
@@ -37,6 +39,7 @@ export default class Lock {
       localStorage.setItem('access_token', authResult.accessToken)
       localStorage.setItem('id_token', authResult.idToken)
       localStorage.setItem('expires_at', expiresAt)
+      localStorage.setItem('user_id', authResult.idTokenPayload.sub)
 
       fetch('http://localhost:3001/graphql', {
         method:'POST',
@@ -68,6 +71,7 @@ export default class Lock {
         localStorage.setItem('access_token', authResult.accessToken)
         localStorage.setItem('id_token', authResult.idToken)
         localStorage.setItem('expires_at', expiresAt)
+        localStorage.setItem('user_id', authResult.idTokenPayload.sub)
         this.scheduleRenewal()
       }
     })
@@ -98,6 +102,7 @@ export default class Lock {
     localStorage.removeItem('access_token')
     localStorage.removeItem('id_token')
     localStorage.removeItem('expires_at')
+    localStorage.removeItem('user_id')
     // clear timeout for token renewal
     clearTimeout(this.tokenRenewalTimeout)
 
@@ -109,5 +114,50 @@ export default class Lock {
     // access token's expiry time
     let expiresAt = JSON.parse(localStorage.getItem('expires_at'))
     return new Date().getTime() < expiresAt
+  }
+
+  changePassword () {
+    var managementAccessToken = fetch('https://domatodevs.auth0.com/oauth/token', {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({
+        client_id: process.env.REACT_APP_AUTH0_MANAGEMENT_CLIENT_ID,
+        client_secret: process.env.REACT_APP_AUTH0_MANAGEMENT_CLIENT_SECRET,
+        audience: 'https://domatodevs.auth0.com/api/v2/',
+        grant_type: 'client_credentials'
+      })
+    })
+    .then(response => {
+      return response.json()
+    })
+    .then(json => {
+      return json.access_token
+    })
+    .catch(err => {
+      console.log('err', err)
+    })
+
+    managementAccessToken
+    .then(token => {
+      fetch('https://domatodevs.auth0.com/api/v2/tickets/password-change', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          result_url: "http://localhost:3000/passwordChanged",
+          user_id: window.localStorage.getItem('user_id')
+        })
+      })
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        console.log('ticket url', json.ticket)
+        window.open(json.ticket)
+      })
+      .catch(err => console.log('err', err))
+    })
   }
 }

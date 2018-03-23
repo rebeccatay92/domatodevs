@@ -16,6 +16,8 @@ import Navbar from './Navbar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
 import UserProfilePage from './user/UserProfilePage'
 
+import PasswordChanged from './Auth0/PasswordChanged'
+
 import history from './Auth0/history'
 import Lock from './Auth0/lock'
 const lock = new Lock()
@@ -37,6 +39,7 @@ class App extends Component {
             {/* <Route path='/callback' render={(props) => {
               return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />
             }} /> */}
+            <Route path='/passwordChanged' component={PasswordChanged} />
             <Route path='/user' render={(props) => (
               <UserProfilePage lock={lock} {...props} />
             )} />

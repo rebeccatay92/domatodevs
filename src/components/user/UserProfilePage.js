@@ -14,12 +14,12 @@ class UserProfilePage extends Component {
     if (this.props.data.loading) return <p>Loading...</p>
 
     var profile = this.props.data.getUserProfile
-    if (!profile) return <h3>no profile?</h3>
     return (
       <div>
         <img src={profile.profilePic} width='200px' height='200px' style={{borderRadius: '50%'}} />
         <h3>Email address: {profile.email}</h3>
         <h3>Full Name: {profile.fullName}</h3>
+        <button onClick={() => this.props.lock.changePassword()}>Change password</button>
       </div>
     )
   }
