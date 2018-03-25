@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { getUserProfile } from '../../apollo/user'
 
-class UserProfilePage extends Component {
+class UserDashboardPage extends Component {
   constructor (props) {
     super(props)
     this.state = {}
@@ -28,4 +28,4 @@ class UserProfilePage extends Component {
 
 export default compose(
   (graphql(getUserProfile))
-)(UserProfilePage)
+)(UserDashboardPage)

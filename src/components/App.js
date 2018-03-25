@@ -16,7 +16,7 @@ import ReadPage from './read/ReadPage'
 import BlogEditorPage from './read/editor/BlogEditorPage'
 import Navbar from './Navbar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
-import UserProfilePage from './user/UserProfilePage'
+import UserDashboardPage from './user/UserDashboardPage'
 
 import PasswordChanged from './Auth0/PasswordChanged'
 
@@ -38,12 +38,9 @@ class App extends Component {
             <Route exact path='/' render={(props) => (
               <HomePage lock={lock} {...props} />
             )} />
-            {/* <Route path='/callback' render={(props) => {
-              return <Callback {...props} handleAuthentication={() => handleAuthentication(props)} />
-            }} /> */}
             <Route path='/passwordChanged' component={PasswordChanged} />
             <Route path='/user' render={(props) => (
-              <UserProfilePage lock={lock} {...props} />
+              <UserDashboardPage lock={lock} {...props} />
             )} />
             <Route path='/itineraries' render={(props) => (
               <ItineraryPage lock={lock} {...props} />
