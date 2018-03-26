@@ -285,6 +285,6 @@ export const readPageStyle = {
   fontFamily: '\'EB Garamond\', serif',
   color: mainFontColor,
   width: '1920px',
-  fontWeight: '400',
-  marginTop: '55px'
+  fontWeight: '400'
+  // marginTop: '55px'
 }
