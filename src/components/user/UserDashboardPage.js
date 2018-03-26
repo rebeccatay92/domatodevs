@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { getUserProfile } from '../../apollo/user'
 
+const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', padding: '10px'}
+const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', borderBottom: '5px solid red', padding: '10px'}
+
 class UserDashboardPage extends Component {
   constructor (props) {
     super(props)
@@ -22,13 +25,13 @@ class UserDashboardPage extends Component {
           <h1 style={{marginTop: 0}}>{profile.username}</h1>
           <h4>Bio: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat tempus ex ac malesuada. Etiam id pharetra sapien, sed malesuada quam. Curabitur facilisis, ex quis placerat dapibus, nisl purus malesuada libero</h4>
         </div>
-        <div style={{margin: '25px 0 25px 0', borderBottom: '3px solid gray', display: 'flex', justifyContent: 'space-between'}}>
-          <h2 style={{cursor: 'pointer'}}>Blogs</h2>
-          <h2>Itineraries</h2>
-          <h2>Media</h2>
-          <h2>Bucket</h2>
-          <h2>Saved Articles</h2>
-          <h2>Account</h2>
+        <div style={{marginTop: '30px', boxSizing: 'border-box', borderBottom: '3px solid gray', display: 'flex', justifyContent: 'space-between', height: '60px', color: 'grey'}}>
+          <h3 style={clickedTabStyle}>Blogs</h3>
+          <h3 style={unclickedTabStyle}>Itineraries</h3>
+          <h3 style={unclickedTabStyle}>Media</h3>
+          <h3 style={unclickedTabStyle}>Bucket</h3>
+          <h3 style={unclickedTabStyle}>Saved Articles</h3>
+          <h3 style={unclickedTabStyle}>Account</h3>
         </div>
       </div>
     )
