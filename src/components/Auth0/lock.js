@@ -22,13 +22,21 @@ export default class Lock {
   )
   constructor (props) {
     let tokenRenewalTimeout
+    // let userProfile
+    // this.getUserProfile = this.getUserProfile.bind(this)
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)
     this.isAuthenticated = this.isAuthenticated.bind(this)
 
     this.onAuthenticated = this.onAuthenticated.bind(this)
     this.onAuthenticated()
+
   }
+
+  // getUserProfile () {
+  //   console.log('get user profile', this.userProfile)
+  //   return this.tokenRenewalTimeout
+  // }
 
   onAuthenticated () {
     this.lock.on('authenticated', authResult => {
@@ -50,6 +58,12 @@ export default class Lock {
       .then(response => {
         // console.log('response', response)
         // console.log('body', response.body)
+        return response.json()
+      })
+      .then(json => {
+        // console.log('json', json)
+        // this.userProfile = json.data.onAuth0UserAuthentication
+        // console.log('after json', this.userProfile)
       })
       .catch(err => {
         console.log('err', err)
@@ -82,11 +96,12 @@ export default class Lock {
     const delay = expiresAt - Date.now()
     // console.log('delay', delay)
     if (delay > 0) {
-      console.log('set timeout')
+      // console.log('set timeout')
       this.tokenRenewalTimeout = setTimeout(() => {
         this.renewToken()
       }, delay)
     } else {
+      // console.log('expired. renew token now')
       this.renewToken()
     }
   }

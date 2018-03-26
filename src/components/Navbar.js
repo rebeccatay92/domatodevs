@@ -1,6 +1,7 @@
 import { Navbar, FormGroup, FormControl, InputGroup, Button, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import React, { Component } from 'react'
+import jwt from 'jsonwebtoken'
 import { primaryColor } from '../Styles/styles'
 
 const dropdownIconStyle = {
@@ -28,11 +29,16 @@ class NavbarInstance extends Component {
   }
 
   componentDidMount () {
-    console.log('lock', this.props.lock)
+    // console.log('lock', this.props.lock)
   }
 
   render () {
     const isAuthenticated = this.props.lock.isAuthenticated()
+    if (isAuthenticated) {
+      var decodedIdToken = jwt.decode(window.localStorage.getItem('id_token'))
+      var profilePic = decodedIdToken.picture
+      // console.log('decoded', profilePic)
+    }
     return (
       <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200'}}>
         <Navbar.Header>
@@ -55,7 +61,7 @@ class NavbarInstance extends Component {
             <React.Fragment>
               <NavItem onClick={() => this.props.lock.logout()}>Log Out</NavItem>
               <Link to={'/user'}>
-                <img src='#' width='50px' height='50px' style={{background: 'orange', borderRadius: '50%'}} />
+                <img src={profilePic} width='50px' height='50px' style={{background: 'black', borderRadius: '50%'}} />
               </Link>
             </React.Fragment>
           }

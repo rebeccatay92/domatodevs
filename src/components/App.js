@@ -2,12 +2,15 @@ import React, { Component } from 'react'
 import { Router, Route } from 'react-router-dom'
 // import jwt from 'jsonwebtoken'
 import { connect } from 'react-redux'
-// import { graphql, compose } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import { generateCloudStorageToken } from '../actions/cloudStorageActions'
+// import { setUserProfile } from '../actions/userActions'
+
+import { getUserProfile } from '../apollo/user'
 
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
@@ -26,15 +29,37 @@ const lock = new Lock()
 
 class App extends Component {
   componentDidMount () {
+    // console.log('did mount')
     this.props.generateCloudStorageToken()
+
+    // fetch user profile from backend and set redux state
+    // var isAuthenticated = lock.isAuthenticated()
+    // var userId = window.localStorage.getItem('user_id')
+    //
+    // if (isAuthenticated && userId) {
+    //   console.log('there is a user. fetch backend')
+    //   // this.props.setUserProfile()
+    // }
   }
 
+  // componentWillReceiveProps (nextProps) {
+  //   console.log('nextProps', nextProps.data)
+  // }
+
   render () {
+    // var userProfile = this.props.data.getUserProfile
+    // var isAuthenticated = lock.isAuthenticated()
+    // var userId = window.localStorage.getItem('user_id')
+    // console.log('userId', userId)
+    // if (isAuthenticated && userId) {
+    //   console.log('there is user')
+    // }
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar lock={lock} />
-          <div style={{marginTop: '60px'}}>
+
+          <div>
             <Route exact path='/' render={(props) => (
               <HomePage lock={lock} {...props} />
             )} />
@@ -50,6 +75,7 @@ class App extends Component {
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />
           </div>
+
           {this.props.showSpinner && (
             <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
               <div style={{position: 'fixed', top: 'calc(50% - 35px)', left: 'calc(50% - 35px)', height: '70px', width: '70px'}}>
@@ -79,7 +105,13 @@ const mapDispatchToProps = (dispatch) => {
     generateCloudStorageToken: () => {
       dispatch(generateCloudStorageToken())
     }
+    // setUserProfile: (userId) => {
+    //   dispatch(setUserProfile(userId))
+    // }
   }
 }
 
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))
+// trying to fetch data from backend. how to integrate with lock?
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(getUserProfile)
+)(App)))
