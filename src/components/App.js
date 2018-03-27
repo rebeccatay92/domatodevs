@@ -42,10 +42,6 @@ class App extends Component {
     // }
   }
 
-  // componentWillReceiveProps (nextProps) {
-  //   console.log('nextProps', nextProps.data)
-  // }
-
   render () {
     // var userProfile = this.props.data.getUserProfile
     // var isAuthenticated = lock.isAuthenticated()
