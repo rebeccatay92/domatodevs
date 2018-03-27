@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Auth0Lock from 'auth0-lock'
 import history from './history'
 
-export default class Lock {
+class Lock {
   lock = new Auth0Lock(
     process.env.REACT_APP_AUTH0_CLIENT_ID,
     process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
@@ -23,20 +23,45 @@ export default class Lock {
   constructor (props) {
     let tokenRenewalTimeout
     // let userProfile
-    // this.getUserProfile = this.getUserProfile.bind(this)
+
+    // this.fetchUserProfile = this.fetchUserProfile.bind(this)
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)
     this.isAuthenticated = this.isAuthenticated.bind(this)
 
     this.onAuthenticated = this.onAuthenticated.bind(this)
     this.onAuthenticated()
-
   }
 
-  // getUserProfile () {
-  //   console.log('get user profile', this.userProfile)
-  //   return this.tokenRenewalTimeout
-  // }
+  // private method? only lock can call this function. App.js only receives userProfile
+  fetchUserProfile () {
+    if (this.isAuthenticated()) {
+      return fetch('http://localhost:3001/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': `Bearer ${window.localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+          query: `{getUserProfile {id,fullName,email,username,profilePic}}`
+        })
+      })
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        var userProfile = json.data.getUserProfile
+        console.log('lock fetch backend', userProfile)
+        return userProfile
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
+    } else {
+      console.log('not authenticated')
+      return Promise.resolve(null)
+    }
+  }
 
   //auth result on sign in has picture field
   onAuthenticated () {
@@ -57,8 +82,6 @@ export default class Lock {
         body: JSON.stringify({query:`mutation {onAuth0UserAuthentication(idToken: \"${authResult.idToken}\") {id,fullName,email,username,profilePic}}`})
       })
       .then(response => {
-        // console.log('response', response)
-        // console.log('body', response.body)
         return response.json()
       })
       .then(json => {
@@ -69,15 +92,15 @@ export default class Lock {
       .catch(err => {
         console.log('err', err)
       })
+      // set userprofile here.
+      // this.userProfile = this.fetchUserProfile()
 
       history.replace('/')
     }) // close listener
     this.scheduleRenewal()
   }
 
-
   renewToken () {
-    // need to add picture field to checkSession
     const checkSessionOptions = {
       scope: 'openid profile email'
     }
@@ -91,6 +114,10 @@ export default class Lock {
         localStorage.setItem('id_token', authResult.idToken)
         localStorage.setItem('expires_at', expiresAt)
         localStorage.setItem('user_id', authResult.idTokenPayload.sub)
+
+        // update user profile
+        // this.userProfile = this.fetchUserProfile()
+
         this.scheduleRenewal()
       }
     })
@@ -108,7 +135,7 @@ export default class Lock {
         this.renewToken()
       }, delay)
     } else {
-      // console.log('expired. renew token now')
+      console.log('expired. renew token now')
       this.renewToken()
     }
   }
@@ -182,3 +209,5 @@ export default class Lock {
     })
   }
 }
+
+export default Lock

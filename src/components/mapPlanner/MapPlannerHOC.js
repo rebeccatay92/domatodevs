@@ -483,6 +483,7 @@ class Map extends Component {
     }
     // console.log('height', mapHeightMercator, 'width', mapWidthMercator)
     var mapWidthPixels = 1920 / 2
+
     var mapHeightPixels = window.innerHeight - 60
 
     var pixelToMercatorScaleX = mapWidthMercator / mapWidthPixels

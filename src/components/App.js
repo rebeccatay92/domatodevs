@@ -10,7 +10,7 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import { generateCloudStorageToken } from '../actions/cloudStorageActions'
 // import { setUserProfile } from '../actions/userActions'
 
-import { getUserProfile } from '../apollo/user'
+// import { getUserProfile } from '../apollo/user'
 
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
@@ -27,6 +27,8 @@ import history from './Auth0/history'
 import Lock from './Auth0/lock'
 const lock = new Lock()
 
+// let userProfileTimeInterval
+
 class App extends Component {
   componentDidMount () {
     // console.log('did mount')
@@ -35,15 +37,24 @@ class App extends Component {
     // fetch user profile from backend and set redux state
     // var isAuthenticated = lock.isAuthenticated()
     // var userId = window.localStorage.getItem('user_id')
-    //
-    // if (isAuthenticated && userId) {
-    //   console.log('there is a user. fetch backend')
-    //   // this.props.setUserProfile()
-    // }
+    // userProfileTimeInterval = setInterval(this.getUserProfile, 10000)
   }
 
+  // getUserProfile () {
+  //   var userProfile = lock.fetchUserProfile()
+  //   userProfile.then(returning => {
+  //     console.log('returning profile', returning)
+  //   })
+  // }
+
   render () {
-    // var userProfile = this.props.data.getUserProfile
+    // console.log('app.js lock', lock)
+    // var userProfile = lock.userProfile
+    // console.log('app.js userProfile', userProfile)
+
+    // var userProfile = lock.fetchUserProfile()
+    // console.log('app.js userProfile', userProfile)
+
     // var isAuthenticated = lock.isAuthenticated()
     // var userId = window.localStorage.getItem('user_id')
     // console.log('userId', userId)
@@ -101,13 +112,7 @@ const mapDispatchToProps = (dispatch) => {
     generateCloudStorageToken: () => {
       dispatch(generateCloudStorageToken())
     }
-    // setUserProfile: (userId) => {
-    //   dispatch(setUserProfile(userId))
-    // }
   }
 }
 
-// trying to fetch data from backend. how to integrate with lock?
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(getUserProfile)
-)(App)))
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))
