@@ -38,6 +38,7 @@ export default class Lock {
   //   return this.tokenRenewalTimeout
   // }
 
+  //auth result on sign in has picture field
   onAuthenticated () {
     this.lock.on('authenticated', authResult => {
       console.log('authResult', authResult)
@@ -70,15 +71,21 @@ export default class Lock {
       })
 
       history.replace('/')
-    })
+    }) // close listener
     this.scheduleRenewal()
   }
 
+
   renewToken () {
-    this.lock.checkSession({},(err, authResult) => {
+    // need to add picture field to checkSession
+    const checkSessionOptions = {
+      scope: 'openid profile email'
+    }
+    this.lock.checkSession(checkSessionOptions,(err, authResult) => {
       if (err) {
         console.log('err', err)
       } else {
+        console.log('renew result', authResult)
         let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime())
         localStorage.setItem('access_token', authResult.accessToken)
         localStorage.setItem('id_token', authResult.idToken)

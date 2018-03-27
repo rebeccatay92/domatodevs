@@ -36,9 +36,11 @@ class NavbarInstance extends Component {
     const isAuthenticated = this.props.lock.isAuthenticated()
     if (isAuthenticated) {
       var decodedIdToken = jwt.decode(window.localStorage.getItem('id_token'))
+      console.log('decodedIdToken', decodedIdToken)
       var profilePic = decodedIdToken.picture
-      // console.log('decoded', profilePic)
+      console.log('picture', profilePic)
     }
+
     return (
       <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200'}}>
         <Navbar.Header>
