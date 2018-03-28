@@ -9,7 +9,8 @@ const dropdownIconStyle = {
   lineHeight: '54px',
   left: '2vw',
   position: 'absolute',
-  color: primaryColor
+  color: primaryColor,
+  cursor: 'pointer'
 }
 
 const searchIconStyle = {
@@ -20,7 +21,8 @@ const bucketLogoStyle = {
   lineHeight: '54px',
   fontSize: '36px',
   // marginLeft: '1vw',
-  color: primaryColor
+  color: primaryColor,
+  cursor: 'pointer'
 }
 
 class NavbarInstance extends Component {
@@ -30,16 +32,23 @@ class NavbarInstance extends Component {
   }
 
   render () {
-    const isAuthenticated = this.props.lock.isAuthenticated()
-    if (isAuthenticated) {
-      var userProfile = this.props.userProfile
+    // const isAuthenticated = this.props.lock.isAuthenticated()
+    // if (isAuthenticated) {
+    //   var userProfile = this.props.userProfile
+    //   var profilePic = userProfile.profilePic
+    // }
+    // dont depend on local storage token expiry time for loggedin/logged out status. take from redux profile.
+    // if token is expired it will be automatically refreshed. taking from redux state avoids the small window between findind expired token and receiving refreshed token (bug which shows logged out even if user is logged in)
+    var userProfile = this.props.userProfile
+    var isLoggedIn = userProfile.id ? true : false
+    if (isLoggedIn) {
       var profilePic = userProfile.profilePic
     }
 
     return (
       <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200'}}>
         <Navbar.Header>
-          <i style={dropdownIconStyle} className='material-icons'>menu</i>
+          <i style={dropdownIconStyle} className='material-icons' onClick={() => console.log('show side bar')}>menu</i>
           <i style={bucketLogoStyle} className='material-icons'>delete</i>
         </Navbar.Header>
         <Navbar.Form style={{margin: '10px 0', marginLeft: '89px', paddingLeft: '0', display: 'inline-block'}}>
@@ -54,7 +63,7 @@ class NavbarInstance extends Component {
           {' '}
         </Navbar.Form>
         <Nav bsStyle='pills' pullRight>
-          {isAuthenticated &&
+          {isLoggedIn &&
             <React.Fragment>
               <NavItem onClick={() => this.props.lock.logout()}>Log Out</NavItem>
               <Link to={'/user'}>
@@ -62,7 +71,7 @@ class NavbarInstance extends Component {
               </Link>
             </React.Fragment>
           }
-          {!isAuthenticated &&
+          {!isLoggedIn &&
             <NavItem onClick={() => this.props.lock.login()}>Log In / Sign up</NavItem>
           }
         </Nav>
