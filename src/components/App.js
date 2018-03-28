@@ -1,16 +1,13 @@
 import React, { Component } from 'react'
 import { Router, Route } from 'react-router-dom'
-// import jwt from 'jsonwebtoken'
+
 import { connect } from 'react-redux'
-import { graphql, compose } from 'react-apollo'
+
 import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import { generateCloudStorageToken } from '../actions/cloudStorageActions'
-// import { setUserProfile } from '../actions/userActions'
-
-// import { getUserProfile } from '../apollo/user'
 
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
@@ -27,40 +24,14 @@ import history from './Auth0/history'
 import Lock from './Auth0/lock'
 const lock = new Lock()
 
-// let userProfileTimeInterval
-
 class App extends Component {
   componentDidMount () {
-    // console.log('did mount')
     this.props.generateCloudStorageToken()
-
-    // fetch user profile from backend and set redux state
-    // var isAuthenticated = lock.isAuthenticated()
-    // var userId = window.localStorage.getItem('user_id')
-    // userProfileTimeInterval = setInterval(this.getUserProfile, 10000)
   }
 
-  // getUserProfile () {
-  //   var userProfile = lock.fetchUserProfile()
-  //   userProfile.then(returning => {
-  //     console.log('returning profile', returning)
-  //   })
-  // }
-
   render () {
-    // console.log('app.js lock', lock)
-    // var userProfile = lock.userProfile
-    // console.log('app.js userProfile', userProfile)
-
-    // var userProfile = lock.fetchUserProfile()
-    // console.log('app.js userProfile', userProfile)
-
     // var isAuthenticated = lock.isAuthenticated()
     // var userId = window.localStorage.getItem('user_id')
-    // console.log('userId', userId)
-    // if (isAuthenticated && userId) {
-    //   console.log('there is user')
-    // }
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
@@ -103,7 +74,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     cloudStorageToken: state.cloudStorageToken,
-    showSpinner: state.showSpinner
+    showSpinner: state.showSpinner,
+    userProfile: state.userProfile
   }
 }
 

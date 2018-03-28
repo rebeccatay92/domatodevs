@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { graphql, compose } from 'react-apollo'
-import { getUserProfile } from '../../apollo/user'
+import { connect } from 'react-redux'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', padding: '10px 20px 10px 20px', color: 'grey'}
 const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', borderBottom: '5px solid red', padding: '10px 20px 10px 20px', color: 'black'}
@@ -20,10 +19,8 @@ class UserDashboardPage extends Component {
   render () {
     var isAuthenticated = this.props.lock.isAuthenticated()
     if (!isAuthenticated) return <p>Not logged in</p>
+    var profile = this.props.userProfile
 
-    if (this.props.data.loading) return <p>Loading...</p>
-
-    var profile = this.props.data.getUserProfile
     return (
       <div style={{margin: '30px auto 30px auto', width: '70%', height: 'calc(100% - 60px)', boxSizing: 'border-box'}}>
         {/* CLICK ON IMG GRAY TINT TO CHANGE PROFILE PIC. */}
@@ -62,9 +59,13 @@ class UserDashboardPage extends Component {
   }
 }
 
-export default compose(
-  (graphql(getUserProfile))
-)(UserDashboardPage)
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.userProfile
+  }
+}
+
+export default connect(mapStateToProps)(UserDashboardPage)
 
 
 {/* <h3>Email address: {profile.email}</h3>

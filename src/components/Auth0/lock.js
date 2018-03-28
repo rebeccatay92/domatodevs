@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import Auth0Lock from 'auth0-lock'
 import history from './history'
 
+import { store } from '../../store'
+import { setUserProfile } from '../../actions/userActions'
+
 class Lock {
   lock = new Auth0Lock(
     process.env.REACT_APP_AUTH0_CLIENT_ID,
@@ -31,9 +34,12 @@ class Lock {
 
     this.onAuthenticated = this.onAuthenticated.bind(this)
     this.onAuthenticated()
+
+    // immediatel initialize user profile
+    this.fetchUserProfile()
   }
 
-  // private method? only lock can call this function. App.js only receives userProfile
+  // fetches user profile from backend and sets redux state
   fetchUserProfile () {
     if (this.isAuthenticated()) {
       return fetch('http://localhost:3001/graphql', {
@@ -51,8 +57,11 @@ class Lock {
       })
       .then(json => {
         var userProfile = json.data.getUserProfile
-        console.log('lock fetch backend', userProfile)
-        return userProfile
+        // console.log('lock fetch backend', userProfile)
+
+        // set redux state when backend returns
+        store.dispatch(setUserProfile(userProfile))
+        // return userProfile
       })
       .catch(err => {
         console.log('err', err)
@@ -88,12 +97,13 @@ class Lock {
         // console.log('json', json)
         // this.userProfile = json.data.onAuth0UserAuthentication
         // console.log('after json', this.userProfile)
+
+        // fetch profile from backend
+        this.fetchUserProfile()
       })
       .catch(err => {
         console.log('err', err)
       })
-      // set userprofile here.
-      // this.userProfile = this.fetchUserProfile()
 
       history.replace('/')
     }) // close listener
@@ -115,8 +125,8 @@ class Lock {
         localStorage.setItem('expires_at', expiresAt)
         localStorage.setItem('user_id', authResult.idTokenPayload.sub)
 
-        // update user profile
-        // this.userProfile = this.fetchUserProfile()
+        // fetch profile from backend
+        this.fetchUserProfile()
 
         this.scheduleRenewal()
       }
@@ -152,6 +162,8 @@ class Lock {
     localStorage.removeItem('user_id')
     // clear timeout for token renewal
     clearTimeout(this.tokenRenewalTimeout)
+
+    store.dispatch(setUserProfile({}))
 
     history.replace('/')
   }

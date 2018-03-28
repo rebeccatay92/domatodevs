@@ -1,7 +1,8 @@
 import { Navbar, FormGroup, FormControl, InputGroup, Button, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import React, { Component } from 'react'
-import jwt from 'jsonwebtoken'
+import { connect } from 'react-redux'
+// import jwt from 'jsonwebtoken'
 import { primaryColor } from '../Styles/styles'
 
 const dropdownIconStyle = {
@@ -28,15 +29,11 @@ class NavbarInstance extends Component {
     this.state = {}
   }
 
-  componentDidMount () {
-    // console.log('lock', this.props.lock)
-  }
-
   render () {
     const isAuthenticated = this.props.lock.isAuthenticated()
     if (isAuthenticated) {
-      var decodedIdToken = jwt.decode(window.localStorage.getItem('id_token'))
-      var profilePic = decodedIdToken.picture
+      var userProfile = this.props.userProfile
+      var profilePic = userProfile.profilePic
     }
 
     return (
@@ -74,4 +71,10 @@ class NavbarInstance extends Component {
   }
 }
 
-export default NavbarInstance
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.userProfile
+  }
+}
+
+export default connect(mapStateToProps)(NavbarInstance)
