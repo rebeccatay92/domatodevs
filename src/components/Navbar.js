@@ -28,7 +28,13 @@ const bucketLogoStyle = {
 class NavbarInstance extends Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      showSideBar: 'false'
+    }
+  }
+
+  toggleNavSideBar () {
+    this.setState({showSideBar: !this.state.showSideBar})
   }
 
   render () {
