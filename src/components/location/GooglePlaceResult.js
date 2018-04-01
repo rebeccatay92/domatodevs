@@ -6,7 +6,6 @@ var key = `key=${process.env.REACT_APP_GOOGLE_API_KEY}`
 var placeDetails = `https://maps.googleapis.com/maps/api/place/details/json?`
 
 class GooglePlaceResult extends Component {
-  // got rid of state since placeDetails api response is now passed directly to form, instead of used to construct googlePlaceData obj
   selectLocation () {
     var urlPlaceDetails = crossOriginUrl + placeDetails + key + `&placeid=${this.props.result.place_id}`
     fetch(urlPlaceDetails)

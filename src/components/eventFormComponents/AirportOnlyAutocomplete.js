@@ -84,13 +84,13 @@ class AirportOnlyAutocomplete extends Component {
       <div style={{locationDropdownStyle}}>
         <input type='text' name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} />
         {this.state.selecting &&
-          <div>
+          <React.Fragment>
             {this.state.results.map((result, i) => {
               return (
                 <h5 key={'airportonly' + i} onClick={() => this.selectAirport(result)}>{result.name}, {result.city}, {result.iata}</h5>
               )
             })}
-          </div>
+          </React.Fragment>
         }
       </div>
     )

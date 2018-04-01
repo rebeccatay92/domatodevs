@@ -12,7 +12,6 @@ class FlightSearchResults extends Component {
           <thead>
             <tr>
               <th style={{width: '86px', textAlign: 'center'}}>
-
               </th>
               <th style={{width: '70px', textAlign: 'center', fontSize: '16px', fontWeight: '400'}}>
                 Departure
