@@ -8,6 +8,7 @@ import EditorTextContent from './EditorTextContent'
 import EditorMediaContent from './EditorMediaContent'
 
 import { initializePosts } from '../../../actions/readActions'
+import { initializeActivePage } from '../../../actions/blogEditorActivePageActions'
 import { queryBlog } from '../../../apollo/blog'
 
 class BlogEditorPage extends Component {
@@ -31,16 +32,64 @@ class BlogEditorPage extends Component {
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} />
         <EditorMediaContent />
-        <EditorTextContent />
+        <EditorTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} />
       </div>
     )
   }
 
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findBlog !== nextProps.data.findBlog) {
-      const allPages = nextProps.data.findBlog.pages
+      const blog = nextProps.data.findBlog
+      const allPages = blog.pages
+      console.log(blog)
       console.log(allPages)
       this.props.initializePosts(allPages)
+      const page = {
+        modelId: blog.id,
+        title: blog.title,
+        textContent: blog.textContent
+      }
+      this.props.initializeActivePage(page)
+    }
+    if (this.props.pages.activePostIndex !== nextProps.pages.activePostIndex) {
+      const blog = nextProps.data.findBlog
+      let page = {
+        modelId: '',
+        type: '',
+        title: '',
+        textContent: '',
+        isSubPost: false,
+        startDay: '',
+        endDay: '',
+        eventType: ''
+      }
+      if (nextProps.pages.activePostIndex === 'home') {
+        page = {
+          modelId: blog.id,
+          type: 'Blog',
+          title: blog.title,
+          textContent: blog.textContent,
+          isSubPost: false,
+          startDay: '',
+          endDay: '',
+          eventType: ''
+        }
+      } else if (nextProps.pages.activePostIndex !== 'fin') {
+        const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]
+        const type = activePage.type
+        const pageObj = activePage[type]
+        page = {
+          modelId: activePage.modelId,
+          type,
+          title: pageObj.title || pageObj.description,
+          isSubPost: !!pageObj.ParentPostId,
+          textContent: pageObj.textContent,
+          eventType: pageObj.eventType,
+          startDay: pageObj.startDay,
+          endDay: pageObj.endDay
+        }
+      }
+      this.props.initializeActivePage(page)
     }
   }
 }
@@ -55,6 +104,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initializePosts: (pages) => {
       dispatch(initializePosts(pages))
+    },
+    initializeActivePage: (page) => {
+      dispatch(initializeActivePage(page))
     }
   }
 }

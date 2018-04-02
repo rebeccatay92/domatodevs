@@ -59,7 +59,7 @@ class PostMediaContent extends Component {
     const mediaArr = fullMediaArr.length > 0 && fullMediaArr.slice(this.state.activePhotoPage * 5, this.state.activePhotoPage * 5 + 5)
     let emptySpaces = []
     for (var i = 1; i <= 5 - (fullMediaArr.length % 5); i++) {
-      emptySpaces.push(<div style={{display: 'inline-block', width: 'calc(8.1vw - 6.4px)', height: 'calc(100vh - 75vh - 84px)', marginBottom: '8px', verticalAlign: 'top'}} />)
+      emptySpaces.push(<div key={i} style={{display: 'inline-block', width: 'calc(8.1vw - 6.4px)', height: 'calc(100vh - 75vh - 84px)', marginBottom: '8px', verticalAlign: 'top'}} />)
     }
     return (
       <React.Fragment>
