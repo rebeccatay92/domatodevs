@@ -14,6 +14,13 @@ export const getUserProfile = gql`
       username
       email
       profilePic
+      CountryId
+      country {
+        id
+        name
+        code
+      }
+      bio
     }
   }
 `

@@ -9,6 +9,14 @@ class UserDashboardPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      tabsArray: [
+        {tab: 'blogs', text: 'Blogs'},
+        {tab: 'itineraries', text: 'Itineraries'},
+        {tab: 'media', text: 'Media'},
+        {tab: 'bucket', text: 'Bucket'},
+        {tab: 'savedArticles', text: 'Saved Articles'},
+        {tab: 'account', text: 'Account'}
+      ],
       focusedTab: 'account'
     }
   }
@@ -30,17 +38,18 @@ class UserDashboardPage extends Component {
       <div style={{margin: '30px auto 30px auto', width: '70%', height: 'calc(100% - 60px)', boxSizing: 'border-box'}}>
         {/* CLICK ON IMG GRAY TINT TO CHANGE PROFILE PIC. */}
         <img src={profile.profilePic} width='120px' height='120px' style={{borderRadius: '50%', display: 'inline-block', cursor: 'pointer'}} />
+
         <div style={{display: 'inline-block', verticalAlign: 'middle', width: 'calc(100% - 120px)', height: '120px', padding: '0 20px 0 20px'}}>
           <h1 style={{marginTop: 0}}>{profile.username}</h1>
-          <h4>Bio: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat tempus ex ac malesuada. Etiam id pharetra sapien, sed malesuada quam. Curabitur facilisis, ex quis placerat dapibus, nisl purus malesuada libero</h4>
+          <h4>Bio: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat tempus ex ac malesuada. Etiam id pharetra sapien, sed malesuada quam. Curabitur facilisis, ex quis placerat dapibus, nisl purus malesuada libero. CLICK TO EDIT</h4>
         </div>
+
         <div style={{marginTop: '30px', boxSizing: 'border-box', borderBottom: '3px solid gray', display: 'flex', justifyContent: 'flex-start', height: '60px'}}>
-          <h3 style={this.state.focusedTab === 'blogs' ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab('blogs')}>Blogs</h3>
-          <h3 style={this.state.focusedTab === 'itineraries' ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab('itineraries')}>Itineraries</h3>
-          <h3 style={this.state.focusedTab === 'media' ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab('media')}>Media</h3>
-          <h3 style={this.state.focusedTab === 'bucket' ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab('bucket')}>Bucket</h3>
-          <h3 style={this.state.focusedTab === 'savedArticles' ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab('savedArticles')}>Saved Articles</h3>
-          <h3 style={this.state.focusedTab === 'account' ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab('account')}>Account</h3>
+          {this.state.tabsArray.map((obj, i) => {
+            return (
+              <h3 key={i} style={this.state.focusedTab === obj.tab ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab(obj.tab)}>{obj.text}</h3>
+            )
+          })}
         </div>
 
         {this.state.focusedTab !== 'account' &&

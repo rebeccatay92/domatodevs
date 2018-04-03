@@ -49,7 +49,7 @@ class Lock {
           'authorization': `Bearer ${window.localStorage.getItem('access_token')}`
         },
         body: JSON.stringify({
-          query: `{getUserProfile {id,fullName,email,username,profilePic}}`
+          query: `{getUserProfile {id,fullName,email,username,profilePic,CountryId,bio, country{id, name, code}}}`
         })
       })
       .then(response => {
