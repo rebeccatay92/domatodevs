@@ -13,3 +13,13 @@ export const createBlogHeading = gql`
     }
   }
 `
+
+export const deleteBlogHeading = gql`
+  mutation deleteBlogHeading(
+    $id: ID!
+  ) {
+    deleteBlogHeading(
+      id: $id
+    )
+  }
+`

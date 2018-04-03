@@ -31,7 +31,7 @@ const MouseHoverHOC = (WrappedComponent) => {
     render () {
       return (
         <li style={{position: 'relative'}} onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
-          <WrappedComponent hover={this.state.hover} {...this.props} />
+          <WrappedComponent hover={this.state.hover} removeHover={() => this.setState({hover: false})} {...this.props} />
         </li>
       )
     }
@@ -74,6 +74,7 @@ class EditorPostsListRow extends Component {
     this.setState({
       dropdown: false
     })
+    this.props.removeHover()
   }
 
   render () {
@@ -98,7 +99,11 @@ class EditorPostsListRow extends Component {
           <React.Fragment key={i}>
             <span style={{color: '#ed685a', display: 'inline-block', paddingBottom: '8px'}}>Header
             </span>
-            <input autoFocus type='text' style={{width: '100%', marginBottom: '16px', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+            <input autoFocus type='text' style={{width: '100%', marginBottom: '8px', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+            <div style={{marginBottom: '16px'}}>
+              <button>Save</button>
+              <button onClick={() => this.props.changeActivePost('home')}>Cancel</button>
+            </div>
           </React.Fragment>
         )
       }
