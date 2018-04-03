@@ -30,7 +30,7 @@ const MouseHoverHOC = (WrappedComponent) => {
 
     render () {
       return (
-        <li onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
+        <li style={{position: 'relative'}} onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
           <WrappedComponent hover={this.state.hover} {...this.props} />
         </li>
       )
@@ -105,9 +105,9 @@ class EditorPostsListRow extends Component {
       return (
         <React.Fragment key={i}>
           <span onClick={() => this.props.changeActivePost(i)} style={{display: 'inline-block', fontWeight: 'bold', padding: '0 0 16px 0', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}}>{page.BlogHeading.title}</span>
-          <span style={{position: 'fixed'}}>
+          <span style={{position: 'absolute', right: 0}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
-            {this.state.dropdown && <BlogDropdownMenu toggleDropdown={(e) => this.toggleDropdown(e)} heading />}
+            {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} heading />}
           </span>
         </React.Fragment>
       )
@@ -129,9 +129,9 @@ class EditorPostsListRow extends Component {
       }
       return (
         <React.Fragment key={i}>{!!this.props.page[type].ParentPostId && <span style={{position: 'absolute', left: '32px'}}>&#8226;</span>}<span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 20px'}}}>{page.Post.title}</span>
-          <span style={{position: 'fixed'}}>
+          <span style={{position: 'absolute', right: 0}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
-            {this.state.dropdown && <BlogDropdownMenu toggleDropdown={(e) => this.toggleDropdown(e)} post />}
+            {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
           </span>
         </React.Fragment>
       )
@@ -152,10 +152,10 @@ class EditorPostsListRow extends Component {
         )
       }
       return (
-        <React.Fragment key={i}>{!!this.props.page[type].ParentPostId && <span style={{position: 'absolute', left: '32px'}}>&#8226;</span>}<span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 20px'}}}>{page.Post.location.name} - {page.Post.description}</span>
-          <span style={{position: 'fixed'}}>
+        <React.Fragment key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.location.name} - {page.Post.description}</span>
+          <span style={{position: 'absolute', right: 0}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
-            {this.state.dropdown && <BlogDropdownMenu toggleDropdown={(e) => this.toggleDropdown(e)} post />}
+            {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
           </span>
         </React.Fragment>
       )

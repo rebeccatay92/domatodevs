@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
 
+import LocationSearch from '../../location/LocationSearch'
+
 // function getPageInfo (props) {
 //   const post = props.pages.pagesArr[props.pages.activePostIndex]
 //   if (post && post.type === 'BlogHeading') return {}
@@ -43,7 +45,7 @@ class EditorTextContent extends Component {
   // }
 
   render () {
-    const {title, textContent, eventType} = this.props.page
+    const {title, textContent, eventType, googlePlaceData} = this.props.page
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     if (post && post.type === 'BlogHeading') return null
     if (this.props.pages.activePostIndex === 'fin') return null
@@ -54,9 +56,10 @@ class EditorTextContent extends Component {
         {this.props.pages.activePostIndex !== 'home' &&
         <React.Fragment>
           <label style={{margin: '8px 0'}}>Location</label>
-          <div>
-            <input type='text' style={{width: eventType ? '80%' : '100%', padding: '8px'}} />
-            {eventType && <input type='text' style={{width: '20%', padding: '8px'}} />}
+          <div style={{position: 'relative'}}>
+            {/* <input type='text' style={{width: eventType ? '80%' : '100%', padding: '8px'}} />
+            {eventType && <input type='text' style={{width: '20%', padding: '8px'}} />} */}
+            <LocationSearch blogEditor placeholder={'Location'} currentLocation={googlePlaceData} eventType={eventType} />
           </div>
         </React.Fragment>}
         <label style={{margin: '8px 0'}}>Content</label>
