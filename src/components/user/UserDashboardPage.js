@@ -112,7 +112,8 @@ class UserDashboardPage extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.userProfile !== this.props.userProfile) {
+    if (nextProps.userProfile) {
+      // if compare, only refresh displays properly. first direct to this route doesnt initialize. componentDidMount instead.
       this.setState({
         profilePic: nextProps.userProfile.profilePic,
         bio: nextProps.userProfile.bio || ''
