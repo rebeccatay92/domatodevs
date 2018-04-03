@@ -6,8 +6,8 @@ import { allCountries } from '../../apollo/country'
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
 
-const focusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid gray', margin: '20px 0 20px 0'}
-const unfocusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid transparent', margin: '20px 0 20px 0'}
+const focusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid gray', margin: '20px 0 20px 0', cursor: 'pointer'}
+const unfocusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid transparent', margin: '20px 0 20px 0', cursor: 'pointer'}
 
 class AccountTab extends Component {
   constructor (props) {
@@ -33,9 +33,9 @@ class AccountTab extends Component {
   }
 
   componentDidMount () {
-    console.log('userProfile', this.props.userProfile)
+    // console.log('userProfile', this.props.userProfile)
     this.setState({
-      fullName: this.props.userProfile.fullName,
+      fullName: this.props.userProfile.fullName || '',
       CountryId: this.props.userProfile.CountryId || ''
     })
   }
@@ -93,7 +93,10 @@ class AccountTab extends Component {
           }
           {this.state.focusedTab === 'security' &&
             <React.Fragment>
-              <button onClick={() => this.props.lock.changePassword()}>Change password</button>
+              <h4>Change password</h4>
+              <button onClick={() => this.props.lock.changePassword()} style={{background: `rgb(211, 247, 183)`, border: 'none', outline: '1px solid gray', height: '50px'}}>Click here to change your password</button>
+
+              <h4>Delete account</h4>
             </React.Fragment>
           }
         </div>

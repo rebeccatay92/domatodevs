@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { graphql } from 'react-apollo'
 import AccountTab from './AccountTab'
+
+import { updateUserProfile } from '../../apollo/user'
+import { setUserProfile } from '../../actions/userActions'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', padding: '10px 20px 10px 20px', color: 'grey'}
 const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', borderBottom: '5px solid red', padding: '10px 20px 10px 20px', color: 'black'}
@@ -17,12 +21,47 @@ class UserDashboardPage extends Component {
         {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
-      focusedTab: 'account'
+      focusedTab: 'account',
+      bio: '',
+      editingBio: false
     }
   }
 
   focusTab (tabName) {
     this.setState({focusedTab: tabName})
+  }
+
+  makeBioEditable () {
+    this.setState({editingBio: true})
+  }
+
+  saveBio () {
+    console.log('state', this.state.bio)
+    this.props.updateUserProfile({
+      variables: {
+        bio: this.state.bio
+      }
+    })
+      .then(returning => {
+        let profile = returning.data.updateUserProfile
+        this.props.setUserProfile(profile)
+      })
+    this.setState({editingBio: false})
+  }
+
+  handleChange (e, field) {
+    this.setState({
+      [field]: e.target.value
+    })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.userProfile !== this.props.userProfile) {
+      this.setState({
+        profilePic: nextProps.userProfile.profilePic,
+        bio: nextProps.userProfile.bio || ''
+      }, () => console.log('initialize', this.state))
+    }
   }
 
   render () {
@@ -41,7 +80,23 @@ class UserDashboardPage extends Component {
 
         <div style={{display: 'inline-block', verticalAlign: 'middle', width: 'calc(100% - 120px)', height: '120px', padding: '0 20px 0 20px'}}>
           <h1 style={{marginTop: 0}}>{profile.username}</h1>
-          <h4>Bio: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat tempus ex ac malesuada. Etiam id pharetra sapien, sed malesuada quam. Curabitur facilisis, ex quis placerat dapibus, nisl purus malesuada libero. CLICK TO EDIT</h4>
+          {!this.state.editingBio &&
+            <React.Fragment>
+              {this.state.bio &&
+                <h4>Bio: {this.state.bio}</h4>
+              }
+              {!this.state.bio &&
+                <h4>Bio: You don't have a bio!</h4>
+              }
+              <button onClick={() => this.makeBioEditable()}>Click to edit bio</button>
+            </React.Fragment>
+          }
+          {this.state.editingBio &&
+            <React.Fragment>
+              <textarea value={this.state.bio} placeholder={'Describe yourself in 255 characters'} onChange={e => this.handleChange(e, 'bio')} style={{display: 'block', width: 'calc(100% - 120px)', height: '80px', resize: 'none'}} />
+              <button onClick={() => this.saveBio()}>Save</button>
+            </React.Fragment>
+          }
         </div>
 
         <div style={{marginTop: '30px', boxSizing: 'border-box', borderBottom: '3px solid gray', display: 'flex', justifyContent: 'flex-start', height: '60px'}}>
@@ -73,4 +128,12 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(UserDashboardPage)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUserProfile: (userProfile) => {
+      dispatch(setUserProfile(userProfile))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(graphql(updateUserProfile, {name: 'updateUserProfile'})(UserDashboardPage))
