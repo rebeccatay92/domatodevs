@@ -44,12 +44,14 @@ class BlogEditorPage extends Component {
       console.log(blog)
       console.log(allPages)
       this.props.initializePosts(allPages)
-      const page = {
-        modelId: blog.id,
-        title: blog.title,
-        textContent: blog.textContent
+      if (this.props.pages.activePostIndex === 'home') {
+        const page = {
+          modelId: blog.id,
+          title: blog.title,
+          textContent: blog.textContent
+        }
+        this.props.initializeActivePage(page)
       }
-      this.props.initializeActivePage(page)
     }
     if (this.props.pages.activePostIndex !== nextProps.pages.activePostIndex) {
       const blog = nextProps.data.findBlog
@@ -83,7 +85,7 @@ class BlogEditorPage extends Component {
           type,
           title: pageObj.title || pageObj.description,
           isSubPost: !!pageObj.ParentPostId,
-          textContent: pageObj.textContent,
+          textContent: pageObj.textContent || '',
           eventType: pageObj.eventType,
           startDay: pageObj.startDay,
           endDay: pageObj.endDay

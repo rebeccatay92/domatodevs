@@ -1,7 +1,7 @@
 export const readReducer = (state = {pagesArr: [], activePostIndex: 'home'}, action) => {
   switch (action.type) {
     case 'INITIALIZE_POSTS':
-      return {pagesArr: action.pages, activePostIndex: 'home'}
+      return {...state, ...{pagesArr: action.pages}}
     case 'CHANGE_ACTIVE_POST':
       return {...state, ...{activePostIndex: action.index}}
     default:

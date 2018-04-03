@@ -98,7 +98,7 @@ class EditorPostsListRow extends Component {
           <React.Fragment key={i}>
             <span style={{color: '#ed685a', display: 'inline-block', paddingBottom: '8px'}}>Header
             </span>
-            <input type='text' style={{width: '100%', marginBottom: '16px', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+            <input autoFocus type='text' style={{width: '100%', marginBottom: '16px', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
           </React.Fragment>
         )
       }
