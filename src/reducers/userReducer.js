@@ -16,5 +16,7 @@ fullName
 email
 username
 profilePic
+CountryId
+bio
 }
 */

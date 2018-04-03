@@ -18,7 +18,7 @@ class AccountTab extends Component {
   }
 
   selectCountry (e) {
-    console.log('value', e.target.value)
+    // console.log('value', e.target.value)
     this.setState({
       CountryId: e.target.value
     })
