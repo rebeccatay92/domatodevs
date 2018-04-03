@@ -3,6 +3,8 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 
 import { allCountries } from '../../apollo/country'
+import { updateUserProfile } from '../../apollo/user'
+import { setUserProfile } from '../../actions/userActions'
 
 const focusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid gray', margin: '20px 0 20px 0'}
 const unfocusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid transparent', margin: '20px 0 20px 0'}
@@ -42,10 +44,23 @@ class AccountTab extends Component {
   //
   // }
 
+  // profilePic and bio r edited in parent component
   updateProfile () {
-    // send backend req to update fullName, countryId.
     console.log('state', this.state)
+    // send backend req to update fullName, countryId. then update redux state
+    this.props.updateUserProfile({
+      variables: {
+        fullName: this.state.fullName,
+        CountryId: this.state.CountryId
+      }
+    })
+      .then(returning => {
+        // console.log('returning json', returning)
+        let userProfile = returning.data.updateUserProfile
+        this.props.setUserProfile(userProfile)
+      })
   }
+
   render () {
     if (this.props.data.loading) return <h1>Loading</h1>
     let profile = this.props.userProfile
@@ -93,6 +108,15 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(compose(
-  graphql(allCountries)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUserProfile: (userProfile) => {
+      dispatch(setUserProfile(userProfile))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(allCountries),
+  graphql(updateUserProfile, {name: 'updateUserProfile'})
 )(AccountTab))
