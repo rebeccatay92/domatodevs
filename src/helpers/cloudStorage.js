@@ -27,6 +27,7 @@ export function retrieveToken () {
     })
     .then(json => {
       var apiToken = json.access_token
+      // console.log('apiToken from fetch', apiToken)
       return resolve({
         expiry: payload.exp,
         token: apiToken

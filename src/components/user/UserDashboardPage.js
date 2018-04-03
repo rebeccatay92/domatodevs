@@ -5,6 +5,7 @@ import AccountTab from './AccountTab'
 
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
+import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', padding: '10px 20px 10px 20px', color: 'grey'}
 const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', borderBottom: '5px solid red', padding: '10px 20px 10px 20px', color: 'black'}
@@ -36,7 +37,6 @@ class UserDashboardPage extends Component {
   }
 
   saveBio () {
-    console.log('state', this.state.bio)
     this.props.updateUserProfile({
       variables: {
         bio: this.state.bio
@@ -50,9 +50,65 @@ class UserDashboardPage extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field === 'bio') {
+      if (e.target.value.length <= 255) {
+        this.setState({
+          bio: e.target.value
+        })
+      }
+    }
+  }
+
+  uploadProfilePic (e) {
+    let file = e.target.files[0]
+
+    if (file) {
+      console.log('file', file)
+      let UserId = this.props.userProfile.id
+      var timestamp = Date.now()
+      var uriBase = process.env.REACT_APP_CLOUD_UPLOAD_URI
+      var uriFull = `${uriBase}${UserId}/account/profilePic_${timestamp}`
+      // timestamp the profilepic so redux knows it is different from previous copy
+
+      fetch(uriFull, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiToken}`,
+          'Content-Type': file.type,
+          'Content-Length': file.size
+        },
+        body: file
+      })
+        .then(response => {
+          return response.json()
+        })
+        .then(json => {
+          console.log('json', json)
+          let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
+          console.log('public url', publicUrl)
+          return publicUrl
+        })
+        .then(publicUrl => {
+          this.props.updateUserProfile({
+            variables: {
+              profilePic: publicUrl
+            }
+          })
+            .then(returning => {
+              // console.log('returning', returning.data.updateUserProfile)
+              let returningProfile = returning.data.updateUserProfile
+              this.props.setUserProfile(returningProfile)
+            })
+        })
+        .catch(err => {
+          console.log('err', err)
+        })
+    }
+  }
+
+  componentDidMount () {
+    // check and refresh token
+    this.props.retrieveCloudStorageToken()
   }
 
   componentWillReceiveProps (nextProps) {
@@ -60,7 +116,14 @@ class UserDashboardPage extends Component {
       this.setState({
         profilePic: nextProps.userProfile.profilePic,
         bio: nextProps.userProfile.bio || ''
-      }, () => console.log('initialize', this.state))
+      })
+    }
+    if (nextProps.cloudStorageToken !== this.props.cloudStorageToken) {
+      nextProps.cloudStorageToken
+        .then(returning => {
+          // console.log('token', returning.token)
+          this.apiToken = returning.token
+        })
     }
   }
 
@@ -68,15 +131,18 @@ class UserDashboardPage extends Component {
     // var isAuthenticated = this.props.lock.isAuthenticated()
     // if (!isAuthenticated) return <p>Not logged in</p>
     // console.log('isAuthenticated', isAuthenticated)
-
     // use redux state instead of token expiry time to determine logged in status
     var profile = this.props.userProfile
+    // console.log('redux state profile', profile)
     if (!profile.id) return <p>Not logged in</p>
 
     return (
       <div style={{margin: '30px auto 30px auto', width: '70%', height: 'calc(100% - 60px)', boxSizing: 'border-box'}}>
         {/* CLICK ON IMG GRAY TINT TO CHANGE PROFILE PIC. */}
-        <img src={profile.profilePic} width='120px' height='120px' style={{borderRadius: '50%', display: 'inline-block', cursor: 'pointer'}} />
+        <label>
+          <img src={this.state.profilePic} width='120px' height='120px' style={{borderRadius: '50%', display: 'inline-block', cursor: 'pointer'}} />
+          <input type='file' accept='.jpeg, .jpg, .png' onChange={e => this.uploadProfilePic(e)} style={{display: 'none'}} />
+        </label>
 
         <div style={{display: 'inline-block', verticalAlign: 'middle', width: 'calc(100% - 120px)', height: '120px', padding: '0 20px 0 20px'}}>
           <h1 style={{marginTop: 0}}>{profile.username}</h1>
@@ -95,6 +161,7 @@ class UserDashboardPage extends Component {
             <React.Fragment>
               <textarea value={this.state.bio} placeholder={'Describe yourself in 255 characters'} onChange={e => this.handleChange(e, 'bio')} style={{display: 'block', width: 'calc(100% - 120px)', height: '80px', resize: 'none'}} />
               <button onClick={() => this.saveBio()}>Save</button>
+              <span>{255 - this.state.bio.length} characters left</span>
             </React.Fragment>
           }
         </div>
@@ -124,12 +191,16 @@ class UserDashboardPage extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    userProfile: state.userProfile
+    userProfile: state.userProfile,
+    cloudStorageToken: state.cloudStorageToken
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    retrieveCloudStorageToken: () => {
+      dispatch(retrieveCloudStorageToken())
+    },
     setUserProfile: (userProfile) => {
       dispatch(setUserProfile(userProfile))
     }
