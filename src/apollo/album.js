@@ -70,3 +70,9 @@ export const updateAlbum = gql`
     }
   }
 `
+
+export const deleteAlbum = gql`
+  mutation deleteAlbum($id: ID!) {
+    deleteAlbum(id: $id)
+  }
+`

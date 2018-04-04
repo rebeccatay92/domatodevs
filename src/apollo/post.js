@@ -88,7 +88,7 @@ export const updatePost = gql`
   mutation updatePost(
     $id: ID!,
     $ParentPostId: ID,
-    $LocationId: ID,
+    $googlePlaceData: googlePlaceData,
     $loadSequence: Int,
     $title: String,
     $textContent: String,
@@ -102,7 +102,7 @@ export const updatePost = gql`
     updatePost(
       id: $id,
       ParentPostId: $ParentPostId,
-      LocationId: $LocationId,
+      googlePlaceData: $googlePlaceData,
       loadSequence: $loadSequence,
       title: $title,
       textContent: $textContent,
