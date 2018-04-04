@@ -63,7 +63,8 @@ class BlogEditorPage extends Component {
         isSubPost: false,
         startDay: '',
         endDay: '',
-        eventType: ''
+        eventType: '',
+        googlePlaceData: {name: ''}
       }
       if (nextProps.pages.activePostIndex === 'home') {
         page = {
@@ -74,7 +75,8 @@ class BlogEditorPage extends Component {
           isSubPost: false,
           startDay: '',
           endDay: '',
-          eventType: ''
+          eventType: '',
+          googlePlaceData: {name: ''}
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
         const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]
@@ -88,7 +90,8 @@ class BlogEditorPage extends Component {
           textContent: pageObj.textContent || '',
           eventType: pageObj.eventType,
           startDay: pageObj.startDay,
-          endDay: pageObj.endDay
+          endDay: pageObj.endDay,
+          googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''}
         }
       }
       this.props.initializeActivePage(page)

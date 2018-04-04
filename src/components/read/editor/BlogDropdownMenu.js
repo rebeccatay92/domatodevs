@@ -9,7 +9,7 @@ import ConfirmWindow from '../../misc/ConfirmWindow'
 import { changeActivePost, initializePosts } from '../../../actions/readActions'
 import { toggleSpinner } from '../../../actions/spinnerActions'
 
-import { createPost, deletePost } from '../../../apollo/post'
+import { createPost, updateMultiplePosts, deletePost } from '../../../apollo/post'
 import { createBlogHeading, deleteBlogHeading } from '../../../apollo/blogHeading'
 import { reorderBlogContent } from '../../../apollo/reorderBlogContent'
 import { queryBlog } from '../../../apollo/blog'
@@ -24,9 +24,28 @@ class BlogDropdownMenu extends Component {
     }
   }
 
-  addPage (index, type) {
+  addPage (index, type, position) {
     this.props.toggleDropdown()
-    const loadSeqArr = this.props.pages.pagesArr.slice(index).map(page => {
+
+    let adjustedIndex = index
+    const selectedPageType = this.props.pages.pagesArr[this.props.i].type
+
+    let indexOfNextHeader = this.props.pages.pagesArr.findIndex((page, i) => {
+      return i >= index && page.type === 'BlogHeading'
+    })
+
+    let indexOfNextHeaderOrPost = this.props.pages.pagesArr.findIndex((page, i) => {
+      return i >= index && (page.type === 'BlogHeading' || (page.type === 'Post' && !page.Post.ParentPostId))
+    })
+
+    if (type === 'BlogHeading' && position === 'below') {
+      if (indexOfNextHeader === -1) {
+        indexOfNextHeader = this.props.pages.pagesArr.length
+      }
+      adjustedIndex = indexOfNextHeader
+    }
+
+    const loadSeqArr = this.props.pages.pagesArr.slice(adjustedIndex).map(page => {
       return {
         type: page.type,
         modelId: page.modelId,
@@ -49,16 +68,26 @@ class BlogDropdownMenu extends Component {
       return this.props[types[type]]({
         variables: {
           BlogId: this.props.blogId,
-          loadSequence: index + 1
+          loadSequence: adjustedIndex + 1
         }
       })
     })
     .then(results => {
+      if (position === 'below' && type === 'Post' && indexOfNextHeaderOrPost > index) {
+        // subPosts Arr to have parentId changed
+        const postsArr = this.props.pages.pagesArr.slice(index, indexOfNextHeaderOrPost).map(post => {
+          return {
+            id: post.modelId,
+            ParentPostId: results.data.createPost.id
+          }
+        })
+        return this.props.updateMultiplePosts
+      }
       return this.props.data.refetch()
     })
     .then(response => {
       this.props.initializePosts(response.data.findBlog.pages)
-      this.props.changeActivePost(index)
+      this.props.changeActivePost(adjustedIndex)
       this.props.toggleSpinner(false)
     })
   }
@@ -112,9 +141,9 @@ class BlogDropdownMenu extends Component {
       <div style={{position: 'absolute', top: '17px', right: '-20px', backgroundColor: 'white', zIndex: 1, display: 'inline-block', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}}>
         <ul style={{listStyleType: 'none', padding: 0}}>
           <li key='addPostAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'Post')}>Add Post Above</li>
-          <li key='addPostBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'Post')}>Add Post Below</li>
+          <li key='addPostBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'Post', 'below')}>Add Post Below</li>
           <li key='addHeaderAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'BlogHeading')}>Add Header Above</li>
-          <li key='addHeaderBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'BlogHeading')}>Add Header Below</li>
+          <li key='addHeaderBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'BlogHeading', 'below')}>Add Header Below</li>
           {this.props.heading && <li key='delHead' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Header</li>}
           {this.props.post && <li key='delPost' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Post</li>}
         </ul>
@@ -160,6 +189,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryBlog, options),
   graphql(createPost, { name: 'createPost' }),
   graphql(createBlogHeading, { name: 'createBlogHeading' }),
+  graphql(updateMultiplePosts, { name: 'updateMultiplePosts' }),
   graphql(deletePost, { name: 'deletePost' }),
   graphql(deleteBlogHeading, { name: 'deleteBlogHeading' }),
   graphql(reorderBlogContent, { name: 'reorderBlogContent' })

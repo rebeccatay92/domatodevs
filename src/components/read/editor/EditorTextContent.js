@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
+import { changeActivePost } from '../../../actions/readActions'
 
 import LocationSearch from '../../location/LocationSearch'
 
@@ -45,7 +46,7 @@ class EditorTextContent extends Component {
   // }
 
   render () {
-    const {title, textContent, eventType, googlePlaceData} = this.props.page
+    const {title, textContent, eventType, googlePlaceData, changesMade} = this.props.page
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     if (post && post.type === 'BlogHeading') return null
     if (this.props.pages.activePostIndex === 'fin') return null
@@ -71,8 +72,8 @@ class EditorTextContent extends Component {
           <input type='number' style={{width: '20%', padding: '8px', margin: '8px'}} min={0} />
         </div>}
         <div style={{position: 'absolute', right: '24px', bottom: '-8px'}}>
-          <button>Save</button>
-          <button>Cancel</button>
+          <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}}>Save Changes</button>
+          <button onClick={() => this.props.changeActivePost('home')}>Cancel</button>
         </div>
       </div>
     )
@@ -89,6 +90,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateActivePage: (property, value) => {
       dispatch(updateActivePage(property, value))
+    },
+    changeActivePost: (index) => {
+      dispatch(changeActivePost(index))
     }
   }
 }
