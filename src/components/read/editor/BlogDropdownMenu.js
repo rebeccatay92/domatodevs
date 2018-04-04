@@ -33,6 +33,11 @@ class BlogDropdownMenu extends Component {
       return i >= index && page.type === 'BlogHeading'
     })
 
+    let indexOfPrevHeader = -1
+    this.props.pages.pagesArr.slice(0, index + 1).forEach((page, i) => {
+      if (page.type === 'BlogHeading') indexOfPrevHeader = i
+    })
+
     let indexOfNextHeaderOrPost = this.props.pages.pagesArr.findIndex((page, i) => {
       return i >= index && (page.type === 'BlogHeading' || (page.type === 'Post' && !page.Post.ParentPostId))
     })
@@ -44,6 +49,12 @@ class BlogDropdownMenu extends Component {
         indexOfNextHeader = this.props.pages.pagesArr.length
       }
       adjustedIndex = indexOfNextHeader
+    }
+
+    if (type === 'BlogHeading' && position === 'above') {
+      if (indexOfPrevHeader !== -1) {
+        adjustedIndex = indexOfPrevHeader
+      }
     }
 
     const loadSeqArr = this.props.pages.pagesArr.slice(adjustedIndex).map(page => {
