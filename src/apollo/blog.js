@@ -64,3 +64,61 @@ export const increaseBlogViews = gql`
     increaseBlogViews(id: $id)
   }
 `
+
+export const createBlog = gql`
+  mutation createBlog(
+    $UserId: ID!,
+    $title: String,
+    $textContent: String
+  ) {
+    createBlog(
+      UserId: $UserId,
+      title: $title,
+      textContent: $textContent
+    ) {
+      id
+      UserId
+      title
+      textContent
+    }
+  }
+`
+
+export const deleteBlog = gql`
+  mutation deleteBlog($id: ID!) {
+    deleteBlog(id: $id)
+  }
+`
+
+export const updateBlog = gql`
+  mutation updateBlog(
+    $id: ID!,
+    $ItineraryId: ID!,
+    $title: String,
+    $textContent: String,
+    $published: Boolean
+  ) {
+    updateBlog(
+      id: $id,
+      ItineraryId: $ItineraryId,
+      title: $title,
+      textContent: $textContent,
+      published: $published
+    ) {
+      id
+    }
+  }
+`
+
+// either like or unlike
+export const toggleBlogLikes = gql`
+  mutation toggleBlogLikes(
+    $BlogId: ID!,
+    $UserId: ID!
+  ) {
+    toggleBlogLikes(
+      BlogId: $BlogId,
+      UserId: $UserId
+    )
+  }
+`

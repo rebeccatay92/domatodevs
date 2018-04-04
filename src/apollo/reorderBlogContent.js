@@ -4,6 +4,8 @@ export const reorderBlogContent = gql`
   mutation reorderBlogContent(
     $input: [reorderBlogContentInput]
   ) {
-    reorderBlogContent(input: $input)
+    reorderBlogContent(
+      input: $input
+    )
   }
 `

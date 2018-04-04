@@ -1,11 +1,5 @@
 import { gql } from 'react-apollo'
 
-// export const createToken = gql`
-//   mutation createToken($email: String!, $password: String!) {
-//     createToken(email: $email, password: $password)
-//   }
-// `
-
 export const getUserProfile = gql`
   query getUserProfile {
     getUserProfile {
@@ -14,6 +8,42 @@ export const getUserProfile = gql`
       username
       email
       profilePic
+      CountryId
+      country {
+        id
+        name
+        code
+      }
+      bio
+    }
+  }
+`
+
+export const updateUserProfile = gql`
+  mutation updateUserProfile(
+    $CountryId: ID,
+    $fullName: String,
+    $bio: String,
+    $profilePic: String
+  ) {
+    updateUserProfile(
+      CountryId: $CountryId,
+      fullName: $fullName,
+      bio: $bio,
+      profilePic: $profilePic
+    ) {
+      id
+      fullName
+      username
+      email
+      profilePic
+      CountryId
+      country {
+        id
+        name
+        code
+      }
+      bio
     }
   }
 `

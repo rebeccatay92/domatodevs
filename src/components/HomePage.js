@@ -14,28 +14,30 @@ class HomePage extends Component {
 
     if (id_token) {
       var decodedIdToken = jwt.decode(id_token)
-      // console.log('id token claims', decodedIdToken)
-
       var idTokenExpiry = decodedIdToken.exp
       var idTokenExpiryString = moment.unix(idTokenExpiry).format('DD MMM YYYY, hh:mm A')
     }
 
     return (
-      <div>
+      <div style={{width: '70%', height: '100%', margin: '0 auto', border: '1px solid blue'}}>
         <h1>HOMEPAGE</h1>
-        <h3>isAuthenticated ===> {isAuthenticated ? 'true' : 'false'}</h3>
-        <h3>Access token: {access_token}</h3>
-        <h3>Access token Expires at: {expires_at}, {expiresAtString}</h3>
-        <h3>Id token: {id_token}</h3>
-        {id_token &&
-          <React.Fragment>
-            <h3>id token expiry: {idTokenExpiry}, {idTokenExpiryString}</h3>
-            <h3>ID token claims</h3>
-            <h3>{decodedIdToken.name}</h3>
-            <h3>{decodedIdToken.sub}</h3>
-            <img src={decodedIdToken.picture} height={'200px'} width={'200px'} />
-          </React.Fragment>
-        }
+
+        {/* <React.Fragment>
+          <h3>isAuthenticated ===> {isAuthenticated ? 'true' : 'false'}</h3>
+          <h3>Access token: {access_token}</h3>
+          <h3>Access token Expires at: {expires_at}, {expiresAtString}</h3>
+          <h3>Id token: {id_token}</h3>
+          {id_token &&
+            <React.Fragment>
+              <h3>id token expiry: {idTokenExpiry}, {idTokenExpiryString}</h3>
+              <h3>ID token claims</h3>
+              <h3>{decodedIdToken.name}</h3>
+              <h3>{decodedIdToken.sub}</h3>
+              <img src={decodedIdToken.picture} height={'200px'} width={'200px'} />
+            </React.Fragment>
+          }
+        </React.Fragment> */}
+
       </div>
     )
   }

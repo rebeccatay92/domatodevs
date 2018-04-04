@@ -1,16 +1,13 @@
 import React, { Component } from 'react'
 import { Router, Route } from 'react-router-dom'
-// import jwt from 'jsonwebtoken'
+
 import { connect } from 'react-redux'
-import { graphql, compose } from 'react-apollo'
+
 import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import { generateCloudStorageToken } from '../actions/cloudStorageActions'
-// import { setUserProfile } from '../actions/userActions'
-
-import { getUserProfile } from '../apollo/user'
 
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
@@ -29,33 +26,18 @@ const lock = new Lock()
 
 class App extends Component {
   componentDidMount () {
-    // console.log('did mount')
     this.props.generateCloudStorageToken()
-
-    // fetch user profile from backend and set redux state
-    // var isAuthenticated = lock.isAuthenticated()
-    // var userId = window.localStorage.getItem('user_id')
-    //
-    // if (isAuthenticated && userId) {
-    //   console.log('there is a user. fetch backend')
-    //   // this.props.setUserProfile()
-    // }
   }
 
   render () {
-    // var userProfile = this.props.data.getUserProfile
     // var isAuthenticated = lock.isAuthenticated()
     // var userId = window.localStorage.getItem('user_id')
-    // console.log('userId', userId)
-    // if (isAuthenticated && userId) {
-    //   console.log('there is user')
-    // }
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar lock={lock} />
 
-          <div style={{width: '100%', marginTop: '60px', height: 'calc(100vh - 60px)'}}>
+          <div style={{width: '100%', marginTop: '60px'}}>
             <Route exact path='/' render={(props) => (
               <HomePage lock={lock} {...props} />
             )} />
@@ -92,7 +74,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     cloudStorageToken: state.cloudStorageToken,
-    showSpinner: state.showSpinner
+    showSpinner: state.showSpinner,
+    userProfile: state.userProfile
   }
 }
 
@@ -101,13 +84,7 @@ const mapDispatchToProps = (dispatch) => {
     generateCloudStorageToken: () => {
       dispatch(generateCloudStorageToken())
     }
-    // setUserProfile: (userId) => {
-    //   dispatch(setUserProfile(userId))
-    // }
   }
 }
 
-// trying to fetch data from backend. how to integrate with lock?
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(getUserProfile)
-)(App)))
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))

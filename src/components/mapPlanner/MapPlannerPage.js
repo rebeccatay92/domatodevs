@@ -142,7 +142,7 @@ class MapPlannerPage extends Component {
     }
     return (
       <div>
-        <div style={{marginTop: '60px', height: 'calc(100vh - 60px)', width: '1920px'}}>
+        <div style={{height: 'calc(100vh - 60px)', width: '1920px'}}>
           <div style={{display: 'inline-block', verticalAlign: 'top', width: '15%', height: 'calc(100vh - 60px)', background: backgroundColor, overflow: 'hidden'}}>
             <div style={{overflowY: 'scroll', width: '107%', height: '100%', paddingRight: '7%'}}>
               <SideBarPlanner itinerary={this.props.data.findItinerary} itineraryId={this.props.match.params.itineraryId} events={this.props.events} days={this.state.days} daysArr={this.state.daysArr} datesArr={this.state.datesArr} />

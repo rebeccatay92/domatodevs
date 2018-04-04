@@ -396,15 +396,14 @@ class MapEditEventPopup extends Component {
         {/* DESCRIPTION / LOCATION SEARCH */}
 
         {(eventType === 'Activity' || eventType === 'Food' || eventType === 'Lodging') &&
-          <div>
+          <React.Fragment>
             <h5 style={{fontSize: '12px'}}>Description</h5>
             <input type='text' placeholder='Optional description' value={this.state.description} onChange={(e) => this.handleChange(e, 'description')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
-          </div>
+          </React.Fragment>
         }
 
         {eventType === 'LandTransport' &&
-          <div>
-
+          <React.Fragment>
             {/* LABEL FOR LOCATION SEARCH */}
             {this.state.locationSearchIsFor === 'arrival' &&
               <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
@@ -422,7 +421,7 @@ class MapEditEventPopup extends Component {
                 <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreLocationSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
               </div>
             }
-          </div>
+          </React.Fragment>
         }
 
         {eventType !== 'Flight' &&
@@ -433,25 +432,25 @@ class MapEditEventPopup extends Component {
         }
 
         {eventType === 'Flight' &&
-          <div>
+          <React.Fragment>
             <h5>Flight Details</h5>
             {this.state.start &&
-              <div>
+              <React.Fragment>
                 <h5>Arrival airport: {this.state.eventRowInDb.arrivalLocation.name}</h5>
                 <h5>Flight no: {this.state.eventRowInDb.flightNumber}</h5>
                 <h5>Departure Terminal: {this.state.eventRowInDb.departureTerminal}</h5>
                 <h5>Departure Time: {startTime}, {startDate}</h5>
-              </div>
+              </React.Fragment>
             }
             {!this.state.start &&
-              <div>
+              <React.Fragment>
                 <h5>Departure airport: {this.state.eventRowInDb.departureLocation.name}</h5>
                 <h5>Flight no: {this.state.eventRowInDb.flightNumber}</h5>
                 <h5>Arrival Terminal: {this.state.eventRowInDb.arrivalTerminal}</h5>
                 <h5>Arrival Time: {endTime}, {endDate}</h5>
-              </div>
+              </React.Fragment>
             }
-          </div>
+          </React.Fragment>
         }
 
         <div style={{position: 'absolute', right: '0', bottom: '0'}}>

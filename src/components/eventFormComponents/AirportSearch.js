@@ -86,22 +86,22 @@ class AirportSearch extends Component {
   render () {
     if (this.props.intuitiveInput) {
       return (
-        <div>
+        <React.Fragment>
           <input style={{height: '31px', width: '100%', padding: '8px', fontSize: '13px'}} placeholder={this.props.placeholder} name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
           {this.state.selecting &&
             <AirportResults intuitiveInput results={this.state.results} selectLocation={(details) => this.selectLocation(details)} />
           }
-        </div>
+        </React.Fragment>
       )
     } else {
       return (
-        <div>
+        <React.Fragment>
           <input key='airportLocation' id='locationInput' className='left-panel-input' autoComplete='off' name='search' value={this.state.search} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={locationSelectionInputStyle(this.state.marginTop, 'flight')} />
 
           {this.state.selecting &&
             <AirportResults results={this.state.results} selectLocation={(details) => this.selectLocation(details)} />
           }
-        </div>
+        </React.Fragment>
       )
     }
   }

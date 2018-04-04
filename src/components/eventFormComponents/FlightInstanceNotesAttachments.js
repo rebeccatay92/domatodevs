@@ -113,7 +113,7 @@ class FlightInstanceNotesAttachments extends Component {
     if (!this.props.instance) return null
     return (
       <div>
-        <div>
+        <React.Fragment>
           <h5>Departure: {this.props.instance.departureAirport}</h5>
           <div style={{width: '50%', display: 'inline-block'}}>
             <Notes notes={this.props.instance.departureNotes} handleChange={(e) => this.handleChange(e, 'departureNotes')} />
@@ -121,11 +121,11 @@ class FlightInstanceNotesAttachments extends Component {
           <div style={{width: '50%', display: 'inline-block', float: 'right'}}>
             <AttachmentsRework ItineraryId={this.props.ItineraryId} attachments={this.props.instance.attachments.filter(e => { return e.arrivalDeparture === 'departure' })} handleFileUpload={(e) => this.handleFileUpload(e, 'departure')} removeUpload={i => this.removeUpload(i)} setBackground={url => this.props.setBackground(url)} formType={this.props.formType} backgroundImage={this.props.backgroundImage} />
           </div>
-        </div>
+        </React.Fragment>
 
         <hr />
 
-        <div>
+        <React.Fragment>
           <h5>Departure: {this.props.instance.arrivalAirport}</h5>
           <div style={{width: '50%', display: 'inline-block'}}>
             <Notes notes={this.props.instance.arrivalNotes} handleChange={(e) => this.handleChange(e, 'arrivalNotes')} />
@@ -133,7 +133,7 @@ class FlightInstanceNotesAttachments extends Component {
           <div style={{width: '50%', display: 'inline-block', float: 'right'}}>
             <AttachmentsRework ItineraryId={this.props.ItineraryId} attachments={this.props.instance.attachments.filter(e => { return e.arrivalDeparture === 'arrival' })} handleFileUpload={(e) => this.handleFileUpload(e, 'arrival')} removeUpload={i => this.removeUpload(i)} setBackground={url => this.props.setBackground(url)} formType={this.props.formType} backgroundImage={this.props.backgroundImage} />
           </div>
-        </div>
+        </React.Fragment>
       </div>
     )
   }

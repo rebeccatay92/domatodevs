@@ -22,19 +22,20 @@ export function retrieveToken () {
       },
       body: dataString
     })
-    .then(response => {
-      return response.json()
-    })
-    .then(json => {
-      var apiToken = json.access_token
-      return resolve({
-        expiry: payload.exp,
-        token: apiToken
+      .then(response => {
+        return response.json()
       })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(json => {
+        var apiToken = json.access_token
+        // console.log('apiToken from fetch', apiToken)
+        return resolve({
+          expiry: payload.exp,
+          token: apiToken
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   })
 }
 
@@ -50,12 +51,12 @@ export function removeAllAttachments (attachments, apiToken) {
         'Authorization': `Bearer ${apiToken}`
       }
     })
-    .then(response => {
-      console.log(response)
-      if (response.status === 204) {
-        console.log('delete from cloud storage succeeded')
-      }
-    })
-    .catch(err => console.log(err))
+      .then(response => {
+        console.log(response)
+        if (response.status === 204) {
+          console.log('delete from cloud storage succeeded')
+        }
+      })
+      .catch(err => console.log(err))
   })
 }
