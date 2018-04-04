@@ -28,7 +28,6 @@ class BlogDropdownMenu extends Component {
     this.props.toggleDropdown()
 
     let adjustedIndex = index
-    const selectedPageType = this.props.pages.pagesArr[this.props.i].type
 
     let indexOfNextHeader = this.props.pages.pagesArr.findIndex((page, i) => {
       return i >= index && page.type === 'BlogHeading'
@@ -37,6 +36,8 @@ class BlogDropdownMenu extends Component {
     let indexOfNextHeaderOrPost = this.props.pages.pagesArr.findIndex((page, i) => {
       return i >= index && (page.type === 'BlogHeading' || (page.type === 'Post' && !page.Post.ParentPostId))
     })
+
+    if (indexOfNextHeaderOrPost === -1) indexOfNextHeaderOrPost = this.props.pages.pagesArr.length
 
     if (type === 'BlogHeading' && position === 'below') {
       if (indexOfNextHeader === -1) {
@@ -81,9 +82,17 @@ class BlogDropdownMenu extends Component {
             ParentPostId: results.data.createPost.id
           }
         })
-        return this.props.updateMultiplePosts
+        return this.props.updateMultiplePosts({
+          variables: {
+            input: postsArr
+          }
+        })
+        .then(results => {
+          return this.props.data.refetch()
+        })
+      } else {
+        return this.props.data.refetch()
       }
-      return this.props.data.refetch()
     })
     .then(response => {
       this.props.initializePosts(response.data.findBlog.pages)
@@ -96,11 +105,14 @@ class BlogDropdownMenu extends Component {
     this.props.toggleDropdown()
     this.props.toggleSpinner(true)
 
+    let noOfSubPosts = 0
+    if (this.props.pages.pagesArr[this.props.i].type === 'Post') noOfSubPosts = this.props.pages.pagesArr[this.props.i].Post && this.props.pages.pagesArr[this.props.i].Post.childPosts.length
+
     const loadSeqArr = this.props.pages.pagesArr.slice(this.props.i + 1).map(page => {
       return {
         type: page.type,
         modelId: page.modelId,
-        loadSequence: page.loadSequence - 1
+        loadSequence: page.loadSequence - 1 - noOfSubPosts
       }
     })
 
@@ -109,15 +121,15 @@ class BlogDropdownMenu extends Component {
       'BlogHeading': 'deleteBlogHeading'
     }
 
-    this.props[types[type]]({
+    this.props.reorderBlogContent({
       variables: {
-        id: this.props.pages.pagesArr[this.props.i].modelId
+        input: loadSeqArr
       }
     })
     .then(results => {
-      return this.props.reorderBlogContent({
+      return this.props[types[type]]({
         variables: {
-          input: loadSeqArr
+          id: this.props.pages.pagesArr[this.props.i].modelId
         }
       })
     })
@@ -147,7 +159,7 @@ class BlogDropdownMenu extends Component {
           {this.props.heading && <li key='delHead' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Header</li>}
           {this.props.post && <li key='delPost' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Post</li>}
         </ul>
-        {this.state.confirmation && <ConfirmWindow message={'Are you sure you want to delete this ' + (this.props.heading ? 'header?' : 'post?')} confirmMessage={'Delete ' + (this.props.heading ? 'Header' : 'Post')} cancelFn={() => this.handleCancel()} confirmFn={() => this.deletePage(this.props.heading ? 'BlogHeading' : 'Post')} />}
+        {this.state.confirmation && <ConfirmWindow message={'Are you sure you want to delete this ' + (this.props.heading ? 'header?' : 'post?')} secondaryMessage={this.props.heading ? '' : 'Warning: All sub-posts that belong to this post will also be deleted.'} confirmMessage={'Delete ' + (this.props.heading ? 'Header' : 'Post')} cancelFn={() => this.handleCancel()} confirmFn={() => this.deletePage(this.props.heading ? 'BlogHeading' : 'Post')} />}
       </div>
     )
   }
