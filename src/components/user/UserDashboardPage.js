@@ -201,7 +201,7 @@ class UserDashboardPage extends Component {
           </div>
         }
         {this.state.focusedTab === 'account' &&
-          <div style={{width: '100%', height: 'calc(100% - 210px)', paddingTop: '15px'}}>
+          <div style={{width: '100%', height: 'calc(100% - 240px)', paddingTop: '15px'}}>
             <AccountTab lock={this.props.lock} />
           </div>
         }

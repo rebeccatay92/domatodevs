@@ -118,6 +118,16 @@ export const updatePost = gql`
   }
 `
 
+export const updateMultiplePosts = gql`
+  mutation updateMultiplePosts(
+    $input: [updateMultiplePostsInput]
+  ) {
+    updateMultiplePosts(
+      input: $input
+    )
+  }
+`
+
 export const deletePost = gql`
   mutation deletePost($id: ID!) {
     deletePost(id: $id)
