@@ -74,7 +74,11 @@ class BlogDropdownMenu extends Component {
       })
     })
     .then(results => {
-      if (position === 'below' && type === 'Post' && indexOfNextHeaderOrPost > index) {
+      if ((position === 'below' && type === 'Post' && indexOfNextHeaderOrPost > index) || (position === 'above' && type === 'Post' && this.props.pages.pagesArr[this.props.i].type === 'Post' && this.props.pages.pagesArr[this.props.i].Post.ParentPostId)) {
+        console.log('called');
+        if (indexOfNextHeaderOrPost === -1) {
+          indexOfNextHeaderOrPost = this.props.pages.pagesArr.length
+        }
         // subPosts Arr to have parentId changed
         const postsArr = this.props.pages.pagesArr.slice(index, indexOfNextHeaderOrPost).map(post => {
           return {
@@ -152,9 +156,9 @@ class BlogDropdownMenu extends Component {
     return (
       <div style={{position: 'absolute', top: '17px', right: '-20px', backgroundColor: 'white', zIndex: 1, display: 'inline-block', boxShadow: '0px 3px 6px 0px rgba(0, 0, 0, .2)'}}>
         <ul style={{listStyleType: 'none', padding: 0}}>
-          <li key='addPostAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'Post')}>Add Post Above</li>
+          <li key='addPostAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'Post', 'above')}>Add Post Above</li>
           <li key='addPostBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'Post', 'below')}>Add Post Below</li>
-          <li key='addHeaderAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'BlogHeading')}>Add Header Above</li>
+          <li key='addHeaderAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'BlogHeading', 'above')}>Add Header Above</li>
           <li key='addHeaderBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'BlogHeading', 'below')}>Add Header Below</li>
           {this.props.heading && <li key='delHead' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Header</li>}
           {this.props.post && <li key='delPost' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Post</li>}
