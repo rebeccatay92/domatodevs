@@ -69,7 +69,7 @@ class MediaTab extends Component {
             if (medium.type === 'Photo') {
               return (
                 <div key={i} style={{width: '256px', height: '144px', margin: '0px 12px 24px 0px'}}>
-                  <img src={medium.url} width='256px' height='144px' />
+                  <img src={medium.imageUrl} width='256px' height='144px' />
                 </div>
               )
             } else if (medium.type === 'Youtube') {

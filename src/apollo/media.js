@@ -5,8 +5,9 @@ export const findMedium = gql`
   query findMedium($id: ID!) {
     findMedium(id: $id) {
       id
-      url
       type
+      imageUrl
+      youtubeUrl
     }
   }
 `
@@ -38,16 +39,20 @@ export const findMediaPost = gql`
 
 export const createMedium = gql`
   mutation createMedium(
-    $url: String!
     $type: String!
+    $imageUrl: String
+    $youtubeUrl: String
+
   ) {
     createMedium(
-      url: $url,
-      type: $type
+      type: $type,
+      imageUrl: $imageUrl,
+      youtubeUrl: $youtubeUrl
     ) {
       id
-      url
       type
+      imageUrl
+      youtubeUrl
     }
   }
 `

@@ -30,7 +30,8 @@ export const findPost = gql`
       }
       media {
         id
-        url
+        imageUrl
+        youtubeUrl
         type
       }
     }
