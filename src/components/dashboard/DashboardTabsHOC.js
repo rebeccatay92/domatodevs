@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import AccountTab from './AccountTab'
 import MediaTab from './MediaTab'
 
-// import all tab components. style container div. compare this.props.focusedTab and return correct component. pass lock down as props
-
 class DashboardTabsHOC extends Component {
   // constructor (props) {
   //   super(props)

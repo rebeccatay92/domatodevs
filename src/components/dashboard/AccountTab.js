@@ -6,8 +6,8 @@ import { allCountries } from '../../apollo/country'
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
 
-const focusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid gray', margin: '20px 0 20px 0', cursor: 'pointer'}
-const unfocusedTabStyle = {paddingLeft: '10px', borderLeft: '5px solid transparent', margin: '20px 0 20px 0', cursor: 'pointer'}
+const focusedTabStyle = {height: '30px', paddingLeft: '10px', paddingTop: '5px', borderLeft: '5px solid black', margin: '20px 0 20px 0', cursor: 'pointer'}
+const unfocusedTabStyle = {height: '30px', paddingLeft: '10px', paddingTop: '5px', borderLeft: '5px solid transparent', margin: '20px 0 20px 0', cursor: 'pointer'}
 
 class AccountTab extends Component {
   constructor (props) {
@@ -20,7 +20,6 @@ class AccountTab extends Component {
   }
 
   selectCountry (e) {
-    // console.log('value', e.target.value)
     this.setState({
       CountryId: e.target.value
     })
@@ -67,14 +66,14 @@ class AccountTab extends Component {
     let allCountries = this.props.data.allCountries
     // console.log('allCountries', allCountries)
     return (
-      <div style={{width: '100%', minHeight: 'calc(100vh - 360px)', padding: '15px 0 15px 0', border: '1px solid red', boxSizing: 'border-box'}}>
+      <div style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box', border: '1px solid red'}}>
 
-        <div style={{display: 'inline-block', verticalAlign: 'top', width: '20%', minHeight: 'calc(100vh - 375px)', borderRight: '2px solid gray', paddingRight: '10px'}}>
+        <div style={{display: 'inline-block', verticalAlign: 'top', width: '20%', height: '100%', borderRight: '2px solid gray', paddingRight: '10px'}}>
           <h4 style={this.state.focusedTab === 'profile' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'profile'})}>Profile Information</h4>
           <h4 style={this.state.focusedTab === 'security' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'security'})}>Security</h4>
         </div>
 
-        <div style={{display: 'inline-block', verticalAlign: 'top', width: '80%', boxSizing: 'border-box', paddingLeft: '20px'}}>
+        <div style={{display: 'inline-block', verticalAlign: 'top', width: '80%', height: '100%', boxSizing: 'border-box', paddingLeft: '20px'}}>
           {this.state.focusedTab === 'profile' &&
             <React.Fragment>
               <h4>Username: {profile.username}</h4>
