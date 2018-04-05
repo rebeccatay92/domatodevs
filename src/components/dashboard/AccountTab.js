@@ -6,8 +6,8 @@ import { allCountries } from '../../apollo/country'
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
 
-const focusedTabStyle = {height: '30px', paddingLeft: '10px', paddingTop: '5px', borderLeft: '5px solid black', margin: '20px 0 20px 0', cursor: 'pointer'}
-const unfocusedTabStyle = {height: '30px', paddingLeft: '10px', paddingTop: '5px', borderLeft: '5px solid transparent', margin: '20px 0 20px 0', cursor: 'pointer'}
+const focusedTabStyle = {height: '30px', paddingLeft: '10px', paddingTop: '5px', borderLeft: '5px solid black', margin: '0px 0 20px 0', cursor: 'pointer'}
+const unfocusedTabStyle = {height: '30px', paddingLeft: '10px', paddingTop: '5px', borderLeft: '5px solid transparent', margin: '0px 0 20px 0', cursor: 'pointer'}
 
 class AccountTab extends Component {
   constructor (props) {
@@ -66,7 +66,7 @@ class AccountTab extends Component {
     let allCountries = this.props.data.allCountries
     // console.log('allCountries', allCountries)
     return (
-      <div style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box', border: '1px solid red'}}>
+      <div style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box'}}>
 
         <div style={{display: 'inline-block', verticalAlign: 'top', width: '20%', height: '100%', borderRight: '2px solid gray', paddingRight: '10px'}}>
           <h4 style={this.state.focusedTab === 'profile' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'profile'})}>Profile Information</h4>
