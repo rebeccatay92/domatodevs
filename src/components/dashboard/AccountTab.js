@@ -67,11 +67,13 @@ class AccountTab extends Component {
     let allCountries = this.props.data.allCountries
     // console.log('allCountries', allCountries)
     return (
-      <div style={{width: '100%', height: '100%'}}>
-        <div style={{display: 'inline-block', verticalAlign: 'top', width: '20%', height: '100%', borderRight: '2px solid gray', paddingRight: '10px'}}>
+      <div style={{width: '100%', minHeight: 'calc(100vh - 360px)', padding: '15px 0 15px 0', border: '1px solid red', boxSizing: 'border-box'}}>
+
+        <div style={{display: 'inline-block', verticalAlign: 'top', width: '20%', minHeight: 'calc(100vh - 375px)', borderRight: '2px solid gray', paddingRight: '10px'}}>
           <h4 style={this.state.focusedTab === 'profile' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'profile'})}>Profile Information</h4>
           <h4 style={this.state.focusedTab === 'security' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'security'})}>Security</h4>
         </div>
+
         <div style={{display: 'inline-block', verticalAlign: 'top', width: '80%', boxSizing: 'border-box', paddingLeft: '20px'}}>
           {this.state.focusedTab === 'profile' &&
             <React.Fragment>

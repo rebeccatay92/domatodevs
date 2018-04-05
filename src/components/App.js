@@ -16,7 +16,7 @@ import ReadPage from './read/ReadPage'
 import BlogEditorPage from './read/editor/BlogEditorPage'
 import Navbar from './Navbar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
-import UserDashboardPage from './user/UserDashboardPage'
+import UserDashboardPage from './dashboard/UserDashboardPage'
 
 import PasswordChanged from './Auth0/PasswordChanged'
 

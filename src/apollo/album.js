@@ -24,13 +24,15 @@ export const findAlbum = gql`
 // userid passed through context.user
 export const getUserAlbums = gql`
   query getUserAlbums {
-    id
-    title
-    description
-    media {
+    getUserAlbums {
       id
-      url
-      type
+      title
+      description
+      media {
+        id
+        url
+        type
+      }
     }
   }
 `
