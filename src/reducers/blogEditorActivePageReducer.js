@@ -19,7 +19,9 @@ export const blogEditorActivePageReducer = (state = {}, action) => {
       return {
         ...state,
         ...{
-          [action.property]: action.value,
+          [action.property]: action.value
+        },
+        ...action.property !== 'changesMade' && {
           changesMade: true
         }
       }

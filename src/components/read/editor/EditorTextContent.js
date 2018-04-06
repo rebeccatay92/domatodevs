@@ -60,7 +60,10 @@ class EditorTextContent extends Component {
         variables: { id: this.props.blogId }
       }]
     })
-    .then(results => this.props.toggleSpinner(false))
+    .then(results => {
+      this.props.updateActivePage('changesMade', false)
+      this.props.toggleSpinner(false)
+    })
   }
 
   savePost () {
@@ -69,6 +72,8 @@ class EditorTextContent extends Component {
     let indexOfNextHeaderOrPost = this.props.pages.pagesArr.findIndex((page, i) => {
       return i > this.props.pages.activePostIndex && (page.type === 'BlogHeading' || (page.type === 'Post' && !page.Post.ParentPostId))
     })
+
+    if (indexOfNextHeaderOrPost === -1) indexOfNextHeaderOrPost = this.props.pages.pagesArr.length
 
     let parentPostId
     if (this.props.page.isSubPost) {
@@ -132,7 +137,6 @@ class EditorTextContent extends Component {
       }
     })
     .then(results => {
-      this.props.toggleSpinner(false)
       return this.props.updateMultiplePosts({
         variables: {
           input: subPostsArrToBeChanged
@@ -142,6 +146,10 @@ class EditorTextContent extends Component {
           variables: { id: this.props.blogId }
         }]
       })
+    })
+    .then(() => {
+      this.props.updateActivePage('changesMade', false)
+      this.props.toggleSpinner(false)
     })
   }
 

@@ -1,5 +1,16 @@
 import { gql } from 'react-apollo'
 
+export const findBlogHeading = gql`
+  query findBlogHeading($id: ID!) {
+    findBlogHeading(id: $id) {
+      id
+      BlogId
+      loadSequence
+      title
+    }
+  }
+`
+
 export const createBlogHeading = gql`
   mutation createBlogHeading(
     $BlogId: ID!,
@@ -10,16 +21,30 @@ export const createBlogHeading = gql`
       loadSequence: $loadSequence
     ) {
       id
+      BlogId
+      loadSequence
+      title
+    }
+  }
+`
+export const updateBlogHeading = gql`
+  mutation updateBlogHeading(
+    $id: ID!,
+    $loadSequence: Int,
+    $title: String
+  ) {
+    updateBlogHeading(
+      id: $id,
+      loadSequence: $loadSequence,
+      title: $title
+    ) {
+      id
     }
   }
 `
 
 export const deleteBlogHeading = gql`
-  mutation deleteBlogHeading(
-    $id: ID!
-  ) {
-    deleteBlogHeading(
-      id: $id
-    )
+  mutation deleteBlogHeading($id: ID!) {
+    deleteBlogHeading(id: $id)
   }
 `

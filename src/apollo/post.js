@@ -78,7 +78,8 @@ export const createPost = gql`
       }
       media {
         id
-        url
+        imageUrl
+        youtubeUrl
         type
       }
     }
