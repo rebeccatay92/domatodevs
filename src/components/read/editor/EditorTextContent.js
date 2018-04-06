@@ -1,7 +1,15 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { graphql, compose } from 'react-apollo'
+
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
 import { changeActivePost } from '../../../actions/readActions'
+import { toggleSpinner } from '../../../actions/spinnerActions'
+
+import { constructGooglePlaceDataObj } from '../../../helpers/location'
+
+import { queryBlog, updateBlog } from '../../../apollo/blog'
+import { updatePost, updateMultiplePosts } from '../../../apollo/post'
 
 import LocationSearch from '../../location/LocationSearch'
 
@@ -23,27 +31,127 @@ import LocationSearch from '../../location/LocationSearch'
 // }
 
 class EditorTextContent extends Component {
-  // constructor (props) {
-  //   super(props)
-  //
-  //   const {title, content} = getPageInfo(props)
-  //
-  //   this.state = {
-  //     title,
-  //     content
-  //   }
-  // }
-  //
-  // componentWillReceiveProps (nextProps) {
-  //   if (nextProps.pages.activePostIndex !== this.props.pages.activePostIndex) {
-  //     const {title, content} = getPageInfo(nextProps)
-  //
-  //     this.setState({
-  //       title,
-  //       content
-  //     })
-  //   }
-  // }
+  constructor (props) {
+    super(props)
+    this.state = {
+      confirmation: false
+    }
+  }
+
+  handleSave (type) {
+    const types = {
+      Post: 'savePost',
+      Blog: 'saveBlog'
+    }
+
+    this[types[type]]()
+  }
+
+  saveBlog () {
+    this.props.toggleSpinner(true)
+    this.props.updateBlog({
+      variables: {
+        id: this.props.page.modelId,
+        title: this.props.page.title,
+        textContent: this.props.page.textContent
+      },
+      refetchQueries: [{
+        query: queryBlog,
+        variables: { id: this.props.blogId }
+      }]
+    })
+    .then(results => this.props.toggleSpinner(false))
+  }
+
+  savePost () {
+    this.props.toggleSpinner(true)
+
+    let indexOfNextHeaderOrPost = this.props.pages.pagesArr.findIndex((page, i) => {
+      return i > this.props.pages.activePostIndex && (page.type === 'BlogHeading' || (page.type === 'Post' && !page.Post.ParentPostId))
+    })
+
+    let parentPostId
+    if (this.props.page.isSubPost) {
+      for (var i = this.props.pages.activePostIndex - 1; i >= 0; i--) {
+        if (this.props.pages.pagesArr[i].type === 'BlogHeading') {
+          alert('error, no parent post to hold sub-posts')
+          this.props.toggleSpinner(false)
+          return
+        }
+        if (this.props.pages.pagesArr[i].type === 'Post' && !this.props.pages.pagesArr[i].Post.ParentPostId) {
+          parentPostId = this.props.pages.pagesArr[i].modelId
+          break
+        }
+      }
+    } else {
+      parentPostId = this.props.page.modelId
+    }
+
+    let subPostsArrToBeChanged
+    if (this.props.page.isSubPost) {
+      subPostsArrToBeChanged = this.props.pages.pagesArr[this.props.pages.activePostIndex].Post.childPosts.map(post => {
+        return {
+          id: post.id,
+          ParentPostId: parentPostId
+        }
+      })
+    } else if (!this.props.page.isSubPost) {
+      subPostsArrToBeChanged = this.props.pages.pagesArr.slice(this.props.pages.activePostIndex + 1, indexOfNextHeaderOrPost).map(post => {
+        return {
+          id: post.modelId,
+          ParentPostId: parentPostId
+        }
+      })
+    }
+
+    this.props.updatePost({
+      variables: {
+        ...{
+          id: this.props.page.modelId,
+          textContent: this.props.page.textContent,
+          eventType: this.props.page.eventType,
+          contentOnly: !this.props.page.eventType
+        },
+        ...this.props.page.eventType && {
+          description: this.props.page.title,
+          title: ''
+        },
+        ...!this.props.page.eventType && {
+          title: this.props.page.title,
+          description: ''
+        },
+        ...this.props.page.isSubPost && {
+          ParentPostId: parentPostId
+        },
+        ...!this.props.page.isSubPost && {
+          ParentPostId: null
+        },
+        ...this.props.page.googlePlaceData.placeId && {
+          googlePlaceData: this.props.page.googlePlaceData
+        }
+      }
+    })
+    .then(results => {
+      this.props.toggleSpinner(false)
+      return this.props.updateMultiplePosts({
+        variables: {
+          input: subPostsArrToBeChanged
+        },
+        refetchQueries: [{
+          query: queryBlog,
+          variables: { id: this.props.blogId }
+        }]
+      })
+    })
+  }
+
+  selectLocation (location) {
+    var googlePlaceData = constructGooglePlaceDataObj(location)
+    googlePlaceData
+    .then(resolved => {
+      this.props.updateActivePage('googlePlaceData', resolved)
+    })
+  }
 
   render () {
     const {title, textContent, eventType, googlePlaceData, changesMade} = this.props.page
@@ -60,7 +168,7 @@ class EditorTextContent extends Component {
           <div style={{position: 'relative'}}>
             {/* <input type='text' style={{width: eventType ? '80%' : '100%', padding: '8px'}} />
             {eventType && <input type='text' style={{width: '20%', padding: '8px'}} />} */}
-            <LocationSearch blogEditor placeholder={'Location'} currentLocation={googlePlaceData} eventType={eventType} />
+            <LocationSearch blogEditor selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={googlePlaceData} eventType={eventType} />
           </div>
         </React.Fragment>}
         <label style={{margin: '8px 0'}}>Content</label>
@@ -72,7 +180,7 @@ class EditorTextContent extends Component {
           <input type='number' style={{width: '20%', padding: '8px', margin: '8px'}} min={0} />
         </div>}
         <div style={{position: 'absolute', right: '24px', bottom: '-8px'}}>
-          <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}}>Save Changes</button>
+          <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.handleSave(this.props.page.type)}>Save Changes</button>
           <button onClick={() => this.props.changeActivePost('home')}>Cancel</button>
         </div>
       </div>
@@ -93,8 +201,24 @@ const mapDispatchToProps = (dispatch) => {
     },
     changeActivePost: (index) => {
       dispatch(changeActivePost(index))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
     }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditorTextContent)
+const options = {
+  options: props => ({
+    variables: {
+      id: props.blogId
+    }
+  })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryBlog, options),
+  graphql(updateBlog, { name: 'updateBlog' }),
+  graphql(updatePost, { name: 'updatePost' }),
+  graphql(updateMultiplePosts, { name: 'updateMultiplePosts' })
+)(EditorTextContent))

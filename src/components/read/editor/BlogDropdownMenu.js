@@ -111,7 +111,7 @@ class BlogDropdownMenu extends Component {
     })
     .then(response => {
       this.props.initializePosts(response.data.findBlog.pages)
-      this.props.changeActivePost(adjustedIndex)
+      // this.props.changeActivePost(adjustedIndex)
       this.props.toggleSpinner(false)
     })
   }
@@ -153,7 +153,13 @@ class BlogDropdownMenu extends Component {
     })
     .then(response => {
       this.props.initializePosts(response.data.findBlog.pages)
-      this.props.changeActivePost('home')
+      if (this.props.pages.activePostIndex === 'home') {
+
+      } else if (this.props.i < this.props.pages.activePostIndex) {
+        this.props.changeActivePost(this.props.pages.activePostIndex - 1)
+      } else if (this.props.i === this.props.pages.activePostIndex) {
+        this.props.changeActivePost('home')
+      }
       this.props.toggleSpinner(false)
     })
   }

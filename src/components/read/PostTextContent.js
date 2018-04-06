@@ -9,7 +9,7 @@ class PostTextContent extends Component {
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     return (
       <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white'}}>
-        <div style={{width: '40vw', height: 'calc(100vh - 60px)', display: 'inline-block', padding: '36px'}}>
+        <div style={{width: '40vw', display: 'inline-block', padding: '36px'}}>
           {this.props.pages.activePostIndex === 'home' && (
             <span className='blogpostTitle' style={{textTransform: 'uppercase', display: 'block', textAlign: 'center', fontFamily: '\'Roboto\', sans-serif', fontWeight: '100', fontSize: '55px'}}>{this.props.blogTitle}</span>
           )}

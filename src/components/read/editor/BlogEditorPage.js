@@ -32,7 +32,7 @@ class BlogEditorPage extends Component {
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
         <EditorMediaContent />
-        <EditorTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} />
+        <EditorTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogId={this.props.match.params.blogId} />
       </div>
     )
   }

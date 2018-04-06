@@ -93,7 +93,7 @@ export const deleteBlog = gql`
 export const updateBlog = gql`
   mutation updateBlog(
     $id: ID!,
-    $ItineraryId: ID!,
+    $ItineraryId: ID,
     $title: String,
     $textContent: String,
     $published: Boolean

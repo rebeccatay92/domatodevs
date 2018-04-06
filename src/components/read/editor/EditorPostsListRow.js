@@ -93,6 +93,7 @@ class EditorPostsListRow extends Component {
         )
       })}
     </div>
+
     if (page.type === 'BlogHeading') {
       if (activePostIndex === i) {
         return (
@@ -100,6 +101,10 @@ class EditorPostsListRow extends Component {
             <span style={{color: '#ed685a', display: 'inline-block', paddingBottom: '8px'}}>Header
             </span>
             <input autoFocus type='text' style={{width: '100%', marginBottom: '8px', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+            <span style={{position: 'absolute', right: 0, top: '0'}}>
+              <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
+              {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} heading />}
+            </span>
             <div style={{marginBottom: '16px'}}>
               <button>Save</button>
               <button onClick={() => this.props.changeActivePost('home')}>Cancel</button>
@@ -124,6 +129,10 @@ class EditorPostsListRow extends Component {
               ? <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span><span style={{width: '12px', display: 'inline-block'}}>|</span>Sub-Post</React.Fragment>
                : <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span>Post</React.Fragment>}
             </div>
+            <span style={{position: 'absolute', right: 0, top: 0}}>
+              <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
+              {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
+            </span>
             <div style={{paddingBottom: '8px'}}>
               <input type='text' style={{marginLeft: isSubPost ? '20px' : '8px', width: isSubPost ? 'calc(77% - 12px)' : '77%', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
               <i className='material-icons read-navigation' onClick={() => this.props.updateActivePage('isSubPost', !isSubPost)} style={{verticalAlign: 'middle', fontSize: '24px', marginLeft: '4px', top: '-2px', position: 'relative', cursor: 'pointer'}}>{isSubPost ? 'format_indent_decrease' : 'format_indent_increase'}</i>
@@ -133,7 +142,7 @@ class EditorPostsListRow extends Component {
         )
       }
       return (
-        <React.Fragment key={i}>{!!this.props.page[type].ParentPostId && <span style={{position: 'absolute', left: '32px'}}>&#8226;</span>}<span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 20px'}}}>{page.Post.title}</span>
+        <React.Fragment key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.title}</span>
           <span style={{position: 'absolute', right: 0}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
             {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
@@ -148,6 +157,10 @@ class EditorPostsListRow extends Component {
               ? <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span><span style={{width: '12px', display: 'inline-block'}}>|</span>Sub-Post</React.Fragment>
                : <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span>Post</React.Fragment>}
             </div>
+            <span style={{position: 'absolute', right: 0, top: 0}}>
+              <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
+              {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
+            </span>
             <div style={{paddingBottom: '8px'}}>
               <input type='text' style={{marginLeft: isSubPost ? '20px' : '8px', width: isSubPost ? 'calc(77% - 12px)' : '77%', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
               <i className='material-icons read-navigation' onClick={() => this.props.updateActivePage('isSubPost', !isSubPost)} style={{verticalAlign: 'middle', fontSize: '24px', marginLeft: '4px', top: '-2px', position: 'relative', cursor: 'pointer'}}>{isSubPost ? 'format_indent_decrease' : 'format_indent_increase'}</i>
@@ -157,7 +170,7 @@ class EditorPostsListRow extends Component {
         )
       }
       return (
-        <React.Fragment key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.location.name} - {page.Post.description}</span>
+        <React.Fragment key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.location && page.Post.location.name + ' - '}{page.Post.description}</span>
           <span style={{position: 'absolute', right: 0}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
             {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
