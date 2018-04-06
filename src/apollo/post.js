@@ -34,6 +34,9 @@ export const findPost = gql`
         youtubeUrl
         type
       }
+      hashtags {
+        name
+      }
     }
   }
 `

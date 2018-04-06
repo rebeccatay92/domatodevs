@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { WithOutContext as ReactTags } from 'react-tag-input'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 
@@ -53,7 +54,8 @@ class EditorTextContent extends Component {
       variables: {
         id: this.props.page.modelId,
         title: this.props.page.title,
-        textContent: this.props.page.textContent
+        textContent: this.props.page.textContent,
+        days: this.props.page.days
       },
       refetchQueries: [{
         query: queryBlog,
@@ -162,7 +164,7 @@ class EditorTextContent extends Component {
   }
 
   render () {
-    const {title, textContent, eventType, googlePlaceData, changesMade} = this.props.page
+    const {title, textContent, eventType, googlePlaceData, changesMade, days} = this.props.page
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     if (post && post.type === 'BlogHeading') return null
     if (this.props.pages.activePostIndex === 'fin') return null
@@ -181,11 +183,14 @@ class EditorTextContent extends Component {
         </React.Fragment>}
         <label style={{margin: '8px 0'}}>Content</label>
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
-        <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} />
+        {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
+        <div>
+          {/* <ReactTags tags={tags} handleDelete={this.handleDelete} handleAddition={this.handleAddition} /> */}
+        </div>
         {this.props.pages.activePostIndex === 'home' &&
         <div>
           <label style={{margin: '8px 0'}}>No. of Days</label>
-          <input type='number' style={{width: '20%', padding: '8px', margin: '8px'}} min={0} />
+          <input type='number' step={1} style={{width: '20%', padding: '8px', margin: '8px'}} min={0} value={days} onChange={(e) => this.props.updateActivePage('days', e.target.value)} />
         </div>}
         <div style={{position: 'absolute', right: '24px', bottom: '-8px'}}>
           <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.handleSave(this.props.page.type)}>Save Changes</button>

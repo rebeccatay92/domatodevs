@@ -47,8 +47,10 @@ class BlogEditorPage extends Component {
       if (this.props.pages.activePostIndex === 'home') {
         const page = {
           modelId: blog.id,
+          type: 'Blog',
           title: blog.title,
-          textContent: blog.textContent
+          textContent: blog.textContent,
+          days: blog.days
         }
         this.props.initializeActivePage(page)
       }
@@ -76,6 +78,7 @@ class BlogEditorPage extends Component {
           startDay: '',
           endDay: '',
           eventType: '',
+          days: blog.days,
           googlePlaceData: {name: ''}
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
