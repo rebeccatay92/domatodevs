@@ -13,6 +13,7 @@ export const blogEditorActivePageReducer = (state = {}, action) => {
         eventType: action.page.eventType, // event only
         days: action.page.days, // No. of days in the trip the blog represents
         googlePlaceData: action.page.googlePlaceData,
+        hashtags: action.page.hashtags,
         changesMade: false
       }
     case 'UPDATE_ACTIVE_PAGE':
