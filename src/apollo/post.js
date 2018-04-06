@@ -30,7 +30,8 @@ export const findPost = gql`
       }
       media {
         id
-        url
+        imageUrl
+        youtubeUrl
         type
       }
     }
@@ -88,8 +89,9 @@ export const updatePost = gql`
   mutation updatePost(
     $id: ID!,
     $ParentPostId: ID,
-    $loadSequence: Int,
     $googlePlaceData: googlePlaceData,
+    $LocationId: ID,
+    $loadSequence: Int,
     $contentOnly: Boolean,
     $title: String,
     $textContent: String,
@@ -102,8 +104,9 @@ export const updatePost = gql`
     updatePost(
       id: $id,
       ParentPostId: $ParentPostId,
-      loadSequence: $loadSequence,
       googlePlaceData: $googlePlaceData,
+      LocationId: $LocationId,
+      loadSequence: $loadSequence,
       contentOnly: $contentOnly,
       title: $title,
       textContent: $textContent,

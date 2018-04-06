@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { graphql } from 'react-apollo'
 import Radium from 'radium'
 
-import AccountTab from './AccountTab'
+import DashboardTabsHOC from './DashboardTabsHOC'
 
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
@@ -11,6 +11,8 @@ import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', padding: '10px 20px 10px 20px', color: 'grey'}
 const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', borderBottom: '5px solid red', padding: '10px 20px 10px 20px', color: 'black'}
+
+const profilePicTintStyle = {background: `rgba(255, 255, 255, 0.3)`, width: '150px', height: '150px', borderRadius: '50%', position: 'absolute', top: '0', left: '0', textAlign: 'center', padding: '60px 0 60px 0', cursor: 'pointer', opacity: 0, ':hover': {opacity: '1'}}
 
 class UserDashboardPage extends Component {
   constructor (props) {
@@ -24,7 +26,7 @@ class UserDashboardPage extends Component {
         {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
-      focusedTab: 'account',
+      focusedTab: 'media',
       bio: '',
       editingBio: false
     }
@@ -153,11 +155,11 @@ class UserDashboardPage extends Component {
     if (!profile.id) return <p>Not logged in</p>
 
     return (
-      <div style={{margin: '90px auto 30px auto', width: '70%', height: 'calc(100vh - 120px)', boxSizing: 'border-box'}}>
-        {/* CLICK ON IMG GRAY TINT TO CHANGE PROFILE PIC. */}
+      <div style={{margin: '90px auto 150px auto', width: '70%', minHeight: 'calc(100vh - 120px)', boxSizing: 'border-box'}}>
+
         <label>
           <div style={{position: 'relative', width: '150px', height: '150px'}}>
-            <div key={'test'} style={{background: `rgba(255, 255, 255, 0.3)`, width: '150px', height: '150px', borderRadius: '50%', position: 'absolute', top: '0', left: '0', textAlign: 'center', padding: '60px 0 60px 0', cursor: 'pointer', opacity: 0, ':hover': {opacity: '1'}}}>
+            <div style={profilePicTintStyle}>
               <span style={{fontSize: '16px', textShadow: '2px 2px 0 rgb(255, 255, 255)'}}>CHANGE</span>
             </div>
             <img src={this.state.profilePic} width='150px' height='150px' style={{borderRadius: '50%', display: 'inline-block'}} />
@@ -195,16 +197,7 @@ class UserDashboardPage extends Component {
           })}
         </div>
 
-        {this.state.focusedTab !== 'account' &&
-          <div>
-            component here
-          </div>
-        }
-        {this.state.focusedTab === 'account' &&
-          <div style={{width: '100%', height: 'calc(100% - 240px)', paddingTop: '15px'}}>
-            <AccountTab lock={this.props.lock} />
-          </div>
-        }
+        <DashboardTabsHOC focusedTab={this.state.focusedTab} lock={this.props.lock} />
       </div>
     )
   }
