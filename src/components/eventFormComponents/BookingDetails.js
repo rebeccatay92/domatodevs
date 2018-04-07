@@ -12,7 +12,7 @@ class BookingDetails extends Component {
   render () {
     if (this.props.flight) {
       return (
-        <React.Fragment>
+        <div>
           <div style={{display: 'inline-block'}}>
             <label style={labelStyle}>
               Booking Service
@@ -35,11 +35,11 @@ class BookingDetails extends Component {
             <input style={{width: '70%'}} type='number' name='cost' value={this.props.cost} onChange={(e) => this.props.handleChange(e, 'cost')} />
           </div>
           <hr />
-        </React.Fragment>
+        </div>
       )
     } else {
       return (
-        <React.Fragment>
+        <div>
           <div style={{display: 'inline-block'}}>
             <label style={labelStyle}>
               Booking Service
@@ -63,7 +63,7 @@ class BookingDetails extends Component {
             </label>
             <input style={{color: 'rgba(60, 58, 68, 0.7)', width: '100%', fontSize: '13px', padding: '8px', fontWeight: '300', height: '31px', marginBottom: '16px'}} type='text' name='bookingConfirmation' value={this.props.bookingConfirmation} onChange={(e) => this.props.handleChange(e, 'bookingConfirmation')} />
           </div>
-        </React.Fragment>
+        </div>
       )
     }
   }

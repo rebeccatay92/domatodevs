@@ -150,23 +150,23 @@ class Map extends Component {
 
         {this.state.isInfoOpen &&
           <InfoWindow position={this.state.searchMarkers[this.state.markerIndex].position} onCloseClick={() => this.onCloseInfo()}>
-            <React.Fragment>
+            <div>
               <h5>Name: {this.state.marker.place.name}</h5>
               <h5>Address: {this.state.marker.place.formatted_address}</h5>
               <h5>place_id: {this.state.marker.place.place_id}</h5>
               <button onClick={() => this.handleSelectLocationClick(this.state.marker.place.place_id)} >Select this location</button>
-            </React.Fragment>
+            </div>
           </InfoWindow>
         }
         {this.props.currentLocation.latitude &&
           <Marker position={{lat: this.props.currentLocation.latitude, lng: this.props.currentLocation.longitude}} onClick={() => this.props.handleCurrentLocationClick()}>
             {this.state.isCurrentLocationOpen &&
               <InfoWindow onCloseClick={this.props.closeCurrentLocationWindow}>
-                <React.Fragment>
+                <div>
                   <h5>Currently selected location</h5>
                   <h5>Name: {this.props.currentLocation.name}</h5>
                   <h5>Address: {this.props.currentLocation.address}</h5>
-                </React.Fragment>
+                </div>
               </InfoWindow>
             }
           </Marker>

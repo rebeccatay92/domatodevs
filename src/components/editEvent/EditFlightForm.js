@@ -599,7 +599,7 @@ class EditFlightForm extends Component {
           <div style={createEventFormRightPanelStyle('flight')}>
             <div style={bookingNotesContainerStyle}>
               {!this.state.searching && !this.state.editingFlightDetails &&
-                <React.Fragment>
+                <div>
                   <h4 style={{fontSize: '24px'}}>Booking Details</h4>
                   <BookingDetails flight handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
 
@@ -610,7 +610,7 @@ class EditFlightForm extends Component {
                     )
                   })}
                   <FlightInstanceNotesAttachments ItineraryId={this.props.ItineraryId} instance={this.state.flightInstances[this.state.instanceTabIndex]} formType={'edit'} changedFlight={this.state.changedFlight} handleFlightInstanceChange={(updatedInstance) => this.handleFlightInstanceChange(updatedInstance)} setBackground={url => this.setBackground(url)} backgroundImage={this.state.backgroundImage} />
-                </React.Fragment>
+                </div>
               }
               {this.state.searching &&
                 <div style={{width: '100%', height: '91%', margin: '2% 0 6% 0', overflowY: 'auto'}}>
