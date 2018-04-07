@@ -15,6 +15,7 @@ import { mapPlannerOpenCreateFormReducer } from './reducers/mapPlannerOpenCreate
 import { mapPlannerOpenEditFormReducer } from './reducers/mapPlannerOpenEditFormReducer'
 import { mapPlannerSearchReducer } from './reducers/mapPlannerSearchReducer'
 import {mediaConsoleReducer} from './reducers/mediaConsoleReducer'
+import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageReducer'
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
 
@@ -53,6 +54,7 @@ const store = createStore(combineReducers({
   openEditFormParams: mapPlannerOpenEditFormReducer,
   mapPlannerSearch: mapPlannerSearchReducer,
   mediaConsole: mediaConsoleReducer,
+  blogEditorActivePage: blogEditorActivePageReducer,
   apollo: client.reducer()
 }),
 {},

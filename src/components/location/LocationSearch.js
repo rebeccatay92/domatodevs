@@ -12,8 +12,9 @@ var placeSearch = 'https://maps.googleapis.com/maps/api/place/textsearch/json?'
 class LocationSearch extends Component {
   constructor (props) {
     super(props)
+
     this.state = {
-      search: this.props.currentLocation.name,
+      search: props.currentLocation.name,
       selecting: false,
       results: []
     }
@@ -101,7 +102,24 @@ class LocationSearch extends Component {
   }
 
   render () {
-    if (this.props.intuitiveInput || this.props.eventInfo) {
+    if (this.props.blogEditor) {
+      return (
+        <div>
+          <input type='text' style={{width: this.props.eventType ? '80%' : '100%', padding: '8px'}} onKeyUp={() => this.customDebounce()} onChange={(e) => this.handleChange(e)} value={this.state.search} />
+          {this.state.selecting && this.state.results.length > 0 &&
+          <span className='placeSearchResults' style={{width: '218px', overflowY: 'none', maxHeight: '1000px', position: 'absolute', top: '30px', left: 0, backgroundColor: 'white'}}>
+            <span className='placeSearchResults' style={{overflowY: 'auto', display: 'inline-block', maxHeight: '216px'}}>
+              {this.state.results.map((indiv, i) => {
+                return <GooglePlaceResult intuitiveInput result={indiv} selectLocation={(location) => this.selectLocation(location)} key={i} />
+              })}
+            </span>
+            {this.state.results.length > 0 && <div style={{textAlign: 'left', paddingLeft: '8px'}}>
+              <img style={{width: '50%', opacity: '0.5'}} src={`${process.env.PUBLIC_URL}/img/poweredByGoogle.png`} />
+            </div>}
+          </span>}
+        </div>
+      )
+    } else if (this.props.intuitiveInput || this.props.eventInfo) {
       return (
         <span style={{display: 'block'}}>
           <input autoFocus={this.props.eventInfo} type='text' placeholder={this.props.placeholder} onChange={(e) => this.handleChange(e)} onKeyUp={() => this.customDebounce()} style={{...{width: this.props.transport ? '358.5px' : '218px', height: '31px', fontSize: '13px', padding: '8px'}, ...this.props.eventInfo && {width: '168px', position: 'relative', top: '-5px'}}} value={this.state.search} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />

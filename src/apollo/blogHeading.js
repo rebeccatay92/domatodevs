@@ -1,7 +1,7 @@
 import { gql } from 'react-apollo'
 
 export const findBlogHeading = gql`
-  findBlogHeading($id: ID!) {
+  query findBlogHeading($id: ID!) {
     findBlogHeading(id: $id) {
       id
       BlogId
@@ -12,15 +12,13 @@ export const findBlogHeading = gql`
 `
 
 export const createBlogHeading = gql`
-  createBlogHeading(
+  mutation createBlogHeading(
     $BlogId: ID!,
-    $loadSequence: Int!,
-    $title: String!
+    $loadSequence: Int!
   ) {
     createBlogHeading(
       BlogId: $BlogId,
-      loadSequence: $loadSequence,
-      title: $title
+      loadSequence: $loadSequence
     ) {
       id
       BlogId
@@ -30,7 +28,7 @@ export const createBlogHeading = gql`
   }
 `
 export const updateBlogHeading = gql`
-  updateBlogHeading(
+  mutation updateBlogHeading(
     $id: ID!,
     $loadSequence: Int,
     $title: String
@@ -46,7 +44,7 @@ export const updateBlogHeading = gql`
 `
 
 export const deleteBlogHeading = gql`
-  deleteBlogHeading($id: ID!) {
+  mutation deleteBlogHeading($id: ID!) {
     deleteBlogHeading(id: $id)
   }
 `

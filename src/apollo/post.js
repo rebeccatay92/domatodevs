@@ -34,6 +34,9 @@ export const findPost = gql`
         youtubeUrl
         type
       }
+      hashtags {
+        name
+      }
     }
   }
 `
@@ -78,7 +81,8 @@ export const createPost = gql`
       }
       media {
         id
-        url
+        imageUrl
+        youtubeUrl
         type
       }
     }
@@ -92,10 +96,10 @@ export const updatePost = gql`
     $googlePlaceData: googlePlaceData,
     $LocationId: ID,
     $loadSequence: Int,
+    $contentOnly: Boolean,
     $title: String,
     $textContent: String,
     $description: String,
-    $contentOnly: Boolean,
     $eventType: String,
     $start: Boolean,
     $startDay: Int,
@@ -107,10 +111,10 @@ export const updatePost = gql`
       googlePlaceData: $googlePlaceData,
       LocationId: $LocationId,
       loadSequence: $loadSequence,
+      contentOnly: $contentOnly,
       title: $title,
       textContent: $textContent,
       description: $description,
-      contentOnly: $contentOnly,
       eventType: $eventType,
       start: $start,
       startDay: $startDay,

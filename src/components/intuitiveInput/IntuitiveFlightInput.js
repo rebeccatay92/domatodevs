@@ -430,7 +430,6 @@ class IntuitiveFlightInput extends Component {
         </div>
         <div style={{marginTop: '6px', display: 'inline-block', textAlign: 'right', width: '100%'}}>
           <button onClick={() => this.handleSubmit()} style={{marginRight: '8px', backgroundColor: '#ed685a', border: 'none', color: 'white', height: '31px', fontSize: '13px', padding: '8px'}}>Submit</button>
-          <button onClick={() => this.props.toggleIntuitiveInput()} style={{marginRight: '8px', backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>Cancel</button>
           <button onClick={() => this.props.handleCreateEventClick('Flight')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>More</button>
         </div>
       </div>
