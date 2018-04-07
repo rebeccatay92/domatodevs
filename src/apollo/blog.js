@@ -26,6 +26,7 @@ export const queryBlog = gql`
         caption
       }
       hashtags {
+        id
         name
       }
       pages {
@@ -61,6 +62,7 @@ export const queryBlog = gql`
             caption
           }
           hashtags {
+            id
             name
           }
         }

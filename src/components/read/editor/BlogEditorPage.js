@@ -50,7 +50,13 @@ class BlogEditorPage extends Component {
           type: 'Blog',
           title: blog.title,
           textContent: blog.textContent,
-          days: blog.days
+          days: blog.days,
+          hashtags: blog.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          })
         }
         this.props.initializeActivePage(page)
       }
@@ -66,7 +72,8 @@ class BlogEditorPage extends Component {
         startDay: '',
         endDay: '',
         eventType: '',
-        googlePlaceData: {name: ''}
+        googlePlaceData: {name: ''},
+        hashtags: []
       }
       if (nextProps.pages.activePostIndex === 'home') {
         page = {
@@ -94,7 +101,13 @@ class BlogEditorPage extends Component {
           eventType: pageObj.eventType,
           startDay: pageObj.startDay,
           endDay: pageObj.endDay,
-          googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''}
+          googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''},
+          hashtags: pageObj.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          })
         }
       }
       this.props.initializeActivePage(page)
