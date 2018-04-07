@@ -9,6 +9,7 @@ export const queryBlog = gql`
       textContent
       views
       shares
+      days
       createdAt
       likes {
         id
@@ -23,6 +24,9 @@ export const queryBlog = gql`
         youtubeUrl
         loadSequence
         caption
+      }
+      hashtags {
+        name
       }
       pages {
         type
@@ -55,6 +59,9 @@ export const queryBlog = gql`
             youtubeUrl
             loadSequence
             caption
+          }
+          hashtags {
+            name
           }
         }
       }
@@ -95,9 +102,10 @@ export const deleteBlog = gql`
 export const updateBlog = gql`
   mutation updateBlog(
     $id: ID!,
-    $ItineraryId: ID!,
+    $ItineraryId: ID,
     $title: String,
     $textContent: String,
+    $days: Int,
     $published: Boolean
   ) {
     updateBlog(
@@ -105,6 +113,7 @@ export const updateBlog = gql`
       ItineraryId: $ItineraryId,
       title: $title,
       textContent: $textContent,
+      days: $days,
       published: $published
     ) {
       id

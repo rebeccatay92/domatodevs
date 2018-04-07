@@ -21,7 +21,7 @@ class PostsList extends Component {
                 )
               } else if (page.type === 'Post' && !page.Post.contentOnly) {
                 return (
-                  <li key={i}>{page.Post.ParentPostId && <span style={{position: 'absolute', left: '32px'}}>&#8226;</span>}<span onClick={() => this.props.changeActivePost(i)} style={{...{verticalAlign: 'top', display: 'inline-block', padding: '0 0 16px 8px', color: this.props.pages.activePostIndex === i ? '#ed685a' : '#3C3A44', cursor: 'pointer'}, ...page.Post.ParentPostId && {padding: '0 0 16px 20px'}}}>{page.Post.location.name} - {page.Post.description}</span></li>
+                  <li key={i}>{page.Post.ParentPostId && <span style={{position: 'absolute', left: '32px'}}>&#8226;</span>}<span onClick={() => this.props.changeActivePost(i)} style={{...{verticalAlign: 'top', display: 'inline-block', padding: '0 0 16px 8px', color: this.props.pages.activePostIndex === i ? '#ed685a' : '#3C3A44', cursor: 'pointer'}, ...page.Post.ParentPostId && {padding: '0 0 16px 20px'}}}>{page.Post.location && page.Post.location.name + ' - '}{page.Post.description}</span></li>
                 )
               }
             })}
