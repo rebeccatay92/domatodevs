@@ -4,12 +4,13 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import { closeMediaConsole, initializeMediaConsole, setFocusedAlbum } from '../../actions/mediaConsoleActions'
 
-import { getUserAlbums } from '../../apollo/album'
+import { getUserAlbums, updateAlbum } from '../../apollo/album'
 
 class MediaConsole extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      id: '',
       title: '',
       description: ''
     }
@@ -19,19 +20,53 @@ class MediaConsole extends Component {
     this.props.setFocusedAlbum(i)
   }
 
+  handleChange (e, field) {
+    this.setState({
+      [field]: e.target.value
+    })
+  }
+
+  cancelEditAlbum () {
+    // dont send backend request, reset this.state with redux state focusedAlbum
+    this.setState({
+      title: this.props.mediaConsole.focusedAlbum.title,
+      description: this.props.mediaConsole.focusedAlbum.description
+    })
+  }
+
+  editAlbum () {
+    let updatesObj = {
+      id: this.state.id,
+      title: this.state.title,
+      description: this.state.description
+    }
+    console.log('edit album info', updatesObj)
+
+    this.props.updateAlbum({
+      variables: updatesObj
+    })
+      .then(returning => {
+        console.log('returning', returning)
+        // need to update album list in media console. refetch or dispatch redux?
+        // BUG: UPDATING ALBUM WILL REORDER ALBUM LIST. FOCUSEDALBUM MAY NOT BE CORRECT. USE ID INSTEAD OF INDEX TO SET FOCUSEDALBUM
+      })
+  }
+
   componentDidMount () {
     // console.log(this.props.data.getUserAlbums)
     let albumsArr = this.props.data.getUserAlbums
     this.props.initializeMediaConsole(albumsArr)
 
-    console.log('focusedAlbum', this.props.mediaConsole.focusedAlbum)
+    // mount focusedAlbum will be {} from redux default state
+    // console.log('mount focusedAlbum', this.props.mediaConsole.focusedAlbum)
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.mediaConsole.focusedAlbum !== this.props.mediaConsole.focusedAlbum) {
       let focusedAlbum = nextProps.mediaConsole.focusedAlbum
-      console.log('focusedAlbum', focusedAlbum)
+      console.log('receiveprops focusedAlbum', focusedAlbum)
       this.setState({
+        id: focusedAlbum.id,
         title: focusedAlbum.title,
         description: focusedAlbum.description
       })
@@ -70,17 +105,18 @@ class MediaConsole extends Component {
             <div style={{height: '45%', width: '100%'}}>
               <label style={{width: '100%'}}>
                 <h5>Album Title</h5>
-                <input type='text' value={this.state.title} style={{width: '100%', height: '25px', border: 'none', color: 'black'}} />
+                <input type='text' value={this.state.title} style={{width: '100%', height: '25px', border: 'none', color: 'black'}} onChange={e => this.handleChange(e, 'title')} />
               </label>
               <label style={{width: '100%'}}>
                 <h5>Album Description</h5>
-                <textarea value={this.state.description} style={{width: '100%', height: '100px', border: 'none', color: 'black', resize: 'none'}} />
+                <textarea value={this.state.description} style={{width: '100%', height: '100px', border: 'none', color: 'black', resize: 'none'}} onChange={e => this.handleChange(e, 'description')} />
               </label>
               <label style={{width: '100%'}}>
                 <h5>Location / Tags</h5>
                 <input type='text' style={{width: '100%', height: '25px', border: 'none', color: 'black'}} />
               </label>
-              <button style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white'}}>Save changes</button>
+              <button style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white'}} onClick={() => this.editAlbum()}>Save changes</button>
+              <button style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white'}} onClick={() => this.cancelEditAlbum()}>Cancel</button>
             </div>
           </div>
 
@@ -110,12 +146,13 @@ const mapDispatchToProps = (dispatch) => {
     initializeMediaConsole: (albums) => {
       dispatch(initializeMediaConsole(albums))
     },
-    setFocusedAlbum: (i) => {
-      dispatch(setFocusedAlbum(i))
+    setFocusedAlbum: (index) => {
+      dispatch(setFocusedAlbum(index))
     }
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(getUserAlbums)
+  graphql(getUserAlbums),
+  graphql(updateAlbum, {name: 'updateAlbum'})
 )(Radium(MediaConsole)))
