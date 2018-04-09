@@ -1,5 +1,12 @@
 import { gql } from 'react-apollo'
 
+export const getAllHashtags = gql`
+  query getAllHashtags {
+    id
+    name
+  }
+`
+
 export const findHashtag = gql`
   query findHashtag($id: ID!) {
     findHashtag(id: $id) {
