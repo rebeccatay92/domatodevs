@@ -86,7 +86,13 @@ class BlogEditorPage extends Component {
           endDay: '',
           eventType: '',
           days: blog.days,
-          googlePlaceData: {name: ''}
+          googlePlaceData: {name: ''},
+          hashtags: blog.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          })
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
         const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]
@@ -102,12 +108,12 @@ class BlogEditorPage extends Component {
           startDay: pageObj.startDay,
           endDay: pageObj.endDay,
           googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''},
-          hashtags: pageObj.hashtags.map(hashtag => {
+          hashtags: pageObj.hashtags ? pageObj.hashtags.map(hashtag => {
             return {
               id: hashtag.id,
               text: hashtag.name
             }
-          })
+          }) : []
         }
       }
       this.props.initializeActivePage(page)

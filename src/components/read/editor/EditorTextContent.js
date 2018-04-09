@@ -163,6 +163,14 @@ class EditorTextContent extends Component {
     })
   }
 
+  handleHashtagAddition (tag) {
+    this.props.updateActivePage('hashtags', [...this.props.page.hashtags, ...[tag]])
+  }
+
+  handleHashtagDelete (i) {
+    this.props.updateActivePage('hashtags', this.props.page.hashtags.filter((hashtag, index) => index !== i))
+  }
+
   render () {
     const {title, textContent, eventType, googlePlaceData, changesMade, days} = this.props.page
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
@@ -185,7 +193,7 @@ class EditorTextContent extends Component {
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
         <div>
-          <ReactTags inline tags={this.props.page.hashtags} handleDelete={() => this.handleDelete()} handleAddition={() => this.handleAddition()} />
+          <ReactTags autofocus={false} delimiters={[32, 13, 9]} inline tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
         </div>
         {this.props.pages.activePostIndex === 'home' &&
         <div>
