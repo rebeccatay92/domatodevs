@@ -84,10 +84,10 @@ class MediaConsole extends Component {
 
         <div style={{position: 'fixed', left: 'calc((100vw - 1134px)/2)', top: '10vh', width: '1134px', height: '744px', background: 'white', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)'}}>
 
-          <div style={{display: 'inline-block', width: '274px', height: '100%', background: 'rgb(24, 143, 143)', padding: '15px', color: 'white'}}>
+          <div style={{display: 'inline-block', width: '274px', height: '100%', background: 'rgb(25, 143, 143)', padding: '15px', color: 'white'}}>
 
             <h3 style={{margin: '0 0 10px 0', padding: '0 0 5px 0'}}>Album List</h3>
-            <div style={{fontSize: '18px', border: '1px solid white', padding: '5px 0 5px 0', cursor: 'pointer'}}>
+            <div style={{fontSize: '18px', border: '1px solid white', padding: '5px 0 5px 0', cursor: 'pointer', ':hover': {background: 'rgb(25, 155, 155)'}}}>
               <i className='material-icons' style={{verticalAlign: 'top'}}>add</i>
               <span>New Album</span>
             </div>
