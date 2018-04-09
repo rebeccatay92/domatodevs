@@ -192,8 +192,8 @@ class EditorTextContent extends Component {
         <label style={{margin: '8px 0'}}>Content</label>
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
-        <div>
-          <ReactTags autofocus={false} delimiters={[32, 13, 9]} inline tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
+        <div style={{margin: '8px 0'}}>
+          <ReactTags autofocus={false} delimiters={[32, 13, 9]} inline={false} placeholder={'Add hashtags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
         </div>
         {this.props.pages.activePostIndex === 'home' &&
         <div>

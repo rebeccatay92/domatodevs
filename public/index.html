@@ -25,7 +25,7 @@
       .left-panel-input::placeholder {
         color: white;
       }
-      .hashtagInput::placeholder {
+      .ReactTags__tagInputField::placeholder {
         color: #ed685a;
         opacity: 0.5;
       }
@@ -158,6 +158,27 @@
       }
       .read-navigation:hover {
         opacity: 1 !important;
+      }
+      .ReactTags__tags {
+        outline: 1px solid rgba(60, 58, 68, 0.2);
+        padding: 8px 8px 0 8px;
+      }
+      .ReactTags__tag {
+        border: 1px solid rgba(60, 58, 68, 0.2);
+        border-radius: 2px;
+        padding: 5px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        background: #eee;
+        display: inline-block;
+      }
+      .ReactTags__tagInputField {
+        outline: none;
+        width: 100%;
+        margin-bottom: 8px;
+      }
+      .ReactTags__remove {
+        margin-left: 5px;
       }
       @media (min-width: 1200px) {
         .navbar .container {
