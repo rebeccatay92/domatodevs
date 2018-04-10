@@ -108,7 +108,8 @@ export const updateBlog = gql`
     $title: String,
     $textContent: String,
     $days: Int,
-    $published: Boolean
+    $published: Boolean,
+    $hashtags: [String]!
   ) {
     updateBlog(
       id: $id,
@@ -116,7 +117,8 @@ export const updateBlog = gql`
       title: $title,
       textContent: $textContent,
       days: $days,
-      published: $published
+      published: $published,
+      hashtags: $hashtags
     ) {
       id
     }

@@ -3,7 +3,7 @@ import { WithOutContext as ReactTags } from 'react-tag-input'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 
-import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
+import { updateActivePage, initializeActivePage } from '../../../actions/blogEditorActivePageActions'
 import { changeActivePost } from '../../../actions/readActions'
 import { toggleSpinner } from '../../../actions/spinnerActions'
 
@@ -56,7 +56,10 @@ class EditorTextContent extends Component {
         id: this.props.page.modelId,
         title: this.props.page.title,
         textContent: this.props.page.textContent,
-        days: this.props.page.days
+        days: this.props.page.days,
+        hashtags: this.props.page.hashtags.map(hashtag => {
+          return hashtag.text.toString()
+        })
       },
       refetchQueries: [{
         query: queryBlog,
@@ -118,7 +121,10 @@ class EditorTextContent extends Component {
           id: this.props.page.modelId,
           textContent: this.props.page.textContent,
           eventType: this.props.page.eventType,
-          contentOnly: !this.props.page.eventType
+          contentOnly: !this.props.page.eventType,
+          hashtags: this.props.page.hashtags.map(hashtag => {
+            return hashtag.text.toString()
+          })
         },
         ...this.props.page.eventType && {
           description: this.props.page.title,
@@ -172,9 +178,56 @@ class EditorTextContent extends Component {
     this.props.updateActivePage('hashtags', this.props.page.hashtags.filter((hashtag, index) => index !== i))
   }
 
+  discardChanges () {
+    this.props.toggleSpinner(true)
+    this.props.queryBlog.refetch()
+    .then(results => {
+      const blog = results.data.findBlog
+      if (this.props.pages.activePostIndex === 'home') {
+        const page = {
+          modelId: blog.id,
+          type: 'Blog',
+          title: blog.title,
+          textContent: blog.textContent,
+          days: blog.days,
+          hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          }) : []
+        }
+        this.props.initializeActivePage(page)
+      } else if (this.props.pages.activePostIndex !== 'fin') {
+        const activePage = this.props.pages.pagesArr[this.props.pages.activePostIndex]
+        const type = activePage.type
+        const pageObj = activePage[type]
+        const page = {
+          modelId: activePage.modelId,
+          type,
+          title: pageObj.title || pageObj.description,
+          isSubPost: !!pageObj.ParentPostId,
+          textContent: pageObj.textContent || '',
+          eventType: pageObj.eventType,
+          startDay: pageObj.startDay,
+          endDay: pageObj.endDay,
+          googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''},
+          hashtags: pageObj.hashtags ? pageObj.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          }) : []
+        }
+        this.props.initializeActivePage(page)
+      }
+      this.props.toggleSpinner(false)
+    })
+  }
+
   componentWillReceiveProps (nextProps) {
-    if (this.props.data.getAllHashtags !== nextProps.data.getAllHashtags) {
-      const arr = nextProps.data.getAllHashtags.map(hashtag => {
+    if (this.props.getAllHashtags.getAllHashtags !== nextProps.getAllHashtags.getAllHashtags) {
+      const arr = nextProps.getAllHashtags.getAllHashtags.map(hashtag => {
         return {
           id: hashtag.id,
           text: hashtag.name
@@ -208,6 +261,7 @@ class EditorTextContent extends Component {
         <label style={{margin: '8px 0'}}>Content</label>
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
+        <label style={{margin: '8px 0'}}>Tags</label>
         <div style={{margin: '8px 0'}}>
           <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[32, 13, 9]} inline={false} placeholder={'Add tags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
         </div>
@@ -218,7 +272,7 @@ class EditorTextContent extends Component {
         </div>}
         <div style={{position: 'absolute', right: '24px', bottom: '-8px'}}>
           <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.handleSave(this.props.page.type)}>Save Changes</button>
-          <button onClick={() => this.props.changeActivePost('home')}>Cancel</button>
+          <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.discardChanges()}>Discard Changes</button>
         </div>
       </div>
     )
@@ -241,20 +295,24 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    initializeActivePage: (page) => {
+      dispatch(initializeActivePage(page))
     }
   }
 }
 
-// const options = {
-//   options: props => ({
-//     variables: {
-//       id: props.blogId
-//     }
-//   })
-// }
+const options = {
+  options: props => ({
+    variables: {
+      id: props.blogId
+    }
+  })
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(getAllHashtags),
+  graphql(getAllHashtags, { name: 'getAllHashtags' }),
+  graphql(queryBlog, { ...{name: 'queryBlog'}, ...options }),
   graphql(updateBlog, { name: 'updateBlog' }),
   graphql(updatePost, { name: 'updatePost' }),
   graphql(updateMultiplePosts, { name: 'updateMultiplePosts' })

@@ -51,12 +51,12 @@ class BlogEditorPage extends Component {
           title: blog.title,
           textContent: blog.textContent,
           days: blog.days,
-          hashtags: blog.hashtags.map(hashtag => {
+          hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
             return {
               id: hashtag.id,
               text: hashtag.name
             }
-          })
+          }) : []
         }
         this.props.initializeActivePage(page)
       }
@@ -87,12 +87,12 @@ class BlogEditorPage extends Component {
           eventType: '',
           days: blog.days,
           googlePlaceData: {name: ''},
-          hashtags: blog.hashtags.map(hashtag => {
+          hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
             return {
               id: hashtag.id,
               text: hashtag.name
             }
-          })
+          }) : []
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
         const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]
