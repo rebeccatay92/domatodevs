@@ -11,6 +11,7 @@ import { constructGooglePlaceDataObj } from '../../../helpers/location'
 
 import { queryBlog, updateBlog } from '../../../apollo/blog'
 import { updatePost, updateMultiplePosts } from '../../../apollo/post'
+import { getAllHashtags } from '../../../apollo/hashtag'
 
 import LocationSearch from '../../location/LocationSearch'
 
@@ -171,6 +172,21 @@ class EditorTextContent extends Component {
     this.props.updateActivePage('hashtags', this.props.page.hashtags.filter((hashtag, index) => index !== i))
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (this.props.data.getAllHashtags !== nextProps.data.getAllHashtags) {
+      const arr = nextProps.data.getAllHashtags.map(hashtag => {
+        return {
+          id: hashtag.id,
+          text: hashtag.name
+        }
+      })
+
+      this.setState({
+        suggestions: arr
+      })
+    }
+  }
+
   render () {
     const {title, textContent, eventType, googlePlaceData, changesMade, days} = this.props.page
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
@@ -193,7 +209,7 @@ class EditorTextContent extends Component {
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
         <div style={{margin: '8px 0'}}>
-          <ReactTags autofocus={false} delimiters={[32, 13, 9]} inline={false} placeholder={'Add hashtags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
+          <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[32, 13, 9]} inline={false} placeholder={'Add tags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
         </div>
         {this.props.pages.activePostIndex === 'home' &&
         <div>
@@ -229,16 +245,16 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const options = {
-  options: props => ({
-    variables: {
-      id: props.blogId
-    }
-  })
-}
+// const options = {
+//   options: props => ({
+//     variables: {
+//       id: props.blogId
+//     }
+//   })
+// }
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(queryBlog, options),
+  graphql(getAllHashtags),
   graphql(updateBlog, { name: 'updateBlog' }),
   graphql(updatePost, { name: 'updatePost' }),
   graphql(updateMultiplePosts, { name: 'updateMultiplePosts' })

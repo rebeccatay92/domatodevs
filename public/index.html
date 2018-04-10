@@ -162,6 +162,7 @@
       .ReactTags__tags {
         outline: 1px solid rgba(60, 58, 68, 0.2);
         padding: 8px 8px 0 8px;
+        position: relative;
       }
       .ReactTags__tag {
         border: 1px solid rgba(60, 58, 68, 0.2);
@@ -179,6 +180,31 @@
       }
       .ReactTags__remove {
         margin-left: 5px;
+      }
+      .ReactTags__suggestions {
+          position: absolute;
+      }
+      .ReactTags__suggestions ul {
+          list-style-type: none;
+          box-shadow: .05em .01em .5em rgba(0,0,0,.2);
+          background: white;
+          width: 200px;
+          margin: 0;
+          padding: 0;
+      }
+      .ReactTags__suggestions li {
+          border-bottom: 1px solid #ddd;
+          padding: 8px;
+          margin: 0;
+      }
+      .ReactTags__suggestions li mark {
+          text-decoration: underline;
+          background: none;
+          font-weight: 600;
+      }
+      .ReactTags__suggestions ul li.ReactTags__activeSuggestion {
+          background: #b7cfe0;
+          cursor: pointer;
       }
       @media (min-width: 1200px) {
         .navbar .container {
