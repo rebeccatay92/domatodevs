@@ -55,10 +55,17 @@ class MediaConsole extends Component {
   componentDidMount () {
     // console.log(this.props.data.getUserAlbums)
     let albumsArr = this.props.data.getUserAlbums
-    this.props.initializeMediaConsole(albumsArr)
+    // this.props.initializeMediaConsole(albumsArr)
 
     // mount focusedAlbum will be {} from redux default state
     // console.log('mount focusedAlbum', this.props.mediaConsole.focusedAlbum)
+    let focusedAlbum = this.props.mediaConsole.focusedAlbum
+    console.log('focusedAlbum', focusedAlbum)
+    this.setState({
+      id: focusedAlbum.id,
+      title: focusedAlbum.title,
+      description: focusedAlbum.description
+    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -94,8 +101,9 @@ class MediaConsole extends Component {
 
             <div style={{height: '40%', boxSizing: 'border-box', overflowY: 'scroll'}}>
               {this.props.mediaConsole.albums.map((album, i) => {
+                let isFocusedAlbum = album.id === this.props.mediaConsole.focusedAlbum.id
                 return (
-                  <h5 key={i} style={album.id === this.props.mediaConsole.focusedAlbum.id ? focusedAlbumStyle : unfocusedAlbumStyle} onClick={() => this.setFocusedAlbum(i)}>{album.title}</h5>
+                  <h5 key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle} onClick={() => this.setFocusedAlbum(i)}>{album.title}</h5>
                 )
               })}
             </div>
