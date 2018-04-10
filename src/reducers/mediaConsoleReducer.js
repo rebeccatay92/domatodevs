@@ -13,17 +13,19 @@ export const mediaConsoleReducer = (state = {
       return {...state, isOpen: true}
     case 'CLOSE_MEDIA_CONSOLE':
       return {...state, isOpen: false}
-    case 'INITIALIZE_MEDIA_CONSOLE':
+    case 'INITIALIZE_MEDIA_CONSOLE_ALBUMS':
       // console.log('reducer received', action.albums)
       return {
         ...state,
-        albums: action.albums,
-        focusedAlbum: action.albums[0] || {id: '', title: '', description: '', media: []}
+        albums: action.albums
       }
     case 'SET_FOCUSED_ALBUM':
+    // based on action.id
       return {
         ...state,
-        focusedAlbum: state.albums[action.index]
+        focusedAlbum: state.albums.find(e => {
+          return e.id === action.id
+        })
       }
     default:
       return state

@@ -10,16 +10,16 @@ export const closeMediaConsole = () => {
   }
 }
 
-export const initializeMediaConsole = (albums) => {
+export const initializeMediaConsoleAlbums = (albums) => {
   return {
-    type: 'INITIALIZE_MEDIA_CONSOLE',
+    type: 'INITIALIZE_MEDIA_CONSOLE_ALBUMS',
     albums
   }
 }
 
-export const setFocusedAlbum = (index) => {
+export const setFocusedAlbum = (id) => {
   return {
     type: 'SET_FOCUSED_ALBUM',
-    index
+    id
   }
 }
