@@ -343,14 +343,14 @@ class MapCreateEventPopup extends Component {
           {/* DESCRIPTION OR LOCATION INPUT */}
           <div style={{width: '100%'}}>
             {this.state.eventType !== 'LandTransport' &&
-              <React.Fragment>
+              <div>
                 <h5 style={{fontSize: '12px'}}>Description</h5>
                 <input type='text' placeholder='Optional description' onChange={(e) => this.handleChange(e, 'description')} value={this.state.description} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '100%'}} />
-              </React.Fragment>
+              </div>
             }
             {/* IF TRANSPORT USE PLACESSERVICE FOR ARRIVAL LOCATION */}
             {this.state.eventType === 'LandTransport' &&
-              <React.Fragment>
+              <div>
                 <h5 style={{fontSize: '12px'}}>Arrival Location</h5>
                 <input type='text' placeholder='Search for an arrival location' value={this.state.searchStr} onFocus={() => this.onSearchFocus()} onChange={(e) => this.handleChange(e, 'searchStr')} onKeyUp={() => this.customDebounce()} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 1)', height: '30px', fontSize: '12px', padding: '6px', width: '90%'}} className={'ignoreLocationSearchInput'} />
                 <i className='material-icons' style={{display: 'inline-block', fontSize: '20px', verticalAlign: 'middle', cursor: 'pointer'}} onClick={() => this.clearSearch()}>clear</i>
@@ -361,7 +361,7 @@ class MapCreateEventPopup extends Component {
                     <MapLocationSearchDropdown outsideClickIgnoreClass={'ignoreLocationSearchInput'} searchResults={this.state.searchResults} closeSearchDropdown={() => this.closeSearchDropdown()} selectLocation={(place) => this.selectLocation(place)} />
                   </div>
                 }
-              </React.Fragment>
+              </div>
             }
           </div>
 

@@ -103,10 +103,10 @@ class EditingFlightDetails extends Component {
     return (
       <div>
         {this.state.tabsNeeded &&
-          <React.Fragment>
+          <div>
             <h3 style={{display: 'inline-block', marginRight: '20px'}} onClick={() => this.switchTab('outgoing')}>Outgoing Flights</h3>
             <h3 style={{display: 'inline-block', marginRight: '20px'}} onClick={() => this.switchTab('returning')}>Returning Flights</h3>
-          </React.Fragment>
+          </div>
         }
         {this.state.flightInstances.map((instance, i) => {
           var startDay = instance.startDay

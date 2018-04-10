@@ -70,12 +70,12 @@ class NavbarInstance extends Component {
         </Navbar.Form>
         <Nav bsStyle='pills' pullRight>
           {isLoggedIn &&
-            <React.Fragment>
+            <div>
               <NavItem onClick={() => this.props.lock.logout()}>Log Out</NavItem>
               <Link to={'/user'}>
                 <img src={profilePic} width='50px' height='50px' style={{background: 'black', borderRadius: '50%'}} />
               </Link>
-            </React.Fragment>
+            </div>
           }
           {!isLoggedIn &&
             <NavItem onClick={() => this.props.lock.login()}>Log In / Sign up</NavItem>

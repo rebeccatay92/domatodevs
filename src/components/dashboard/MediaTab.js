@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { getUserAlbums } from '../../apollo/album'
+import { openMediaConsole } from '../../actions/mediaConsoleActions'
+import MediaConsole from '../mediaConsole/MediaConsole'
 
 const focusedTabStyle = {minHeight: '30px', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px', borderLeft: '5px solid black', margin: '0px 0 20px 0', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}
 const unfocusedTabStyle = {minHeight: '30px', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px', borderLeft: '5px solid transparent', margin: '0px 0 20px 0', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}
@@ -23,7 +26,7 @@ class MediaTab extends Component {
   }
 
   openMediaConsole () {
-    console.log('open media console')
+    this.props.openMediaConsole()
   }
 
   componentWillReceiveProps (nextProps) {
@@ -52,6 +55,10 @@ class MediaTab extends Component {
     return (
       <div style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box'}}>
 
+        {this.props.mediaConsole.isOpen &&
+          <MediaConsole />
+        }
+
         <div style={{display: 'inline-block', width: '20%', height: '100%', verticalAlign: 'top', borderRight: '2px solid gray', paddingRight: '10px', overflow: 'scroll'}}>
           <h4 style={unfocusedTabStyle} onClick={() => this.openMediaConsole()}><strong>Album list </strong><i className='material-icons' style={{color: 'gray', verticalAlign: 'middle'}}>settings</i></h4>
           {this.state.albums.map((album, i) => {
@@ -69,12 +76,13 @@ class MediaTab extends Component {
             if (medium.type === 'Photo') {
               return (
                 <div key={i} style={{width: '256px', height: '144px', margin: '0px 12px 24px 0px'}}>
+                  {/* NEED TO POSITION LANDSCAPE/PORTRAIT PROPERLY */}
                   <img src={medium.imageUrl} width='256px' height='144px' />
                 </div>
               )
             } else if (medium.type === 'Youtube') {
               return (
-                <iframe src='#' width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen />
+                <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen />
               )
             }
           })}
@@ -85,6 +93,20 @@ class MediaTab extends Component {
   }
 }
 
-export default (compose(
+const mapStateToProps = (state) => {
+  return {
+    mediaConsole: state.mediaConsole
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openMediaConsole: () => {
+      dispatch(openMediaConsole())
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(getUserAlbums)
 )(MediaTab))
