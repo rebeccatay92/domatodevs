@@ -51,6 +51,8 @@ export const queryBlog = gql`
           start
           startDay
           endDay
+          startTime
+          endTime
           childPosts {
             id
           }

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { readPageStyle } from '../../../Styles/styles'
+import moment from 'moment'
 
 import EditorPostsList from './EditorPostsList'
 import EditorTextContent from './EditorTextContent'
@@ -114,8 +115,8 @@ class BlogEditorPage extends Component {
               text: hashtag.name
             }
           }) : [],
-          startTime: pageObj.startTime ? `${Math.floor(pageObj.startTime / 3600)}:${pageObj.startTime % 3600 / 60}` : '',
-          endTime: pageObj.endTime ? `${Math.floor(pageObj.endTime / 3600)}:${pageObj.endTime % 3600 / 60}` : ''
+          startTime: pageObj.startTime ? moment.unix(pageObj.startTime).utc().format('HH:mm') : '',
+          endTime: pageObj.endTime ? moment.unix(pageObj.endTime).utc().format('HH:mm') : ''
         }
       }
       this.props.initializeActivePage(page)

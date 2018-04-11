@@ -121,6 +121,18 @@ class EditorTextContent extends Component {
       })
     }
 
+    var startUnix, endUnix
+    if (this.props.page.startTime) {
+      var startHours = this.props.page.startTime.split(':')[0]
+      var startMins = this.props.page.startTime.split(':')[1]
+      startUnix = (startHours * 60 * 60) + (startMins * 60)
+    }
+    if (this.props.page.endTime) {
+      var endHours = this.props.page.endTime.split(':')[0]
+      var endMins = this.props.page.endTime.split(':')[1]
+      endUnix = (endHours * 60 * 60) + (endMins * 60)
+    }
+
     this.props.updatePost({
       variables: {
         ...{
@@ -132,7 +144,9 @@ class EditorTextContent extends Component {
             return hashtag.text.toString()
           }),
           startDay: this.props.page.startDay && this.props.page.startDay.value,
-          endDay: this.props.page.endDay && this.props.page.endDay.value
+          endDay: this.props.page.endDay && this.props.page.endDay.value,
+          startTime: startUnix,
+          endTime: endUnix
         },
         ...this.props.page.eventType && {
           description: this.props.page.title,
@@ -140,7 +154,11 @@ class EditorTextContent extends Component {
         },
         ...!this.props.page.eventType && {
           title: this.props.page.title,
-          description: ''
+          description: '',
+          startDay: null,
+          endDay: null,
+          startTime: null,
+          endTime: null
         },
         ...this.props.page.isSubPost && {
           ParentPostId: parentPostId
@@ -325,16 +343,16 @@ class EditorTextContent extends Component {
                   )
                 })}
               </select> */}
-              {!this.props.page.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              {!this.props.page.startTime && !this.state.editingStartTime && <input className='editorTimeInput' type='text' placeholder='Start Time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
                 this.setState({editingStartTime: true})
               }} />}
-              {(this.props.page.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center', verticalAlign: 'top'}} value={startTime} onChange={(e) => this.props.updateActivePage('startTime', e.target.value)} onBlur={(e) => {
+              {(this.props.page.startTime || this.state.editingStartTime) && <input autoFocus={!this.props.page.startTime} type='time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center', verticalAlign: 'top'}} value={startTime} onChange={(e) => this.props.updateActivePage('startTime', e.target.value)} onBlur={(e) => {
                 this.setState({editingStartTime: false})
               }} />}
-              {!this.props.page.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              {!this.props.page.endTime && !this.state.editingEndTime && <input className='editorTimeInput' type='text' placeholder='End Time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
                 this.setState({editingEndTime: true})
               }} />}
-              {(this.props.page.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center', verticalAlign: 'top'}} value={endTime} onChange={(e) => this.props.updateActivePage('endTime', e.target.value)} onBlur={(e) => {
+              {(this.props.page.endTime || this.state.editingEndTime) && <input autoFocus={!this.props.page.endTime} type='time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center', verticalAlign: 'top'}} value={endTime} onChange={(e) => this.props.updateActivePage('endTime', e.target.value)} onBlur={(e) => {
                 this.setState({editingEndTime: false})
               }} />}
             </React.Fragment>}
@@ -344,14 +362,16 @@ class EditorTextContent extends Component {
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
         <label style={{margin: '8px 0'}}>Tags</label>
-        <div>
-          <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[32, 13, 9]} inline={false} placeholder={'Add tags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i, e) => this.handleHashtagDelete(i, e)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
+        <div style={{marginBottom: '40px'}}>
+          <div>
+            <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[32, 13, 9]} inline={false} placeholder={'Add tags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i, e) => this.handleHashtagDelete(i, e)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
+          </div>
+          {this.props.pages.activePostIndex === 'home' &&
+          <div>
+            <label style={{margin: '8px 0'}}>No. of Days</label>
+            <input type='number' step={1} style={{width: '20%', padding: '8px', margin: '8px'}} min={0} value={days} onChange={(e) => this.props.updateActivePage('days', e.target.value)} />
+          </div>}
         </div>
-        {this.props.pages.activePostIndex === 'home' &&
-        <div>
-          <label style={{margin: '8px 0'}}>No. of Days</label>
-          <input type='number' step={1} style={{width: '20%', padding: '8px', margin: '8px'}} min={0} value={days} onChange={(e) => this.props.updateActivePage('days', e.target.value)} />
-        </div>}
         <div style={{position: 'absolute', marginTop: '8px', bottom: '24px', right: '24px'}}>
           <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.handleSave(this.props.page.type)}>Save Changes</button>
           <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.discardChanges()}>Discard Changes</button>
