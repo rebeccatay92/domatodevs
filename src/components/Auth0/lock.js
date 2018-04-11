@@ -57,7 +57,7 @@ class Lock {
       })
       .then(json => {
         var userProfile = json.data.getUserProfile
-        console.log('lock fetch backend', userProfile)
+        // console.log('lock fetch backend', userProfile)
 
         // set redux state when backend returns
         store.dispatch(setUserProfile(userProfile))

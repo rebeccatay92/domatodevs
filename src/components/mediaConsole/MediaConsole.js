@@ -66,7 +66,7 @@ class MediaConsole extends Component {
       .then(returning => {
         // console.log('returning', returning)
         let AlbumId = returning.data.createAlbum.id
-        console.log('album id', AlbumId)
+        // console.log('album id', AlbumId)
         // refetch query hasnt returned yet. need to setFocusedAlbum on newly created album only after updated albums arr returns
         this.setState({pendingRefetchFocusedAlbumId: AlbumId})
       })
@@ -79,8 +79,8 @@ class MediaConsole extends Component {
       })
 
       if (isNewAlbumPresent) {
-        console.log('albums arr', this.props.mediaConsole.albums)
-        console.log('AlbumId to focus', prevState.pendingRefetchFocusedAlbumId)
+        // console.log('albums arr', this.props.mediaConsole.albums)
+        // console.log('AlbumId to focus', prevState.pendingRefetchFocusedAlbumId)
         this.props.setFocusedAlbum(prevState.pendingRefetchFocusedAlbumId)
         this.setState({pendingRefetchFocusedAlbumId: null})
       }
@@ -95,7 +95,7 @@ class MediaConsole extends Component {
     // mount focusedAlbum will be {} from redux default state
     // console.log('mount focusedAlbum', this.props.mediaConsole.focusedAlbum)
     let focusedAlbum = this.props.mediaConsole.focusedAlbum
-    console.log('focusedAlbum', focusedAlbum)
+    // console.log('focusedAlbum', focusedAlbum)
     this.setState({
       id: focusedAlbum.id,
       title: focusedAlbum.title,
@@ -106,12 +106,12 @@ class MediaConsole extends Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.mediaConsole.focusedAlbum !== this.props.mediaConsole.focusedAlbum) {
       let focusedAlbum = nextProps.mediaConsole.focusedAlbum
-      console.log('receiveprops next focusedAlbum', focusedAlbum)
+      // console.log('receiveprops next focusedAlbum', focusedAlbum)
       this.setState({
         id: focusedAlbum.id,
         title: focusedAlbum.title,
         description: focusedAlbum.description || ''
-      }, () => console.log('after setstate', this.state))
+      })
     }
   }
 
@@ -124,7 +124,7 @@ class MediaConsole extends Component {
 
         <i className='material-icons' style={{position: 'fixed', top: '10vh', left: 'calc((100vw - 1134px)/2 - 50px)', fontSize: '36px', cursor: 'pointer'}} onClick={() => this.props.closeMediaConsole()}>close</i>
 
-        <div style={{position: 'fixed', left: 'calc((100vw - 1134px)/2)', top: '10vh', width: '1134px', height: '744px', background: 'white', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)'}}>
+        <div style={{position: 'fixed', left: 'calc((100vw - 1134px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)'}}>
 
           <div style={{display: 'inline-block', width: '274px', height: '100%', background: 'rgb(25, 143, 143)', padding: '15px', color: 'white'}}>
 
@@ -165,13 +165,33 @@ class MediaConsole extends Component {
             }
           </div>
 
-          <div style={{display: 'inline-block', width: '860px', height: '100%', verticalAlign: 'top'}}>
-            {this.props.mediaConsole.albums.length &&
-              <h3>media</h3>
-            }
-            {!this.props.mediaConsole.albums.length &&
-              <h3>You don't have any albums.</h3>
-            }
+          {/* 864 NOT 860. for even margin */}
+          <div style={{display: 'inline-block', width: '864px', height: '100%', verticalAlign: 'top'}}>
+            {/* TOP SECTION -> THUMBNAILS */}
+            <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '100%', height: '95%', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
+              {this.props.mediaConsole.albums.length && this.props.mediaConsole.focusedAlbum.media.map((medium, i) => {
+                // 256 X 144. 24px spacing
+                if (medium.type === 'Photo') {
+                  return (
+                    <div key={i} style={{width: '256px', height: '144px', margin: '12px'}}>
+                      {/* NEED TO POSITION LANDSCAPE/PORTRAIT PROPERLY */}
+                      <img src={medium.imageUrl} width='256px' height='144px' />
+                    </div>
+                  )
+                } else if (medium.type === 'Youtube') {
+                  return (
+                    <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '12px'}} frameBorder={0} allowFullScreen />
+                  )
+                }
+              })}
+              {!this.props.mediaConsole.albums.length &&
+                <h3>You don't have any albums.</h3>
+              }
+            </div>
+            {/* BOTTOM BAR -> ACTION BUTTONS */}
+            <div style={{width: '100%', height: '5%', padding: '0 24px 0 24px'}}>
+              <div style={{width: '100%', height: '100%', borderTop: '2px solid grey'}}>BAR</div>
+            </div>
           </div>
         </div>
       </div>
