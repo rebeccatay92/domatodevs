@@ -14,6 +14,8 @@ export const blogEditorActivePageReducer = (state = {}, action) => {
         days: action.page.days, // No. of days in the trip the blog represents
         googlePlaceData: action.page.googlePlaceData,
         hashtags: action.page.hashtags,
+        startTime: action.page.startTime,
+        endTime: action.page.endTime,
         changesMade: false
       }
     case 'UPDATE_ACTIVE_PAGE':

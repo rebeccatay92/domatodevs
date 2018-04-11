@@ -32,7 +32,7 @@ class BlogEditorPage extends Component {
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
         <EditorMediaContent />
-        <EditorTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogId={this.props.match.params.blogId} />
+        <EditorTextContent pages={this.props.pages} blogDays={this.props.data.findBlog.days} blogId={this.props.match.params.blogId} />
       </div>
     )
   }
@@ -105,15 +105,17 @@ class BlogEditorPage extends Component {
           isSubPost: !!pageObj.ParentPostId,
           textContent: pageObj.textContent || '',
           eventType: pageObj.eventType,
-          startDay: pageObj.startDay,
-          endDay: pageObj.endDay,
+          startDay: {value: pageObj.startDay},
+          endDay: {value: pageObj.endDay},
           googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''},
           hashtags: pageObj.hashtags ? pageObj.hashtags.map(hashtag => {
             return {
               id: hashtag.id,
               text: hashtag.name
             }
-          }) : []
+          }) : [],
+          startTime: pageObj.startTime ? `${Math.floor(pageObj.startTime / 3600)}:${pageObj.startTime % 3600 / 60}` : '',
+          endTime: pageObj.endTime ? `${Math.floor(pageObj.endTime / 3600)}:${pageObj.endTime % 3600 / 60}` : ''
         }
       }
       this.props.initializeActivePage(page)

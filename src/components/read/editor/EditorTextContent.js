@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { WithOutContext as ReactTags } from 'react-tag-input'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+import Select from 'react-select'
+import 'react-select/dist/react-select.css'
 
 import { updateActivePage, initializeActivePage } from '../../../actions/blogEditorActivePageActions'
 import { changeActivePost } from '../../../actions/readActions'
@@ -36,7 +38,11 @@ class EditorTextContent extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      confirmation: false
+      confirmation: false,
+      editingStartTime: false,
+      editingEndTime: false,
+      editingStartDay: false,
+      editingEndDay: false
     }
   }
 
@@ -124,7 +130,9 @@ class EditorTextContent extends Component {
           contentOnly: !this.props.page.eventType,
           hashtags: this.props.page.hashtags.map(hashtag => {
             return hashtag.text.toString()
-          })
+          }),
+          startDay: this.props.page.startDay && this.props.page.startDay.value,
+          endDay: this.props.page.endDay && this.props.page.endDay.value
         },
         ...this.props.page.eventType && {
           description: this.props.page.title,
@@ -174,7 +182,8 @@ class EditorTextContent extends Component {
     this.props.updateActivePage('hashtags', [...this.props.page.hashtags, ...[tag]])
   }
 
-  handleHashtagDelete (i) {
+  handleHashtagDelete (i, e) {
+    if (e.keyCode === 8) return
     this.props.updateActivePage('hashtags', this.props.page.hashtags.filter((hashtag, index) => index !== i))
   }
 
@@ -209,8 +218,8 @@ class EditorTextContent extends Component {
           isSubPost: !!pageObj.ParentPostId,
           textContent: pageObj.textContent || '',
           eventType: pageObj.eventType,
-          startDay: pageObj.startDay,
-          endDay: pageObj.endDay,
+          startDay: {value: pageObj.startDay},
+          endDay: {value: pageObj.endDay},
           googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''},
           hashtags: pageObj.hashtags ? pageObj.hashtags.map(hashtag => {
             return {
@@ -226,6 +235,13 @@ class EditorTextContent extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.props.pages.activePostIndex !== nextProps.pages.activePostIndex) {
+      this.setState({
+        editingStartTime: false,
+        editingEndTime: false
+      })
+    }
+
     if (this.props.getAllHashtags.getAllHashtags !== nextProps.getAllHashtags.getAllHashtags) {
       const arr = nextProps.getAllHashtags.getAllHashtags.map(hashtag => {
         return {
@@ -240,37 +256,103 @@ class EditorTextContent extends Component {
     }
   }
 
+  generateDropdown (days, startDay) {
+    let arr = []
+    for (var i = 1; i <= days; i++) {
+      if (i >= startDay) {
+        arr.push({value: i, label: 'Day ' + i})
+      }
+    }
+    return arr
+  }
+
   render () {
-    const {title, textContent, eventType, googlePlaceData, changesMade, days} = this.props.page
+    const {title, textContent, eventType, googlePlaceData, startTime, endTime, startDay, endDay, changesMade, days} = this.props.page
     const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     if (post && post.type === 'BlogHeading') return null
     if (this.props.pages.activePostIndex === 'fin') return null
     return (
-      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '24px'}}>
-        <label style={{margin: '8px 0'}}>{this.props.pages.activePostIndex === 'home' ? 'Blog Title' : 'Post Title'}</label>
-        <input type='text' style={{width: '100%', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '16px 24px', fontSize: '13px', minHeight: 'calc(100vh - 60px)'}}>
+        {this.props.pages.activePostIndex === 'home' && <React.Fragment>
+          <label style={{margin: '8px 0'}}>Blog Title</label>
+          <input type='text' style={{width: '100%', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+        </React.Fragment>}
         {this.props.pages.activePostIndex !== 'home' &&
         <React.Fragment>
-          <label style={{margin: '8px 0'}}>Location</label>
+          <label style={{margin: '8px 0'}}>{eventType ? 'Event Info' : 'Location'}</label>
           <div style={{position: 'relative'}}>
             {/* <input type='text' style={{width: eventType ? '80%' : '100%', padding: '8px'}} />
             {eventType && <input type='text' style={{width: '20%', padding: '8px'}} />} */}
             <LocationSearch blogEditor selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={googlePlaceData} eventType={eventType} />
+            {eventType && <React.Fragment>
+              <Select
+                placeholder='Start Day'
+                value={startDay && startDay.value}
+                onChange={(e) => {
+                  this.props.updateActivePage('startDay', e)
+                  if (endDay && e.value > endDay.value) {
+                    this.props.updateActivePage('endDay', e)
+                  }
+                }}
+                options={
+                [...Array(this.props.blogDays)].map((day, i) => {
+                  return (
+                    {value: i + 1, label: 'Day ' + (i + 1)}
+                  )
+                })}
+              />
+              <Select
+                placeholder='End Day'
+                value={endDay && endDay.value}
+                onChange={(e) => this.props.updateActivePage('endDay', e)}
+                options={
+                this.generateDropdown(this.props.blogDays, startDay ? startDay.value : 0)}
+              />
+              {/* <select onChange={(e) => this.props.updateActivePage('startDay', e.target.value)} className='editorDayDropdown' value={startDay} style={{width: '65px', padding: '8px', marginLeft: '8px', backgroundColor: 'white'}} onBlur={(e) => this.setState({editingStartDay: false})}>
+                <option value='' />
+                {[...Array(this.props.blogDays)].map((day, i) => {
+                  return (
+                    <option key={i} value={i + 1}>Day {i + 1}</option>
+                  )
+                })}
+              </select> */}
+              {/* <span style={{padding: '3px'}}>to</span>
+              <select onChange={(e) => this.props.updateActivePage('endDay', e.target.value)} className='editorDayDropdown' value={endDay} style={{width: '65px', padding: '8px', backgroundColor: 'white'}} onBlur={(e) => this.setState({editingEndDay: false})}>
+                <option value='' />
+                {[...Array(this.props.blogDays)].map((day, i) => {
+                  return (
+                    <option key={i} value={i + 1}>Day {i + 1}</option>
+                  )
+                })}
+              </select> */}
+              {!this.props.page.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+                this.setState({editingStartTime: true})
+              }} />}
+              {(this.props.page.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center', verticalAlign: 'top'}} value={startTime} onChange={(e) => this.props.updateActivePage('startTime', e.target.value)} onBlur={(e) => {
+                this.setState({editingStartTime: false})
+              }} />}
+              {!this.props.page.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+                this.setState({editingEndTime: true})
+              }} />}
+              {(this.props.page.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '76px', fontSize: '13px', padding: '8px', marginLeft: '8px', textAlign: 'center', verticalAlign: 'top'}} value={endTime} onChange={(e) => this.props.updateActivePage('endTime', e.target.value)} onBlur={(e) => {
+                this.setState({editingEndTime: false})
+              }} />}
+            </React.Fragment>}
           </div>
         </React.Fragment>}
         <label style={{margin: '8px 0'}}>Content</label>
         <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
         <label style={{margin: '8px 0'}}>Tags</label>
-        <div style={{margin: '8px 0'}}>
-          <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[32, 13, 9]} inline={false} placeholder={'Add tags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i) => this.handleHashtagDelete(i)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
+        <div>
+          <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[32, 13, 9]} inline={false} placeholder={'Add tags to get discovered by others'} tags={this.props.page.hashtags} handleDelete={(i, e) => this.handleHashtagDelete(i, e)} handleAddition={(tag) => this.handleHashtagAddition(tag)} />
         </div>
         {this.props.pages.activePostIndex === 'home' &&
         <div>
           <label style={{margin: '8px 0'}}>No. of Days</label>
           <input type='number' step={1} style={{width: '20%', padding: '8px', margin: '8px'}} min={0} value={days} onChange={(e) => this.props.updateActivePage('days', e.target.value)} />
         </div>}
-        <div style={{position: 'absolute', right: '24px', bottom: '-8px'}}>
+        <div style={{position: 'absolute', marginTop: '8px', bottom: '24px', right: '24px'}}>
           <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.handleSave(this.props.page.type)}>Save Changes</button>
           <button disabled={!changesMade} style={{opacity: changesMade ? '1.0' : '0.5'}} onClick={() => this.discardChanges()}>Discard Changes</button>
         </div>
