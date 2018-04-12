@@ -4,3 +4,10 @@ export const setStickyTabs = (sticky) => {
     sticky
   }
 }
+
+export const setStickySidebar = (sticky) => {
+  return {
+    type: 'SET_STICKY_SIDEBAR',
+    sticky
+  }
+}

@@ -1,9 +1,12 @@
 export const userDashboardReducer = (state = {
-  stickyTabs: false
+  stickyTabs: false,
+  stickySidebar: false
 }, action) => {
   switch (action.type) {
     case 'SET_STICKY_TABS':
-      return {stickyTabs: action.sticky}
+      return {...state, stickyTabs: action.sticky}
+    case 'SET_STICKY_SIDEBAR':
+      return {...state, stickySidebar: action.sticky}
     default:
       return state
   }
@@ -12,5 +15,5 @@ export const userDashboardReducer = (state = {
 /*
 track stickiness of dashboard tabs, sidebar
 stickyTabs: Boolean
-stickyMediaSidebar: Boolean
+stickySidebar: Boolean
 */
