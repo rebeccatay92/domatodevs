@@ -37,7 +37,7 @@ class App extends Component {
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar lock={lock} />
 
-          <div style={{width: '100%', marginTop: '60px'}}>
+          <div style={{width: '100%', marginTop: '53px'}}>
             <Route exact path='/' render={(props) => (
               <HomePage lock={lock} {...props} />
             )} />

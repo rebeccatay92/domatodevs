@@ -6,8 +6,9 @@ import { openMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbum } from 
 import MediaConsole from '../mediaConsole/MediaConsole'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
-const focusedTabStyle = {minHeight: '30px', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px', borderLeft: '5px solid black', margin: '0px 0 20px 0', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}
-const unfocusedTabStyle = {minHeight: '30px', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px', borderLeft: '5px solid transparent', margin: '0px 0 20px 0', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}
+const coreTabStyle = {paddingLeft: '4px', cursor: 'pointer', color: 'rgba(60, 58, 68, 1)', fontFamily: 'EB Garamond, serif', fontSize: '16px', fontWeight: '400', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', height: '21px', marginTop: '24px'}
+const unfocusedTabStyle = {...coreTabStyle, borderLeft: '4px solid transparent'}
+const focusedTabStyle = {...coreTabStyle, borderLeft: '4px solid rgba(60, 58, 68, 1)'}
 
 class MediaTab extends Component {
   constructor (props) {
@@ -29,7 +30,6 @@ class MediaTab extends Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.data.getUserAlbums !== this.props.data.getUserAlbums) {
       let albumsArr = nextProps.data.getUserAlbums
-      console.log('albumsArr', albumsArr)
       this.props.initializeMediaConsoleAlbums(albumsArr)
       if (!nextProps.mediaConsole.isOpen) {
         if (albumsArr.length) {
@@ -42,7 +42,6 @@ class MediaTab extends Component {
   componentDidMount () {
     if (this.props.data.getUserAlbums) {
       let albumsArr = this.props.data.getUserAlbums
-      console.log('albumsArr', albumsArr)
       this.props.initializeMediaConsoleAlbums(albumsArr)
       if (!this.props.mediaConsole.isOpen) {
         if (albumsArr.length) {
@@ -54,7 +53,7 @@ class MediaTab extends Component {
   }
 
   componentWillUnmount () {
-    document.removeEventListener('scroll', this.handScrollBound)
+    document.removeEventListener('scroll', this.handleScrollBound)
   }
 
   handleScroll (e) {
@@ -73,23 +72,33 @@ class MediaTab extends Component {
     let media = mediaConsole.focusedAlbum.media
 
     return (
-      <div className={'mediaTabComponent'} style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box', border: '1px solid blue'}}>
+      <div className={'mediaTabComponent'} style={{width: '100%', height: 'calc(100vh - 270px)', boxSizing: 'border-box'}}>
 
         {mediaConsole.isOpen &&
           <MediaConsole />
         }
 
-        <div style={{display: 'inline-block', width: '20%', height: '100%', verticalAlign: 'top', borderRight: '2px solid gray', paddingRight: '10px', overflow: 'scroll'}}>
-          <h4 style={unfocusedTabStyle} onClick={() => this.openMediaConsole()}><strong>Album list</strong> <i className='material-icons' style={{color: 'gray', verticalAlign: 'middle'}}>settings</i></h4>
-          {mediaConsole.albums.map((album, i) => {
-            let isFocusedAlbum = mediaConsole.focusedAlbum.id === album.id
-            return (
-              <h4 style={isFocusedAlbum ? focusedTabStyle : unfocusedTabStyle} key={i} onClick={() => this.switchFocusedAlbum(album.id)}>{album.title}</h4>
-            )
-          })}
+        {/* ENTIRE LEFT TABS COLUMN */}
+        <div style={{display: 'inline-block', width: '265px', height: 'calc(100vh - 110px)', verticalAlign: 'top', paddingTop: '24px', paddingBottom: '24px', paddingLeft: '2px', border: '1px solid red'}}>
+          {/* HIGHLIGHTED LINE DIV */}
+          <div style={{borderRight: '1px solid rgba(60, 58, 68, 0.1)', width: '100%', height: '100%'}}>
+
+            <div style={{display: 'flex', alignItems: 'center', height: '24px'}}>
+              <h4 style={{paddingLeft: '8px', fontSize: '24px', fontFamily: 'EB Garamond, serif', fontWeight: '400'}} onClick={() => this.openMediaConsole()}>Album list</h4>
+              <i className='material-icons' style={{color: 'rgba(60, 58, 68, 0.3)', marginLeft: '10px'}}>settings</i>
+            </div>
+
+            {mediaConsole.albums.map((album, i) => {
+              let isFocusedAlbum = mediaConsole.focusedAlbum.id === album.id
+              console.log('albumid', album.id, 'isFocus', isFocusedAlbum)
+              return (
+                <h4 style={isFocusedAlbum ? focusedTabStyle : unfocusedTabStyle} key={i} onClick={() => this.switchFocusedAlbum(album.id)}>{album.title}</h4>
+              )
+            })}
+          </div>
         </div>
 
-        <div className={'mediaTabContent'} style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '80%', height: '100%', boxSizing: 'border-box', paddingLeft: '12px'}}>
+        <div className={'mediaTabContent'} style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '12px'}}>
           {/* <iframe src={'https://www.youtube.com/embed/L5TRm2iADhE'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen /> */}
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
           {mediaConsole.albums.length && media.map((medium, i) => {
