@@ -34,7 +34,7 @@ export const mediaConsoleReducer = (state = {
 
 /*
 mediaConsole redux state
-{
+
 isOpen: Boolean
 albums: [Album]
 focusedAlbum: {
@@ -43,5 +43,5 @@ focusedAlbum: {
   description
   media: []
 }
-}
+selectedMedia: [medium id]
 */

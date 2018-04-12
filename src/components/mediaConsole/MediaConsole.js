@@ -126,6 +126,7 @@ class MediaConsole extends Component {
 
         <div style={{position: 'fixed', left: 'calc((100vw - 1134px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)'}}>
 
+          {/* MEDIA CONSOLE LEFT COL */}
           <div style={{display: 'inline-block', width: '274px', height: '100%', background: 'rgb(25, 143, 143)', padding: '15px', color: 'white'}}>
 
             <h3 style={{margin: '0 0 10px 0', padding: '0 0 5px 0'}}>Album List</h3>
@@ -145,6 +146,7 @@ class MediaConsole extends Component {
 
             <hr style={{margin: '10px 0 10px 0'}} />
 
+            {/* ALBUM INFO */}
             {this.props.mediaConsole.focusedAlbum.id &&
               <div style={{height: '45%', width: '100%'}}>
                 <label style={{width: '100%'}}>
@@ -159,45 +161,81 @@ class MediaConsole extends Component {
                   <h5>Location / Tags</h5>
                   <input type='text' style={{width: '100%', height: '25px', border: 'none', color: 'black'}} />
                 </label>
-                <button style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white'}} onClick={() => this.editAlbum()}>Save changes</button>
-                <button style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white'}} onClick={() => this.cancelEditAlbum()}>Cancel</button>
+                <button key={'albumButton1'} style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white', ':hover': {color: 'red'}}} onClick={() => this.editAlbum()}>Save changes</button>
+                <button key={'albumButton2'} style={{marginTop: '10px', height: '30px', float: 'right', border: 'none', outline: 'none', background: 'transparent', color: 'white', ':hover': {color: 'red'}}} onClick={() => this.cancelEditAlbum()}>Cancel</button>
               </div>
             }
           </div>
 
-          {/* 864 NOT 860. for even margin */}
-          <div style={{display: 'inline-block', width: '864px', height: '100%', verticalAlign: 'top'}}>
-            {/* TOP SECTION -> THUMBNAILS */}
-            <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '100%', height: '95%', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
-              {this.props.mediaConsole.albums.length && this.props.mediaConsole.focusedAlbum.media.map((medium, i) => {
-                // 256 X 144. 24px spacing
-                if (medium.type === 'Photo') {
-                  return (
-                    <div key={i} style={{width: '256px', height: '144px', margin: '12px'}}>
-                      {/* NEED TO POSITION LANDSCAPE/PORTRAIT PROPERLY */}
-                      <img src={medium.imageUrl} width='256px' height='144px' />
-                    </div>
-                  )
-                } else if (medium.type === 'Youtube') {
-                  return (
-                    <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '12px'}} frameBorder={0} allowFullScreen />
-                  )
-                }
-              })}
-              {!this.props.mediaConsole.albums.length &&
-                <h3>You don't have any albums.</h3>
-              }
+          {/* MEDIA CONSOLE RIGHT SIDE. 864 NOT 860. for even margin */}
+          {this.props.mediaConsole.focusedAlbum.id &&
+            <div style={{display: 'inline-block', width: '864px', height: '100%', verticalAlign: 'top'}}>
+
+              {/* TOP SECTION -> THUMBNAILS */}
+              <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '100%', height: '93%', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
+                <div style={{position: 'relative', width: '256px', height: '144px', margin: '12px', display: 'flex', justifyContent: 'space-between'}}>
+                  <div style={{width: '45%', height: '100%', border: '2px solid gray', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer'}}>
+                    <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
+                    <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>collections</i>
+                    <h5 style={{height: '30px', width: '100%'}}>Add a photo</h5>
+                  </div>
+                  <div style={{width: '45%', height: '100%', border: '2px solid gray', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer'}}>
+                    <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
+                    <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>videocam</i>
+                    <h5 style={{height: '30px', width: '100%'}}>Embed Youtube video</h5>
+                  </div>
+                </div>
+                {this.props.mediaConsole.focusedAlbum.media.map((medium, i) => {
+                  // 256 X 144. 24px spacing
+                  if (medium.type === 'Photo') {
+                    return (
+                      <div key={i} style={{position: 'relative', width: '256px', height: '144px', margin: '12px'}}>
+                        {/* NEED TO POSITION LANDSCAPE/PORTRAIT PROPERLY */}
+                        <img src={medium.imageUrl} width='256px' height='144px' />
+                        <div style={{position: 'absolute', right: '10px', top: '10px', width: '30px', height: '30px', background: 'rgba(0, 0, 0, 0.7)', border: '2px solid white', borderRadius: '50%', cursor: 'pointer'}} />
+                      </div>
+                    )
+                  } else if (medium.type === 'Youtube') {
+                    return (
+                      <div key={i} style={{position: 'relative', width: '256px', height: '144px', margin: '12px'}}>
+                        <iframe src={medium.youtubeUrl} width='256px' height='144px' frameBorder={0} allowFullScreen />
+                        <div style={{position: 'absolute', right: '10px', top: '10px', width: '30px', height: '30px', background: 'rgba(0, 0, 0, 0.7)', border: '2px solid white', borderRadius: '50%', cursor: 'pointer'}} />
+                      </div>
+                    )
+                  }
+                })}
+              </div>
+
+              {/* BOTTOM BAR -> ACTION BUTTONS */}
+              <div style={{width: '100%', height: '7%', padding: '0 24px 0 24px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', borderTop: '2px solid grey'}}>
+                  {/* DISPLAY THESE ONLY IF STUFF IS TICKED */}
+                  <div>
+                    <button key={'mediaButton1'} style={mediaButtonStyle}>Delete</button>
+                    <button key={'mediaButton2'} style={mediaButtonStyle}>Download</button>
+                    <button key={'mediaButton3'} style={mediaButtonStyle}>Move to</button>
+                  </div>
+                  <div>
+                    <button key={'mediaButton4'} style={mediaButtonStyle}>Uncheck all</button>
+                    <button key={'mediaButton5'} style={mediaButtonStyle}>Check all</button>
+                    {/* <button key={'mediaButton6'} style={mediaButtonStyle}>Post</button> */}
+                  </div>
+                </div>
+              </div>
             </div>
-            {/* BOTTOM BAR -> ACTION BUTTONS */}
-            <div style={{width: '100%', height: '5%', padding: '0 24px 0 24px'}}>
-              <div style={{width: '100%', height: '100%', borderTop: '2px solid grey'}}>BAR</div>
+          }
+          {!this.props.mediaConsole.focusedAlbum.id &&
+            <div style={{display: 'inline-block', width: '864px', height: '100%', verticalAlign: 'top'}}>
+              You don't have any albums.
             </div>
-          </div>
+          }
         </div>
       </div>
     )
   }
 }
+
+const mediaButtonStyle = {border: 'none', padding: '0 10px', fontWeight: 'bold', ':hover': {color: 'red'}}
 
 const unfocusedAlbumStyle = {borderLeft: '5px solid transparent', paddingLeft: '10px', cursor: 'pointer', margin: '10px 0', height: '20px', fontSize: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Roboto, sans-serif'}
 const focusedAlbumStyle = {borderLeft: '5px solid white', paddingLeft: '10px', cursor: 'pointer', margin: '10px 0', height: '20px', fontSize: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Roboto, sans-serif'}
