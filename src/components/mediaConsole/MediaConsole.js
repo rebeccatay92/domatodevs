@@ -139,7 +139,9 @@ class MediaConsole extends Component {
               {this.props.mediaConsole.albums.map((album, i) => {
                 let isFocusedAlbum = album.id === this.props.mediaConsole.focusedAlbum.id
                 return (
-                  <h5 key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</h5>
+                  <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle}>
+                    <h5 key={i} style={albumNameStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</h5>
+                  </div>
                 )
               })}
             </div>
@@ -237,8 +239,10 @@ class MediaConsole extends Component {
 
 const mediaButtonStyle = {border: 'none', padding: '0 10px', fontWeight: 'bold', ':hover': {color: 'red'}}
 
-const unfocusedAlbumStyle = {borderLeft: '5px solid transparent', paddingLeft: '10px', cursor: 'pointer', margin: '10px 0', height: '20px', fontSize: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Roboto, sans-serif'}
-const focusedAlbumStyle = {borderLeft: '5px solid white', paddingLeft: '10px', cursor: 'pointer', margin: '10px 0', height: '20px', fontSize: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'Roboto, sans-serif'}
+const unfocusedAlbumStyle = {borderLeft: '5px solid transparent', paddingLeft: '10px', cursor: 'pointer', height: '40px'}
+const focusedAlbumStyle = {borderLeft: '5px solid white', paddingLeft: '10px', cursor: 'pointer', height: '40px'}
+
+const albumNameStyle = {paddingLeft: '10px', fontSize: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '80%', fontFamily: 'Roboto, sans-serif'}
 
 const mapStateToProps = (state) => {
   return {

@@ -1,5 +1,5 @@
 export const mediaConsoleReducer = (state = {
-  isOpen: true,
+  isOpen: false,
   albums: [],
   focusedAlbum: {
     id: '',

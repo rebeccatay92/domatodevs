@@ -155,7 +155,7 @@ class UserDashboardPage extends Component {
     if (!profile.id) return <p>Not logged in</p>
 
     return (
-      <div style={{margin: '90px auto 150px auto', width: '70%', minHeight: 'calc(100vh - 120px)', boxSizing: 'border-box'}}>
+      <div style={{margin: '90px auto 150px auto', width: '1265px', minHeight: 'calc(100vh - 120px)', boxSizing: 'border-box'}}>
 
         <label>
           <div style={{position: 'relative', width: '150px', height: '150px'}}>
