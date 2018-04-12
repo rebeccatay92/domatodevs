@@ -8,6 +8,7 @@ import DashboardTabsHOC from './DashboardTabsHOC'
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+import { setStickyTabs } from '../../actions/userDashboardActions'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', padding: '10px 20px 10px 20px', color: 'grey'}
 const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', borderBottom: '5px solid red', padding: '10px 20px 10px 20px', color: 'black'}
@@ -29,7 +30,9 @@ class UserDashboardPage extends Component {
       focusedTab: 'media',
       bio: '',
       editingBio: false
+      // stickyTabs: false
     }
+    this.handleScrollBound = (e) => this.handleScroll(e)
   }
 
   focusTab (tabName) {
@@ -126,6 +129,27 @@ class UserDashboardPage extends Component {
         bio: this.props.userProfile.bio || ''
       })
     }
+
+    document.addEventListener('scroll', this.handleScrollBound)
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('scroll', this.handScrollBound)
+  }
+
+  handleScroll (e) {
+    // console.log('scroll', e)
+    const el = document.querySelector('.dashboardTabs')
+    const rect = el.getBoundingClientRect()
+    // console.log('rect', rect)
+    const distFromTop = rect.top
+    // console.log('tabs distFromTop', distFromTop)
+
+    if (distFromTop <= 50 && !this.props.userDashboard.stickyTabs) {
+      this.props.setStickyTabs(true)
+    }
+
+    // need to compare with top of tab content to determine when to unsticky it. redux state? tab content is different component
   }
 
   componentWillReceiveProps (nextProps) {
@@ -153,6 +177,8 @@ class UserDashboardPage extends Component {
     var profile = this.props.userProfile
     // console.log('redux state profile', profile)
     if (!profile.id) return <p>Not logged in</p>
+
+    let stickyTabs = this.props.userDashboard.stickyTabs
 
     return (
       <div style={{margin: '90px auto 150px auto', width: '1265px', minHeight: 'calc(100vh - 120px)', boxSizing: 'border-box'}}>
@@ -189,14 +215,17 @@ class UserDashboardPage extends Component {
           }
         </div>
 
-        <div style={{marginTop: '30px', boxSizing: 'border-box', borderBottom: '3px solid gray', display: 'flex', justifyContent: 'flex-start', height: '60px'}}>
+        {/* TABS BECOME STICKY AFTER SCROLLPOINT */}
+        <div className={'dashboardTabs'} style={{boxSizing: 'border-box', borderBottom: '3px solid gray', display: 'flex', justifyContent: 'flex-start', height: '60px', background: 'white', position: stickyTabs ? 'fixed' : 'relative', top: stickyTabs ? '50px' : '0', width: '100%'}}>
           {this.state.tabsArray.map((obj, i) => {
             return (
               <h3 key={i} style={this.state.focusedTab === obj.tab ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab(obj.tab)}>{obj.text}</h3>
             )
           })}
         </div>
-
+        {stickyTabs &&
+          <div style={{width: '100%', height: '60px'}} />
+        }
         <DashboardTabsHOC focusedTab={this.state.focusedTab} lock={this.props.lock} />
       </div>
     )
@@ -206,7 +235,8 @@ class UserDashboardPage extends Component {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.userProfile,
-    cloudStorageToken: state.cloudStorageToken
+    cloudStorageToken: state.cloudStorageToken,
+    userDashboard: state.userDashboard
   }
 }
 
@@ -217,6 +247,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setUserProfile: (userProfile) => {
       dispatch(setUserProfile(userProfile))
+    },
+    setStickyTabs: (sticky) => {
+      dispatch(setStickyTabs(sticky))
     }
   }
 }

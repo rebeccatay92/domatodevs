@@ -4,6 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { getUserAlbums } from '../../apollo/album'
 import { openMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbum } from '../../actions/mediaConsoleActions'
 import MediaConsole from '../mediaConsole/MediaConsole'
+import { setStickyTabs } from '../../actions/userDashboardActions'
 
 const focusedTabStyle = {minHeight: '30px', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px', borderLeft: '5px solid black', margin: '0px 0 20px 0', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}
 const unfocusedTabStyle = {minHeight: '30px', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px', borderLeft: '5px solid transparent', margin: '0px 0 20px 0', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}
@@ -14,6 +15,7 @@ class MediaTab extends Component {
     this.state = {
       // no need internal state. takes from redux state props.mediaConsole
     }
+    this.handleScrollBound = (e) => this.handleScroll(e)
   }
 
   switchFocusedAlbum (id) {
@@ -48,6 +50,21 @@ class MediaTab extends Component {
         }
       }
     }
+    document.addEventListener('scroll', this.handleScrollBound)
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('scroll', this.handScrollBound)
+  }
+
+  handleScroll (e) {
+    const el = document.querySelector('.mediaTabComponent')
+    const rect = el.getBoundingClientRect()
+    const distFromTop = rect.top
+    // console.log('componnet distFromTop', distFromTop)
+    if (distFromTop >= 110 && this.props.userDashboard.stickyTabs) {
+      this.props.setStickyTabs(false)
+    }
   }
 
   render () {
@@ -56,7 +73,7 @@ class MediaTab extends Component {
     let media = mediaConsole.focusedAlbum.media
 
     return (
-      <div style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box'}}>
+      <div className={'mediaTabComponent'} style={{width: '100%', height: 'calc(100vh - 270px)', padding: '15px 0 15px 0', boxSizing: 'border-box', border: '1px solid blue'}}>
 
         {mediaConsole.isOpen &&
           <MediaConsole />
@@ -72,7 +89,7 @@ class MediaTab extends Component {
           })}
         </div>
 
-        <div className={'mediaTabContent'} style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '80%', height: '100%', boxSizing: 'border-box', paddingLeft: '12px', overflow: 'scroll'}}>
+        <div className={'mediaTabContent'} style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '80%', height: '100%', boxSizing: 'border-box', paddingLeft: '12px'}}>
           {/* <iframe src={'https://www.youtube.com/embed/L5TRm2iADhE'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen /> */}
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
           {mediaConsole.albums.length && media.map((medium, i) => {
@@ -102,7 +119,8 @@ class MediaTab extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    mediaConsole: state.mediaConsole
+    mediaConsole: state.mediaConsole,
+    userDashboard: state.userDashboard
   }
 }
 
@@ -116,6 +134,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setFocusedAlbum: (id) => {
       dispatch(setFocusedAlbum(id))
+    },
+    setStickyTabs: (sticky) => {
+      dispatch(setStickyTabs(sticky))
     }
   }
 }
