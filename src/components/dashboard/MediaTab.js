@@ -116,18 +116,16 @@ class MediaTab extends Component {
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
           {mediaConsole.albums.length && media.map((medium, i) => {
             // 256 X 144. 24px spacing
-            if (medium.type === 'Photo') {
-              return (
-                <div key={i} style={{maxWidth: '256px', maxHeight: '144px', margin: '0px 24px 24px 0px'}}>
-                  {/* NEED TO POSITION LANDSCAPE/PORTRAIT PROPERLY */}
+            return (
+              <div key={i} style={{maxWidth: '256px', maxHeight: '144px', margin: '0px 24px 24px 0px'}}>
+                {medium.type === 'Photo' &&
                   <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                </div>
-              )
-            } else if (medium.type === 'Youtube') {
-              return (
-                <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
-              )
-            }
+                }
+                {medium.type === 'Youtube' &&
+                  <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
+                }
+              </div>
+            )
           })}
           {!mediaConsole.albums.length &&
             <h3>You don't have any albums!</h3>
