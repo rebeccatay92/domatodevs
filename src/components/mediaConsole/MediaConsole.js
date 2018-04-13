@@ -24,9 +24,14 @@ class MediaConsole extends Component {
   }
 
   handleChange (e, field) {
-    this.setState({
-      [field]: e.target.value
-    })
+    if (field === 'title') {
+      if (e.target.value.length <= 30) {
+        this.setState({title: e.target.value})
+      }
+    }
+    if (field === 'description') {
+      this.setState({description: e.target.value})
+    }
   }
 
   cancelEditAlbum () {

@@ -50,7 +50,6 @@ class MediaTab extends Component {
       }
     }
     document.addEventListener('scroll', this.handleScrollBound)
-    // this.checkDistanceFromTop()
   }
 
   componentWillUnmount () {
@@ -59,10 +58,11 @@ class MediaTab extends Component {
 
   handleScroll (e) {
     const el = document.querySelector('.mediaTabComponent')
+    if (!el) return
     const rect = el.getBoundingClientRect()
     const distFromTop = rect.top
     // console.log('componnet distFromTop', distFromTop)
-    if (distFromTop >= 110 && this.props.userDashboard.stickyTabs) {
+    if (distFromTop > 110 && this.props.userDashboard.stickyTabs) {
       this.props.setStickyTabs(false)
       this.props.setStickySidebar(false)
     }
@@ -111,21 +111,21 @@ class MediaTab extends Component {
           </div>
         </div>
 
-        <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '12px'}}>
+        <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '24px', paddingTop: '24px'}}>
           {/* <iframe src={'https://www.youtube.com/embed/L5TRm2iADhE'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen /> */}
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
           {mediaConsole.albums.length && media.map((medium, i) => {
             // 256 X 144. 24px spacing
             if (medium.type === 'Photo') {
               return (
-                <div key={i} style={{width: '256px', height: '144px', margin: '0px 12px 24px 0px'}}>
+                <div key={i} style={{maxWidth: '256px', maxHeight: '144px', margin: '0px 24px 24px 0px'}}>
                   {/* NEED TO POSITION LANDSCAPE/PORTRAIT PROPERLY */}
-                  <img src={medium.imageUrl} width='256px' height='144px' />
+                  <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                 </div>
               )
             } else if (medium.type === 'Youtube') {
               return (
-                <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen />
+                <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
               )
             }
           })}
