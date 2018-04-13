@@ -32,7 +32,8 @@ class PostMediaContent extends Component {
         activePhotoPage: newPageNo
       })
     }
-    if (prevState.activePhotoIndex !== this.state.activePhotoIndex || prevProps.pages.activePostIndex !== this.props.pages.activePostIndex) {
+
+    if (prevState.activePhotoIndex !== this.state.activePhotoIndex) {
       this.setState({
         justChangedMedia: true
       })
@@ -61,8 +62,15 @@ class PostMediaContent extends Component {
     if (nextProps.pages.activePostIndex !== this.props.pages.activePostIndex) {
       this.setState({
         activePhotoIndex: 0,
-        activePhotoPage: 0
+        activePhotoPage: 0,
+        justChangedMedia: true
       })
+
+      setTimeout(() => {
+        this.setState({
+          justChangedMedia: false
+        })
+      }, 4000)
     }
   }
 

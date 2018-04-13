@@ -62,6 +62,26 @@ class PostTextContent extends Component {
                 })}
               </span>
             )}
+            {this.props.pages.activePostIndex === 'home' && this.props.blogHashtags.length > 0 && (
+              <div style={{color: '#ed685a'}}>
+                <br />
+                {this.props.blogHashtags.map((hashtag, i) => {
+                  return (
+                    <span key={i}>{'#' + hashtag.name + ' '}</span>
+                  )
+                })}
+              </div>
+            )}
+            {this.props.pages.activePostIndex !== 'home' && this.props.pages.activePostIndex !== 'fin' && post[post.type].hashtags.length > 0 && (
+              <div style={{color: '#ed685a'}}>
+                <br />
+                {post[post.type].hashtags.map((hashtag, i) => {
+                  return (
+                    <span key={i}>{'#' + hashtag.name + ' '}</span>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
         {this.props.pages.activePostIndex !== 'home' && <div style={{position: 'fixed', width: '24px', height: '24px', top: 'calc(50vh - 28px - 12px + 56px)', left: '61vw'}}>

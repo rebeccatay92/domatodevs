@@ -16,6 +16,7 @@ export const blogEditorActivePageReducer = (state = {}, action) => {
         hashtags: action.page.hashtags,
         startTime: action.page.startTime,
         endTime: action.page.endTime,
+        media: action.page.media,
         changesMade: false
       }
     case 'UPDATE_ACTIVE_PAGE':

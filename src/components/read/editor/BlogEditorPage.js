@@ -17,8 +17,7 @@ class BlogEditorPage extends Component {
     super(props)
 
     this.state = {
-      editedPages: [],
-      deletedPages: []
+      mediaEditMode: false
     }
   }
   render () {
@@ -32,7 +31,7 @@ class BlogEditorPage extends Component {
     return (
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
-        <EditorMediaContent />
+        <EditorMediaContent pages={this.props.pages} blogMedia={this.props.data.findBlog.media} />
         <EditorTextContent pages={this.props.pages} blogDays={this.props.data.findBlog.days} blogId={this.props.match.params.blogId} />
       </div>
     )
@@ -57,7 +56,8 @@ class BlogEditorPage extends Component {
               id: hashtag.id,
               text: hashtag.name
             }
-          }) : []
+          }) : [],
+          media: blog.media || []
         }
         this.props.initializeActivePage(page)
       }
@@ -93,7 +93,8 @@ class BlogEditorPage extends Component {
               id: hashtag.id,
               text: hashtag.name
             }
-          }) : []
+          }) : [],
+          media: blog.media
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
         const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]
@@ -115,6 +116,7 @@ class BlogEditorPage extends Component {
               text: hashtag.name
             }
           }) : [],
+          media: pageObj.media || [],
           startTime: pageObj.startTime ? moment.unix(pageObj.startTime).utc().format('HH:mm') : '',
           endTime: pageObj.endTime ? moment.unix(pageObj.endTime).utc().format('HH:mm') : ''
         }
