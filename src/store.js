@@ -18,6 +18,9 @@ import {mediaConsoleReducer} from './reducers/mediaConsoleReducer'
 import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageReducer'
 import { userDashboardReducer } from './reducers/userDashboardReducer'
 
+// testing
+import { googleCloudTokenReducer } from './reducers/googleCloudTokenReducer'
+
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
 
 const networkInterface = createNetworkInterface({
@@ -57,6 +60,7 @@ const store = createStore(combineReducers({
   mediaConsole: mediaConsoleReducer,
   blogEditorActivePage: blogEditorActivePageReducer,
   userDashboard: userDashboardReducer,
+  googleCloudToken: googleCloudTokenReducer,
   apollo: client.reducer()
 }),
 {},

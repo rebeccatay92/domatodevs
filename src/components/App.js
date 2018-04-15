@@ -19,9 +19,12 @@ import MapPlannerPage from './mapPlanner/MapPlannerPage'
 import UserDashboardPage from './dashboard/UserDashboardPage'
 
 import PasswordChanged from './Auth0/PasswordChanged'
-
 import history from './Auth0/history'
 import Lock from './Auth0/lock'
+
+import GoogleCloudStorage from './Google/GoogleCloudStorage'
+const GoogleCloudStorageInstance = new GoogleCloudStorage()
+
 const lock = new Lock()
 
 class App extends Component {

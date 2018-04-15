@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 import Auth0Lock from 'auth0-lock'
 import history from './history'
 
