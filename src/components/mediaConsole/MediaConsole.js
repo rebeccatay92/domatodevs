@@ -77,6 +77,44 @@ class MediaConsole extends Component {
       })
   }
 
+  uploadPhotos (e) {
+    let files = e.target.files
+    console.log('files', files)
+    let fileUploadPromiseArr = []
+    // files.forEach(file => {
+    //   // check if file is img
+    //   if ((file.type).indexOf('image') > -1) {
+    //     console.log('type', file.type)
+    //
+    //     let UserId = this.props.userProfile.id
+    //     let timestamp = Date.now()
+    //     let uriBase = process.env.REACT_APP_CLOUD_UPLOAD_URI
+    //     let uploadEndpoint = `${uriBase}${UserId}/media/${timestamp}`
+    //     let uploadRequest = fetch(uploadEndpoint, {
+    //       method: 'POST',
+    //       headers: {
+    //         'Authorization': `Bearer ${this.apiToken}`,
+    //         'Content-Type': file.type,
+    //         'Content-Length': file.size
+    //       },
+    //       body: file
+    //     })
+    //       .then(response => {
+    //         return response.json()
+    //       })
+    //       .then(json => {
+    //         console.log('json', json)
+    //         let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
+    //         console.log('public url', publicUrl)
+    //         return publicUrl
+    //       })
+    //       .catch(err => {
+    //         console.log('err', err)
+    //       })
+    //   }
+    // })
+  }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevState.pendingRefetchFocusedAlbumId) {
       let isNewAlbumPresent = _.find(this.props.mediaConsole.albums, e => {
@@ -93,6 +131,9 @@ class MediaConsole extends Component {
   }
 
   componentDidMount () {
+    // check and refresh GCP token?
+    // this.props.retrieveCloudStorageToken()
+
     // console.log(this.props.data.getUserAlbums)
     let albumsArr = this.props.data.getUserAlbums
     // this.props.initializeMediaConsole(albumsArr)
@@ -128,7 +169,7 @@ class MediaConsole extends Component {
 
         <i className='material-icons' style={{position: 'fixed', top: '10vh', left: 'calc((100vw - 1134px)/2 - 50px)', fontSize: '36px', cursor: 'pointer'}} onClick={() => this.props.closeMediaConsole()}>close</i>
 
-        <div style={{position: 'fixed', left: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}}>
+        <div style={mediaConsoleContainerStyle}>
 
           {/* MEDIA CONSOLE LEFT COL */}
           <div style={{width: '274px', height: '100%', background: 'rgba(67, 132, 150, 1)', paddingTop: '24px', paddingBottom: '24px', color: 'white'}}>
@@ -187,16 +228,17 @@ class MediaConsole extends Component {
 
               {/* TOP SECTION -> THUMBNAILS */}
               <div style={{display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
-                <div style={{position: 'relative', width: '256px', height: '144px', margin: '12px', display: 'flex', justifyContent: 'space-between'}}>
-                  <div key={'mediaConsoleAddPhotoButton'} style={{width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}}>
+                <div style={mediaConsoleAddMediumContainerStyle}>
+                  <label key={'mediaConsoleAddPhotoButton'} style={mediaConsoleAddMediumButtonStyle}>
                     <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
                     <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>collections</i>
-                    <h5 style={{height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}}>Add a photo</h5>
-                  </div>
-                  <div key={'mediaConsoleAddYoutubeButton'} style={{width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}}>
+                    <h5 style={mediaConsoleAddMediumTextStyle}>Add a photo</h5>
+                    <input type='file' multiple accept='.jpeg, .jpg, .png' style={{display: 'none'}} onChange={e => this.uploadPhotos(e)} />
+                  </label>
+                  <div key={'mediaConsoleAddYoutubeButton'} style={mediaConsoleAddMediumButtonStyle}>
                     <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
                     <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>videocam</i>
-                    <h5 style={{height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}}>Embed Youtube video</h5>
+                    <h5 style={mediaConsoleAddMediumTextStyle}>Embed Youtube video</h5>
                   </div>
                 </div>
                 {this.props.mediaConsole.focusedAlbum.media.map((medium, i) => {
@@ -209,7 +251,7 @@ class MediaConsole extends Component {
                       {medium.type === 'Youtube' &&
                         <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
                       }
-                      <div style={{position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}}>
+                      <div style={mediaConsoleThumbnailCheckboxContainerStyle}>
                         {/* IF NOT SELECTED. SHOW TICK ON HOVER */}
                         <div key={`mediaThumbnailUnchecked${i}`} style={{width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', ':hover': {opacity: '1'}}}>
                           <i className='material-icons' style={{color: 'white'}}>done</i>
@@ -254,19 +296,25 @@ class MediaConsole extends Component {
   }
 }
 
+const mediaConsoleAddMediumContainerStyle = {position: 'relative', width: '256px', height: '144px', margin: '12px', display: 'flex', justifyContent: 'space-between'}
+const mediaConsoleAddMediumButtonStyle = {width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}
+const mediaConsoleAddMediumTextStyle = {height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}
+
 const mediaButtonLeftStyle = {border: 'none', fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', padding: 0, ':hover': {color: 'rgba(60, 58, 68, 1)'}, marginRight: '24px'}
 const mediaButtonRightStyle = {...mediaButtonLeftStyle, marginRight: '0', marginLeft: '24px'}
 
 const unfocusedAlbumStyle = {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', height: '15px', borderLeft: '4px solid transparent'}
 const focusedAlbumStyle = {...unfocusedAlbumStyle, borderLeft: '4px solid white'}
-
 const albumNameStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', lineHeight: '15px', width: 'auto', padding: '0', margin: '0', verticalAlign: 'top'}
 
 const editAlbumHeaderStyle = {margin: 0, padding: 0, fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '400', color: 'white'}
 const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '31px'}
 const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '121px', lineHeight: '18px', resize: 'none'}
-
 const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
+
+const mediaConsoleContainerStyle = {position: 'fixed', left: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
+
+const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}
 
 const mapStateToProps = (state) => {
   return {
