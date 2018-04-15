@@ -10,12 +10,8 @@ import { setUserProfile } from '../../actions/userActions'
 import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
-// const unclickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', marginRight: '40px', paddingBottom: '16px', color: 'rgba(60, 58, 68, 0.3)'}
-// const clickedTabStyle = {cursor: 'pointer', height: '100%', marginTop: '3px', marginRight: '40px', borderBottom: '5px solid red', paddingBottom: '16px', color: 'rgba(223, 56, 107, 1)'}
-
-const coreTabStyle = {cursor: 'pointer', height: '100%', fontFamily: 'Roboto, sans-serif', fontSize: '24px', fontWeight: '300', marginTop: '1px', marginRight: '40px', paddingTop: '16px', paddingBottom: '16px'}
-const unclickedTabStyle = {...coreTabStyle, color: 'rgba(60, 58, 68, 0.3)'}
-const clickedTabStyle = {...coreTabStyle, color: 'rgba(223, 56, 107, 1)', borderBottom: '3px solid rgba(223, 56, 107, 1)'}
+const unclickedTabStyle = {cursor: 'pointer', height: '100%', fontFamily: 'Roboto, sans-serif', fontSize: '24px', fontWeight: '300', marginTop: '1px', marginRight: '40px', paddingTop: '16px', paddingBottom: '16px', color: 'rgba(60, 58, 68, 0.3)'}
+const clickedTabStyle = {...unclickedTabStyle, color: 'rgba(223, 56, 107, 1)', borderBottom: '3px solid rgba(223, 56, 107, 1)'}
 
 const profilePicTintStyle = {background: `rgba(255, 255, 255, 0.3)`, width: '97px', height: '97px', borderRadius: '50%', position: 'absolute', top: '0', left: '0', textAlign: 'center', padding: '30px 0 30px 0', cursor: 'pointer', opacity: 0, ':hover': {opacity: '1'}}
 

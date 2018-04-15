@@ -25,7 +25,7 @@ class MediaConsole extends Component {
 
   handleChange (e, field) {
     if (field === 'title') {
-      if (e.target.value.length <= 30) {
+      if (e.target.value.length <= 28) {
         this.setState({title: e.target.value})
       }
     }
@@ -122,7 +122,6 @@ class MediaConsole extends Component {
 
   render () {
     // console.log('focusedAlbum in redux state', this.props.mediaConsole.focusedAlbum)
-
     return (
       <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
         <Style rules={{html: {overflowY: 'hidden'}}} />
@@ -143,14 +142,14 @@ class MediaConsole extends Component {
               </div>
 
               {/* DIV TO CONTAIN ALBUM NAMES WITH BORDER LEFT */}
-              <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexFlow: 'column nowrap'}}>
+              <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexDirection: 'column'}}>
                 {this.props.mediaConsole.albums.map((album, i) => {
                   let isFocusedAlbum = album.id === this.props.mediaConsole.focusedAlbum.id
                   return (
                     <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle}>
                       <span key={i} style={albumNameStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</span>
-                      {/* <hr style={{width: '10px', color: 'rgb(255, 255, 255, 0.3)', margin: '0', padding: '0'}} /> */}
-                      {/* <span>13</span> */}
+                      <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
+                      <span style={albumNameStyle}>13</span>
                     </div>
                   )
                 })}
@@ -210,7 +209,16 @@ class MediaConsole extends Component {
                       {medium.type === 'Youtube' &&
                         <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
                       }
-                      <div style={{position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', borderRadius: '50%', cursor: 'pointer'}} />
+                      <div style={{position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}}>
+                        {/* IF NOT SELECTED. SHOW TICK ON HOVER */}
+                        <div key={`mediaThumbnailUnchecked${i}`} style={{width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', ':hover': {opacity: '1'}}}>
+                          <i className='material-icons' style={{color: 'white'}}>done</i>
+                        </div>
+                        {/* IF SELECTED. SHOW NUMBER */}
+                        {/* <div key={`mediaThumbnailChecked${i}`} style={{width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '1', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          <span style={{fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'white'}}>130</span>
+                        </div> */}
+                      </div>
                     </div>
                   )
                 })}
@@ -218,18 +226,18 @@ class MediaConsole extends Component {
 
               {/* BOTTOM BAR -> ACTION BUTTONS */}
               <div style={{width: '100%', height: '47px', padding: '0 24px 0 24px'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', borderTop: '2px solid grey'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', padding: '0 8px 0 8px', borderTop: '2px solid rgba(60, 58, 68, 0.3)'}}>
                   {/* DISPLAY THESE ONLY IF STUFF IS TICKED */}
                   <div>
-                    <button key={'mediaButton1'} style={mediaButtonStyle}>Delete</button>
-                    <button key={'mediaButton2'} style={mediaButtonStyle}>Download</button>
-                    <button key={'mediaButton3'} style={mediaButtonStyle}>Shift album</button>
-                    <button key={'mediaButton4'} style={mediaButtonStyle}>Delete album</button>
+                    <button key={'mediaButton1'} style={mediaButtonLeftStyle}>Delete</button>
+                    <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
+                    <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
+                    <button key={'mediaButton4'} style={mediaButtonLeftStyle}>Delete album</button>
                   </div>
                   <div>
-                    <button key={'mediaButton5'} style={mediaButtonStyle}>Uncheck all</button>
-                    <button key={'mediaButton6'} style={mediaButtonStyle}>Check all</button>
-                    {/* <button key={'mediaButton6'} style={mediaButtonStyle}>Post</button> */}
+                    <button key={'mediaButton5'} style={mediaButtonRightStyle}>Uncheck all</button>
+                    <button key={'mediaButton6'} style={mediaButtonRightStyle}>Check all</button>
+                    {/* <button key={'mediaButton7'} style={mediaButtonRightStyle}>Post</button> */}
                   </div>
                 </div>
               </div>
@@ -246,18 +254,16 @@ class MediaConsole extends Component {
   }
 }
 
-const mediaButtonStyle = {border: 'none', padding: '0 10px', fontWeight: 'bold', ':hover': {color: 'red'}}
+const mediaButtonLeftStyle = {border: 'none', fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', padding: 0, ':hover': {color: 'rgba(60, 58, 68, 1)'}, marginRight: '24px'}
+const mediaButtonRightStyle = {...mediaButtonLeftStyle, marginRight: '0', marginLeft: '24px'}
 
-const coreAlbumStyle = {paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', height: '15px'}
-const unfocusedAlbumStyle = {...coreAlbumStyle, borderLeft: '4px solid transparent'}
-const focusedAlbumStyle = {...coreAlbumStyle, borderLeft: '4px solid white'}
+const unfocusedAlbumStyle = {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', height: '15px', borderLeft: '4px solid transparent'}
+const focusedAlbumStyle = {...unfocusedAlbumStyle, borderLeft: '4px solid white'}
 
-const albumNameStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', lineHeight: '15px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: 'auto', padding: '0', margin: '0', verticalAlign: 'top'}
+const albumNameStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', lineHeight: '15px', width: 'auto', padding: '0', margin: '0', verticalAlign: 'top'}
 
 const editAlbumHeaderStyle = {margin: 0, padding: 0, fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '400', color: 'white'}
-
 const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '31px'}
-
 const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '121px', lineHeight: '18px', resize: 'none'}
 
 const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
