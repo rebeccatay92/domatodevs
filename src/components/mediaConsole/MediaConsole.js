@@ -182,22 +182,22 @@ class MediaConsole extends Component {
 
           </div>
 
-          {/* MEDIA CONSOLE RIGHT SIDE. 864 NOT 860. for even margin */}
+          {/* MEDIA CONSOLE RIGHT SIDE */}
           {this.props.mediaConsole.focusedAlbum.id &&
             <div style={{width: '864px', height: '100%'}}>
 
               {/* TOP SECTION -> THUMBNAILS */}
-              <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
+              <div style={{display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
                 <div style={{position: 'relative', width: '256px', height: '144px', margin: '12px', display: 'flex', justifyContent: 'space-between'}}>
-                  <div style={{width: '45%', height: '100%', border: '2px solid gray', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer'}}>
+                  <div key={'mediaConsoleAddPhotoButton'} style={{width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}}>
                     <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
                     <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>collections</i>
-                    <h5 style={{height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%'}}>Add a photo</h5>
+                    <h5 style={{height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}}>Add a photo</h5>
                   </div>
-                  <div style={{width: '45%', height: '100%', border: '2px solid gray', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer'}}>
+                  <div key={'mediaConsoleAddYoutubeButton'} style={{width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}}>
                     <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
                     <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>videocam</i>
-                    <h5 style={{height:'30px', lineHeight: '15px', fontSize: '13px', width: '100%'}}>Embed Youtube video</h5>
+                    <h5 style={{height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}}>Embed Youtube video</h5>
                   </div>
                 </div>
                 {this.props.mediaConsole.focusedAlbum.media.map((medium, i) => {
@@ -260,7 +260,7 @@ const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontF
 
 const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '121px', lineHeight: '18px', resize: 'none'}
 
-const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', ':hover':{color: 'rgba(255,255,255,1)'} }
+const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
 
 const mapStateToProps = (state) => {
   return {
