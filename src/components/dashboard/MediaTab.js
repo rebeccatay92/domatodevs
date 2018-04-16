@@ -111,7 +111,7 @@ class MediaTab extends Component {
           </div>
         </div>
 
-        <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '24px', paddingTop: '24px'}}>
+        <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '24px', paddingTop: '24px'}}>
           {/* <iframe src={'https://www.youtube.com/embed/L5TRm2iADhE'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen /> */}
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
           {mediaConsole.albums.length && media.map((medium, i) => {

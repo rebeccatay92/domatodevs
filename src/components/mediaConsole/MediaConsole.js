@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbum } from '../../actions/mediaConsoleActions'
 
 import { getUserAlbums, updateAlbum, createAlbum } from '../../apollo/album'
+import { createMedia } from '../../apollo/media'
 
 const _ = require('lodash')
 
@@ -115,7 +116,7 @@ class MediaConsole extends Component {
             console.log('json', json)
             let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
             console.log('public url', publicUrl)
-            return {objectName: json.name, imageUrl: publicUrl}
+            return {type: 'Photo', objectName: json.name, imageUrl: publicUrl}
           })
           .catch(err => {
             console.log('err', err)
@@ -125,7 +126,23 @@ class MediaConsole extends Component {
     })
     Promise.all(fileUploadPromiseArr)
       .then(values => {
-        console.log('promise all', values)
+        let mediaInputArr = values
+        console.log('mediaInputArr', mediaInputArr)
+
+        // dispatch apollo req to createMedia
+        this.props.createMedia({
+          variables: {
+            AlbumId: this.state.id,
+            media: mediaInputArr
+          },
+          refetchQueries: [{
+            query: getUserAlbums
+          }]
+        })
+          .then(returning => {
+            console.log('returning', returning)
+            // state not updating to uploaded media
+          })
       })
   }
 
@@ -145,9 +162,6 @@ class MediaConsole extends Component {
   }
 
   componentDidMount () {
-    // check and refresh GCP token?
-    // this.props.retrieveCloudStorageToken()
-
     // console.log(this.props.data.getUserAlbums)
     let albumsArr = this.props.data.getUserAlbums
     // this.props.initializeMediaConsole(albumsArr)
@@ -355,5 +369,6 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(getUserAlbums),
   graphql(updateAlbum, {name: 'updateAlbum'}),
-  graphql(createAlbum, {name: 'createAlbum'})
+  graphql(createAlbum, {name: 'createAlbum'}),
+  graphql(createMedia, {name: 'createMedia'})
 )(Radium(MediaConsole)))

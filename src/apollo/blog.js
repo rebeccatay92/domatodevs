@@ -20,6 +20,7 @@ export const queryBlog = gql`
       }
       media {
         type
+        objectName
         imageUrl
         youtubeUrl
         loadSequence
@@ -55,6 +56,7 @@ export const queryBlog = gql`
           }
           media {
             type
+            objectName
             imageUrl
             youtubeUrl
             loadSequence

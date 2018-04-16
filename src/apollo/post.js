@@ -30,6 +30,8 @@ export const findPost = gql`
       }
       media {
         id
+        AlbumId
+        objectName
         imageUrl
         youtubeUrl
         type
@@ -81,6 +83,8 @@ export const createPost = gql`
       }
       media {
         id
+        AlbumId
+        objectName
         imageUrl
         youtubeUrl
         type

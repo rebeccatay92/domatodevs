@@ -37,23 +37,15 @@ export const findMediaPost = gql`
 `
 /* ---------------------------- */
 
-export const createMedium = gql`
-  mutation createMedium(
-    $type: String!
-    $imageUrl: String
-    $youtubeUrl: String
-
+export const createMedia = gql`
+  mutation createMedia(
+    $AlbumId: ID!,
+    $media: [createMediaInput]!
   ) {
-    createMedium(
-      type: $type,
-      imageUrl: $imageUrl,
-      youtubeUrl: $youtubeUrl
-    ) {
-      id
-      type
-      imageUrl
-      youtubeUrl
-    }
+    createMedia(
+      AlbumId: $AlbumId,
+      media: $media
+    )
   }
 `
 
@@ -62,10 +54,11 @@ export const deleteMedium = gql`
     deleteMedium(id: $id)
   }
 `
+
 /* ---------------------------- */
 
 export const createMediaBlog = gql`
-  createMediaBlog(
+  mutation createMediaBlog(
     $MediumId: ID!,
     $BlogId: ID!,
     $loadSequence: Int!,
@@ -87,7 +80,7 @@ export const createMediaBlog = gql`
 `
 
 export const createMediaPost = gql`
-  createMediaPost(
+  mutation createMediaPost(
     $MediumId: ID!,
     $PostId: ID!,
     $loadSequence: Int!,
@@ -109,7 +102,7 @@ export const createMediaPost = gql`
 `
 
 export const updateMediaBlog = gql`
-  updateMediaBlog(
+  mutation updateMediaBlog(
     $id: ID!,
     $loadSequence: Int,
     $caption: String
@@ -125,7 +118,7 @@ export const updateMediaBlog = gql`
 `
 
 export const updateMediaPost = gql`
-  updateMediaPost(
+  mutation updateMediaPost(
     $id: ID!,
     $loadSequence: Int,
     $caption: String
@@ -141,13 +134,13 @@ export const updateMediaPost = gql`
 `
 
 export const deleteMediaBlog = gql`
-  deleteMediaBlog($id: ID!) {
+  mutation deleteMediaBlog($id: ID!) {
     deleteMediaBlog(id: $id)
   }
 `
 
 export const deleteMediaPost = gql`
-  deleteMediaPost($id: ID!) {
+  mutation deleteMediaPost($id: ID!) {
     deleteMediaPost(id: $id)
   }
 `
@@ -155,13 +148,13 @@ export const deleteMediaPost = gql`
 /* ---------------------------- */
 
 export const reorderMediaBlog = gql`
-  reorderMediaBlog($input: [reorderMediaBlogInput]) {
+  mutation reorderMediaBlog($input: [reorderMediaBlogInput]) {
     reorderMediaBlog(input: $input)
   }
 `
 
 export const reorderMediaPost = gql`
-  reorderMediaPost($input: [reorderMediaPostInput]) {
+  mutation reorderMediaPost($input: [reorderMediaPostInput]) {
     reorderMediaPost(input: $input)
   }
 `
