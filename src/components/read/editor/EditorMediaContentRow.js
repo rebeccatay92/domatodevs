@@ -34,6 +34,7 @@ class EditorMediaContentRow extends Component {
       return {...medium, ...{loadSequence: i + 1}}
     })
     this.props.updateActivePage('media', newMediaArr)
+    this.setState({deletingMedia: false})
   }
 
   render () {
