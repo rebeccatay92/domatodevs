@@ -11,9 +11,9 @@ export const retrieveCloudStorageToken = () => {
 }
 
 // trying with GCP class
-export const setCloudStorageToken = (tokenObj) => {
+export const setGoogleCloudToken = (tokenObj) => {
   return {
-    type: 'SET_CLOUD_STORAGE_TOKEN',
+    type: 'SET_GOOGLE_CLOUD_TOKEN',
     tokenObj
   }
 }

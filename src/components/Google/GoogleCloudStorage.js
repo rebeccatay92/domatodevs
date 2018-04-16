@@ -1,5 +1,5 @@
 import { store } from '../../store'
-import { setCloudStorageToken } from '../../actions/cloudStorageActions'
+import { setGoogleCloudToken } from '../../actions/cloudStorageActions'
 const jwt = require('jsonwebtoken')
 
 class GoogleCloudStorage {
@@ -41,7 +41,7 @@ class GoogleCloudStorage {
       'iss': 'domatodevs@neon-rex-186905.iam.gserviceaccount.com',
       'scope': 'https://www.googleapis.com/auth/cloud-platform',
       'aud': 'https://www.googleapis.com/oauth2/v4/token',
-      'exp': (Date.now() / 1000) + 60,
+      'exp': (Date.now() / 1000) + 3600,
       'iat': Date.now() / 1000
     }
     var token = jwt.sign(payload, process.env.REACT_APP_OAUTH_PRIVATE_KEY, {algorithm: 'RS256'})
@@ -67,7 +67,7 @@ class GoogleCloudStorage {
           token: apiToken
         }
         // dispatch redux
-        store.dispatch(setCloudStorageToken(tokenObj))
+        store.dispatch(setGoogleCloudToken(tokenObj))
         this.scheduleRenewal()
       })
       .catch(err => {

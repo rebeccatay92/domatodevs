@@ -78,41 +78,55 @@ class MediaConsole extends Component {
   }
 
   uploadPhotos (e) {
+    // console.log('token', this.props.googleCloudToken)
+    let googleCloudToken = this.props.googleCloudToken.token
+
     let files = e.target.files
     console.log('files', files)
+
+    // FileList is not an Array. Make it an array in es6.
+    let filesArr = Array.from(files)
+    console.log('filesArr', filesArr)
+
     let fileUploadPromiseArr = []
-    // files.forEach(file => {
-    //   // check if file is img
-    //   if ((file.type).indexOf('image') > -1) {
-    //     console.log('type', file.type)
-    //
-    //     let UserId = this.props.userProfile.id
-    //     let timestamp = Date.now()
-    //     let uriBase = process.env.REACT_APP_CLOUD_UPLOAD_URI
-    //     let uploadEndpoint = `${uriBase}${UserId}/media/${timestamp}`
-    //     let uploadRequest = fetch(uploadEndpoint, {
-    //       method: 'POST',
-    //       headers: {
-    //         'Authorization': `Bearer ${this.apiToken}`,
-    //         'Content-Type': file.type,
-    //         'Content-Length': file.size
-    //       },
-    //       body: file
-    //     })
-    //       .then(response => {
-    //         return response.json()
-    //       })
-    //       .then(json => {
-    //         console.log('json', json)
-    //         let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
-    //         console.log('public url', publicUrl)
-    //         return publicUrl
-    //       })
-    //       .catch(err => {
-    //         console.log('err', err)
-    //       })
-    //   }
-    // })
+    filesArr.forEach(file => {
+      // check if file is img
+      if ((file.type).indexOf('image') > -1) {
+        console.log('type', file.type)
+
+        let UserId = this.props.userProfile.id
+        let timestamp = Date.now()
+        let uriBase = process.env.REACT_APP_CLOUD_UPLOAD_URI
+        let objectName = `${UserId}/media/${timestamp}`
+        let uploadEndpoint = `${uriBase}${objectName}`
+        let uploadPromise = fetch(uploadEndpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${googleCloudToken}`,
+            'Content-Type': file.type,
+            'Content-Length': file.size
+          },
+          body: file
+        })
+          .then(response => {
+            return response.json()
+          })
+          .then(json => {
+            console.log('json', json)
+            let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
+            console.log('public url', publicUrl)
+            return {objectName: json.name, imageUrl: publicUrl}
+          })
+          .catch(err => {
+            console.log('err', err)
+          })
+        fileUploadPromiseArr.push(uploadPromise)
+      }
+    })
+    Promise.all(fileUploadPromiseArr)
+      .then(values => {
+        console.log('promise all', values)
+      })
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -319,7 +333,8 @@ const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right
 const mapStateToProps = (state) => {
   return {
     mediaConsole: state.mediaConsole,
-    userProfile: state.userProfile
+    userProfile: state.userProfile,
+    googleCloudToken: state.googleCloudToken
   }
 }
 
