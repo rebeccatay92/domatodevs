@@ -47,7 +47,7 @@ class EditorMediaContentRow extends Component {
           <input type='text' style={{width: 'calc(100% - 8px)', position: 'absolute', bottom: '8px', left: '8px', padding: '0 8px'}} placeholder='Caption' value={medium.caption} onChange={(e) => (this.handleCaptionChange(index, e.target.value))} />
           {this.props.hover && <i onClick={() => this.handleDeleteClick()} className='material-icons' style={{position: 'absolute', top: '8px', right: '0', fontSize: '18px', cursor: 'pointer'}} title={`Delete this ${medium.type === 'Photo' ? 'Image' : 'Video'}`}>highlight_off</i>}
         </div>
-        {this.state.deletingMedia && <ConfirmWindow message={`Are you sure you want to delete this ${medium.type === 'Photo' ? 'Image' : 'Video'}?`} cancelFn={() => this.setState({deletingMedia: false})} confirmFn={() => this.props.handleMediaDelete(index)} confirmMessage={`Delete ${medium.type === 'Photo' ? 'Image' : 'Video'}`} />}
+        {this.state.deletingMedia && <ConfirmWindow message={`Are you sure you want to delete this ${medium.type === 'Photo' ? 'Image' : 'Video'}?`} cancelFn={() => this.setState({deletingMedia: false})} confirmFn={() => this.handleMediaDelete(index)} confirmMessage={`Delete ${medium.type === 'Photo' ? 'Image' : 'Video'}`} />}
       </div>
     )
   }
