@@ -31,7 +31,7 @@ class BlogEditorPage extends Component {
     return (
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
-        <EditorMediaContent pages={this.props.pages} blogMedia={this.props.data.findBlog.media} />
+        <EditorMediaContent pages={this.props.pages} />
         <EditorTextContent pages={this.props.pages} blogDays={this.props.data.findBlog.days} blogId={this.props.match.params.blogId} />
       </div>
     )

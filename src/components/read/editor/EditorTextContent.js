@@ -290,7 +290,7 @@ class EditorTextContent extends Component {
     if (post && post.type === 'BlogHeading') return null
     if (this.props.pages.activePostIndex === 'fin') return null
     return (
-      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '16px 24px', fontSize: '13px', minHeight: 'calc(100vh - 60px)'}}>
+      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '16px 24px', fontSize: '13px', minHeight: 'calc(100vh - 60px)', zIndex: 0}}>
         {this.props.pages.activePostIndex === 'home' && <React.Fragment>
           <label style={{margin: '8px 0'}}>Blog Title</label>
           <input type='text' style={{width: '100%', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
