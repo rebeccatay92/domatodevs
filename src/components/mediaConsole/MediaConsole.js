@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Radium, { Style } from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
-import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbum } from '../../actions/mediaConsoleActions'
+import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId } from '../../actions/mediaConsoleActions'
 
 import { getUserAlbums, updateAlbum, createAlbum } from '../../apollo/album'
 import { createMedia } from '../../apollo/media'
@@ -21,7 +21,7 @@ class MediaConsole extends Component {
   }
 
   setFocusedAlbum (id) {
-    this.props.setFocusedAlbum(id)
+    this.props.setFocusedAlbumId(id)
   }
 
   handleChange (e, field) {
@@ -155,7 +155,7 @@ class MediaConsole extends Component {
       if (isNewAlbumPresent) {
         // console.log('albums arr', this.props.mediaConsole.albums)
         // console.log('AlbumId to focus', prevState.pendingRefetchFocusedAlbumId)
-        this.props.setFocusedAlbum(prevState.pendingRefetchFocusedAlbumId)
+        this.props.setFocusedAlbumId(prevState.pendingRefetchFocusedAlbumId)
         this.setState({pendingRefetchFocusedAlbumId: null})
       }
     }
@@ -164,23 +164,20 @@ class MediaConsole extends Component {
   componentDidMount () {
     // console.log(this.props.data.getUserAlbums)
     let albumsArr = this.props.data.getUserAlbums
-    // this.props.initializeMediaConsole(albumsArr)
+    this.props.initializeMediaConsoleAlbums(albumsArr)
+
+    // need to check if open from media tab, or somewhere else. if opened from mediaTab, the focusedAlbum should be what was focused previously, not the first
+    // if (albumsArr.length) {
+    //   this.props.setFocusedAlbum(albumsArr[0].id)
+    // }
 
     // mount focusedAlbum will be {} from redux default state
-    // console.log('mount focusedAlbum', this.props.mediaConsole.focusedAlbum)
-    let focusedAlbum = this.props.mediaConsole.focusedAlbum
-    // console.log('focusedAlbum', focusedAlbum)
-    this.setState({
-      id: focusedAlbum.id,
-      title: focusedAlbum.title,
-      description: focusedAlbum.description || ''
+    let focusedAlbumId = this.props.mediaConsole.focusedAlbumId
+    let focusedAlbum = this.props.mediaConsole.albums.find(e => {
+      return e.id === focusedAlbumId
     })
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.mediaConsole.focusedAlbum !== this.props.mediaConsole.focusedAlbum) {
-      let focusedAlbum = nextProps.mediaConsole.focusedAlbum
-      // console.log('receiveprops next focusedAlbum', focusedAlbum)
+    // console.log('focusedAlbum', focusedAlbum)
+    if (focusedAlbum) {
       this.setState({
         id: focusedAlbum.id,
         title: focusedAlbum.title,
@@ -189,8 +186,33 @@ class MediaConsole extends Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.mediaConsole.focusedAlbumId !== this.props.mediaConsole.focusedAlbumId) {
+      // console.log('albums', nextProps.mediaConsole.albums)
+      let focusedAlbum = nextProps.mediaConsole.albums.find(e => {
+        return e.id === nextProps.mediaConsole.focusedAlbumId
+      })
+      // console.log('receiveprops next focusedAlbum', focusedAlbum)
+      if (focusedAlbum) {
+        this.setState({
+          id: focusedAlbum.id,
+          title: focusedAlbum.title,
+          description: focusedAlbum.description || ''
+        })
+      }
+    }
+
+    // check if albums arr has changed
+    if (this.props.data.getUserAlbums !== nextProps.data.getUserAlbums) {
+      this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
+    }
+  }
+
   render () {
-    // console.log('focusedAlbum in redux state', this.props.mediaConsole.focusedAlbum)
+    // console.log('focusedAlbumId in redux state', this.props.mediaConsole.focusedAlbumId)
+    let focusedAlbum = this.props.mediaConsole.albums.find(e => {
+      return e.id === this.props.mediaConsole.focusedAlbumId
+    })
     return (
       <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
         <Style rules={{html: {overflowY: 'hidden'}}} />
@@ -212,8 +234,8 @@ class MediaConsole extends Component {
 
               {/* DIV TO CONTAIN ALBUM NAMES WITH BORDER LEFT */}
               <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexDirection: 'column'}}>
-                {this.props.mediaConsole.albums.map((album, i) => {
-                  let isFocusedAlbum = album.id === this.props.mediaConsole.focusedAlbum.id
+                {focusedAlbum && this.props.mediaConsole.albums.map((album, i) => {
+                  let isFocusedAlbum = album.id === focusedAlbum.id
                   return (
                     <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle}>
                       <span key={i} style={albumNameStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</span>
@@ -228,7 +250,7 @@ class MediaConsole extends Component {
             <hr style={{margin: '0px 16px 0px 16px', color: 'rgba(255, 255, 255, 0.3)'}} />
 
             {/* ALBUM INFO */}
-            {this.props.mediaConsole.focusedAlbum.id &&
+            {this.props.mediaConsole.focusedAlbumId &&
               <div style={{width: '100%', height: '372px', padding: '24px 16px 0 16px'}}>
                 <label style={{width: '100%', margin: 0, padding: 0}}>
                   <h5 style={editAlbumHeaderStyle}>Album Title</h5>
@@ -251,7 +273,7 @@ class MediaConsole extends Component {
           </div>
 
           {/* MEDIA CONSOLE RIGHT SIDE */}
-          {this.props.mediaConsole.focusedAlbum.id &&
+          {this.props.mediaConsole.focusedAlbumId &&
             <div style={{width: '864px', height: '100%'}}>
 
               {/* TOP SECTION -> THUMBNAILS */}
@@ -269,7 +291,7 @@ class MediaConsole extends Component {
                     <h5 style={mediaConsoleAddMediumTextStyle}>Embed Youtube video</h5>
                   </div>
                 </div>
-                {this.props.mediaConsole.focusedAlbum.media.map((medium, i) => {
+                {focusedAlbum && focusedAlbum.media.map((medium, i) => {
                   // 256 X 144. 24px spacing
                   return (
                     <div key={i} style={{position: 'relative', maxWidth: '256px', maxHeight: '144px', margin: '12px'}}>
@@ -313,7 +335,7 @@ class MediaConsole extends Component {
               </div>
             </div>
           }
-          {!this.props.mediaConsole.focusedAlbum.id &&
+          {!this.props.mediaConsole.focusedAlbumId &&
             <div style={{display: 'inline-block', width: '864px', height: '100%', verticalAlign: 'top'}}>
               You don't have any albums.
             </div>
@@ -360,8 +382,8 @@ const mapDispatchToProps = (dispatch) => {
     initializeMediaConsoleAlbums: (albums) => {
       dispatch(initializeMediaConsoleAlbums(albums))
     },
-    setFocusedAlbum: (id) => {
-      dispatch(setFocusedAlbum(id))
+    setFocusedAlbumId: (id) => {
+      dispatch(setFocusedAlbumId(id))
     }
   }
 }

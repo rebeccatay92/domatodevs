@@ -17,9 +17,9 @@ export const initializeMediaConsoleAlbums = (albums) => {
   }
 }
 
-export const setFocusedAlbum = (id) => {
+export const setFocusedAlbumId = (id) => {
   return {
-    type: 'SET_FOCUSED_ALBUM',
+    type: 'SET_FOCUSED_ALBUM_ID',
     id
   }
 }

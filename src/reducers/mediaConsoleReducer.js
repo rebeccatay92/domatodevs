@@ -1,12 +1,13 @@
 export const mediaConsoleReducer = (state = {
-  isOpen: true,
+  isOpen: false,
   albums: [],
-  focusedAlbum: {
-    id: '',
-    title: '',
-    description: '',
-    media: []
-  }
+  // focusedAlbum: {
+  //   id: '',
+  //   title: '',
+  //   description: '',
+  //   media: []
+  // },
+  focusedAlbumId: ''
 }, action) => {
   switch (action.type) {
     case 'OPEN_MEDIA_CONSOLE':
@@ -19,14 +20,16 @@ export const mediaConsoleReducer = (state = {
         ...state,
         albums: action.albums
       }
-    case 'SET_FOCUSED_ALBUM':
-    // based on action.id
-      return {
-        ...state,
-        focusedAlbum: state.albums.find(e => {
-          return e.id === action.id
-        })
-      }
+    // case 'SET_FOCUSED_ALBUM':
+    // // based on action.id
+    //   return {
+    //     ...state,
+    //     focusedAlbum: state.albums.find(e => {
+    //       return e.id === action.id
+    //     })
+    //   }
+    case 'SET_FOCUSED_ALBUM_ID':
+      return {...state, focusedAlbumId: action.id}
     default:
       return state
   }
@@ -43,5 +46,6 @@ focusedAlbum: {
   description
   media: []
 }
+switch to focusedAlbum: ID
 selectedMedia: [medium id]
 */

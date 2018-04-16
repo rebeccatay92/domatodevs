@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { getUserAlbums } from '../../apollo/album'
-import { openMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbum } from '../../actions/mediaConsoleActions'
+import { openMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId } from '../../actions/mediaConsoleActions'
 import MediaConsole from '../mediaConsole/MediaConsole'
 import { setStickyTabs, setStickySidebar } from '../../actions/userDashboardActions'
 
@@ -20,7 +20,7 @@ class MediaTab extends Component {
   }
 
   switchFocusedAlbum (id) {
-    this.props.setFocusedAlbum(id)
+    this.props.setFocusedAlbumId(id)
   }
 
   openMediaConsole () {
@@ -33,7 +33,7 @@ class MediaTab extends Component {
       this.props.initializeMediaConsoleAlbums(albumsArr)
       if (!nextProps.mediaConsole.isOpen) {
         if (albumsArr.length) {
-          this.props.setFocusedAlbum(albumsArr[0].id)
+          this.props.setFocusedAlbumId(albumsArr[0].id)
         }
       }
     }
@@ -45,7 +45,7 @@ class MediaTab extends Component {
       this.props.initializeMediaConsoleAlbums(albumsArr)
       if (!this.props.mediaConsole.isOpen) {
         if (albumsArr.length) {
-          this.props.setFocusedAlbum(albumsArr[0].id)
+          this.props.setFocusedAlbumId(albumsArr[0].id)
         }
       }
     }
@@ -74,7 +74,13 @@ class MediaTab extends Component {
   render () {
     if (this.props.data.loading) return <h1>Loading</h1>
     let mediaConsole = this.props.mediaConsole
-    let media = mediaConsole.focusedAlbum.media
+    let albumsArr = mediaConsole.albums
+    let focusedAlbumId = mediaConsole.focusedAlbumId
+    // find focusedAlbum from albums arr. if not found (initially no id '' in redux state), it is undef
+    let focusedAlbum = albumsArr.find(e => {
+      return e.id === focusedAlbumId
+    })
+    // let media = mediaConsole.focusedAlbum.media
 
     let stickySidebar = this.props.userDashboard.stickySidebar
 
@@ -95,14 +101,16 @@ class MediaTab extends Component {
           {/* HIGHLIGHTED LINE DIV */}
           <div style={{borderRight: '1px solid rgba(60, 58, 68, 0.3)', width: '100%', height: '100%'}}>
 
-            <div style={{display: 'flex', alignItems: 'center', height: '24px', cursor: 'pointer'}}>
-              <h4 style={{paddingLeft: '8px', fontSize: '24px', fontFamily: 'EB Garamond, serif', fontWeight: '400'}} onClick={() => this.openMediaConsole()}>Album list</h4>
+            <div style={{display: 'flex', alignItems: 'center', height: '24px', cursor: 'pointer'}} onClick={() => this.openMediaConsole()}>
+              <h4 style={{paddingLeft: '8px', fontSize: '24px', fontFamily: 'EB Garamond, serif', fontWeight: '400'}}>Album list</h4>
               <i className='material-icons' style={{color: 'rgba(60, 58, 68, 0.3)', marginLeft: '10px'}}>settings</i>
             </div>
 
             <div style={{width: '100%', height: 'calc(100% - 24px)', overflow: 'scroll'}}>
               {mediaConsole.albums.map((album, i) => {
-                let isFocusedAlbum = mediaConsole.focusedAlbum.id === album.id
+                // let isFocusedAlbum = mediaConsole.focusedAlbum.id === album.id
+                // switch to focusedAlbum -> id only
+                let isFocusedAlbum = mediaConsole.focusedAlbumId === album.id
                 return (
                   <h4 style={isFocusedAlbum ? focusedTabStyle : unfocusedTabStyle} key={i} onClick={() => this.switchFocusedAlbum(album.id)}>{album.title}</h4>
                 )
@@ -114,7 +122,7 @@ class MediaTab extends Component {
         <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '24px', paddingTop: '24px'}}>
           {/* <iframe src={'https://www.youtube.com/embed/L5TRm2iADhE'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen /> */}
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
-          {mediaConsole.albums.length && media.map((medium, i) => {
+          {focusedAlbum && focusedAlbum.media.map((medium, i) => {
             // 256 X 144. 24px spacing
             return (
               <div key={i} style={{maxWidth: '256px', maxHeight: '144px', margin: '0px 24px 24px 0px'}}>
@@ -152,8 +160,8 @@ const mapDispatchToProps = (dispatch) => {
     initializeMediaConsoleAlbums: (albums) => {
       dispatch(initializeMediaConsoleAlbums(albums))
     },
-    setFocusedAlbum: (id) => {
-      dispatch(setFocusedAlbum(id))
+    setFocusedAlbumId: (id) => {
+      dispatch(setFocusedAlbumId(id))
     },
     setStickyTabs: (sticky) => {
       dispatch(setStickyTabs(sticky))
