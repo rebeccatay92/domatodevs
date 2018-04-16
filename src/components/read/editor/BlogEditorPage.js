@@ -94,7 +94,7 @@ class BlogEditorPage extends Component {
               text: hashtag.name
             }
           }) : [],
-          media: blog.media
+          media: blog.media || []
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
         const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]

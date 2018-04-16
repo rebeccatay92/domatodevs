@@ -57,6 +57,7 @@ export const queryBlog = gql`
             id
           }
           media {
+            id
             type
             imageUrl
             youtubeUrl

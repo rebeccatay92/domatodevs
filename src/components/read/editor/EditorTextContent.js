@@ -143,6 +143,13 @@ class EditorTextContent extends Component {
           hashtags: this.props.page.hashtags.map(hashtag => {
             return hashtag.text.toString()
           }),
+          media: this.props.page.media.map(medium => {
+            return {
+              MediumId: medium.id,
+              caption: medium.caption,
+              loadSequence: medium.loadSequence
+            }
+          }),
           startDay: this.props.page.startDay && this.props.page.startDay.value,
           endDay: this.props.page.endDay && this.props.page.endDay.value,
           startTime: startUnix,

@@ -106,7 +106,8 @@ export const updatePost = gql`
     $endDay: Int,
     $startTime: Int,
     $endTime: Int,
-    $hashtags: [String]!
+    $hashtags: [String]!,
+    $media: [updatePostMediaInput]!
   ) {
     updatePost(
       id: $id,
@@ -124,7 +125,8 @@ export const updatePost = gql`
       endDay: $endDay,
       startTime: $startTime,
       endTime: $endTime,
-      hashtags: $hashtags
+      hashtags: $hashtags,
+      media: $media
     ) {
       id
     }
