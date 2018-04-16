@@ -125,7 +125,7 @@ class MediaTab extends Component {
           {focusedAlbum && focusedAlbum.media.map((medium, i) => {
             // 256 X 144. 24px spacing
             return (
-              <div key={i} style={{maxWidth: '256px', maxHeight: '144px', margin: '0px 24px 24px 0px'}}>
+              <div key={i} style={{width: '256px', height: '144px', margin: '0px 24px 24px 0px'}}>
                 {medium.type === 'Photo' &&
                   <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                 }

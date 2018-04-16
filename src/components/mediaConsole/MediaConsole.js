@@ -294,7 +294,7 @@ class MediaConsole extends Component {
                 {focusedAlbum && focusedAlbum.media.map((medium, i) => {
                   // 256 X 144. 24px spacing
                   return (
-                    <div key={i} style={{position: 'relative', maxWidth: '256px', maxHeight: '144px', margin: '12px'}}>
+                    <div key={i} style={{position: 'relative', width: '256px', height: '144px', margin: '12px'}}>
                       {medium.type === 'Photo' &&
                         <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                       }
