@@ -30,6 +30,8 @@ class EditorMediaContentRow extends Component {
   handleMediaDelete (index) {
     const newMediaArr = this.props.mediaArr.filter((medium, i) => {
       return i !== index
+    }).map((medium, i) => {
+      return {...medium, ...{loadSequence: i + 1}}
     })
     this.props.updateActivePage('media', newMediaArr)
   }
