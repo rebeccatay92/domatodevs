@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { graphql, compose } from 'react-apollo'
 import Radium from 'radium'
 
 import BlogDropdownMenu from './BlogDropdownMenu'
 
-import { changeActivePost } from '../../../actions/readActions'
+import { changeActivePost, initializePosts } from '../../../actions/readActions'
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
+import { toggleSpinner } from '../../../actions/spinnerActions'
+
+import { updateBlogHeading } from '../../../apollo/blogHeading'
+import { queryBlog } from '../../../apollo/blog'
 
 const eventIconStyle = {
   fontSize: '16px',
@@ -56,7 +61,10 @@ class EditorPostsListRow extends Component {
       // pageTitle: this.props.page[type].title || this.props.page[type].description,
       // eventType: this.props.page[type].eventType,
       // isSubPost: !!this.props.page[type].ParentPostId,
-      dropdown: false
+      dropdown: false,
+      editingHeading: false,
+      newHeadingTitle: this.props.page.type === 'BlogHeading' && this.props.page.BlogHeading.title,
+      // headingTitle: this.props.page.type === 'BlogHeading' && this.props.page.BlogHeading.title
     }
 
     this.dropdownStyle = () => {
@@ -75,6 +83,14 @@ class EditorPostsListRow extends Component {
   //   }
   // }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.page.BlogHeading && (!this.props.page.BlogHeading || nextProps.page.BlogHeading.title !== this.props.page.BlogHeading.title)) {
+      this.setState({
+        newHeadingTitle: nextProps.page.BlogHeading.title
+      })
+    }
+  }
+
   toggleDropdown (e) {
     if (e) {
       if (e.target.textContent === 'more_horiz' && e.target.id == this.props.i) return
@@ -83,6 +99,25 @@ class EditorPostsListRow extends Component {
       dropdown: false
     })
     this.props.removeHover()
+  }
+
+  handleHeadingSave () {
+    this.props.toggleSpinner(true)
+
+    this.props.updateBlogHeading({
+      variables: {
+        id: this.props.page.modelId,
+        title: this.state.newHeadingTitle
+      }
+    })
+    .then(() => {
+      return this.props.data.refetch()
+    })
+    .then(response => {
+      this.props.initializePosts(response.data.findBlog.pages)
+      this.setState({editingHeading: false})
+      this.props.toggleSpinner(false)
+    })
   }
 
   render () {
@@ -103,26 +138,28 @@ class EditorPostsListRow extends Component {
     </div>
 
     if (page.type === 'BlogHeading') {
-      if (activePostIndex === i) {
+      if (this.state.editingHeading) {
         return (
           <React.Fragment key={i}>
             <span style={{color: '#ed685a', display: 'inline-block', paddingBottom: '8px'}}>Header
             </span>
-            <input autoFocus type='text' style={{width: '100%', marginBottom: '8px', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
+            <input autoFocus type='text' style={{width: '100%', marginBottom: '8px', padding: '8px'}} value={this.state.newHeadingTitle} onChange={(e) => this.setState({newHeadingTitle: e.target.value})} />
             <span style={{position: 'absolute', right: 0, top: '0'}}>
               <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
               {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} heading />}
             </span>
             <div style={{marginBottom: '16px'}}>
-              <button>Save</button>
-              <button onClick={() => this.props.changeActivePost('home')}>Cancel</button>
+              <button onClick={() => this.handleHeadingSave()}>Save</button>
+              <button onClick={() => {
+                this.setState({editingHeading: false, newHeadingTitle: page.BlogHeading.title})
+              }}>Cancel</button>
             </div>
           </React.Fragment>
         )
       }
       return (
         <React.Fragment key={i}>
-          <span onClick={() => this.props.changeActivePost(i)} style={{display: 'inline-block', fontWeight: 'bold', padding: '0 0 16px 0', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}}>{page.BlogHeading.title}</span>
+          <span onClick={() => this.setState({editingHeading: true})} style={{display: 'inline-block', fontWeight: 'bold', padding: '0 0 16px 0', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}}>{page.BlogHeading.title}</span>
           <span style={{position: 'absolute', right: 0}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
             {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} heading />}
@@ -202,8 +239,25 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateActivePage: (property, value) => {
       dispatch(updateActivePage(property, value))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
+    },
+    initializePosts: (pages) => {
+      dispatch(initializePosts(pages))
     }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MouseHoverHOC(Radium(EditorPostsListRow)))
+const options = {
+  options: props => ({
+    variables: {
+      id: props.blogId
+    }
+  })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryBlog, options),
+  graphql(updateBlogHeading, { name: 'updateBlogHeading' })
+)(MouseHoverHOC(Radium(EditorPostsListRow))))

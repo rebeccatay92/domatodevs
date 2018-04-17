@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import MouseHoverHOC from '../../hoc/MouseHoverHOC'
-import ConfirmWindow from '../../misc/ConfirmWindow'
+// import ConfirmWindow from '../../misc/ConfirmWindow'
+
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
+import { openConfirmWindow, resetConfirmWindow } from '../../../actions/confirmWindowActions'
 
 class EditorMediaContentRow extends Component {
   constructor (props) {
@@ -25,6 +27,11 @@ class EditorMediaContentRow extends Component {
 
   handleDeleteClick () {
     this.setState({deletingMedia: true})
+    this.props.openConfirmWindow({
+      message: `Are you sure you want to remove this ${this.props.medium.type === 'Photo' ? 'Image' : 'Video'} from the blog?`,
+      confirmMessage: `Remove ${this.props.medium.type === 'Photo' ? 'Image' : 'Video'}`
+    })
+    this.props.removeHover()
   }
 
   handleMediaDelete (index) {
@@ -38,6 +45,17 @@ class EditorMediaContentRow extends Component {
     this.props.removeHover()
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (this.state.deletingMedia && nextProps.confirmWindow.confirmClicked && !this.props.confirmWindow.confirmClicked) {
+      this.handleMediaDelete(this.props.index)
+      this.props.resetConfirmWindow()
+    }
+
+    if (this.state.deletingMedia && !nextProps.confirmWindow.open && this.props.confirmWindow.open && !nextProps.confirmWindow.confirmClicked) {
+      this.setState({deletingMedia: false})
+    }
+  }
+
   render () {
     const { medium, mediumNum, index } = this.props
     return (
@@ -47,11 +65,17 @@ class EditorMediaContentRow extends Component {
           {medium.type === 'Photo' && <span>Image {mediumNum}</span>}
           {medium.type === 'Youtube' && <span>Video {mediumNum}</span>}
           <input type='text' style={{width: 'calc(100% - 8px)', position: 'absolute', bottom: '8px', left: '8px', padding: '0 8px'}} placeholder='Caption' value={medium.caption} onChange={(e) => (this.handleCaptionChange(index, e.target.value))} />
-          {this.props.hover && <i onClick={() => this.handleDeleteClick()} className='material-icons' style={{position: 'absolute', top: '8px', right: '0', fontSize: '18px', cursor: 'pointer'}} title={`Delete this ${medium.type === 'Photo' ? 'Image' : 'Video'}`}>highlight_off</i>}
+          {this.props.hover && <i onClick={() => this.handleDeleteClick()} className='material-icons' style={{position: 'absolute', top: '8px', right: '0', fontSize: '18px', cursor: 'pointer'}} title={`Remove this ${medium.type === 'Photo' ? 'Image' : 'Video'}`}>highlight_off</i>}
         </div>
-        {this.state.deletingMedia && <ConfirmWindow message={`Are you sure you want to delete this ${medium.type === 'Photo' ? 'Image' : 'Video'}?`} cancelFn={() => this.setState({deletingMedia: false})} confirmFn={() => this.handleMediaDelete(index)} confirmMessage={`Delete ${medium.type === 'Photo' ? 'Image' : 'Video'}`} />}
+        {/* {this.state.deletingMedia && <ConfirmWindow message={`Are you sure you want to remove this ${medium.type === 'Photo' ? 'Image' : 'Video'} from the blog?`} cancelFn={() => this.setState({deletingMedia: false})} confirmFn={() => this.handleMediaDelete(index)} confirmMessage={`Remove ${medium.type === 'Photo' ? 'Image' : 'Video'}`} />} */}
       </div>
     )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    confirmWindow: state.confirmWindow
   }
 }
 
@@ -59,8 +83,14 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateActivePage: (property, value) => {
       dispatch(updateActivePage(property, value))
+    },
+    openConfirmWindow: (input) => {
+      dispatch(openConfirmWindow(input))
+    },
+    resetConfirmWindow: () => {
+      dispatch(resetConfirmWindow())
     }
   }
 }
 
-export default connect(null, mapDispatchToProps)(MouseHoverHOC(EditorMediaContentRow, 'div'))
+export default connect(mapStateToProps, mapDispatchToProps)(MouseHoverHOC(EditorMediaContentRow, 'div'))
