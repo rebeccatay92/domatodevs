@@ -35,6 +35,7 @@ class EditorMediaContentRow extends Component {
     })
     this.props.updateActivePage('media', newMediaArr)
     this.setState({deletingMedia: false})
+    this.props.removeHover()
   }
 
   render () {
