@@ -239,8 +239,10 @@ class MediaConsole extends Component {
                   return (
                     <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle}>
                       <span key={i} style={albumNameStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</span>
-                      <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
-                      <span style={albumNameStyle}>13</span>
+                      <React.Fragment>
+                        <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
+                        <span style={albumNameStyle}>13</span>
+                      </React.Fragment>
                     </div>
                   )
                 })}

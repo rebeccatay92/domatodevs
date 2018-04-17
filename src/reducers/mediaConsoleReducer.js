@@ -1,5 +1,8 @@
 export const mediaConsoleReducer = (state = {
   isOpen: false,
+  // fromEdit: true
+  // stuffToAddToPost: [{} , {}] //edit route
+  // selectedMedia: [id, id]
   albums: [],
   // focusedAlbum: {
   //   id: '',
