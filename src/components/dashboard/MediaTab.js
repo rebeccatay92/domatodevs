@@ -24,7 +24,7 @@ class MediaTab extends Component {
   }
 
   openMediaConsole () {
-    this.props.openMediaConsole()
+    this.props.openMediaConsole('dashboard')
   }
 
   componentWillReceiveProps (nextProps) {
@@ -154,8 +154,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    openMediaConsole: () => {
-      dispatch(openMediaConsole())
+    openMediaConsole: (openedFrom) => {
+      dispatch(openMediaConsole(openedFrom))
     },
     initializeMediaConsoleAlbums: (albums) => {
       dispatch(initializeMediaConsoleAlbums(albums))

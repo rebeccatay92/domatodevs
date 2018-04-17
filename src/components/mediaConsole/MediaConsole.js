@@ -83,7 +83,7 @@ class MediaConsole extends Component {
     let googleCloudToken = this.props.googleCloudToken.token
 
     let files = e.target.files
-    console.log('files', files)
+    // console.log('files', files)
 
     // FileList is not an Array. Make it an array in es6.
     let filesArr = Array.from(files)
@@ -93,7 +93,7 @@ class MediaConsole extends Component {
     filesArr.forEach(file => {
       // check if file is img
       if ((file.type).indexOf('image') > -1) {
-        console.log('type', file.type)
+        // console.log('type', file.type)
 
         let UserId = this.props.userProfile.id
         let timestamp = Date.now()
@@ -113,9 +113,9 @@ class MediaConsole extends Component {
             return response.json()
           })
           .then(json => {
-            console.log('json', json)
+            // console.log('json', json)
             let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
-            console.log('public url', publicUrl)
+            // console.log('public url', publicUrl)
             return {type: 'Photo', objectName: json.name, imageUrl: publicUrl}
           })
           .catch(err => {
@@ -141,7 +141,6 @@ class MediaConsole extends Component {
         })
           .then(returning => {
             console.log('returning', returning)
-            // state not updating to uploaded media
           })
       })
   }
@@ -162,27 +161,34 @@ class MediaConsole extends Component {
   }
 
   componentDidMount () {
-    // console.log(this.props.data.getUserAlbums)
+    let openedFrom = this.props.mediaConsole.openedFrom
+
+    console.log('mount props', this.props.mediaConsole)
+    // check openedFrom. if dashboard, focusedAlbumId was whatever is focused in MediaTab (take from redux state). If editor, setFocusedAlbumId to be first album if there are albums
+
     let albumsArr = this.props.data.getUserAlbums
-    this.props.initializeMediaConsoleAlbums(albumsArr)
+    if (openedFrom === 'dashboard') {
+      if (albumsArr.length) {
+        this.props.initializeMediaConsoleAlbums(albumsArr)
+      }
 
-    // need to check if open from media tab, or somewhere else. if opened from mediaTab, the focusedAlbum should be what was focused previously, not the first
-    // if (albumsArr.length) {
-    //   this.props.setFocusedAlbum(albumsArr[0].id)
-    // }
-
-    // mount focusedAlbum will be {} from redux default state
-    let focusedAlbumId = this.props.mediaConsole.focusedAlbumId
-    let focusedAlbum = this.props.mediaConsole.albums.find(e => {
-      return e.id === focusedAlbumId
-    })
-    // console.log('focusedAlbum', focusedAlbum)
-    if (focusedAlbum) {
-      this.setState({
-        id: focusedAlbum.id,
-        title: focusedAlbum.title,
-        description: focusedAlbum.description || ''
+      let focusedAlbumId = this.props.mediaConsole.focusedAlbumId
+      let focusedAlbum = this.props.mediaConsole.albums.find(e => {
+        return e.id === focusedAlbumId
       })
+      // console.log('focusedAlbum', focusedAlbum)
+      if (focusedAlbum) {
+        this.setState({
+          id: focusedAlbum.id,
+          title: focusedAlbum.title,
+          description: focusedAlbum.description || ''
+        })
+      }
+    } else if (openedFrom === 'editor') {
+      console.log('mount from editor')
+      if (albumsArr && albumsArr.length) {
+        this.props.setFocusedAlbumId(albumsArr[0].id)
+      }
     }
   }
 
@@ -201,7 +207,13 @@ class MediaConsole extends Component {
         })
       }
     }
-
+    // console.log('props', this.props.data)
+    if (!this.props.data.getUserAlbums && nextProps.data.getUserAlbums) {
+      this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
+      if (nextProps.data.getUserAlbums.length) {
+        this.props.setFocusedAlbumId(nextProps.data.getUserAlbums[0].id)
+      }
+    }
     // check if albums arr has changed
     if (this.props.data.getUserAlbums !== nextProps.data.getUserAlbums) {
       this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
@@ -210,6 +222,7 @@ class MediaConsole extends Component {
 
   render () {
     // console.log('focusedAlbumId in redux state', this.props.mediaConsole.focusedAlbumId)
+    // console.log('this.props.mediaConsole', this.props.mediaConsole)
     let focusedAlbum = this.props.mediaConsole.albums.find(e => {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
@@ -234,8 +247,12 @@ class MediaConsole extends Component {
 
               {/* DIV TO CONTAIN ALBUM NAMES WITH BORDER LEFT */}
               <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexDirection: 'column'}}>
-                {focusedAlbum && this.props.mediaConsole.albums.map((album, i) => {
-                  let isFocusedAlbum = album.id === focusedAlbum.id
+                {this.props.mediaConsole.albums.map((album, i) => {
+                  if (focusedAlbum) {
+                    var isFocusedAlbum = album.id === focusedAlbum.id
+                  } else {
+                    isFocusedAlbum = false
+                  }
                   return (
                     <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle}>
                       <span key={i} style={albumNameStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</span>
@@ -252,7 +269,7 @@ class MediaConsole extends Component {
             <hr style={{margin: '0px 16px 0px 16px', color: 'rgba(255, 255, 255, 0.3)'}} />
 
             {/* ALBUM INFO */}
-            {this.props.mediaConsole.focusedAlbumId &&
+            {focusedAlbum &&
               <div style={{width: '100%', height: '372px', padding: '24px 16px 0 16px'}}>
                 <label style={{width: '100%', margin: 0, padding: 0}}>
                   <h5 style={editAlbumHeaderStyle}>Album Title</h5>

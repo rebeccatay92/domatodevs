@@ -7,6 +7,7 @@ import moment from 'moment'
 import EditorPostsList from './EditorPostsList'
 import EditorTextContent from './EditorTextContent'
 import EditorMediaContent from './EditorMediaContent'
+import MediaConsole from '../../mediaConsole/MediaConsole'
 
 import { initializePosts } from '../../../actions/readActions'
 import { initializeActivePage } from '../../../actions/blogEditorActivePageActions'
@@ -33,6 +34,9 @@ class BlogEditorPage extends Component {
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
         <EditorMediaContent pages={this.props.pages} />
         <EditorTextContent pages={this.props.pages} blogDays={this.props.data.findBlog.days} blogId={this.props.match.params.blogId} />
+        {this.props.mediaConsole.isOpen &&
+          <MediaConsole />
+        }
       </div>
     )
   }
@@ -128,7 +132,8 @@ class BlogEditorPage extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    pages: state.blogPosts
+    pages: state.blogPosts,
+    mediaConsole: state.mediaConsole
   }
 }
 

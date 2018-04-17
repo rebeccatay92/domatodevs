@@ -11,24 +11,24 @@ class GoogleCloudStorage {
   scheduleRenewal () {
     // obtain state from redux store
     let reduxState = store.getState()
-    console.log('redux state googleCloudToken', reduxState.googleCloudToken)
+    // console.log('redux state googleCloudToken', reduxState.googleCloudToken)
 
     // check current time against expiresAt in redux store
     let currentTime = Date.now() / 1000
-    console.log('currentTime in secs', currentTime)
+    // console.log('currentTime in secs', currentTime)
 
     // if token is still valid, set timeout to renew token
     // if token is expired, not within time margin, trigger obtainCloudToken function
     // time margin 10s for 60s expiry (TESTING ONLY)
     if (currentTime < reduxState.googleCloudToken.expiresAt - 10) {
-      console.log('still valid, set timeout')
+      // console.log('still valid, set timeout')
       let timeoutDelayInSecs = reduxState.googleCloudToken.expiresAt - currentTime - 10
-      console.log('timeoutDelay', timeoutDelayInSecs)
+      // console.log('timeoutDelay', timeoutDelayInSecs)
       this.tokenRenewalTimeout = setTimeout(() => {
         this.obtainCloudToken()
       }, timeoutDelayInSecs * 1000)
     } else {
-      console.log('expired, renew now')
+      // console.log('expired, renew now')
       this.obtainCloudToken()
     }
   }
@@ -61,7 +61,7 @@ class GoogleCloudStorage {
       .then(json => {
         var apiToken = json.access_token
         // console.log('apiToken from fetch', apiToken)
-        console.log('new expires at', payload.exp)
+        // console.log('new expires at', payload.exp)
         let tokenObj = {
           expiresAt: payload.exp,
           token: apiToken

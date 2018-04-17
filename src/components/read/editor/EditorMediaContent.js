@@ -2,10 +2,17 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import EditorMediaContentRow from './EditorMediaContentRow'
+// import MediaConsole from '../../mediaConsole/MediaConsole'
 
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
+import { openMediaConsole } from '../../../actions/mediaConsoleActions'
 
 class EditorMediaContent extends Component {
+  openMediaConsole () {
+    console.log('dispatch redux openMediaConsole')
+    this.props.openMediaConsole('editor')
+  }
+
   render () {
     let imageNo = 0, videoNo = 0
     // if (this.props.pages.activePostIndex === 'home') {
@@ -28,9 +35,12 @@ class EditorMediaContent extends Component {
             </div>
           </div>
           <div style={{height: 'calc((100vh - 60px - 32px) / 7)', width: '100%', padding: '8px 24px'}}>
-            <div style={{border: '1px solid rgba(60, 58, 68, 0.2)', height: '100%'}}>
+            <div style={{border: '1px solid rgba(60, 58, 68, 0.2)', height: '100%'}} onClick={() => this.openMediaConsole()}>
               <span style={{textAlign: 'center', display: 'block', width: '100%', position: 'relative', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer'}}>Add more image(s) and video(s)</span>
             </div>
+            {/* {this.props.mediaConsole.isOpen &&
+              <MediaConsole />
+            } */}
           </div>
         </div>
       </div>
@@ -41,6 +51,7 @@ class EditorMediaContent extends Component {
 const mapStateToProps = (state) => {
   return {
     page: state.blogEditorActivePage
+    // mediaConsole: state.mediaConsole
   }
 }
 
@@ -48,6 +59,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateActivePage: (property, value) => {
       dispatch(updateActivePage(property, value))
+    },
+    openMediaConsole: (openedFrom) => {
+      dispatch(openMediaConsole(openedFrom))
     }
   }
 }

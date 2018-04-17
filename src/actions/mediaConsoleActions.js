@@ -1,6 +1,7 @@
-export const openMediaConsole = () => {
+export const openMediaConsole = (openedFrom) => {
   return {
-    type: 'OPEN_MEDIA_CONSOLE'
+    type: 'OPEN_MEDIA_CONSOLE',
+    openedFrom
   }
 }
 
