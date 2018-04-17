@@ -1,9 +1,11 @@
 import { gql } from 'react-apollo'
 
 export const getAllHashtags = gql`
-  query getAllHashtags {
-    id
-    name
+  query {
+    getAllHashtags {
+      id
+      name
+    }
   }
 `
 

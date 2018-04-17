@@ -41,7 +41,7 @@ class EditorPostsList extends Component {
 
   render () {
     return (
-      <div style={{position: 'fixed', zIndex: 1}}>
+      <div style={{position: 'fixed', zIndex: 2}}>
         <div style={{overflow: 'hidden', top: '56px', display: 'inline-block', width: '15vw', height: 'calc(100vh - 60px)'}}>
           <div style={{overscrollBehaviorY: 'contain', overflowY: 'scroll', width: '110%', height: '100%', paddingRight: '10%'}}>
             <ul style={{fontSize: '13px', listStyleType: 'none', padding: '24px 24px 0 24px', width: '15vw'}}>

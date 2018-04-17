@@ -104,8 +104,8 @@ class LocationSearch extends Component {
   render () {
     if (this.props.blogEditor) {
       return (
-        <div>
-          <input type='text' style={{width: this.props.eventType ? '80%' : '100%', padding: '8px'}} onKeyUp={() => this.customDebounce()} onChange={(e) => this.handleChange(e)} value={this.state.search} />
+        <div style={{display: 'inline-block', width: this.props.eventType ? '30%' : '100%'}}>
+          <input type='text' style={{width: '100%', padding: '8px'}} onKeyUp={() => this.customDebounce()} onChange={(e) => this.handleChange(e)} value={this.state.search} />
           {this.state.selecting && this.state.results.length > 0 &&
           <span className='placeSearchResults' style={{width: '218px', overflowY: 'none', maxHeight: '1000px', position: 'absolute', top: '30px', left: 0, backgroundColor: 'white'}}>
             <span className='placeSearchResults' style={{overflowY: 'auto', display: 'inline-block', maxHeight: '216px'}}>
