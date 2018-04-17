@@ -25,9 +25,13 @@
       .left-panel-input::placeholder {
         color: white;
       }
-      .hashtagInput::placeholder {
+      .ReactTags__tagInputField::placeholder {
         color: #ed685a;
         opacity: 0.5;
+      }
+      .Select-placeholder, .editorTimeInput::placeholder {
+        color: #3C3A44 !important;
+        opacity: 1 !important;
       }
       :focus::placeholder {
         color: transparent;
@@ -98,7 +102,7 @@
       .itineraryInfo:hover, .activityInfo:not(.Flight):not(.bookingStatus):hover {
         outline: 1px solid rgba(60, 58, 68, 0.2);
       }
-      input, textarea {
+      input, textarea, .editorDayDropdown {
         border: none;
         outline: 1px solid rgba(60, 58, 68, 0.2);
       }
@@ -146,7 +150,7 @@
       .flightSearchParams select::-ms-expand {
         display: none;
       }
-      .flightSearchParams select {
+      .flightSearchParams select, .editorDayDropdown {
         /*for firefox*/
         -moz-appearance: none;
         /*for chrome*/
@@ -159,12 +163,72 @@
       .read-navigation:hover {
         opacity: 1 !important;
       }
+<<<<<<< HEAD
 
+=======
+      .ReactTags__tags {
+        position: relative;
+      }
+      .ReactTags__tag {
+        border: 1px solid rgba(60, 58, 68, 0.2);
+        border-radius: 2px;
+        padding: 5px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        background: #eee;
+        display: inline-block;
+      }
+      .ReactTags__tagInputField {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 8px;
+      }
+      .ReactTags__remove {
+        margin-left: 5px;
+        cursor: pointer;
+        color: #aaa;
+      }
+      .ReactTags__suggestions {
+          position: absolute;
+      }
+      .ReactTags__suggestions ul {
+          list-style-type: none;
+          box-shadow: .05em .01em .5em rgba(0,0,0,.2);
+          background: white;
+          width: 200px;
+          margin: 0;
+          padding: 0;
+      }
+      .ReactTags__suggestions li {
+          border-bottom: 1px solid #ddd;
+          padding: 8px;
+          margin: 0;
+      }
+      .ReactTags__suggestions li mark {
+          text-decoration: underline;
+          background: none;
+          font-weight: 600;
+      }
+      .ReactTags__suggestions ul li.ReactTags__activeSuggestion {
+          background: #b7cfe0;
+          cursor: pointer;
+      }
+      .Select {
+        display: inline-block !important;
+        margin-left: 8px !important;
+        vertical-align: top !important;
+      }
+      .Select-control {
+        border: none !important;
+        outline: 1px solid rgba(60, 58, 68, 0.2) !important;
+        width: 82px !important;
+      }
+>>>>>>> origin/master
       @media (min-width: 1200px) {
-        .navbar .container {
+        /*.navbar .container {
           width: 1445px;
           padding-left: 5px;
-        }
+        }*/
         .navbar {
           width: 101%;
         }

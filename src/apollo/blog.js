@@ -27,6 +27,7 @@ export const queryBlog = gql`
         caption
       }
       hashtags {
+        id
         name
       }
       pages {
@@ -51,10 +52,13 @@ export const queryBlog = gql`
           start
           startDay
           endDay
+          startTime
+          endTime
           childPosts {
             id
           }
           media {
+            id
             type
             objectName
             imageUrl
@@ -63,6 +67,7 @@ export const queryBlog = gql`
             caption
           }
           hashtags {
+            id
             name
           }
         }
@@ -108,7 +113,7 @@ export const updateBlog = gql`
     $title: String,
     $textContent: String,
     $days: Int,
-    $published: Boolean
+    $published: Boolean,
     $hashtags: [String]!
   ) {
     updateBlog(
@@ -117,7 +122,7 @@ export const updateBlog = gql`
       title: $title,
       textContent: $textContent,
       days: $days,
-      published: $published
+      published: $published,
       hashtags: $hashtags
     ) {
       id

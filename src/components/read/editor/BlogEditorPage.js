@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { readPageStyle } from '../../../Styles/styles'
+import moment from 'moment'
 
 import EditorPostsList from './EditorPostsList'
 import EditorTextContent from './EditorTextContent'
@@ -16,8 +17,7 @@ class BlogEditorPage extends Component {
     super(props)
 
     this.state = {
-      editedPages: [],
-      deletedPages: []
+      mediaEditMode: false
     }
   }
   render () {
@@ -31,8 +31,8 @@ class BlogEditorPage extends Component {
     return (
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
-        <EditorMediaContent />
-        <EditorTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogId={this.props.match.params.blogId} />
+        <EditorMediaContent pages={this.props.pages} />
+        <EditorTextContent pages={this.props.pages} blogDays={this.props.data.findBlog.days} blogId={this.props.match.params.blogId} />
       </div>
     )
   }
@@ -50,7 +50,14 @@ class BlogEditorPage extends Component {
           type: 'Blog',
           title: blog.title,
           textContent: blog.textContent,
-          days: blog.days
+          days: blog.days,
+          hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          }) : [],
+          media: blog.media || []
         }
         this.props.initializeActivePage(page)
       }
@@ -66,7 +73,8 @@ class BlogEditorPage extends Component {
         startDay: '',
         endDay: '',
         eventType: '',
-        googlePlaceData: {name: ''}
+        googlePlaceData: {name: ''},
+        hashtags: []
       }
       if (nextProps.pages.activePostIndex === 'home') {
         page = {
@@ -79,7 +87,14 @@ class BlogEditorPage extends Component {
           endDay: '',
           eventType: '',
           days: blog.days,
-          googlePlaceData: {name: ''}
+          googlePlaceData: {name: ''},
+          hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          }) : [],
+          media: blog.media || []
         }
       } else if (nextProps.pages.activePostIndex !== 'fin') {
         const activePage = this.props.pages.pagesArr[nextProps.pages.activePostIndex]
@@ -92,9 +107,18 @@ class BlogEditorPage extends Component {
           isSubPost: !!pageObj.ParentPostId,
           textContent: pageObj.textContent || '',
           eventType: pageObj.eventType,
-          startDay: pageObj.startDay,
-          endDay: pageObj.endDay,
-          googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''}
+          startDay: {value: pageObj.startDay},
+          endDay: {value: pageObj.endDay},
+          googlePlaceData: {name: pageObj.location ? pageObj.location.name : ''},
+          hashtags: pageObj.hashtags ? pageObj.hashtags.map(hashtag => {
+            return {
+              id: hashtag.id,
+              text: hashtag.name
+            }
+          }) : [],
+          media: pageObj.media || [],
+          startTime: pageObj.startTime ? moment.unix(pageObj.startTime).utc().format('HH:mm') : '',
+          endTime: pageObj.endTime ? moment.unix(pageObj.endTime).utc().format('HH:mm') : ''
         }
       }
       this.props.initializeActivePage(page)
