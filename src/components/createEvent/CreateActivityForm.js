@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -23,7 +23,7 @@ import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import latestTime from '../../helpers/latestTime'
-import moment from 'moment'
+// import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
 import { validateOpeningHours } from '../../helpers/openingHoursValidation'
 import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
@@ -181,8 +181,10 @@ class CreateActivityForm extends Component {
     }) // close .then
   }
 
+  // REPLACE WITH TOKEN FROM ES6 CLASS + REDUX.
   closeForm () {
-    removeAllAttachments(this.state.attachments, this.apiToken)
+    // removeAllAttachments(this.state.attachments, this.apiToken)
+    removeAllAttachments(this.state.attachments, this.props.googleCloudToken.token)
     this.resetState()
     if (this.props.openedFromMap) {
       this.props.mapCreateEventFormCancel()
@@ -214,7 +216,7 @@ class CreateActivityForm extends Component {
       },
       openingHoursValidation: null
     })
-    this.apiToken = null
+    // this.apiToken = null
   }
 
   selectLocation (place) {
@@ -252,12 +254,14 @@ class CreateActivityForm extends Component {
 
   componentDidMount () {
     // console.log('mount state', this.state)
-    console.log('mount props', this.props)
-    this.props.retrieveCloudStorageToken()
 
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
+    // replace cloudStorageToken logic with this.props.googleCloudToken.token (from es6 class)
+    // console.log('mount props', this.props)
+    // this.props.retrieveCloudStorageToken()
+    //
+    // this.props.cloudStorageToken.then(obj => {
+    //   this.apiToken = obj.token
+    // })
 
     var currencyList = allCurrenciesList()
     this.setState({currencyList: currencyList})
@@ -374,19 +378,21 @@ class CreateActivityForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    // cloudStorageToken: state.cloudStorageToken,
+    // new googleCloudToken comes from GoogleCloudStorage class
+    googleCloudToken: state.googleCloudToken
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     retrieveCloudStorageToken: () => {
+//       dispatch(retrieveCloudStorageToken())
+//     }
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(compose(
+export default connect(mapStateToProps)(compose(
   graphql(createActivity, {name: 'createActivity'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(Radium(CreateActivityForm)))

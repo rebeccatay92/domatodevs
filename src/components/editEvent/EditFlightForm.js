@@ -3,7 +3,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
 import moment from 'moment'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
@@ -25,8 +25,7 @@ import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
 import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import updateEventLoadSeqAssignment from
- '../../helpers/updateEventLoadSeqAssignment'
+import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
 import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
@@ -139,7 +138,8 @@ class EditFlightForm extends Component {
       updatesObj.flightInstances = reconstructedInstanceArr
     } else {
       // if flight changed, dump attachments from old instances out of cloud
-      removeAllAttachments(this.state.attachmentsToDumpIfFlightChange, this.apiToken)
+      // removeAllAttachments(this.state.attachmentsToDumpIfFlightChange, this.apiToken)
+      removeAllAttachments(this.state.attachmentsToDumpIfFlightChange, this.props.googleCloudToken.token)
       // no need to touch attachments. holder arrs not in search flight instances
       updatesObj.flightInstances = this.state.flightInstances
       updatesObj.changedFlight = true
@@ -214,9 +214,11 @@ class EditFlightForm extends Component {
     // remove from cloud stuff which has not yet been passed to backend. depending on whether flight has changed
     this.state.flightInstances.forEach(instance => {
       if (this.state.changedFlight) {
-        removeAllAttachments(instance.attachments, this.apiToken)
+        // removeAllAttachments(instance.attachments, this.apiToken)
+        removeAllAttachments(instance.attachments, this.props.googleCloudToken.token)
       } else {
-        removeAllAttachments(instance.holderNewAttachments, this.apiToken)
+        // removeAllAttachments(instance.holderNewAttachments, this.apiToken)
+        removeAllAttachments(instance.holderNewAttachments, this.props.googleCloudToken.token)
       }
     })
     this.resetState()
@@ -470,10 +472,10 @@ class EditFlightForm extends Component {
   }
 
   componentDidMount () {
-    this.props.retrieveCloudStorageToken()
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
+    // this.props.retrieveCloudStorageToken()
+    // this.props.cloudStorageToken.then(obj => {
+    //   this.apiToken = obj.token
+    // })
     var currencyList = allCurrenciesList()
     this.setState({currencyList: currencyList})
 
@@ -652,15 +654,16 @@ const options = {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    googleCloudToken: state.googleCloudToken
+    // cloudStorageToken: state.cloudStorageToken
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    },
+    // retrieveCloudStorageToken: () => {
+    //   dispatch(retrieveCloudStorageToken())
+    // },
     clearCurrentlyFocusedEvent: () => {
       dispatch(clearCurrentlyFocusedEvent())
     }

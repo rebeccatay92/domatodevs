@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import Radium from 'radium'
 // import ImagePreview from './ImagePreview'
@@ -35,7 +35,7 @@ class AttachmentsRework extends Component {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${this.apiToken}`,
+            'Authorization': `Bearer ${this.props.googleCloudToken.token}`,
             'Content-Type': file.type,
             'Content-Length': file.size
           },
@@ -93,7 +93,7 @@ class AttachmentsRework extends Component {
     fetch(uriFull, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${this.apiToken}`
+        'Authorization': `Bearer ${this.props.googleCloudToken.token}`
       }
     })
     .then(response => {
@@ -145,13 +145,13 @@ class AttachmentsRework extends Component {
     window.open(url)
   }
 
-  componentDidMount () {
-    this.props.retrieveCloudStorageToken()
-
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
-  }
+  // componentDidMount () {
+  //   this.props.retrieveCloudStorageToken()
+  //
+  //   this.props.cloudStorageToken.then(obj => {
+  //     this.apiToken = obj.token
+  //   })
+  // }
 
   toggleDropdown (i) {
     console.log('toggle dropdown', i)
@@ -225,16 +225,17 @@ class AttachmentsRework extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    cloudStorageToken: state.cloudStorageToken
+    // cloudStorageToken: state.cloudStorageToken
+    googleCloudToken: state.googleCloudToken
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     retrieveCloudStorageToken: () => {
+//       dispatch(retrieveCloudStorageToken())
+//     }
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Radium(AttachmentsRework))
+export default connect(mapStateToProps)(Radium(AttachmentsRework))

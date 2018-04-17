@@ -7,7 +7,7 @@ import DashboardTabsHOC from './DashboardTabsHOC'
 
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', fontFamily: 'Roboto, sans-serif', fontSize: '24px', fontWeight: '300', marginTop: '1px', marginRight: '40px', paddingTop: '16px', paddingBottom: '16px', color: 'rgba(60, 58, 68, 0.3)'}
@@ -85,7 +85,7 @@ class UserDashboardPage extends Component {
       fetch(uriFull, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`,
+          'Authorization': `Bearer ${this.props.googleCloudToken.token}`,
           'Content-Type': file.type,
           'Content-Length': file.size
         },
@@ -120,7 +120,7 @@ class UserDashboardPage extends Component {
 
   componentDidMount () {
     // check and refresh token
-    this.props.retrieveCloudStorageToken()
+    // this.props.retrieveCloudStorageToken()
 
     if (this.props.userProfile.id) {
       this.setState({
@@ -207,7 +207,7 @@ class UserDashboardPage extends Component {
             }
             {this.state.editingBio &&
               <div style={{display: 'inline-flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-                <textarea value={this.state.bio} placeholder={'Describe yourself in 255 characters'} onChange={e => this.handleChange(e, 'bio')} onKeyDown={(e) => this.onBioKeyDown(e)} style={{fontFamily: 'EB Garamond, serif', fontSize: '24px', height: '31px', fontWeight: 400, color: 'rgba(60, 58, 68, 1)', margin: '0', padding: '0', width: '100%', resize: 'none'}} />
+                <textarea value={this.state.bio} placeholder={'Describe yourself in 255 characters'} onChange={e => this.handleChange(e, 'bio')} onKeyDown={(e) => this.onBioKeyDown(e)} style={{fontFamily: 'EB Garamond, serif', fontSize: '24px', lineHeight: '31px', height: '31px', fontWeight: 400, color: 'rgba(60, 58, 68, 1)', margin: '0', padding: '0', width: '100%', resize: 'none'}} />
                 {/* <i className='material-icons' onClick={() => this.saveBio()} style={{cursor: 'pointer'}}>save</i> */}
                 {/* <span>{100 - this.state.bio.length} characters left</span> */}
               </div>
@@ -235,16 +235,17 @@ class UserDashboardPage extends Component {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.userProfile,
-    cloudStorageToken: state.cloudStorageToken,
+    // cloudStorageToken: state.cloudStorageToken,
+    googleCloudToken: state.googleCloudToken,
     userDashboard: state.userDashboard
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    },
+    // retrieveCloudStorageToken: () => {
+    //   dispatch(retrieveCloudStorageToken())
+    // },
     setUserProfile: (userProfile) => {
       dispatch(setUserProfile(userProfile))
     },

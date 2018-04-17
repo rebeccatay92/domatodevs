@@ -7,7 +7,7 @@ import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-import { generateCloudStorageToken } from '../actions/cloudStorageActions'
+// import { generateCloudStorageToken } from '../actions/cloudStorageActions'
 
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
@@ -28,9 +28,9 @@ const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 
 class App extends Component {
-  componentDidMount () {
-    this.props.generateCloudStorageToken()
-  }
+  // componentDidMount () {
+  //   this.props.generateCloudStorageToken()
+  // }
 
   render () {
     // var isAuthenticated = lock.isAuthenticated()
@@ -76,18 +76,18 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    cloudStorageToken: state.cloudStorageToken,
+    // cloudStorageToken: state.cloudStorageToken,
     showSpinner: state.showSpinner,
     userProfile: state.userProfile
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    generateCloudStorageToken: () => {
-      dispatch(generateCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     generateCloudStorageToken: () => {
+//       dispatch(generateCloudStorageToken())
+//     }
+//   }
+// }
 
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps)(App))
