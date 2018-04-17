@@ -3,7 +3,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
 import moment from 'moment'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 // import { button } from 'react-bootstrap'
 
 import { labelStyle, createFlightFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle, createFlightButtonStyle } from '../../Styles/styles'
@@ -177,7 +177,8 @@ class CreateFlightForm extends Component {
   closeForm () {
     // REMOVE ALL ATTACHMENTS FROM FLIGHT INSTANCES
     this.state.flightInstances.forEach(instance => {
-      removeAllAttachments(instance.attachments, this.apiToken)
+      // removeAllAttachments(instance.attachments, this.apiToken)
+      removeAllAttachments(instance.attachments, this.props.googleCloudToken.token)
     })
     this.resetState()
     this.props.toggleCreateEventType()
@@ -293,11 +294,11 @@ class CreateFlightForm extends Component {
   }
 
   componentDidMount () {
-    this.props.retrieveCloudStorageToken()
-
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
+    // this.props.retrieveCloudStorageToken()
+    //
+    // this.props.cloudStorageToken.then(obj => {
+    //   this.apiToken = obj.token
+    // })
 
     // AIRHOB USING USD. FOR FUTURE USE
     var currencyList = allCurrenciesList()
@@ -380,19 +381,20 @@ class CreateFlightForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    googleCloudToken: state.googleCloudToken
+    // cloudStorageToken: state.cloudStorageToken
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     retrieveCloudStorageToken: () => {
+//       dispatch(retrieveCloudStorageToken())
+//     }
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(compose(
+export default connect(mapStateToProps)(compose(
   graphql(createFlightBooking, {name: 'createFlightBooking'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})

@@ -14,6 +14,7 @@ export const findAlbum = gql`
       }
       media {
         id
+        objectName
         imageUrl
         youtubeUrl
         type
@@ -31,6 +32,7 @@ export const getUserAlbums = gql`
       description
       media {
         id
+        objectName
         imageUrl
         youtubeUrl
         type

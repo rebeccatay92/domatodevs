@@ -7,7 +7,7 @@ import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-import { generateCloudStorageToken } from '../actions/cloudStorageActions'
+// import { generateCloudStorageToken } from '../actions/cloudStorageActions'
 
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
@@ -19,15 +19,18 @@ import MapPlannerPage from './mapPlanner/MapPlannerPage'
 import UserDashboardPage from './dashboard/UserDashboardPage'
 
 import PasswordChanged from './Auth0/PasswordChanged'
-
 import history from './Auth0/history'
 import Lock from './Auth0/lock'
+
+import GoogleCloudStorage from './Google/GoogleCloudStorage'
+const GoogleCloudStorageInstance = new GoogleCloudStorage()
+
 const lock = new Lock()
 
 class App extends Component {
-  componentDidMount () {
-    this.props.generateCloudStorageToken()
-  }
+  // componentDidMount () {
+  //   this.props.generateCloudStorageToken()
+  // }
 
   render () {
     // var isAuthenticated = lock.isAuthenticated()
@@ -37,7 +40,7 @@ class App extends Component {
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar lock={lock} />
 
-          <div style={{width: '100%', marginTop: '56px'}}>
+          <div style={{width: '100%', marginTop: '53px'}}>
             <Route exact path='/' render={(props) => (
               <HomePage lock={lock} {...props} />
             )} />
@@ -73,18 +76,18 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    cloudStorageToken: state.cloudStorageToken,
+    // cloudStorageToken: state.cloudStorageToken,
     showSpinner: state.showSpinner,
     userProfile: state.userProfile
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    generateCloudStorageToken: () => {
-      dispatch(generateCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     generateCloudStorageToken: () => {
+//       dispatch(generateCloudStorageToken())
+//     }
+//   }
+// }
 
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps)(App))

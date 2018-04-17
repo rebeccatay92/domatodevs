@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Notes from '../eventFormComponents/Notes'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
@@ -63,7 +63,7 @@ class FlightInstanceNotesAttachments extends Component {
         fetch(uriFull, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${this.apiToken}`
+            'Authorization': `Bearer ${this.props.googleCloudToken.token}`
           }
         })
         .then(response => {
@@ -85,7 +85,7 @@ class FlightInstanceNotesAttachments extends Component {
       fetch(uriFull, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`
+          'Authorization': `Bearer ${this.props.googleCloudToken.token}`
         }
       })
       .then(response => {
@@ -101,13 +101,13 @@ class FlightInstanceNotesAttachments extends Component {
     this.props.handleFlightInstanceChange(instanceClone)
   }
 
-  componentDidMount () {
-    this.props.retrieveCloudStorageToken()
-
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
-  }
+  // componentDidMount () {
+  //   this.props.retrieveCloudStorageToken()
+  //
+  //   this.props.cloudStorageToken.then(obj => {
+  //     this.apiToken = obj.token
+  //   })
+  // }
 
   render () {
     if (!this.props.instance) return null
@@ -141,16 +141,17 @@ class FlightInstanceNotesAttachments extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    cloudStorageToken: state.cloudStorageToken
+    googleCloudToken: state.googleCloudToken
+    // cloudStorageToken: state.cloudStorageToken
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     retrieveCloudStorageToken: () => {
+//       dispatch(retrieveCloudStorageToken())
+//     }
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FlightInstanceNotesAttachments)
+export default connect(mapStateToProps)(FlightInstanceNotesAttachments)

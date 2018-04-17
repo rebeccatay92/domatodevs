@@ -52,7 +52,7 @@ class NavbarInstance extends Component {
     }
 
     return (
-      <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200'}}>
+      <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200', height: '53px'}}>
         <Navbar.Header>
           <i style={dropdownIconStyle} className='material-icons' onClick={() => console.log('show side bar')}>menu</i>
           <i style={bucketLogoStyle} className='material-icons'>delete</i>

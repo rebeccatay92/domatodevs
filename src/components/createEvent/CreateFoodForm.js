@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -23,7 +23,7 @@ import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import latestTime from '../../helpers/latestTime'
-import moment from 'moment'
+// import moment from 'moment'
 import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
 import { validateOpeningHours } from '../../helpers/openingHoursValidation'
 import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
@@ -179,7 +179,8 @@ class CreateFoodForm extends Component {
   }
 
   closeForm () {
-    removeAllAttachments(this.state.attachments, this.apiToken)
+    // removeAllAttachments(this.state.attachments, this.apiToken)
+    removeAllAttachments(this.state.attachments, this.props.googleCloudToken.token)
     this.resetState()
     if (this.props.openedFromMap) {
       this.props.mapCreateEventFormCancel()
@@ -212,7 +213,7 @@ class CreateFoodForm extends Component {
       },
       openingHoursValidation: null
     })
-    this.apiToken = null
+    // this.apiToken = null
   }
 
   selectLocation (place) {
@@ -249,11 +250,11 @@ class CreateFoodForm extends Component {
   }
 
   componentDidMount () {
-    this.props.retrieveCloudStorageToken()
-
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
+    // this.props.retrieveCloudStorageToken()
+    //
+    // this.props.cloudStorageToken.then(obj => {
+    //   this.apiToken = obj.token
+    // })
 
     var currencyList = allCurrenciesList()
     this.setState({currencyList: currencyList})
@@ -365,19 +366,20 @@ class CreateFoodForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken
+    googleCloudToken: state.googleCloudToken
+    // cloudStorageToken: state.cloudStorageToken
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     retrieveCloudStorageToken: () => {
+//       dispatch(retrieveCloudStorageToken())
+//     }
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(compose(
+export default connect(mapStateToProps)(compose(
   graphql(createFood, {name: 'createFood'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(Radium(CreateFoodForm)))

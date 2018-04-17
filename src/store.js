@@ -16,6 +16,10 @@ import { mapPlannerOpenEditFormReducer } from './reducers/mapPlannerOpenEditForm
 import { mapPlannerSearchReducer } from './reducers/mapPlannerSearchReducer'
 import {mediaConsoleReducer} from './reducers/mediaConsoleReducer'
 import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageReducer'
+import { userDashboardReducer } from './reducers/userDashboardReducer'
+
+// testing
+import { googleCloudTokenReducer } from './reducers/googleCloudTokenReducer'
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
 
@@ -55,6 +59,8 @@ const store = createStore(combineReducers({
   mapPlannerSearch: mapPlannerSearchReducer,
   mediaConsole: mediaConsoleReducer,
   blogEditorActivePage: blogEditorActivePageReducer,
+  userDashboard: userDashboardReducer,
+  googleCloudToken: googleCloudTokenReducer,
   apollo: client.reducer()
 }),
 {},

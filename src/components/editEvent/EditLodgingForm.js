@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
-import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
+// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
@@ -111,7 +111,8 @@ class EditLodgingForm extends Component {
     // removeAttachments obj only takes id
     if (this.state.holderDeleteAttachments.length) {
       // removing holderDeleteAttachments from cloud
-      removeAllAttachments(this.state.holderDeleteAttachments, this.apiToken)
+      // removeAllAttachments(this.state.holderDeleteAttachments, this.apiToken)
+      removeAllAttachments(this.state.holderDeleteAttachments, this.props.googleCloudToken.token)
       // set up removeAttachments[ID] arr for backend
       updatesObj.removeAttachments = this.state.holderDeleteAttachments.map(e => {
         return e.id
@@ -213,7 +214,8 @@ class EditLodgingForm extends Component {
   }
 
   closeForm () {
-    removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    // removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
+    removeAllAttachments(this.state.holderNewAttachments, this.props.googleCloudToken.token)
     this.resetState()
     if (this.props.openedFromMap) {
       this.props.mapEditEventFormCancel()
@@ -325,7 +327,7 @@ class EditLodgingForm extends Component {
       fetch(uriFull, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`
+          'Authorization': `Bearer ${this.props.googleCloudToken.token}`
         }
       })
       .then(response => {
@@ -356,10 +358,10 @@ class EditLodgingForm extends Component {
   }
 
   componentDidMount () {
-    this.props.retrieveCloudStorageToken()
-    this.props.cloudStorageToken.then(obj => {
-      this.apiToken = obj.token
-    })
+    // this.props.retrieveCloudStorageToken()
+    // this.props.cloudStorageToken.then(obj => {
+    //   this.apiToken = obj.token
+    // })
     // DROPDOWN WITH ALL CURRENCIES.
     var currencyList = allCurrenciesList()
     this.setState({currencyList: currencyList})
@@ -473,16 +475,17 @@ class EditLodgingForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    cloudStorageToken: state.cloudStorageToken,
+    googleCloudToken: state.googleCloudToken,
+    // cloudStorageToken: state.cloudStorageToken,
     currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    retrieveCloudStorageToken: () => {
-      dispatch(retrieveCloudStorageToken())
-    },
+    // retrieveCloudStorageToken: () => {
+    //   dispatch(retrieveCloudStorageToken())
+    // },
     clearCurrentlyFocusedEvent: () => {
       dispatch(clearCurrentlyFocusedEvent())
     }

@@ -39,10 +39,6 @@ class AccountTab extends Component {
     })
   }
 
-  // componentWillReceiveProps (nextProps) {
-  //
-  // }
-
   // profilePic and bio r edited in parent component
   updateProfile () {
     console.log('state', this.state)
@@ -108,7 +104,8 @@ class AccountTab extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    userProfile: state.userProfile
+    userProfile: state.userProfile,
+    userDashboard: state.userDashboard
   }
 }
 
