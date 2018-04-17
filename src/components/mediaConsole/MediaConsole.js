@@ -16,12 +16,16 @@ class MediaConsole extends Component {
       id: '',
       title: '',
       description: '',
-      pendingRefetchFocusedAlbumId: null
+      pendingRefetchFocusedAlbumId: null,
+      isAddYoutubeComponentOpen: false
     }
   }
 
   setFocusedAlbum (id) {
     this.props.setFocusedAlbumId(id)
+
+    // also close add youtube component
+    this.setState({isAddYoutubeComponentOpen: false})
   }
 
   handleChange (e, field) {
@@ -145,6 +149,26 @@ class MediaConsole extends Component {
       })
   }
 
+  displayAddYoutubeComponent () {
+    console.log('show add youtube component')
+    this.setState({
+      isAddYoutubeComponentOpen: true
+    })
+  }
+
+  uploadVideo () {
+    /* possible video links
+    share link
+    https://youtu.be/yyIZOLKui8o
+    playlist link to 1 video
+    https://www.youtube.com/watch?v=yyIZOLKui8o&index=13&list=RD6xkX7wAclaQ
+    direct url for 1 video
+    https://www.youtube.com/watch?v=DY8oOxqPu9g
+    embed iframe
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/DY8oOxqPu9g" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    */
+  }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevState.pendingRefetchFocusedAlbumId) {
       let isNewAlbumPresent = _.find(this.props.mediaConsole.albums, e => {
@@ -254,8 +278,8 @@ class MediaConsole extends Component {
                     isFocusedAlbum = false
                   }
                   return (
-                    <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle}>
-                      <span key={i} style={albumNameStyle} onClick={() => this.setFocusedAlbum(album.id)}>{album.title}</span>
+                    <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle} onClick={() => this.setFocusedAlbum(album.id)}>
+                      <span key={i} style={albumNameStyle}>{album.title}</span>
                       <React.Fragment>
                         <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
                         <span style={albumNameStyle}>13</span>
@@ -297,19 +321,31 @@ class MediaConsole extends Component {
 
               {/* TOP SECTION -> THUMBNAILS */}
               <div style={{display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
-                <div style={mediaConsoleAddMediumContainerStyle}>
-                  <label key={'mediaConsoleAddPhotoButton'} style={mediaConsoleAddMediumButtonStyle}>
-                    <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
-                    <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>collections</i>
-                    <h5 style={mediaConsoleAddMediumTextStyle}>Add a photo</h5>
-                    <input type='file' multiple accept='.jpeg, .jpg, .png' style={{display: 'none'}} onChange={e => this.uploadPhotos(e)} />
-                  </label>
-                  <div key={'mediaConsoleAddYoutubeButton'} style={mediaConsoleAddMediumButtonStyle}>
-                    <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
-                    <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>videocam</i>
-                    <h5 style={mediaConsoleAddMediumTextStyle}>Embed Youtube video</h5>
+                {!this.state.isAddYoutubeComponentOpen &&
+                  <div style={mediaConsoleAddMediumContainerStyle}>
+                    <label key={'mediaConsoleAddPhotoButton'} style={mediaConsoleAddMediumButtonStyle}>
+                      <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
+                      <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>collections</i>
+                      <h5 style={mediaConsoleAddMediumTextStyle}>Add a photo</h5>
+                      <input type='file' multiple accept='.jpeg, .jpg, .png' style={{display: 'none'}} onChange={e => this.uploadPhotos(e)} />
+                    </label>
+                    <div key={'mediaConsoleAddYoutubeButton'} style={mediaConsoleAddMediumButtonStyle} onClick={() => this.displayAddYoutubeComponent()}>
+                      <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
+                      <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>videocam</i>
+                      <h5 style={mediaConsoleAddMediumTextStyle}>Embed Youtube video</h5>
+                    </div>
                   </div>
-                </div>
+                }
+                {this.state.isAddYoutubeComponentOpen &&
+                  <div style={{position: 'relative', width: '256px', height: '144px', margin: '12px', border: '2px solid rgba(60, 58, 68, 0.5)'}}>
+                    <label>
+                      Paste youtube link here
+                      <input type='text' style={{width: '100%'}} />
+                      <button onClick={() => this.setState({isAddYoutubeComponentOpen: false})}>Cancel</button>
+                      <button>Add</button>
+                    </label>
+                  </div>
+                }
                 {focusedAlbum && focusedAlbum.media.map((medium, i) => {
                   // 256 X 144. 24px spacing
                   return (
