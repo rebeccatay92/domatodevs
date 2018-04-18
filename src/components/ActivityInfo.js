@@ -92,7 +92,7 @@ class ActivityInfo extends Component {
       if (this.props.name === 'googlePlaceData' || this.props.name === 'departureGooglePlaceData' || this.props.name === 'arrivalGooglePlaceData') {
         return (
           <span onKeyDown={(e) => this.handleKeyDown(e)} style={{display: 'inline-block'}}>
-            <LocationSearch eventInfo selectLocation={location => this.selectLocation(location)} placeholder='' currentLocation={this.state.googlePlaceData} />
+            <LocationSearch eventInfo selectLocation={location => this.selectLocation(location)} placeholder='' currentLocation={this.state.googlePlaceData} inputFocus={() => {}} inputBlur={() => {}} />
           </span>
         )
       }

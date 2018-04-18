@@ -19,6 +19,7 @@ export const queryBlog = gql`
         username
       }
       media {
+        id
         type
         objectName
         imageUrl
