@@ -1,8 +1,8 @@
 export const mediaConsoleReducer = (state = {
   isOpen: false,
-  openedFrom: '', // either dashboard or editor or ''
+  openedFrom: '',
   // stuffToAddToPost: [{} , {}] // edit route
-  selectedMedia: [], // array of medium ids. solely for checkbox rendering
+  selectedMedia: [],
   albums: [],
   focusedAlbumId: ''
 }, action) => {
@@ -19,6 +19,25 @@ export const mediaConsoleReducer = (state = {
       }
     case 'SET_FOCUSED_ALBUM_ID':
       return {...state, focusedAlbumId: action.id}
+    case 'CLICK_CHECKBOX':
+      // check if id is in current selected media. if yes, remove, if no, add.
+      let medium = action.medium
+      let selectedMedia = state.selectedMedia
+      if (selectedMedia.includes(medium)) {
+        return {
+          ...state,
+          selectedMedia: selectedMedia.filter(e => {
+            return e.id !== medium.id
+          })
+        }
+      } else {
+        return {
+          ...state,
+          selectedMedia: [...selectedMedia, medium]
+        }
+      }
+    case 'ClEAR_SELECTED_MEDIA':
+      return {...state, selectedMedia: []}
     default:
       return state
   }
@@ -28,8 +47,8 @@ export const mediaConsoleReducer = (state = {
 mediaConsole redux state
 
 isOpen: Boolean
-openedFrom: String
+openedFrom: String // either dashboard or editor or ''
 albums: [Album]
 focusedAlbumId: ID
-selectedMedia: [medium id]
+selectedMedia: [ {id, AlbumId, type....}] // array of medium obj. solely for checkbox rendering
 */

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Radium, { Style } from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
-import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId } from '../../actions/mediaConsoleActions'
+import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId , clickCheckbox, clearSelectedMedia } from '../../actions/mediaConsoleActions'
 
 import { getUserAlbums, updateAlbum, createAlbum } from '../../apollo/album'
 import { createMedia } from '../../apollo/media'
@@ -218,6 +218,11 @@ class MediaConsole extends Component {
     }
   }
 
+  onCheckboxClick (id) {
+    // console.log('medium id clicked', id)
+    this.props.clickCheckbox(id)
+  }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevState.pendingRefetchFocusedAlbumId) {
       let isNewAlbumPresent = _.find(this.props.mediaConsole.albums, e => {
@@ -236,7 +241,7 @@ class MediaConsole extends Component {
   componentDidMount () {
     let openedFrom = this.props.mediaConsole.openedFrom
 
-    console.log('mount props', this.props.mediaConsole)
+    // console.log('mount props', this.props.mediaConsole)
     // check openedFrom. if dashboard, focusedAlbumId was whatever is focused in MediaTab (take from redux state). If editor, setFocusedAlbumId to be first album if there are albums
 
     let albumsArr = this.props.data.getUserAlbums
@@ -293,9 +298,13 @@ class MediaConsole extends Component {
     }
   }
 
+  componentWillUnmount () {
+    this.props.clearSelectedMedia()
+  }
+
   render () {
     // console.log('focusedAlbumId in redux state', this.props.mediaConsole.focusedAlbumId)
-    // console.log('this.props.mediaConsole', this.props.mediaConsole)
+    // console.log('this.props.mediaConsole.selectedMedia', this.props.mediaConsole.selectedMedia)
     let focusedAlbum = this.props.mediaConsole.albums.find(e => {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
@@ -326,13 +335,20 @@ class MediaConsole extends Component {
                   } else {
                     isFocusedAlbum = false
                   }
+                  // count num of selected media in each album
+                  let selectedArrBelongingToAlbum = _.filter(this.props.mediaConsole.selectedMedia, e => {
+                    return e.AlbumId === album.id
+                  })
+                  let selectedMediaCount = selectedArrBelongingToAlbum.length
                   return (
                     <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle} onClick={() => this.setFocusedAlbum(album.id)}>
                       <span key={i} style={albumNameStyle}>{album.title}</span>
-                      <React.Fragment>
-                        <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
-                        <span style={albumNameStyle}>13</span>
-                      </React.Fragment>
+                      {selectedMediaCount > 0 &&
+                        <React.Fragment>
+                          <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
+                          <span style={albumNameStyle}>{selectedMediaCount}</span>
+                        </React.Fragment>
+                      }
                     </div>
                   )
                 })}
@@ -397,6 +413,10 @@ class MediaConsole extends Component {
                 }
                 {focusedAlbum && focusedAlbum.media.map((medium, i) => {
                   // 256 X 144. 24px spacing
+                  // find medium obj in selectedMedia arr
+                  let isSelectedMedia = _.find(this.props.mediaConsole.selectedMedia, e => {
+                    return e.id === medium.id
+                  })
                   return (
                     <div key={i} style={{position: 'relative', width: '256px', height: '144px', margin: '12px'}}>
                       {medium.type === 'Photo' &&
@@ -405,15 +425,10 @@ class MediaConsole extends Component {
                       {medium.type === 'Youtube' &&
                         <iframe key={i} src={`${medium.youtubeUrl}?modestbranding=1&rel=0`} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
                       }
-                      <div style={mediaConsoleThumbnailCheckboxContainerStyle}>
-                        {/* IF NOT SELECTED. SHOW TICK ON HOVER */}
-                        <div key={`mediaThumbnailUnchecked${i}`} style={{width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', ':hover': {opacity: '1'}}}>
+                      <div style={mediaConsoleThumbnailCheckboxContainerStyle} onClick={() => this.onCheckboxClick(medium)}>
+                        <div key={`mediaThumbnailUnchecked${i}`} style={isSelectedMedia ? mediaConsoleThumbnailCheckedStyle : mediaConsoleThumbnailUncheckedStyle}>
                           <i className='material-icons' style={{color: 'white'}}>done</i>
                         </div>
-                        {/* IF SELECTED. SHOW NUMBER */}
-                        {/* <div key={`mediaThumbnailChecked${i}`} style={{width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '1', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span style={{fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'white'}}>130</span>
-                        </div> */}
                       </div>
                     </div>
                   )
@@ -470,6 +485,9 @@ const mediaConsoleContainerStyle = {position: 'fixed', left: 'calc((100vw - 1138
 
 const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}
 
+const mediaConsoleThumbnailCheckedStyle = {width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '1', display: 'flex', alignItems: 'center', justifyContent: 'center'}
+const mediaConsoleThumbnailUncheckedStyle = {...mediaConsoleThumbnailCheckedStyle, opacity: 0}
+
 const mapStateToProps = (state) => {
   return {
     mediaConsole: state.mediaConsole,
@@ -488,6 +506,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     setFocusedAlbumId: (id) => {
       dispatch(setFocusedAlbumId(id))
+    },
+    clickCheckbox: (id) => {
+      dispatch(clickCheckbox(id))
+    },
+    clearSelectedMedia: () => {
+      dispatch(clearSelectedMedia())
     }
   }
 }

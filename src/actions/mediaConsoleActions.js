@@ -24,3 +24,16 @@ export const setFocusedAlbumId = (id) => {
     id
   }
 }
+
+export const clickCheckbox = (medium) => {
+  return {
+    type: 'CLICK_CHECKBOX',
+    medium
+  }
+}
+
+export const clearSelectedMedia = () => {
+  return {
+    type: 'ClEAR_SELECTED_MEDIA'
+  }
+}
