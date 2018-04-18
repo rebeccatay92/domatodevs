@@ -223,15 +223,18 @@ class MediaConsole extends Component {
   }
 
   uncheckAll () {
-    // uncheck all in this album
     let AlbumId = this.state.id
     this.props.uncheckAllInAlbum(AlbumId)
   }
 
   checkAll () {
-    // check all in this album
     let AlbumId = this.state.id
     this.props.checkAllInAlbum(AlbumId)
+  }
+
+  deleteSelectedMedia () {
+    console.log('delete all selected', this.props.mediaConsole.selectedMedia)
+    // leave cloud delete logic to the backend. backend will loop thru n remove photos from cloud storage, then delete all join table rows
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -451,7 +454,7 @@ class MediaConsole extends Component {
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', padding: '0 8px 0 8px', borderTop: '2px solid rgba(60, 58, 68, 0.3)'}}>
                   {/* DISPLAY THESE ONLY IF STUFF IS TICKED */}
                   <div>
-                    <button key={'mediaButton1'} style={mediaButtonLeftStyle}>Delete</button>
+                    <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.deleteSelectedMedia()}>Delete</button>
                     <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
                     <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
                     <button key={'mediaButton4'} style={mediaButtonLeftStyle}>Delete album</button>
