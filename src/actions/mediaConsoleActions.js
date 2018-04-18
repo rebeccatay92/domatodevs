@@ -37,3 +37,17 @@ export const clearSelectedMedia = () => {
     type: 'ClEAR_SELECTED_MEDIA'
   }
 }
+
+export const uncheckAllInAlbum = (AlbumId) => {
+  return {
+    type: 'UNCHECK_ALL_IN_ALBUM',
+    AlbumId
+  }
+}
+
+export const checkAllInAlbum = (AlbumId) => {
+  return {
+    type: 'CHECK_ALL_IN_ALBUM',
+    AlbumId
+  }
+}

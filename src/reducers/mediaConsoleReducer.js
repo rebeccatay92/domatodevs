@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 export const mediaConsoleReducer = (state = {
   isOpen: false,
   openedFrom: '',
@@ -38,6 +40,26 @@ export const mediaConsoleReducer = (state = {
       }
     case 'ClEAR_SELECTED_MEDIA':
       return {...state, selectedMedia: []}
+    case 'CHECK_ALL_IN_ALBUM':
+      // console.log(action.AlbumId)
+      let focusedAlbum = state.albums.find(e => {
+        return e.id === action.AlbumId
+      })
+      let albumMedia = focusedAlbum.media
+      // merge selectedMedia and all of album's media with no dupes
+      let newSelectedMedia = _.union(state.selectedMedia, albumMedia)
+      return {
+        ...state,
+        selectedMedia: newSelectedMedia
+      }
+    case 'UNCHECK_ALL_IN_ALBUM':
+      // console.log('album', action.AlbumId)
+      return {
+        ...state,
+        selectedMedia: state.selectedMedia.filter(e => {
+          return e.AlbumId !== action.AlbumId
+        })
+      }
     default:
       return state
   }

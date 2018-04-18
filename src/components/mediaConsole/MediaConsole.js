@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Radium, { Style } from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
-import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId , clickCheckbox, clearSelectedMedia } from '../../actions/mediaConsoleActions'
+import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId , clickCheckbox, clearSelectedMedia, uncheckAllInAlbum, checkAllInAlbum } from '../../actions/mediaConsoleActions'
 
 import { getUserAlbums, updateAlbum, createAlbum } from '../../apollo/album'
 import { createMedia } from '../../apollo/media'
@@ -154,7 +154,6 @@ class MediaConsole extends Component {
   }
 
   displayAddYoutubeComponent () {
-    console.log('show add youtube component')
     this.setState({
       isAddYoutubeComponentOpen: true
     })
@@ -221,6 +220,18 @@ class MediaConsole extends Component {
   onCheckboxClick (id) {
     // console.log('medium id clicked', id)
     this.props.clickCheckbox(id)
+  }
+
+  uncheckAll () {
+    // uncheck all in this album
+    let AlbumId = this.state.id
+    this.props.uncheckAllInAlbum(AlbumId)
+  }
+
+  checkAll () {
+    // check all in this album
+    let AlbumId = this.state.id
+    this.props.checkAllInAlbum(AlbumId)
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -385,7 +396,7 @@ class MediaConsole extends Component {
             <div style={{width: '864px', height: '100%'}}>
 
               {/* TOP SECTION -> THUMBNAILS */}
-              <div style={{display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}}>
+              <div style={mediaConsoleThumbnailContainerStyle}>
                 {!this.state.isAddYoutubeComponentOpen &&
                   <div style={mediaConsoleAddMediumContainerStyle}>
                     <label key={'mediaConsoleAddPhotoButton'} style={mediaConsoleAddMediumButtonStyle}>
@@ -446,9 +457,11 @@ class MediaConsole extends Component {
                     <button key={'mediaButton4'} style={mediaButtonLeftStyle}>Delete album</button>
                   </div>
                   <div>
-                    <button key={'mediaButton5'} style={mediaButtonRightStyle}>Uncheck all</button>
-                    <button key={'mediaButton6'} style={mediaButtonRightStyle}>Check all</button>
-                    {/* <button key={'mediaButton7'} style={mediaButtonRightStyle}>Post</button> */}
+                    <button key={'mediaButton5'} style={mediaButtonRightStyle} onClick={() => this.uncheckAll()}>Uncheck all</button>
+                    <button key={'mediaButton6'} style={mediaButtonRightStyle} onClick={() => this.checkAll()}>Check all</button>
+                    {this.props.mediaConsole.openedFrom === 'editor' &&
+                    <button key={'mediaButton7'} style={mediaButtonRightStyle}>Post</button>
+                    }
                   </div>
                 </div>
               </div>
@@ -469,7 +482,7 @@ const mediaConsoleAddMediumContainerStyle = {position: 'relative', width: '256px
 const mediaConsoleAddMediumButtonStyle = {width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}
 const mediaConsoleAddMediumTextStyle = {height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}
 
-const mediaButtonLeftStyle = {border: 'none', fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', padding: 0, ':hover': {color: 'rgba(60, 58, 68, 1)'}, marginRight: '24px'}
+const mediaButtonLeftStyle = {border: 'none', fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', padding: 0, outline: 'none', ':hover': {color: 'rgba(60, 58, 68, 1)'}, marginRight: '24px'}
 const mediaButtonRightStyle = {...mediaButtonLeftStyle, marginRight: '0', marginLeft: '24px'}
 
 const unfocusedAlbumStyle = {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', height: '15px', borderLeft: '4px solid transparent'}
@@ -482,6 +495,7 @@ const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', font
 const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
 
 const mediaConsoleContainerStyle = {position: 'fixed', left: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
+const mediaConsoleThumbnailContainerStyle = {display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}
 
 const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}
 
@@ -512,6 +526,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     clearSelectedMedia: () => {
       dispatch(clearSelectedMedia())
+    },
+    uncheckAllInAlbum: (AlbumId) => {
+      dispatch(uncheckAllInAlbum(AlbumId))
+    },
+    checkAllInAlbum: (AlbumId) => {
+      dispatch(checkAllInAlbum(AlbumId))
     }
   }
 }
