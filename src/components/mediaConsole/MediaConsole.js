@@ -17,7 +17,8 @@ class MediaConsole extends Component {
       title: '',
       description: '',
       pendingRefetchFocusedAlbumId: null,
-      isAddYoutubeComponentOpen: false
+      isAddYoutubeComponentOpen: false,
+      youtubeUrl: ''
     }
   }
 
@@ -36,6 +37,9 @@ class MediaConsole extends Component {
     }
     if (field === 'description') {
       this.setState({description: e.target.value})
+    }
+    if (field === 'youtubeUrl') {
+      this.setState({youtubeUrl: e.target.value})
     }
   }
 
@@ -156,7 +160,25 @@ class MediaConsole extends Component {
     })
   }
 
-  uploadVideo () {
+  onYoutubeInputKeyDown (e) {
+    if (e.key === 'Escape') {
+      this.setState({isAddYoutubeComponentOpen: false})
+    }
+    if (e.key === 'Enter') {
+      this.addYoutubeVideo()
+    }
+  }
+
+  onMediaConsoleKeyDown (e) {
+    if (e.key === 'Escape') {
+      console.log('esc in media console')
+      if (this.state.isAddYoutubeComponentOpen) {
+        this.setState({isAddYoutubeComponentOpen: false})
+      }
+    }
+  }
+
+  addYoutubeVideo () {
     /* possible video links
     share link
     https://youtu.be/yyIZOLKui8o
@@ -164,9 +186,36 @@ class MediaConsole extends Component {
     https://www.youtube.com/watch?v=yyIZOLKui8o&index=13&list=RD6xkX7wAclaQ
     direct url for 1 video
     https://www.youtube.com/watch?v=DY8oOxqPu9g
-    embed iframe
+    embed iframe (not done yet)
     <iframe width="560" height="315" src="https://www.youtube.com/embed/DY8oOxqPu9g" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     */
+    let url = this.state.youtubeUrl
+    if (url !== undefined || url !== '') {
+      var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/
+      var match = url.match(regExp)
+      if (match && match[2].length === 11) {
+        // if valid send to backend
+        // console.log('match videoid', match[2])
+        let youtubeUrl = `https://www.youtube.com/embed/${match[2]}`
+        let imageUrl = `http://img.youtube.com/vi/${match[2]}/0.jpg`
+        console.log('urls to send backend', youtubeUrl, imageUrl)
+        this.props.createMedia({
+          variables: {
+            AlbumId: this.state.id,
+            media: [{type: 'Youtube', youtubeUrl: youtubeUrl, imageUrl: imageUrl}]
+          },
+          refetchQueries: [{
+            query: getUserAlbums
+          }]
+        })
+          .then(returning => {
+            console.log('returning', returning)
+            this.setState({isAddYoutubeComponentOpen: false})
+          })
+      } else {
+        console.log('not valid')
+      }
+    }
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -251,7 +300,7 @@ class MediaConsole extends Component {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
     return (
-      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
+      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}} tabIndex='0' onKeyDown={e => this.onMediaConsoleKeyDown(e)}>
         <Style rules={{html: {overflowY: 'hidden'}}} />
 
         <i className='material-icons' style={{position: 'fixed', top: '10vh', left: 'calc((100vw - 1134px)/2 - 50px)', fontSize: '36px', cursor: 'pointer'}} onClick={() => this.props.closeMediaConsole()}>close</i>
@@ -340,9 +389,9 @@ class MediaConsole extends Component {
                   <div style={{position: 'relative', width: '256px', height: '144px', margin: '12px', border: '2px solid rgba(60, 58, 68, 0.5)'}}>
                     <label>
                       Paste youtube link here
-                      <input type='text' style={{width: '100%'}} />
+                      <input type='text' style={{width: '90%', margin: '0 auto'}} autoFocus onChange={e => this.handleChange(e, 'youtubeUrl')} onKeyDown={e => this.onYoutubeInputKeyDown(e)} />
                       <button onClick={() => this.setState({isAddYoutubeComponentOpen: false})}>Cancel</button>
-                      <button>Add</button>
+                      <button onClick={() => this.addYoutubeVideo()}>Add</button>
                     </label>
                   </div>
                 }
