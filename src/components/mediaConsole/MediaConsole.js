@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import Radium, { Style } from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
-import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId , clickCheckbox, clearSelectedMedia, uncheckAllInAlbum, checkAllInAlbum } from '../../actions/mediaConsoleActions'
+import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId, clickCheckbox, clearSelectedMedia, uncheckAllInAlbum, checkAllInAlbum } from '../../actions/mediaConsoleActions'
 
-import { getUserAlbums, updateAlbum, createAlbum } from '../../apollo/album'
-import { createMedia } from '../../apollo/media'
+import { getUserAlbums, updateAlbum, createAlbum, deleteAlbum } from '../../apollo/album'
+import { createMedia, deleteMedia } from '../../apollo/media'
 
 const _ = require('lodash')
 
@@ -233,8 +233,54 @@ class MediaConsole extends Component {
   }
 
   deleteSelectedMedia () {
-    console.log('delete all selected', this.props.mediaConsole.selectedMedia)
-    // leave cloud delete logic to the backend. backend will loop thru n remove photos from cloud storage, then delete all join table rows
+    // console.log('delete all selected', this.props.mediaConsole.selectedMedia)
+    // clear selectedMedia arr in redux
+    this.props.clearSelectedMedia()
+    let selectedMedia = this.props.mediaConsole.selectedMedia
+    // leave all the logic to the backend. pass an arr of ID.
+    // backend will loop thru n remove photos from cloud storage, then delete all join table rows
+    let inputArr = selectedMedia.map(e => {
+      return e.id
+    })
+    this.props.deleteMedia({
+      variables: {
+        input: inputArr
+      },
+      refetchQueries: [{
+        query: getUserAlbums
+      }]
+    })
+  }
+
+  deleteAlbum () {
+    let AlbumId = this.state.id
+    let albumsArr = this.props.mediaConsole.albums
+    // after deleting focusedAlbum, need to set new focusedAlbum. check if focusedAlbumId is first in albumsArr. if yes, set it the second. else set to the first. There might be no albums left after delete
+
+    let firstAlbumId = albumsArr[0].id
+
+    if (AlbumId === firstAlbumId) {
+      if (albumsArr.length > 1) {
+        this.props.setFocusedAlbumId(albumsArr[1].id)
+      } else {
+        this.props.setFocusedAlbumId('')
+      }
+    } else {
+      this.props.setFocusedAlbumId(albumsArr[0].id)
+    }
+
+    // remove all album media from selectedMedia
+    this.props.uncheckAllInAlbum(AlbumId)
+    // let backend handle the logic for cloud.
+    this.props.deleteAlbum({
+      variables: {id: AlbumId},
+      refetchQueries: [{
+        query: getUserAlbums
+      }]
+    })
+      .then(returning => {
+        console.log('returning', returning)
+      })
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -306,8 +352,10 @@ class MediaConsole extends Component {
         this.props.setFocusedAlbumId(nextProps.data.getUserAlbums[0].id)
       }
     }
+
     // check if albums arr has changed
     if (this.props.data.getUserAlbums !== nextProps.data.getUserAlbums) {
+      console.log('albums changed')
       this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
     }
   }
@@ -457,7 +505,7 @@ class MediaConsole extends Component {
                     <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.deleteSelectedMedia()}>Delete</button>
                     <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
                     <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
-                    <button key={'mediaButton4'} style={mediaButtonLeftStyle}>Delete album</button>
+                    <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.deleteAlbum()}>Delete album</button>
                   </div>
                   <div>
                     <button key={'mediaButton5'} style={mediaButtonRightStyle} onClick={() => this.uncheckAll()}>Uncheck all</button>
@@ -543,5 +591,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(getUserAlbums),
   graphql(updateAlbum, {name: 'updateAlbum'}),
   graphql(createAlbum, {name: 'createAlbum'}),
-  graphql(createMedia, {name: 'createMedia'})
+  graphql(createMedia, {name: 'createMedia'}),
+  graphql(deleteMedia, {name: 'deleteMedia'}),
+  graphql(deleteAlbum, {name: 'deleteAlbum'})
 )(Radium(MediaConsole)))

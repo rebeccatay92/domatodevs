@@ -49,9 +49,9 @@ export const createMedia = gql`
   }
 `
 
-export const deleteMedium = gql`
-  mutation deleteMedium($id: ID!) {
-    deleteMedium(id: $id)
+export const deleteMedia = gql`
+  mutation deleteMedia($input: [ID]!) {
+    deleteMedia(input: $input)
   }
 `
 
