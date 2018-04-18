@@ -403,7 +403,7 @@ class MediaConsole extends Component {
                         <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                       }
                       {medium.type === 'Youtube' &&
-                        <iframe key={i} src={medium.youtubeUrl} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
+                        <iframe key={i} src={`${medium.youtubeUrl}?modestbranding=1&rel=0`} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
                       }
                       <div style={mediaConsoleThumbnailCheckboxContainerStyle}>
                         {/* IF NOT SELECTED. SHOW TICK ON HOVER */}

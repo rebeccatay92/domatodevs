@@ -2,7 +2,7 @@ export const mediaConsoleReducer = (state = {
   isOpen: false,
   openedFrom: '', // either dashboard or editor or ''
   // stuffToAddToPost: [{} , {}] // edit route
-  // selectedMedia: [id, id] // solely for checkbox logic in console
+  selectedMedia: [], // array of medium ids. solely for checkbox rendering
   albums: [],
   focusedAlbumId: ''
 }, action) => {
