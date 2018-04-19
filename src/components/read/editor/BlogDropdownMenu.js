@@ -4,10 +4,11 @@ import onClickOutside from 'react-onclickoutside'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 
-import ConfirmWindow from '../../misc/ConfirmWindow'
+// import ConfirmWindow from '../../misc/ConfirmWindow'
 
 import { changeActivePost, initializePosts } from '../../../actions/readActions'
 import { toggleSpinner } from '../../../actions/spinnerActions'
+import { openConfirmWindow, resetConfirmWindow } from '../../../actions/confirmWindowActions'
 
 import { createPost, updateMultiplePosts, deletePost } from '../../../apollo/post'
 import { createBlogHeading, deleteBlogHeading } from '../../../apollo/blogHeading'
@@ -117,7 +118,6 @@ class BlogDropdownMenu extends Component {
   }
 
   deletePage (type) {
-    this.props.toggleDropdown()
     this.props.toggleSpinner(true)
 
     let noOfSubPosts = 0
@@ -161,12 +161,33 @@ class BlogDropdownMenu extends Component {
         this.props.changeActivePost('home')
       }
       this.props.toggleSpinner(false)
+      this.setState({confirmation: false})
+      this.props.toggleDropdown()
     })
   }
 
   handleCancel () {
     this.setState({confirmation: false})
     this.props.toggleDropdown()
+  }
+
+  handleDeleteClick () {
+    this.setState({confirmation: true})
+    this.props.openConfirmWindow({
+      message: 'Are you sure you want to delete this ' + (this.props.heading ? 'header?' : 'post?'),
+      secondaryMessage: this.props.heading ? '' : 'Warning: All sub-posts that belong to this post will also be deleted.',
+      confirmMessage: 'Delete ' + (this.props.heading ? 'Header' : 'Post')
+    })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.state.confirmation && nextProps.confirmWindow.confirmClicked && !this.props.confirmWindow.confirmClicked) {
+      this.deletePage(this.props.heading ? 'BlogHeading' : 'Post')
+      this.props.resetConfirmWindow()
+    }
+    if (this.state.confirmation && !nextProps.confirmWindow.open && this.props.confirmWindow.open && !nextProps.confirmWindow.confirmClicked) {
+      this.handleCancel()
+    }
   }
 
   render () {
@@ -177,22 +198,24 @@ class BlogDropdownMenu extends Component {
           <li key='addPostBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'Post', 'below')}>Add Post Below</li>
           <li key='addHeaderAbv' style={liStyle} onClick={() => this.addPage(this.props.i, 'BlogHeading', 'above')}>Add Header Above</li>
           <li key='addHeaderBel' style={liStyle} onClick={() => this.addPage(this.props.i + 1, 'BlogHeading', 'below')}>Add Header Below</li>
-          {this.props.heading && <li key='delHead' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Header</li>}
-          {this.props.post && <li key='delPost' style={liStyle} onClick={() => this.setState({confirmation: true})}>Delete Post</li>}
+          {this.props.heading && <li key='delHead' style={liStyle} onClick={() => this.handleDeleteClick()}>Delete Header</li>}
+          {this.props.post && <li key='delPost' style={liStyle} onClick={() => this.handleDeleteClick()}>Delete Post</li>}
         </ul>
-        {this.state.confirmation && <ConfirmWindow message={'Are you sure you want to delete this ' + (this.props.heading ? 'header?' : 'post?')} secondaryMessage={this.props.heading ? '' : 'Warning: All sub-posts that belong to this post will also be deleted.'} confirmMessage={'Delete ' + (this.props.heading ? 'Header' : 'Post')} cancelFn={() => this.handleCancel()} confirmFn={() => this.deletePage(this.props.heading ? 'BlogHeading' : 'Post')} />}
+        {/* {this.state.confirmation && <ConfirmWindow message={'Are you sure you want to delete this ' + (this.props.heading ? 'header?' : 'post?')} secondaryMessage={this.props.heading ? '' : 'Warning: All sub-posts that belong to this post will also be deleted.'} confirmMessage={'Delete ' + (this.props.heading ? 'Header' : 'Post')} cancelFn={() => this.handleCancel()} confirmFn={() => this.deletePage(this.props.heading ? 'BlogHeading' : 'Post')} />} */}
       </div>
     )
   }
 
   handleClickOutside (event) {
+    if (this.state.confirmation) return
     this.props.toggleDropdown(event)
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    pages: state.blogPosts
+    pages: state.blogPosts,
+    confirmWindow: state.confirmWindow
   }
 }
 
@@ -206,6 +229,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    openConfirmWindow: (input) => {
+      dispatch(openConfirmWindow(input))
+    },
+    resetConfirmWindow: () => {
+      dispatch(resetConfirmWindow())
     }
   }
 }

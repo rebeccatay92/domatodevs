@@ -17,6 +17,7 @@ import { mapPlannerSearchReducer } from './reducers/mapPlannerSearchReducer'
 import {mediaConsoleReducer} from './reducers/mediaConsoleReducer'
 import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageReducer'
 import { userDashboardReducer } from './reducers/userDashboardReducer'
+import { confirmWindowReducer } from './reducers/confirmWindowReducer'
 
 // testing
 import { googleCloudTokenReducer } from './reducers/googleCloudTokenReducer'
@@ -61,6 +62,7 @@ const store = createStore(combineReducers({
   blogEditorActivePage: blogEditorActivePageReducer,
   userDashboard: userDashboardReducer,
   googleCloudToken: googleCloudTokenReducer,
+  confirmWindow: confirmWindowReducer,
   apollo: client.reducer()
 }),
 {},

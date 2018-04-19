@@ -178,7 +178,7 @@ class EditorTextContent extends Component {
         }
       }
     })
-    .then(results => {
+    .then(() => {
       return this.props.updateMultiplePosts({
         variables: {
           input: subPostsArrToBeChanged
@@ -229,7 +229,8 @@ class EditorTextContent extends Component {
               id: hashtag.id,
               text: hashtag.name
             }
-          }) : []
+          }) : [],
+          media: blog.media || []
         }
         this.props.initializeActivePage(page)
       } else if (this.props.pages.activePostIndex !== 'fin') {
@@ -251,7 +252,8 @@ class EditorTextContent extends Component {
               id: hashtag.id,
               text: hashtag.name
             }
-          }) : []
+          }) : [],
+          media: pageObj.media || []
         }
         this.props.initializeActivePage(page)
       }

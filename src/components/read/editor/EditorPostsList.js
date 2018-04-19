@@ -34,7 +34,7 @@ class EditorPostsList extends Component {
     })
     .then(response => {
       this.props.initializePosts(response.data.findBlog.pages)
-      this.props.changeActivePost(index)
+      // this.props.changeActivePost(index)
       this.props.toggleSpinner(false)
     })
   }

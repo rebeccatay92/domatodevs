@@ -17,6 +17,7 @@ import BlogEditorPage from './read/editor/BlogEditorPage'
 import Navbar from './Navbar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
 import UserDashboardPage from './dashboard/UserDashboardPage'
+import ConfirmWindow from './misc/ConfirmWindow'
 
 import PasswordChanged from './Auth0/PasswordChanged'
 import history from './Auth0/history'
@@ -68,6 +69,8 @@ class App extends Component {
               </div>
             </div>
           )}
+
+          {this.props.confirmWindow.open && <ConfirmWindow />}
         </div>
       </Router>
     )
@@ -78,7 +81,8 @@ const mapStateToProps = (state) => {
   return {
     // cloudStorageToken: state.cloudStorageToken,
     showSpinner: state.showSpinner,
-    userProfile: state.userProfile
+    userProfile: state.userProfile,
+    confirmWindow: state.confirmWindow
   }
 }
 
