@@ -301,6 +301,7 @@ class MediaConsole extends Component {
     let selectedMedia = this.props.mediaConsole.selectedMedia // does not hv load seq, caption
 
     let oldMedia = _.intersectionBy(previousMediaArr, selectedMedia, 'id')
+    console.log('oldMedia', oldMedia)
     let newlySelectedMedia = _.differenceBy(selectedMedia, previousMediaArr, 'id')
 
 
@@ -365,12 +366,13 @@ class MediaConsole extends Component {
       if (albumsArr && albumsArr.length) {
         this.props.setFocusedAlbumId(albumsArr[0].id)
       }
+      // console.log('active page', this.props.page)
       console.log('preexisting media in active page', this.props.page.media) // has load sequence and caption (mediaObj for blog/post), not just the Medium table row
       // scrub arr of MediaObject to form arr of selectedMedia (remove load seq, caption)
       let preselectedMedia = this.props.page.media.map(e => {
         return _.omit(e, ['loadSequence', 'caption'])
       })
-      console.log('preselectedMedia', preselectedMedia)
+      console.log('scrubbed media arr', preselectedMedia)
       // let media console hv preselected media
       this.props.setSelectedMedia(preselectedMedia)
     }

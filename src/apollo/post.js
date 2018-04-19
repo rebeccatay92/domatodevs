@@ -30,6 +30,10 @@ export const findPost = gql`
       }
       media {
         id
+        PostId
+        loadSequence
+        caption
+        MediumId
         type
         AlbumId
         objectName

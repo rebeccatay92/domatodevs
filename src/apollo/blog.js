@@ -20,13 +20,15 @@ export const queryBlog = gql`
       }
       media {
         id
+        BlogId
+        loadSequence
+        caption
+        MediumId
         type
         AlbumId
         objectName
         imageUrl
         youtubeUrl
-        loadSequence
-        caption
       }
       hashtags {
         id
@@ -61,13 +63,15 @@ export const queryBlog = gql`
           }
           media {
             id
+            loadSequence
+            caption
+            PostId
+            MediumId
             type
             AlbumId
             objectName
             imageUrl
             youtubeUrl
-            loadSequence
-            caption
           }
           hashtags {
             id

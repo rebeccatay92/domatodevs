@@ -29,6 +29,7 @@ class BlogEditorPage extends Component {
         </div>
       )
     }
+    // console.log('apollo findBlog', this.props.data.findBlog)
     return (
       <div style={readPageStyle}>
         <EditorPostsList pages={this.props.pages} blogId={this.props.match.params.blogId} />
@@ -45,8 +46,8 @@ class BlogEditorPage extends Component {
     if (this.props.data.findBlog !== nextProps.data.findBlog) {
       const blog = nextProps.data.findBlog
       const allPages = blog.pages
-      console.log(blog)
-      console.log(allPages)
+      // console.log(blog)
+      // console.log(allPages)
       this.props.initializePosts(allPages)
       if (this.props.pages.activePostIndex === 'home') {
         const page = {
