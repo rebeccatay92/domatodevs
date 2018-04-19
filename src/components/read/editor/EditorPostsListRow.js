@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+import { DropTarget, DragSource } from 'react-dnd'
 import Radium from 'radium'
 
 import BlogDropdownMenu from './BlogDropdownMenu'
@@ -23,6 +24,36 @@ const eventIconStyle = {
   // }
 }
 
+const pageSource = {
+  beginDrag (props) {
+    return props.page
+  },
+  endDrag (props, monitor) {
+    console.log(props.page)
+  }
+}
+
+const pageTarget = {
+  hover (props, monitor) {
+
+  }
+}
+
+function collectTarget (connect, monitor) {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  }
+}
+
+function collectSource (connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    getItem: monitor.getItem()
+  }
+}
+
 const MouseHoverHOC = (WrappedComponent, elemType) => {
   return class extends Component {
     constructor (props) {
@@ -36,7 +67,7 @@ const MouseHoverHOC = (WrappedComponent, elemType) => {
     render () {
       if (!elemType || elemType === 'li') {
         return (
-          <li style={{position: 'relative'}} onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
+          <li style={{position: 'relative', padding: '0 24px'}} onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
             <WrappedComponent hover={this.state.hover} removeHover={() => this.setState({hover: false})} {...this.props} />
           </li>
         )
@@ -122,7 +153,7 @@ class EditorPostsListRow extends Component {
 
   render () {
     const type = this.props.page.type
-    const {page, i, activePostIndex} = this.props
+    const {page, i, activePostIndex, connectDragSource, connectDragPreview, connectDropTarget} = this.props
     const {title, eventType, isSubPost} = this.props.activePage
     const iconTypes = ['directions_run', 'restaurant', 'hotel', 'flight', 'directions_subway', 'local_car_wash', 'directions_boat']
     const eventTypes = ['Activity', 'Food', 'Lodging', 'Flight', 'Train', 'LandTransport', 'SeaTransport']
@@ -136,6 +167,8 @@ class EditorPostsListRow extends Component {
         )
       })}
     </div>
+
+    const dragHandler = <i className='material-icons' style={{position: 'absolute', left: '2px', fontSize: '20px', cursor: 'move', opacity: '1'}}>unfold_more</i>
 
     if (page.type === 'BlogHeading') {
       if (this.state.editingHeading) {
@@ -157,15 +190,16 @@ class EditorPostsListRow extends Component {
           </React.Fragment>
         )
       }
-      return (
-        <React.Fragment key={i}>
+      return connectDropTarget(connectDragPreview(
+        <div key={i}>
+          {this.props.hover && connectDragSource(dragHandler)}
           <span onClick={() => this.setState({editingHeading: true})} style={{display: 'inline-block', fontWeight: 'bold', padding: '0 0 16px 0', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}}>{page.BlogHeading.title}</span>
-          <span style={{position: 'absolute', right: 0}}>
+          <span style={{position: 'absolute', right: '24px'}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
             {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} heading />}
           </span>
-        </React.Fragment>
-      )
+        </div>
+      ))
     } else if (page.type === 'Post' && page.Post.contentOnly) {
       if (activePostIndex === i) {
         return (
@@ -174,7 +208,7 @@ class EditorPostsListRow extends Component {
               ? <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span><span style={{width: '12px', display: 'inline-block'}}>|</span>Sub-Post</React.Fragment>
                : <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span>Post</React.Fragment>}
             </div>
-            <span style={{position: 'absolute', right: 0, top: 0}}>
+            <span style={{position: 'absolute', right: '24px', top: 0}}>
               <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
               {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
             </span>
@@ -186,14 +220,15 @@ class EditorPostsListRow extends Component {
           </React.Fragment>
         )
       }
-      return (
-        <React.Fragment key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.title}</span>
-          <span style={{position: 'absolute', right: 0}}>
+      return connectDropTarget(connectDragPreview(
+        <div key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.title}</span>
+          {this.props.hover && connectDragSource(dragHandler)}
+          <span style={{position: 'absolute', right: '24px'}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
             {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
           </span>
-        </React.Fragment>
-      )
+        </div>
+      ))
     } else if (page.type === 'Post' && !page.Post.contentOnly) {
       if (activePostIndex === i) {
         return (
@@ -202,7 +237,7 @@ class EditorPostsListRow extends Component {
               ? <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span><span style={{width: '12px', display: 'inline-block'}}>|</span>Sub-Post</React.Fragment>
                : <React.Fragment><span style={{width: '8px', display: 'inline-block'}}>|</span>Post</React.Fragment>}
             </div>
-            <span style={{position: 'absolute', right: 0, top: 0}}>
+            <span style={{position: 'absolute', right: '24px', top: 0}}>
               <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
               {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
             </span>
@@ -214,14 +249,15 @@ class EditorPostsListRow extends Component {
           </React.Fragment>
         )
       }
-      return (
-        <React.Fragment key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.location && page.Post.location.name + ' - '}{page.Post.description}</span>
-          <span style={{position: 'absolute', right: 0}}>
+      return connectDropTarget(connectDragPreview(
+        <div key={i}><span onClick={() => this.props.changeActivePost(i)} style={{...{display: 'inline-block', padding: '0 0 16px 8px', color: '#3C3A44', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}, ...!!this.props.page[type].ParentPostId && {padding: '0 0 16px 8px'}}}>{!!this.props.page[type].ParentPostId && <span style={{marginRight: '12px', display: 'inline-block'}}>&#8226;</span>}{page.Post.location && page.Post.location.name + ' - '}{page.Post.description}</span>
+          {this.props.hover && connectDragSource(dragHandler)}
+          <span style={{position: 'absolute', right: '24px'}}>
             <i id={i} onClick={() => this.setState({dropdown: !this.state.dropdown})} style={this.dropdownStyle()} className='material-icons'>more_horiz</i>
             {this.state.dropdown && <BlogDropdownMenu blogId={this.props.blogId} i={i} toggleDropdown={(e) => this.toggleDropdown(e)} post />}
           </span>
-        </React.Fragment>
-      )
+        </div>
+      ))
     }
   }
 }
@@ -260,4 +296,4 @@ const options = {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryBlog, options),
   graphql(updateBlogHeading, { name: 'updateBlogHeading' })
-)(MouseHoverHOC(Radium(EditorPostsListRow))))
+)(DragSource('page', pageSource, collectSource)(DropTarget(['page'], pageTarget, collectTarget)(MouseHoverHOC(Radium(EditorPostsListRow))))))
