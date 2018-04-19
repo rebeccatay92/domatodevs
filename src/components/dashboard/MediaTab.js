@@ -62,11 +62,11 @@ class MediaTab extends Component {
     const rect = el.getBoundingClientRect()
     const distFromTop = rect.top
     // console.log('componnet distFromTop', distFromTop)
-    if (distFromTop > 110 && this.props.userDashboard.stickyTabs) {
+    if (distFromTop >= 110 && this.props.userDashboard.stickyTabs) {
       this.props.setStickyTabs(false)
       this.props.setStickySidebar(false)
     }
-    if (distFromTop <= 110 && !this.props.userDashboard.stickySidebar) {
+    if (distFromTop < 110 && !this.props.userDashboard.stickySidebar) {
       this.props.setStickySidebar(true)
     }
   }
