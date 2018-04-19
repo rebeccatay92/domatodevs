@@ -60,6 +60,11 @@ export const mediaConsoleReducer = (state = {
           return e.AlbumId !== action.AlbumId
         })
       }
+    case 'SET_SELECTED_MEDIA':
+      return {
+        ...state,
+        selectedMedia: action.mediaArr
+      }
     default:
       return state
   }
@@ -72,5 +77,5 @@ isOpen: Boolean
 openedFrom: String // either dashboard or editor or ''
 albums: [Album]
 focusedAlbumId: ID
-selectedMedia: [ {id, AlbumId, type....}] // array of medium obj. solely for checkbox rendering
+selectedMedia: [ {id, AlbumId, type....}] // array of medium obj. DOES NOT HV LOAD SEQ, CAPTION. solely for checkbox rendering
 */

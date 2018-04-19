@@ -51,3 +51,10 @@ export const checkAllInAlbum = (AlbumId) => {
     AlbumId
   }
 }
+
+export const setSelectedMedia = (mediaArr) => {
+  return {
+    type: 'SET_SELECTED_MEDIA',
+    mediaArr
+  }
+}

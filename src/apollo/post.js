@@ -30,11 +30,11 @@ export const findPost = gql`
       }
       media {
         id
+        type
         AlbumId
         objectName
         imageUrl
         youtubeUrl
-        type
       }
       hashtags {
         name

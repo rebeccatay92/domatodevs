@@ -21,6 +21,7 @@ export const queryBlog = gql`
       media {
         id
         type
+        AlbumId
         objectName
         imageUrl
         youtubeUrl
@@ -61,6 +62,7 @@ export const queryBlog = gql`
           media {
             id
             type
+            AlbumId
             objectName
             imageUrl
             youtubeUrl

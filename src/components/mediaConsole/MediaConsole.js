@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import Radium, { Style } from 'radium'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
-import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId, clickCheckbox, clearSelectedMedia, uncheckAllInAlbum, checkAllInAlbum } from '../../actions/mediaConsoleActions'
+import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId, clickCheckbox, clearSelectedMedia, uncheckAllInAlbum, checkAllInAlbum, setSelectedMedia } from '../../actions/mediaConsoleActions'
+import { updateActivePage } from '../../actions/blogEditorActivePageActions'
 
 import { getUserAlbums, updateAlbum, createAlbum, deleteAlbum } from '../../apollo/album'
 import { createMedia, deleteMedia } from '../../apollo/media'
-
-const _ = require('lodash')
+import _ from 'lodash'
 
 class MediaConsole extends Component {
   constructor (props) {
@@ -283,6 +283,30 @@ class MediaConsole extends Component {
       })
   }
 
+  updateActivePageMedia () {
+    // compare old media and current selectedMedia
+    let previousMediaArr = this.props.page.media
+    let selectedMedia = this.props.mediaConsole.selectedMedia // does not hv load seq, caption
+
+    let oldMedia = _.intersectionBy(previousMediaArr, selectedMedia, 'id')
+    let newlySelectedMedia = _.differenceBy(selectedMedia, previousMediaArr, 'id')
+
+
+    let mediaToAdd = newlySelectedMedia.map(e => {
+      return {...e, loadSequence: null, caption: ''}
+    })
+    let concatArr = oldMedia.concat(mediaToAdd)
+
+    // assign new load seq
+    let finalMediaArr = concatArr.map((medium, i) => {
+      return {...medium, loadSequence: i + 1}
+    })
+    console.log('finalarr', finalMediaArr)
+
+
+    this.props.updateActivePage('media', finalMediaArr)
+    this.props.closeMediaConsole()
+  }
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevState.pendingRefetchFocusedAlbumId) {
       let isNewAlbumPresent = _.find(this.props.mediaConsole.albums, e => {
@@ -306,6 +330,7 @@ class MediaConsole extends Component {
 
     let albumsArr = this.props.data.getUserAlbums
     if (openedFrom === 'dashboard') {
+      console.log('didmount, from dashboard')
       if (albumsArr.length) {
         this.props.initializeMediaConsoleAlbums(albumsArr)
       }
@@ -323,10 +348,18 @@ class MediaConsole extends Component {
         })
       }
     } else if (openedFrom === 'editor') {
-      console.log('mount from editor')
+      console.log('didmount, from editor')
       if (albumsArr && albumsArr.length) {
         this.props.setFocusedAlbumId(albumsArr[0].id)
       }
+      console.log('preexisting media in active page', this.props.page.media) // has load sequence and caption (mediaObj for blog/post), not just the Medium table row
+      // scrub arr of MediaObject to form arr of selectedMedia (remove load seq, caption)
+      let preselectedMedia = this.props.page.media.map(e => {
+        return _.omit(e, ['loadSequence', 'caption'])
+      })
+      console.log('preselectedMedia', preselectedMedia)
+      // let media console hv preselected media
+      this.props.setSelectedMedia(preselectedMedia)
     }
   }
 
@@ -345,18 +378,18 @@ class MediaConsole extends Component {
         })
       }
     }
-    // console.log('props', this.props.data)
-    if (!this.props.data.getUserAlbums && nextProps.data.getUserAlbums) {
-      this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
-      if (nextProps.data.getUserAlbums.length) {
-        this.props.setFocusedAlbumId(nextProps.data.getUserAlbums[0].id)
-      }
-    }
 
     // check if albums arr has changed
     if (this.props.data.getUserAlbums !== nextProps.data.getUserAlbums) {
-      console.log('albums changed')
+      console.log('willreceiveprops, albums changed')
       this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
+
+      // only set focusedAlbum if receiving albums arr from backend for first time, and if albumsArr has a length.
+      if (!this.props.data.getUserAlbums && nextProps.data.getUserAlbums) {
+        if (nextProps.data.getUserAlbums.length) {
+          this.props.setFocusedAlbumId(nextProps.data.getUserAlbums[0].id)
+        }
+      }
     }
   }
 
@@ -366,7 +399,7 @@ class MediaConsole extends Component {
 
   render () {
     // console.log('focusedAlbumId in redux state', this.props.mediaConsole.focusedAlbumId)
-    // console.log('this.props.mediaConsole.selectedMedia', this.props.mediaConsole.selectedMedia)
+    // console.log('selectedMedia', this.props.mediaConsole.selectedMedia)
     let focusedAlbum = this.props.mediaConsole.albums.find(e => {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
@@ -511,7 +544,7 @@ class MediaConsole extends Component {
                     <button key={'mediaButton5'} style={mediaButtonRightStyle} onClick={() => this.uncheckAll()}>Uncheck all</button>
                     <button key={'mediaButton6'} style={mediaButtonRightStyle} onClick={() => this.checkAll()}>Check all</button>
                     {this.props.mediaConsole.openedFrom === 'editor' &&
-                    <button key={'mediaButton7'} style={mediaButtonRightStyle}>Post</button>
+                    <button key={'mediaButton7'} style={mediaButtonRightStyle} onClick={() => this.updateActivePageMedia()}>Post</button>
                     }
                   </div>
                 </div>
@@ -557,7 +590,8 @@ const mapStateToProps = (state) => {
   return {
     mediaConsole: state.mediaConsole,
     userProfile: state.userProfile,
-    googleCloudToken: state.googleCloudToken
+    googleCloudToken: state.googleCloudToken,
+    page: state.blogEditorActivePage
   }
 }
 
@@ -583,6 +617,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     checkAllInAlbum: (AlbumId) => {
       dispatch(checkAllInAlbum(AlbumId))
+    },
+    setSelectedMedia: (mediaArr) => {
+      dispatch(setSelectedMedia(mediaArr))
+    },
+    updateActivePage: (property, value) => {
+      dispatch(updateActivePage(property, value))
     }
   }
 }
