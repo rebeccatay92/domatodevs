@@ -4,6 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import { closeMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId, clickCheckbox, clearSelectedMedia, uncheckAllInAlbum, checkAllInAlbum, setSelectedMedia } from '../../actions/mediaConsoleActions'
 import { updateActivePage } from '../../actions/blogEditorActivePageActions'
+import { openConfirmWindow } from '../../actions/confirmWindowActions'
 
 import { getUserAlbums, updateAlbum, createAlbum, deleteAlbum } from '../../apollo/album'
 import { createMedia, deleteMedia } from '../../apollo/media'
@@ -232,6 +233,17 @@ class MediaConsole extends Component {
     this.props.checkAllInAlbum(AlbumId)
   }
 
+  confirmDeleteMedia () {
+    console.log('open confirm window')
+    let selectedMediaLength = this.props.mediaConsole.selectedMedia.length
+    if (selectedMediaLength <= 0) return
+    this.props.openConfirmWindow({
+      message: 'Are you sure you want to delete all selected media? Deleted media will no longer be viewable in any posts you may have',
+      secondaryMessage: `You have ${selectedMediaLength} media selected`,
+      confirmMessage: 'Proceed'
+    })
+  }
+
   deleteSelectedMedia () {
     // console.log('delete all selected', this.props.mediaConsole.selectedMedia)
     // clear selectedMedia arr in redux
@@ -307,6 +319,7 @@ class MediaConsole extends Component {
     this.props.updateActivePage('media', finalMediaArr)
     this.props.closeMediaConsole()
   }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevState.pendingRefetchFocusedAlbumId) {
       let isNewAlbumPresent = _.find(this.props.mediaConsole.albums, e => {
@@ -423,7 +436,7 @@ class MediaConsole extends Component {
               </div>
 
               {/* DIV TO CONTAIN ALBUM NAMES WITH BORDER LEFT */}
-              <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexDirection: 'column'}}>
+              <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexFlow: 'column nowrap', justifyContent: 'flex-start'}}>
                 {this.props.mediaConsole.albums.map((album, i) => {
                   if (focusedAlbum) {
                     var isFocusedAlbum = album.id === focusedAlbum.id
@@ -535,7 +548,7 @@ class MediaConsole extends Component {
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', padding: '0 8px 0 8px', borderTop: '2px solid rgba(60, 58, 68, 0.3)'}}>
                   {/* DISPLAY THESE ONLY IF STUFF IS TICKED */}
                   <div>
-                    <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.deleteSelectedMedia()}>Delete</button>
+                    <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteMedia()}>Delete</button>
                     <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
                     <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
                     <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.deleteAlbum()}>Delete album</button>
@@ -569,9 +582,9 @@ const mediaConsoleAddMediumTextStyle = {height: '30px', lineHeight: '15px', font
 const mediaButtonLeftStyle = {border: 'none', fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', padding: 0, outline: 'none', ':hover': {color: 'rgba(60, 58, 68, 1)'}, marginRight: '24px'}
 const mediaButtonRightStyle = {...mediaButtonLeftStyle, marginRight: '0', marginLeft: '24px'}
 
-const unfocusedAlbumStyle = {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', height: '15px', borderLeft: '4px solid transparent'}
+const unfocusedAlbumStyle = {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', borderLeft: '4px solid transparent', minHeight: '15px'}
 const focusedAlbumStyle = {...unfocusedAlbumStyle, borderLeft: '4px solid white'}
-const albumNameStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', lineHeight: '15px', width: 'auto', padding: '0', margin: '0', verticalAlign: 'top'}
+const albumNameStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', lineHeight: '15px', width: 'auto', padding: '0', margin: '0'}
 
 const editAlbumHeaderStyle = {margin: 0, padding: 0, fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '400', color: 'white'}
 const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '31px'}
@@ -591,7 +604,8 @@ const mapStateToProps = (state) => {
     mediaConsole: state.mediaConsole,
     userProfile: state.userProfile,
     googleCloudToken: state.googleCloudToken,
-    page: state.blogEditorActivePage
+    page: state.blogEditorActivePage,
+    confirmWindow: state.confirmWindow
   }
 }
 
@@ -623,6 +637,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateActivePage: (property, value) => {
       dispatch(updateActivePage(property, value))
+    },
+    openConfirmWindow: (input) => {
+      dispatch(openConfirmWindow(input))
     }
   }
 }
