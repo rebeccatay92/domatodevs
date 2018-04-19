@@ -1,4 +1,4 @@
-const _ = require('lodash')
+import _ from 'lodash'
 
 export const mediaConsoleReducer = (state = {
   isOpen: false,
@@ -25,7 +25,14 @@ export const mediaConsoleReducer = (state = {
       // check if id is in current selected media. if yes, remove, if no, add.
       let medium = action.medium
       let selectedMedia = state.selectedMedia
-      if (selectedMedia.includes(medium)) {
+      // console.log('selectedMedia', state.selectedMedia, 'clicked', action.medium)
+      // check if medium id exists in selectedMedia
+      let isInside = _.find(state.selectedMedia, function (e) {
+        return e.id === medium.id
+      })
+      // console.log('isInside', isInside)
+      if (isInside) {
+        // console.log('includes, uncheck')
         return {
           ...state,
           selectedMedia: selectedMedia.filter(e => {
@@ -33,6 +40,7 @@ export const mediaConsoleReducer = (state = {
           })
         }
       } else {
+        // console.log('not includes, check')
         return {
           ...state,
           selectedMedia: [...selectedMedia, medium]
