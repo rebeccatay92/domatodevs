@@ -61,6 +61,7 @@ export const queryBlog = gql`
           }
           media {
             id
+            MediumId
             type
             AlbumId
             objectName

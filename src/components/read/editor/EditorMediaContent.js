@@ -34,7 +34,7 @@ class EditorMediaContent extends Component {
           </div>
           <div style={{height: 'calc((100vh - 60px - 32px) / 7)', width: '100%', padding: '8px 24px'}}>
             <div style={{border: '1px solid rgba(60, 58, 68, 0.2)', height: '100%', cursor: 'pointer'}} onClick={() => this.openMediaConsole()}>
-              <span style={{textAlign: 'center', display: 'block', width: '100%', position: 'relative', top: '50%', transform: 'translateY(-50%)'}}>Add more image(s) and video(s)</span>
+              <span style={{textAlign: 'center', display: 'block', width: '100%', position: 'relative', top: '50%', transform: 'translateY(-50%)'}}>Add/Remove image(s) and video(s)</span>
             </div>
           </div>
         </div>

@@ -578,7 +578,7 @@ const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontF
 const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '121px', lineHeight: '18px', resize: 'none'}
 const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
 
-const mediaConsoleContainerStyle = {position: 'fixed', left: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
+const mediaConsoleContainerStyle = {marginLeft: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
 const mediaConsoleThumbnailContainerStyle = {display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}
 
 const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}

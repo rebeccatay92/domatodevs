@@ -65,6 +65,13 @@ class EditorTextContent extends Component {
         days: this.props.page.days,
         hashtags: this.props.page.hashtags.map(hashtag => {
           return hashtag.text.toString()
+        }),
+        media: this.props.page.media.map(medium => {
+          return {
+            MediumId: medium.id,
+            caption: medium.caption,
+            loadSequence: medium.loadSequence
+          }
         })
       },
       refetchQueries: [{
@@ -133,6 +140,50 @@ class EditorTextContent extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
+    console.log({
+      ...{
+        id: this.props.page.modelId,
+        textContent: this.props.page.textContent,
+        eventType: this.props.page.eventType,
+        contentOnly: !this.props.page.eventType,
+        hashtags: this.props.page.hashtags.map(hashtag => {
+          return hashtag.text.toString()
+        }),
+        media: this.props.page.media.map(medium => {
+          return {
+            MediumId: medium.MediumId,
+            caption: medium.caption,
+            loadSequence: medium.loadSequence
+          }
+        }),
+        startDay: this.props.page.startDay && this.props.page.startDay.value,
+        endDay: this.props.page.endDay && this.props.page.endDay.value,
+        startTime: startUnix,
+        endTime: endUnix
+      },
+      ...this.props.page.eventType && {
+        description: this.props.page.title,
+        title: ''
+      },
+      ...!this.props.page.eventType && {
+        title: this.props.page.title,
+        description: '',
+        startDay: null,
+        endDay: null,
+        startTime: null,
+        endTime: null
+      },
+      ...this.props.page.isSubPost && {
+        ParentPostId: parentPostId
+      },
+      ...!this.props.page.isSubPost && {
+        ParentPostId: null
+      },
+      ...this.props.page.googlePlaceData.placeId && {
+        googlePlaceData: this.props.page.googlePlaceData
+      }
+    });
+
     this.props.updatePost({
       variables: {
         ...{
@@ -145,7 +196,7 @@ class EditorTextContent extends Component {
           }),
           media: this.props.page.media.map(medium => {
             return {
-              MediumId: medium.id,
+              MediumId: medium.MediumId,
               caption: medium.caption,
               loadSequence: medium.loadSequence
             }
