@@ -46,7 +46,7 @@ class BlogEditorPage extends Component {
     if (this.props.data.findBlog !== nextProps.data.findBlog) {
       const blog = nextProps.data.findBlog
       const allPages = blog.pages
-      // console.log(blog)
+      console.log('NEXTPROPS FINDBLOG', blog)
       // console.log(allPages)
       this.props.initializePosts(allPages)
       if (this.props.pages.activePostIndex === 'home') {

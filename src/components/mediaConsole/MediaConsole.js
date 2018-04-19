@@ -299,11 +299,17 @@ class MediaConsole extends Component {
     // compare old media and current selectedMedia
     let previousMediaArr = this.props.page.media
     let selectedMedia = this.props.mediaConsole.selectedMedia // does not hv load seq, caption
+    // need to rename selectedMedia redux arr (id -> back to MediumId).
+    let renamedSelectedMedia = selectedMedia.map(e => {
+      let renamedObj = {...e, MediumId: e.id}
+      return _.omit(renamedObj, 'id')
+    })
+    // console.log('renamedSelectedMedia', renamedSelectedMedia)
 
-    let oldMedia = _.intersectionBy(previousMediaArr, selectedMedia, 'id')
-    console.log('oldMedia', oldMedia)
-    let newlySelectedMedia = _.differenceBy(selectedMedia, previousMediaArr, 'id')
-
+    let oldMedia = _.intersectionBy(previousMediaArr, renamedSelectedMedia, 'MediumId')
+    // console.log('oldMedia', oldMedia)
+    let newlySelectedMedia = _.differenceBy(renamedSelectedMedia, previousMediaArr, 'MediumId')
+    // console.log('newlySelectedMedia', newlySelectedMedia)
 
     let mediaToAdd = newlySelectedMedia.map(e => {
       return {...e, loadSequence: null, caption: ''}
@@ -367,12 +373,21 @@ class MediaConsole extends Component {
         this.props.setFocusedAlbumId(albumsArr[0].id)
       }
       // console.log('active page', this.props.page)
-      console.log('preexisting media in active page', this.props.page.media) // has load sequence and caption (mediaObj for blog/post), not just the Medium table row
-      // scrub arr of MediaObject to form arr of selectedMedia (remove load seq, caption)
+      // console.log('preexisting media in active page', this.props.page.media) // has load sequence and caption (mediaObj for blog/post), not just the Medium table row
+      // scrub arr of MediaObject to form arr of selectedMedia (remove load seq, caption. rename MediumId to id)
       let preselectedMedia = this.props.page.media.map(e => {
-        return _.omit(e, ['loadSequence', 'caption'])
+        let formedObj = {
+          id: e.MediumId, // selectedMedia.id should be the MediumId, while post.id is the join table id.
+          AlbumId: e.AlbumId,
+          type: e.type,
+          objectName: e.objectName,
+          imageUrl: e.imageUrl,
+          youtubeUrl: e.youtubeUrl
+        }
+        // return _.omit(e, ['loadSequence', 'caption'])
+        return formedObj
       })
-      console.log('scrubbed media arr', preselectedMedia)
+      console.log('scrubbed media arr for preselected', preselectedMedia)
       // let media console hv preselected media
       this.props.setSelectedMedia(preselectedMedia)
     }
@@ -396,7 +411,7 @@ class MediaConsole extends Component {
 
     // check if albums arr has changed
     if (this.props.data.getUserAlbums !== nextProps.data.getUserAlbums) {
-      console.log('willreceiveprops, albums changed')
+      // console.log('willreceiveprops, albums changed')
       this.props.initializeMediaConsoleAlbums(nextProps.data.getUserAlbums)
 
       // only set focusedAlbum if receiving albums arr from backend for first time, and if albumsArr has a length.
@@ -593,7 +608,7 @@ const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontF
 const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '121px', lineHeight: '18px', resize: 'none'}
 const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
 
-const mediaConsoleContainerStyle = {position: 'fixed', left: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
+const mediaConsoleContainerStyle = {marginLeft: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
 const mediaConsoleThumbnailContainerStyle = {display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}
 
 const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}
