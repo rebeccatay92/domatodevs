@@ -169,14 +169,14 @@ class MediaConsole extends Component {
     }
   }
 
-  // onMediaConsoleKeyDown (e) {
-  //   if (e.key === 'Escape') {
-  //     console.log('esc in media console')
-  //     if (this.state.isAddYoutubeComponentOpen) {
-  //       this.setState({isAddYoutubeComponentOpen: false})
-  //     }
-  //   }
-  // }
+  onMediaConsoleKeyDown (e) {
+    if (e.key === 'Escape') {
+      console.log('esc in media console')
+      if (this.state.isAddYoutubeComponentOpen) {
+        this.setState({isAddYoutubeComponentOpen: false})
+      }
+    }
+  }
 
   addYoutubeVideo () {
     /* possible video links
@@ -225,11 +225,13 @@ class MediaConsole extends Component {
 
   uncheckAll () {
     let AlbumId = this.state.id
+    console.log('uncheckAll', AlbumId)
     this.props.uncheckAllInAlbum(AlbumId)
   }
 
   checkAll () {
     let AlbumId = this.state.id
+    console.log('checkAll', AlbumId)
     this.props.checkAllInAlbum(AlbumId)
   }
 
@@ -370,7 +372,13 @@ class MediaConsole extends Component {
     } else if (openedFrom === 'editor') {
       console.log('didmount, from editor')
       if (albumsArr && albumsArr.length) {
+        // console.log('set focused album id', albumsArr[0].id)
         this.props.setFocusedAlbumId(albumsArr[0].id)
+        this.setState({
+          id: albumsArr[0].id,
+          title: albumsArr[0].title,
+          description: albumsArr[0].description
+        })
       }
       // console.log('active page', this.props.page)
       // console.log('preexisting media in active page', this.props.page.media) // has load sequence and caption (mediaObj for blog/post), not just the Medium table row
@@ -434,7 +442,7 @@ class MediaConsole extends Component {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
     return (
-      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
+      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}} tabIndex='0' onKeyDown={e => this.onMediaConsoleKeyDown(e)}>
         <Style rules={{html: {overflowY: 'hidden'}}} />
 
         <i className='material-icons' style={{position: 'fixed', top: '10vh', left: 'calc((100vw - 1134px)/2 - 50px)', fontSize: '36px', cursor: 'pointer'}} onClick={() => this.props.closeMediaConsole()}>close</i>
