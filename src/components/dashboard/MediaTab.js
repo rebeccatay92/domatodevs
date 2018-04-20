@@ -6,9 +6,8 @@ import { openMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId } fro
 import MediaConsole from '../mediaConsole/MediaConsole'
 import { setStickyTabs, setStickySidebar } from '../../actions/userDashboardActions'
 
-const coreTabStyle = {paddingLeft: '4px', cursor: 'pointer', color: 'rgba(60, 58, 68, 1)', fontFamily: 'EB Garamond, serif', fontSize: '16px', fontWeight: '400', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', height: '21px', marginTop: '24px'}
-const unfocusedTabStyle = {...coreTabStyle, borderLeft: '4px solid transparent'}
-const focusedTabStyle = {...coreTabStyle, borderLeft: '4px solid rgba(60, 58, 68, 1)'}
+const unfocusedTabStyle = {paddingLeft: '4px', cursor: 'pointer', color: 'rgba(60, 58, 68, 1)', fontFamily: 'EB Garamond, serif', fontSize: '16px', lineHeight: '21px', fontWeight: '400', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', height: '21px', marginTop: '24px', borderLeft: '4px solid transparent'}
+const focusedTabStyle = {...unfocusedTabStyle, borderLeft: '4px solid rgba(60, 58, 68, 1)'}
 
 class MediaTab extends Component {
   constructor (props) {
@@ -108,8 +107,6 @@ class MediaTab extends Component {
 
             <div style={{width: '100%', height: 'calc(100% - 24px)', overflow: 'scroll'}}>
               {mediaConsole.albums.map((album, i) => {
-                // let isFocusedAlbum = mediaConsole.focusedAlbum.id === album.id
-                // switch to focusedAlbum -> id only
                 let isFocusedAlbum = mediaConsole.focusedAlbumId === album.id
                 return (
                   <h4 style={isFocusedAlbum ? focusedTabStyle : unfocusedTabStyle} key={i} onClick={() => this.switchFocusedAlbum(album.id)}>{album.title}</h4>

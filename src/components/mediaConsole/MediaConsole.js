@@ -601,7 +601,7 @@ class MediaConsole extends Component {
                   {/* DISPLAY THESE ONLY IF STUFF IS TICKED */}
                   <div>
                     <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteMedia()}>Delete</button>
-                    <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
+                    {/* <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button> */}
                     <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
                     <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteAlbum()}>Delete album</button>
                   </div>
