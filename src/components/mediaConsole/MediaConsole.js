@@ -19,7 +19,8 @@ class MediaConsole extends Component {
       description: '',
       pendingRefetchFocusedAlbumId: null,
       isAddYoutubeComponentOpen: false,
-      youtubeUrl: ''
+      youtubeUrl: '',
+      confirmIsFor: ''
     }
   }
 
@@ -225,20 +226,21 @@ class MediaConsole extends Component {
 
   uncheckAll () {
     let AlbumId = this.state.id
-    console.log('uncheckAll', AlbumId)
+    // console.log('uncheckAll', AlbumId)
     this.props.uncheckAllInAlbum(AlbumId)
   }
 
   checkAll () {
     let AlbumId = this.state.id
-    console.log('checkAll', AlbumId)
+    // console.log('checkAll', AlbumId)
     this.props.checkAllInAlbum(AlbumId)
   }
 
   confirmDeleteMedia () {
-    console.log('open confirm window')
+    // console.log('open confirm window')
     let selectedMediaLength = this.props.mediaConsole.selectedMedia.length
     if (selectedMediaLength <= 0) return
+    this.setState({confirmIsFor: 'deleteMedia'})
     this.props.openConfirmWindow({
       message: 'Are you sure you want to delete all selected media? Deleted media will no longer be viewable in any posts you may have',
       secondaryMessage: `You have ${selectedMediaLength} media selected`,
@@ -246,10 +248,18 @@ class MediaConsole extends Component {
     })
   }
 
+  confirmDeleteAlbum () {
+    this.setState({confirmIsFor: 'deleteAlbum'})
+    let albumTitle = this.state.title
+    this.props.openConfirmWindow({
+      message: 'Are you sure you want to delete this album? All media within will no longer be viewable in any posts you may have',
+      secondaryMessage: `You are about to delete the album named ${albumTitle}`,
+      confirmMessage: 'Proceed'
+    })
+  }
+
   deleteSelectedMedia () {
     // console.log('delete all selected', this.props.mediaConsole.selectedMedia)
-    // clear selectedMedia arr in redux
-    this.props.clearSelectedMedia()
     let selectedMedia = this.props.mediaConsole.selectedMedia
     // leave all the logic to the backend. pass an arr of ID.
     // backend will loop thru n remove photos from cloud storage, then delete all join table rows
@@ -264,6 +274,8 @@ class MediaConsole extends Component {
         query: getUserAlbums
       }]
     })
+    // clear selectedMedia arr in redux
+    this.props.clearSelectedMedia()
   }
 
   deleteAlbum () {
@@ -429,6 +441,21 @@ class MediaConsole extends Component {
         }
       }
     }
+
+    // listen to confirm window redux state
+    if (nextProps.confirmWindow !== this.props.confirmWindow) {
+      // if confirmClicked is true, proceed with whatever fxn
+      // if confirmClicked is false, ignore
+      if (nextProps.confirmWindow.confirmClicked) {
+        console.log('state confirmIsFor', this.state.confirmIsFor)
+        if (this.state.confirmIsFor === 'deleteMedia') {
+          this.deleteSelectedMedia()
+        }
+        if (this.state.confirmIsFor === 'deleteAlbum') {
+          this.deleteAlbum()
+        }
+      }
+    }
   }
 
   componentWillUnmount () {
@@ -576,7 +603,7 @@ class MediaConsole extends Component {
                     <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteMedia()}>Delete</button>
                     <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
                     <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
-                    <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.deleteAlbum()}>Delete album</button>
+                    <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteAlbum()}>Delete album</button>
                   </div>
                   <div>
                     <button key={'mediaButton5'} style={mediaButtonRightStyle} onClick={() => this.uncheckAll()}>Uncheck all</button>
