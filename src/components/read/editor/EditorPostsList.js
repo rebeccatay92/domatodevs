@@ -9,6 +9,7 @@ import { createBlogHeading } from '../../../apollo/blogHeading'
 import { queryBlog } from '../../../apollo/blog'
 
 import EditorPostsListRow from './EditorPostsListRow'
+import EditorPostsListEmptyRow from './EditorPostsListEmptyRow'
 
 class EditorPostsList extends Component {
   constructor (props) {
@@ -47,7 +48,15 @@ class EditorPostsList extends Component {
             <ul style={{fontSize: '13px', listStyleType: 'none', padding: '24px 0 0 0', width: '15vw'}}>
               <li style={{textAlign: 'center', position: 'relative', padding: '0 24px'}}><hr style={{position: 'absolute', width: 'calc(100% - 48px)', top: '17px', margin: 0}} /><span onClick={() => this.props.changeActivePost('home')} style={{display: 'inline-block', padding: '8px 8px 16px 8px', position: 'relative', backgroundColor: 'white', color: this.props.pages.activePostIndex === 'home' ? '#ed685a' : '#3C3A44', cursor: 'pointer', fontWeight: 'bold'}}>Home</span></li>
               {this.props.pages.pagesArr.map((page, i, arr) => {
-                return <EditorPostsListRow key={i} page={page} prevPage={i > 0 && arr[i - 1]} activePostIndex={this.props.pages.activePostIndex} i={i} blogId={this.props.blogId} />
+                if (page.isEmpty) {
+                  return (
+                    <li style={{position: 'relative', padding: '0 24px', height: '39px'}} key={i}>
+                      <EditorPostsListEmptyRow page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.childPosts.length > 0} />
+                      <EditorPostsListEmptyRow nested page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.childPosts.length > 0} />
+                    </li>
+                  )
+                }
+                return <EditorPostsListRow key={i} page={page} prevPage={i > 0 && arr[i - 1]} activePostIndex={this.props.pages.activePostIndex} i={i} blogId={this.props.blogId} pagesArr={arr} />
               })}
               <span style={{marginBottom: '16px', display: 'inline-block', fontWeight: 'bold', cursor: 'pointer', padding: '0 24px'}} onClick={() => this.addHeader(this.props.pages.pagesArr.length)}>+ Add New Header</span>
               <li style={{textAlign: 'center', position: 'relative', zIndex: '-1', padding: '0 24px'}}><hr style={{position: 'absolute', width: 'calc(100% - 48px)', top: '9px', margin: 0}} /><span onClick={() => this.props.changeActivePost('fin')} style={{display: 'inline-block', padding: '0 8px 16px 8px', position: 'relative', backgroundColor: 'white', fontWeight: 'bold', color: this.props.pages.activePostIndex === 'fin' ? '#ed685a' : '#3C3A44', cursor: 'pointer'}}>fin</span></li>

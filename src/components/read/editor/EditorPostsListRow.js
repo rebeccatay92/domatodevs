@@ -29,13 +29,24 @@ const pageSource = {
     return props.page
   },
   endDrag (props, monitor) {
-    console.log(props.page)
+    // const indexOfEmptyGap = props.pagesArr.findIndex(page => page.isEmpty)
+    // const newPagesArr = [...props.pagesArr.slice(0, indexOfEmptyGap), ...[monitor.getItem()], ...props.pagesArr.slice(indexOfEmptyGap + 1)].map((page, i) => {
+    //   return {...page, ...{loadSequence: i + 1}}
+    // })
   }
 }
 
 const pageTarget = {
   hover (props, monitor) {
-
+    // if (props.page.isEmpty) return
+    const draggedPage = monitor.getItem()
+    const newPagesArrWithoutGap = props.pagesArr.filter(page => {
+      return page.modelId
+    })
+    const newPagesArr = [...newPagesArrWithoutGap.slice(0, props.i), ...[{...draggedPage, ...{modelId: null, isEmpty: true}}], ...newPagesArrWithoutGap.slice(props.i)].filter(page => {
+      return page.modelId !== draggedPage.modelId || page.type !== draggedPage.type
+    })
+    props.initializePosts(newPagesArr)
   }
 }
 
