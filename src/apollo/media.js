@@ -55,6 +55,11 @@ export const deleteMedia = gql`
   }
 `
 
+export const moveMediaToAlbum = gql`
+  mutation moveMediaToAlbum($AlbumId: ID!, $media: [ID]!) {
+    moveMediaToAlbum(AlbumId: $AlbumId, media: $media)
+  }
+`
 /* ---------------------------- */
 
 export const createMediaBlog = gql`
