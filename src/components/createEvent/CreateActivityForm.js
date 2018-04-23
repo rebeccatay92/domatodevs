@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -378,19 +377,9 @@ class CreateActivityForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    // cloudStorageToken: state.cloudStorageToken,
-    // new googleCloudToken comes from GoogleCloudStorage class
     googleCloudToken: state.googleCloudToken
   }
 }
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     retrieveCloudStorageToken: () => {
-//       dispatch(retrieveCloudStorageToken())
-//     }
-//   }
-// }
 
 export default connect(mapStateToProps)(compose(
   graphql(createActivity, {name: 'createActivity'}),

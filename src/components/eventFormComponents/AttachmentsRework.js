@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import Radium from 'radium'
 // import ImagePreview from './ImagePreview'
@@ -225,17 +224,8 @@ class AttachmentsRework extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    // cloudStorageToken: state.cloudStorageToken
     googleCloudToken: state.googleCloudToken
   }
 }
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     retrieveCloudStorageToken: () => {
-//       dispatch(retrieveCloudStorageToken())
-//     }
-//   }
-// }
 
 export default connect(mapStateToProps)(Radium(AttachmentsRework))

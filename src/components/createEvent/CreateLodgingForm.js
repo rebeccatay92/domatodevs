@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -19,7 +18,7 @@ import { createLodging } from '../../apollo/lodging'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
-import { retrieveToken, removeAllAttachments } from '../../helpers/cloudStorage'
+import { removeAllAttachments } from '../../helpers/cloudStorage'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import latestTime from '../../helpers/latestTime'
@@ -358,17 +357,8 @@ const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
     googleCloudToken: state.googleCloudToken
-    // cloudStorageToken: state.cloudStorageToken
   }
 }
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     retrieveCloudStorageToken: () => {
-//       dispatch(retrieveCloudStorageToken())
-//     }
-//   }
-// }
 
 export default connect(mapStateToProps)(compose(
   graphql(createLodging, {name: 'createLodging'}),

@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium, { Style } from 'radium'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
 
@@ -410,18 +409,9 @@ class CreateLandTransportForm extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
-    googleCloudToken: state.googleCloudToken,
-    // cloudStorageToken: state.cloudStorageToken
+    googleCloudToken: state.googleCloudToken
   }
 }
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     retrieveCloudStorageToken: () => {
-//       dispatch(retrieveCloudStorageToken())
-//     }
-//   }
-// }
 
 export default connect(mapStateToProps)(compose(
   graphql(createLandTransport, {name: 'createLandTransport'}),

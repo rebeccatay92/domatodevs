@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Notes from '../eventFormComponents/Notes'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
-
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 
 class FlightInstanceNotesAttachments extends Component {
@@ -142,16 +140,7 @@ class FlightInstanceNotesAttachments extends Component {
 const mapStateToProps = (state) => {
   return {
     googleCloudToken: state.googleCloudToken
-    // cloudStorageToken: state.cloudStorageToken
   }
 }
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     retrieveCloudStorageToken: () => {
-//       dispatch(retrieveCloudStorageToken())
-//     }
-//   }
-// }
 
 export default connect(mapStateToProps)(FlightInstanceNotesAttachments)
