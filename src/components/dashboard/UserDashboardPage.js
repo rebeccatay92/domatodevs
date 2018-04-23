@@ -27,7 +27,7 @@ class UserDashboardPage extends Component {
         {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
-      focusedTab: 'media',
+      focusedTab: 'account',
       bio: '',
       editingBio: false
     }
