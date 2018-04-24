@@ -50,13 +50,14 @@ class EditorPostsList extends Component {
               {this.props.pages.pagesArr.map((page, i, arr) => {
                 if (page.isEmpty) {
                   return (
-                    <li style={{position: 'relative', padding: '0 24px'}} key={i}>
-                      <EditorPostsListEmptyRow page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.childPosts.length > 0} />
-                      <EditorPostsListEmptyRow nested page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.childPosts.length > 0} />
-                    </li>
+                    <EditorPostsListRow empty key={i} page={page} prevPage={i > 0 && arr[i - 1]} activePostIndex={this.props.pages.activePostIndex} i={i} blogId={this.props.blogId} pagesArr={arr} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.ParentPostId} prevPageIsSubpost={i !== 0 && arr[i - 1].Post && arr[i - 1].Post.ParentPostId} />
+                    /* <li style={{position: 'relative', padding: '0 24px'}} key={i}>
+                      <EditorPostsListEmptyRow page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.ParentPostId} />
+                      <EditorPostsListEmptyRow nested page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.ParentPostId} />
+                    </li> */
                   )
                 }
-                return <EditorPostsListRow key={i} page={page} prevPage={i > 0 && arr[i - 1]} activePostIndex={this.props.pages.activePostIndex} i={i} blogId={this.props.blogId} pagesArr={arr} />
+                return <EditorPostsListRow key={i} page={page} prevPage={i > 0 && arr[i - 1]} activePostIndex={this.props.pages.activePostIndex} i={i} blogId={this.props.blogId} pagesArr={arr} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.ParentPostId} prevPageIsSubpost={i !== 0 && arr[i - 1].Post && arr[i - 1].Post.ParentPostId} />
               })}
               <span style={{marginBottom: '16px', display: 'inline-block', fontWeight: 'bold', cursor: 'pointer', padding: '0 24px'}} onClick={() => this.addHeader(this.props.pages.pagesArr.length)}>+ Add New Header</span>
               <li style={{textAlign: 'center', position: 'relative', zIndex: '-1', padding: '0 24px'}}><hr style={{position: 'absolute', width: 'calc(100% - 48px)', top: '9px', margin: 0}} /><span onClick={() => this.props.changeActivePost('fin')} style={{display: 'inline-block', padding: '0 8px 16px 8px', position: 'relative', backgroundColor: 'white', fontWeight: 'bold', color: this.props.pages.activePostIndex === 'fin' ? '#ed685a' : '#3C3A44', cursor: 'pointer'}}>fin</span></li>

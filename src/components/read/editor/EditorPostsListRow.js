@@ -5,6 +5,7 @@ import { DropTarget, DragSource } from 'react-dnd'
 import Radium from 'radium'
 
 import BlogDropdownMenu from './BlogDropdownMenu'
+import EditorPostsListEmptyRow from './EditorPostsListEmptyRow'
 
 import { changeActivePost, initializePosts } from '../../../actions/readActions'
 import { updateActivePage } from '../../../actions/blogEditorActivePageActions'
@@ -12,6 +13,7 @@ import { toggleSpinner } from '../../../actions/spinnerActions'
 
 import { updateBlogHeading } from '../../../apollo/blogHeading'
 import { queryBlog } from '../../../apollo/blog'
+import { reorderBlogContent } from '../../../apollo/reorderBlogContent'
 
 const eventIconStyle = {
   fontSize: '16px',
@@ -29,10 +31,32 @@ const pageSource = {
     return props.page
   },
   endDrag (props, monitor) {
-    // const indexOfEmptyGap = props.pagesArr.findIndex(page => page.isEmpty)
-    // const newPagesArr = [...props.pagesArr.slice(0, indexOfEmptyGap), ...[monitor.getItem()], ...props.pagesArr.slice(indexOfEmptyGap + 1)].map((page, i) => {
-    //   return {...page, ...{loadSequence: i + 1}}
-    // })
+    const indexOfEmptyGap = props.pagesArr.findIndex(page => page.isEmpty)
+    const newPagesArr = [...props.pagesArr.slice(0, indexOfEmptyGap), ...[monitor.getItem()], ...props.pagesArr.slice(indexOfEmptyGap + 1)].map((page, i) => {
+      return {...page, ...{loadSequence: i + 1}}
+    })
+    const loadSeqArr = newPagesArr.map(page => {
+      return {
+        type: page.type,
+        modelId: page.modelId,
+        loadSequence: page.loadSequence
+      }
+    })
+
+    props.toggleSpinner(true)
+
+    props.reorderBlogContent({
+      variables: {
+        input: loadSeqArr
+      }
+    })
+    .then(() => {
+      return props.data.refetch()
+    })
+    .then(response => {
+      props.initializePosts(response.data.findBlog.pages)
+      props.toggleSpinner(false)
+    })
   }
 }
 
@@ -40,12 +64,29 @@ const pageTarget = {
   hover (props, monitor) {
     // if (props.page.isEmpty) return
     const draggedPage = monitor.getItem()
+    // if (draggedPage.type === 'BlogHeading' && props.nextPageType === 'Post') return
     const newPagesArrWithoutGap = props.pagesArr.filter(page => {
       return page.modelId
     })
-    const newPagesArr = [...newPagesArrWithoutGap.slice(0, props.i), ...[{...draggedPage, ...{modelId: null, isEmpty: true}}], ...newPagesArrWithoutGap.slice(props.i)].filter(page => {
-      return page.modelId !== draggedPage.modelId || page.type !== draggedPage.type
-    })
+    let newPagesArr
+    if (draggedPage.type === 'BlogHeading' && props.nextPageIsSubpost && props.prevPageIsSubpost) return
+    if (draggedPage.type === 'BlogHeading' && !props.prevPageIsSubpost && props.page.type === 'Post' && props.page.Post.ParentPostId) return
+    if (draggedPage.type === 'BlogHeading' && props.nextPageIsSubpost && !props.prevPageIsSubpost) {
+      newPagesArr = [...newPagesArrWithoutGap.slice(0, props.i - 1), ...[{...draggedPage, ...{modelId: null, isEmpty: true}}], ...newPagesArrWithoutGap.slice(props.i - 1)]
+      .filter(page => {
+        return page.modelId !== draggedPage.modelId || page.type !== draggedPage.type
+      })
+    } else if (draggedPage.type === 'BlogHeading' && props.page.type === 'Post' && props.page.Post.ParentPostId) {
+      newPagesArr = [...newPagesArrWithoutGap.slice(0, props.i + 1), ...[{...draggedPage, ...{modelId: null, isEmpty: true}}], ...newPagesArrWithoutGap.slice(props.i + 1)]
+      .filter(page => {
+        return page.modelId !== draggedPage.modelId || page.type !== draggedPage.type
+      })
+    } else {
+      newPagesArr = [...newPagesArrWithoutGap.slice(0, props.i), ...[{...draggedPage, ...{modelId: null, isEmpty: true}}], ...newPagesArrWithoutGap.slice(props.i)]
+      .filter(page => {
+        return page.modelId !== draggedPage.modelId || page.type !== draggedPage.type
+      })
+    }
     props.initializePosts(newPagesArr)
   }
 }
@@ -105,7 +146,7 @@ class EditorPostsListRow extends Component {
       // isSubPost: !!this.props.page[type].ParentPostId,
       dropdown: false,
       editingHeading: false,
-      newHeadingTitle: this.props.page.type === 'BlogHeading' && this.props.page.BlogHeading.title,
+      newHeadingTitle: this.props.page.type === 'BlogHeading' && this.props.page.BlogHeading.title
       // headingTitle: this.props.page.type === 'BlogHeading' && this.props.page.BlogHeading.title
     }
 
@@ -126,6 +167,9 @@ class EditorPostsListRow extends Component {
   // }
 
   componentWillReceiveProps (nextProps) {
+    // if (nextProps.getItem && !this.props.getItem) {
+    //   this.props.removeHover()
+    // }
     if (nextProps.page.BlogHeading && (!this.props.page.BlogHeading || nextProps.page.BlogHeading.title !== this.props.page.BlogHeading.title)) {
       this.setState({
         newHeadingTitle: nextProps.page.BlogHeading.title
@@ -163,6 +207,14 @@ class EditorPostsListRow extends Component {
   }
 
   render () {
+    if (this.props.empty) {
+      return (
+        <React.Fragment>
+          <EditorPostsListEmptyRow page={this.props.page} i={this.props.i} pagesArr={this.props.pagesArr} blogId={this.props.blogId} prevPageType={this.props.prevPageType} nextPageType={this.props.nextPageType} nextPageIsSubpost={this.props.nextPageIsSubpost} />
+          <EditorPostsListEmptyRow nested page={this.props.page} i={this.props.i} pagesArr={this.props.pagesArr} blogId={this.props.blogId} prevPageType={this.props.prevPageType} nextPageType={this.props.nextPageType} nextPageIsSubpost={this.props.nextPageIsSubpost} />
+        </React.Fragment>
+      )
+    }
     const type = this.props.page.type
     const {page, i, activePostIndex, connectDragSource, connectDragPreview, connectDropTarget} = this.props
     const {title, eventType, isSubPost} = this.props.activePage
@@ -179,7 +231,7 @@ class EditorPostsListRow extends Component {
       })}
     </div>
 
-    const dragHandler = <i className='material-icons' style={{position: 'absolute', left: '2px', fontSize: '20px', cursor: 'move', opacity: '1'}}>unfold_more</i>
+    const dragHandler = <i className='material-icons' style={{position: 'absolute', left: '2px', fontSize: '20px', cursor: 'move', opacity: this.props.getItem ? '0' : '1'}}>unfold_more</i>
 
     if (page.type === 'BlogHeading') {
       if (this.state.editingHeading) {
@@ -275,7 +327,8 @@ class EditorPostsListRow extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    activePage: state.blogEditorActivePage
+    activePage: state.blogEditorActivePage,
+    dragDropType: state.editorPostsListDragDrop
   }
 }
 
@@ -306,5 +359,6 @@ const options = {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryBlog, options),
-  graphql(updateBlogHeading, { name: 'updateBlogHeading' })
-)(DragSource('page', pageSource, collectSource)(DropTarget(['page'], pageTarget, collectTarget)(MouseHoverHOC(Radium(EditorPostsListRow))))))
+  graphql(updateBlogHeading, { name: 'updateBlogHeading' }),
+  graphql(reorderBlogContent, { name: 'reorderBlogContent' })
+)(MouseHoverHOC(DragSource('page', pageSource, collectSource)(DropTarget(['page'], pageTarget, collectTarget)(Radium(EditorPostsListRow))))))
