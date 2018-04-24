@@ -50,7 +50,7 @@ class EditorPostsList extends Component {
               {this.props.pages.pagesArr.map((page, i, arr) => {
                 if (page.isEmpty) {
                   return (
-                    <li style={{position: 'relative', padding: '0 24px', height: '39px'}} key={i}>
+                    <li style={{position: 'relative', padding: '0 24px'}} key={i}>
                       <EditorPostsListEmptyRow page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.childPosts.length > 0} />
                       <EditorPostsListEmptyRow nested page={page} i={i} pagesArr={arr} blogId={this.props.blogId} prevPageType={i === 0 ? 'none' : arr[i - 1].type} nextPageType={i === arr.length - 1 ? 'none' : arr[i + 1].type} nextPageIsSubpost={i !== arr.length - 1 && arr[i + 1].Post && arr[i + 1].Post.childPosts.length > 0} />
                     </li>
