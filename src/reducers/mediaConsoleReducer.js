@@ -49,19 +49,22 @@ export const mediaConsoleReducer = (state = {
     case 'ClEAR_SELECTED_MEDIA':
       return {...state, selectedMedia: []}
     case 'CHECK_ALL_IN_ALBUM':
-      // console.log(action.AlbumId)
+      // console.log('albumid', action.AlbumId)
+      // console.log('state selectedMedia', state.selectedMedia)
       let focusedAlbum = state.albums.find(e => {
         return e.id === action.AlbumId
       })
       let albumMedia = focusedAlbum.media
       // merge selectedMedia and all of album's media with no dupes
-      let newSelectedMedia = _.union(state.selectedMedia, albumMedia)
+      // objects are not of same structure. just check 1 property
+      let newSelectedMedia = _.unionBy(state.selectedMedia, albumMedia, 'id')
+      // console.log('check all resulting arr', newSelectedMedia)
       return {
         ...state,
         selectedMedia: newSelectedMedia
       }
     case 'UNCHECK_ALL_IN_ALBUM':
-      // console.log('album', action.AlbumId)
+      // console.log('albumId passed', action.AlbumId)
       return {
         ...state,
         selectedMedia: state.selectedMedia.filter(e => {

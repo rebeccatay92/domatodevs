@@ -3,7 +3,6 @@ import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
 import moment from 'moment'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { Button } from 'react-bootstrap'
@@ -655,15 +654,11 @@ const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
     googleCloudToken: state.googleCloudToken
-    // cloudStorageToken: state.cloudStorageToken
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // retrieveCloudStorageToken: () => {
-    //   dispatch(retrieveCloudStorageToken())
-    // },
     clearCurrentlyFocusedEvent: () => {
       dispatch(clearCurrentlyFocusedEvent())
     }

@@ -7,7 +7,6 @@ import DashboardTabsHOC from './DashboardTabsHOC'
 
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
 const unclickedTabStyle = {cursor: 'pointer', height: '100%', fontFamily: 'Roboto, sans-serif', fontSize: '24px', fontWeight: '300', marginTop: '1px', marginRight: '40px', paddingTop: '16px', paddingBottom: '16px', color: 'rgba(60, 58, 68, 0.3)'}
@@ -235,7 +234,6 @@ class UserDashboardPage extends Component {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.userProfile,
-    // cloudStorageToken: state.cloudStorageToken,
     googleCloudToken: state.googleCloudToken,
     userDashboard: state.userDashboard
   }
@@ -243,9 +241,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // retrieveCloudStorageToken: () => {
-    //   dispatch(retrieveCloudStorageToken())
-    // },
     setUserProfile: (userProfile) => {
       dispatch(setUserProfile(userProfile))
     },

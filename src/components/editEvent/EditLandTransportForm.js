@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import Radium from 'radium'
-// import { retrieveCloudStorageToken } from '../../actions/cloudStorageActions'
 import { clearCurrentlyFocusedEvent } from '../../actions/mapPlannerActions'
 
 import { createEventFormContainerStyle, createEventFormBoxShadow, createEventFormLeftPanelStyle, greyTintStyle, eventDescriptionStyle, eventDescContainerStyle, eventWarningStyle, createEventFormRightPanelStyle, attachmentsStyle, bookingNotesContainerStyle } from '../../Styles/styles'
@@ -530,16 +529,12 @@ const mapStateToProps = (state) => {
   return {
     events: state.plannerActivities,
     googleCloudToken: state.googleCloudToken,
-    // cloudStorageToken: state.cloudStorageToken,
     currentlyFocusedEvent: state.currentlyFocusedEvent
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // retrieveCloudStorageToken: () => {
-    //   dispatch(retrieveCloudStorageToken())
-    // },
     clearCurrentlyFocusedEvent: () => {
       dispatch(clearCurrentlyFocusedEvent())
     }

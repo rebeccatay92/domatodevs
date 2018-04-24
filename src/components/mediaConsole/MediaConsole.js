@@ -7,7 +7,7 @@ import { updateActivePage } from '../../actions/blogEditorActivePageActions'
 import { openConfirmWindow } from '../../actions/confirmWindowActions'
 
 import { getUserAlbums, updateAlbum, createAlbum, deleteAlbum } from '../../apollo/album'
-import { createMedia, deleteMedia } from '../../apollo/media'
+import { createMedia, deleteMedia, moveMediaToAlbum } from '../../apollo/media'
 import _ from 'lodash'
 
 class MediaConsole extends Component {
@@ -19,7 +19,10 @@ class MediaConsole extends Component {
       description: '',
       pendingRefetchFocusedAlbumId: null,
       isAddYoutubeComponentOpen: false,
-      youtubeUrl: ''
+      isMoveToAlbumDropdownOpen: false,
+      moveToAlbumId: '',
+      youtubeUrl: '',
+      confirmIsFor: ''
     }
   }
 
@@ -169,14 +172,14 @@ class MediaConsole extends Component {
     }
   }
 
-  // onMediaConsoleKeyDown (e) {
-  //   if (e.key === 'Escape') {
-  //     console.log('esc in media console')
-  //     if (this.state.isAddYoutubeComponentOpen) {
-  //       this.setState({isAddYoutubeComponentOpen: false})
-  //     }
-  //   }
-  // }
+  onMediaConsoleKeyDown (e) {
+    if (e.key === 'Escape') {
+      console.log('esc in media console')
+      if (this.state.isAddYoutubeComponentOpen) {
+        this.setState({isAddYoutubeComponentOpen: false})
+      }
+    }
+  }
 
   addYoutubeVideo () {
     /* possible video links
@@ -219,24 +222,26 @@ class MediaConsole extends Component {
   }
 
   onCheckboxClick (id) {
-    console.log('medium id clicked', id)
     this.props.clickCheckbox(id)
   }
 
   uncheckAll () {
     let AlbumId = this.state.id
+    // console.log('uncheckAll', AlbumId)
     this.props.uncheckAllInAlbum(AlbumId)
   }
 
   checkAll () {
     let AlbumId = this.state.id
+    // console.log('checkAll', AlbumId)
     this.props.checkAllInAlbum(AlbumId)
   }
 
   confirmDeleteMedia () {
-    console.log('open confirm window')
+    // console.log('open confirm window')
     let selectedMediaLength = this.props.mediaConsole.selectedMedia.length
     if (selectedMediaLength <= 0) return
+    this.setState({confirmIsFor: 'deleteMedia'})
     this.props.openConfirmWindow({
       message: 'Are you sure you want to delete all selected media? Deleted media will no longer be viewable in any posts you may have',
       secondaryMessage: `You have ${selectedMediaLength} media selected`,
@@ -244,10 +249,18 @@ class MediaConsole extends Component {
     })
   }
 
+  confirmDeleteAlbum () {
+    this.setState({confirmIsFor: 'deleteAlbum'})
+    let albumTitle = this.state.title
+    this.props.openConfirmWindow({
+      message: 'Are you sure you want to delete this album? All media within will no longer be viewable in any posts you may have',
+      secondaryMessage: `You are about to delete the album named ${albumTitle}`,
+      confirmMessage: 'Proceed'
+    })
+  }
+
   deleteSelectedMedia () {
     // console.log('delete all selected', this.props.mediaConsole.selectedMedia)
-    // clear selectedMedia arr in redux
-    this.props.clearSelectedMedia()
     let selectedMedia = this.props.mediaConsole.selectedMedia
     // leave all the logic to the backend. pass an arr of ID.
     // backend will loop thru n remove photos from cloud storage, then delete all join table rows
@@ -262,6 +275,8 @@ class MediaConsole extends Component {
         query: getUserAlbums
       }]
     })
+    // clear selectedMedia arr in redux
+    this.props.clearSelectedMedia()
   }
 
   deleteAlbum () {
@@ -327,6 +342,46 @@ class MediaConsole extends Component {
     this.props.closeMediaConsole()
   }
 
+  toggleMoveToAlbumDropdown () {
+    this.setState({isMoveToAlbumDropdownOpen: !this.state.isMoveToAlbumDropdownOpen})
+  }
+
+  confirmMoveToAlbum (id) {
+    this.setState({moveToAlbumId: id, confirmIsFor: 'moveToAlbum'}) // store album id while waiting for confirmation status
+    let destinationAlbum = this.props.mediaConsole.albums.find(e => {
+      return e.id === id
+    })
+    let albumTitle = destinationAlbum.title
+    let selectedMediaLength = this.props.mediaConsole.selectedMedia.length
+
+    this.props.openConfirmWindow({
+      message: `Are you sure you want to move media to the album titled ${albumTitle}?`,
+      secondaryMessage: `You have selected ${selectedMediaLength} media to be moved`,
+      confirmMessage: 'Proceed'
+    })
+  }
+
+  moveToAlbum () {
+    let AlbumId = this.state.moveToAlbumId
+    let mediaArr = this.props.mediaConsole.selectedMedia.map(e => {
+      return e.id
+    })
+    this.props.moveMediaToAlbum({
+      variables: {
+        AlbumId: AlbumId,
+        media: mediaArr
+      },
+      refetchQueries: [{
+        query: getUserAlbums
+      }]
+    })
+      .then(returning => {
+        this.setState({moveToAlbumId: '', confirmIsFor: '', isMoveToAlbumDropdownOpen: false})
+        this.props.clearSelectedMedia()
+        this.props.setFocusedAlbumId(AlbumId)
+      })
+  }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevState.pendingRefetchFocusedAlbumId) {
       let isNewAlbumPresent = _.find(this.props.mediaConsole.albums, e => {
@@ -370,7 +425,13 @@ class MediaConsole extends Component {
     } else if (openedFrom === 'editor') {
       console.log('didmount, from editor')
       if (albumsArr && albumsArr.length) {
+        // console.log('set focused album id', albumsArr[0].id)
         this.props.setFocusedAlbumId(albumsArr[0].id)
+        this.setState({
+          id: albumsArr[0].id,
+          title: albumsArr[0].title,
+          description: albumsArr[0].description
+        })
       }
       // console.log('active page', this.props.page)
       // console.log('preexisting media in active page', this.props.page.media) // has load sequence and caption (mediaObj for blog/post), not just the Medium table row
@@ -421,6 +482,28 @@ class MediaConsole extends Component {
         }
       }
     }
+
+    // listen to confirm window redux state
+    if (nextProps.confirmWindow !== this.props.confirmWindow) {
+      // console.log('nextProps confirmWindow', nextProps.confirmWindow)
+      // first open of confirmWindow does not return property confirmClicked
+      // if confirmClicked is true, proceed with whatever fxn
+      if (!nextProps.confirmWindow.open && nextProps.confirmWindow.confirmClicked) {
+        // console.log('state confirmIsFor', this.state.confirmIsFor)
+        if (this.state.confirmIsFor === 'deleteMedia') {
+          this.deleteSelectedMedia()
+        }
+        if (this.state.confirmIsFor === 'deleteAlbum') {
+          this.deleteAlbum()
+        }
+        if (this.state.confirmIsFor === 'moveToAlbum') {
+          this.moveToAlbum()
+        }
+        this.setState({confirmIsFor: ''})
+      } else if (!nextProps.confirmWindow.open && !nextProps.confirmWindow.confirmClicked) {
+        this.setState({confirmIsFor: '', isMoveToAlbumDropdownOpen: false, moveToAlbumId: ''})
+      }
+    }
   }
 
   componentWillUnmount () {
@@ -434,7 +517,7 @@ class MediaConsole extends Component {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
     return (
-      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}}>
+      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}} tabIndex='0' onKeyDown={e => this.onMediaConsoleKeyDown(e)}>
         <Style rules={{html: {overflowY: 'hidden'}}} />
 
         <i className='material-icons' style={{position: 'fixed', top: '10vh', left: 'calc((100vw - 1134px)/2 - 50px)', fontSize: '36px', cursor: 'pointer'}} onClick={() => this.props.closeMediaConsole()}>close</i>
@@ -563,12 +646,21 @@ class MediaConsole extends Component {
               {/* BOTTOM BAR -> ACTION BUTTONS */}
               <div style={{width: '100%', height: '47px', padding: '0 24px 0 24px'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', padding: '0 8px 0 8px', borderTop: '2px solid rgba(60, 58, 68, 0.3)'}}>
-                  {/* DISPLAY THESE ONLY IF STUFF IS TICKED */}
-                  <div>
+                  <div style={{position: 'relative'}}>
                     <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteMedia()}>Delete</button>
-                    <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button>
-                    <button key={'mediaButton3'} style={mediaButtonLeftStyle}>Shift album</button>
-                    <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.deleteAlbum()}>Delete album</button>
+                    {/* <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button> */}
+                    <button key={'mediaButton3'} style={mediaButtonLeftStyle} onClick={() => this.toggleMoveToAlbumDropdown()}>Move to</button>
+                    {this.state.isMoveToAlbumDropdownOpen &&
+                      <div style={{border: '1px solid red', position: 'absolute', bottom: '30px', background: 'white', width: '200px', height: '200px', overflowY: 'scroll'}}>
+                        <h4>Select an album</h4>
+                        {this.props.mediaConsole.albums.map((album, i) => {
+                          return (
+                            <h4 key={i} style={{cursor: 'pointer'}} onClick={() => this.confirmMoveToAlbum(album.id)}>{album.title}</h4>
+                          )
+                        })}
+                      </div>
+                    }
+                    <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteAlbum()}>Delete album</button>
                   </div>
                   <div>
                     <button key={'mediaButton5'} style={mediaButtonRightStyle} onClick={() => this.uncheckAll()}>Uncheck all</button>
@@ -667,5 +759,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(createAlbum, {name: 'createAlbum'}),
   graphql(createMedia, {name: 'createMedia'}),
   graphql(deleteMedia, {name: 'deleteMedia'}),
-  graphql(deleteAlbum, {name: 'deleteAlbum'})
+  graphql(deleteAlbum, {name: 'deleteAlbum'}),
+  graphql(moveMediaToAlbum, {name: 'moveMediaToAlbum'})
 )(Radium(MediaConsole)))
