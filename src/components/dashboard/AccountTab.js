@@ -100,7 +100,6 @@ class AccountTab extends Component {
             <React.Fragment>
               <h4 style={accountHeaderStyle}>Change password</h4>
               <button onClick={() => this.props.lock.changePassword()} style={{background: `rgb(211, 247, 183)`, border: 'none', outline: '1px solid rgba(60, 58, 68, 0.3)', height: '41px', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px', lineHeight: '41px', marginTop: '8px'}}>Click here to change your password</button>
-
               <button style={{display: 'block', marginTop: '24px', background: 'white', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px'}}>Delete account</button>
             </React.Fragment>
           }

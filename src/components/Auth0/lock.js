@@ -19,6 +19,7 @@ class Lock {
         }
       },
       autoclose: true,
+      // closable: true,
       rememberLastLogin: true
     }
   )
@@ -215,6 +216,7 @@ class Lock {
       .then(json => {
         console.log('ticket url', json.ticket)
         window.location.assign(json.ticket)
+        // window.open(json.ticket)
       })
       .catch(err => console.log('err', err))
     })

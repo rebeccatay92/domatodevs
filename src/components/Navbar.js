@@ -38,13 +38,6 @@ class NavbarInstance extends Component {
   }
 
   render () {
-    // const isAuthenticated = this.props.lock.isAuthenticated()
-    // if (isAuthenticated) {
-    //   var userProfile = this.props.userProfile
-    //   var profilePic = userProfile.profilePic
-    // }
-    // dont depend on local storage token expiry time for loggedin/logged out status. take from redux profile.
-    // if token is expired it will be automatically refreshed. taking from redux state avoids the small window between findind expired token and receiving refreshed token (bug which shows logged out even if user is logged in)
     var userProfile = this.props.userProfile
     var isLoggedIn = userProfile.id ? true : false
     if (isLoggedIn) {
