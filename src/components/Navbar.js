@@ -38,24 +38,24 @@ class NavbarInstance extends Component {
     return (
       <div style={navBarContainerStyle}>
         <div style={{height: '100%', display: 'flex', alignItems: 'center'}}>
-          <i className='material-icons ignoreNavBarHamburger' style={{fontSize: '32px', cursor: 'pointer', marginLeft: '32px', marginRight: '100px'}} onClick={() => this.props.toggleShowNavBar()}>menu</i>
+          <i className='material-icons ignoreNavBarHamburger' style={{fontSize: '32px', cursor: 'pointer', marginLeft: '32px', marginRight: '100px', color: 'rgba(60, 58, 68, 0.7)'}} onClick={() => this.props.toggleShowNavBar()}>menu</i>
           <Link to={'/'} >
             <img src={`${process.env.PUBLIC_URL}/img/marcoLogo.png`} style={{height: '32px', width: '32px', cursor: 'pointer'}} />
           </Link>
-          <input type='text' style={{width: '300px', height: '32px', lineHeight: '32px', marginLeft: '32px'}} />
-          <i className='material-icons' style={{fontSize: '32px', marginLeft: '10px', cursor: 'pointer'}}>search</i>
+          <input type='text' style={{width: '300px', height: '32px', padding: '8px', lineHeight: '32px', marginLeft: '32px', fontFamily: 'Roboto, sans-serif', fontWeight: '400', fontSize: '16px', color: 'rgba(60, 58, 68, 0.7)'}} />
+          <i className='material-icons' style={{fontSize: '32px', color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer'}}>search</i>
         </div>
         <div style={{height: '100%', display: 'flex', alignItems: 'center', marginRight: '32px'}}>
           {isLoggedIn &&
             <React.Fragment>
-              <span onClick={() => this.props.lock.logout()} style={{cursor: 'pointer'}}>Log out</span>
+              <span onClick={() => this.props.lock.logout()} style={{cursor: 'pointer', fontFamily: 'Roboto, sans-serif', fontWeight: '400', fontSize: '16px', color: 'rgba(60, 58, 68, 0.7)'}}>Log out</span>
               <Link to={'/user/media'}>
                 <img src={profilePic} width='35px' height='35px' style={{background: 'black', borderRadius: '50%', marginLeft: '10px'}} />
               </Link>
             </React.Fragment>
           }
           {!isLoggedIn &&
-            <span onClick={() => this.props.lock.login()} style={{cursor: 'pointer'}}>Log In / Sign Up</span>
+            <span onClick={() => this.props.lock.login()} style={{cursor: 'pointer', fontFamily: 'Roboto, sans-serif', fontWeight: '400', fontSize: '16px', color: 'rgba(60, 58, 68, 0.7)'}}>Log In / Sign Up</span>
           }
         </div>
       </div>

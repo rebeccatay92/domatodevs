@@ -125,6 +125,12 @@ class UserDashboardPage extends Component {
     console.log('this.props', this.props)
     let tab = this.props.match.params.tab
     console.log('tab in route', tab)
+
+    if (tab !== 'account' && tab !== 'blogs' && tab !== 'itineraries' && tab !== 'media' && tab !== 'savedArticles' && tab !== 'bucket') {
+      console.log('no match with tab. default to account')
+      this.props.history.replace('/user/account')
+    }
+
     this.setState({
       focusedTab: tab
     })
@@ -157,7 +163,6 @@ class UserDashboardPage extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.userProfile !== this.props.userProfile) {
-      // if compare, only refresh displays properly. first direct to this route doesnt initialize. componentDidMount instead.
       this.setState({
         profilePic: nextProps.userProfile.profilePic,
         bio: nextProps.userProfile.bio || ''
@@ -168,19 +173,9 @@ class UserDashboardPage extends Component {
         focusedTab: nextProps.match.params.tab
       })
     }
-    // if (nextProps.cloudStorageToken !== this.props.cloudStorageToken) {
-    //   nextProps.cloudStorageToken
-    //     .then(returning => {
-    //       // console.log('token', returning.token)
-    //       this.apiToken = returning.token
-    //     })
-    // }
   }
 
   render () {
-    // var isAuthenticated = this.props.lock.isAuthenticated()
-    // if (!isAuthenticated) return <p>Not logged in</p>
-    // console.log('isAuthenticated', isAuthenticated)
     // use redux state instead of token expiry time to determine logged in status
     var profile = this.props.userProfile
     // console.log('redux state profile', profile)
