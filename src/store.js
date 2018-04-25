@@ -18,6 +18,7 @@ import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageRedu
 import { userDashboardReducer } from './reducers/userDashboardReducer'
 import { confirmWindowReducer } from './reducers/confirmWindowReducer'
 import { googleCloudTokenReducer } from './reducers/googleCloudTokenReducer'
+import { navBarReducer } from './reducers/navBarReducer'
 
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
 
@@ -59,6 +60,7 @@ const store = createStore(combineReducers({
   userDashboard: userDashboardReducer,
   googleCloudToken: googleCloudTokenReducer,
   confirmWindow: confirmWindowReducer,
+  navBar: navBarReducer,
   apollo: client.reducer()
 }),
 {},

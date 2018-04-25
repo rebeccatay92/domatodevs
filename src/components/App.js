@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Router, Route } from 'react-router-dom'
+import { toggleShowNavBar } from '../actions/navBarActions'
 
 import { connect } from 'react-redux'
 
@@ -7,8 +8,7 @@ import { ClipLoader } from 'react-spinners'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-// import { generateCloudStorageToken } from '../actions/cloudStorageActions'
-
+import NavSideBar from './NavSideBar'
 import HomePage from './HomePage'
 import ItineraryPage from './itinerary/ItineraryPage'
 import PlannerPage from './PlannerPage'
@@ -29,10 +29,6 @@ const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 
 class App extends Component {
-  // componentDidMount () {
-  //   this.props.generateCloudStorageToken()
-  // }
-
   render () {
     // var isAuthenticated = lock.isAuthenticated()
     // var userId = window.localStorage.getItem('user_id')
@@ -41,7 +37,11 @@ class App extends Component {
         <div style={{backgroundColor: '#FFFFFF'}}>
           <Navbar lock={lock} />
 
-          <div style={{width: '100%', marginTop: '53px'}}>
+          {this.props.navBar.showNavBar &&
+            <NavSideBar outsideClickIgnoreClass={'ignoreNavBarHamburger'} />
+          }
+
+          <div style={{width: '100%', marginTop: '52px'}}>
             <Route exact path='/' render={(props) => (
               <HomePage lock={lock} {...props} />
             )} />
@@ -79,19 +79,19 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    // cloudStorageToken: state.cloudStorageToken,
     showSpinner: state.showSpinner,
     userProfile: state.userProfile,
-    confirmWindow: state.confirmWindow
+    confirmWindow: state.confirmWindow,
+    navBar: state.navBar
   }
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     generateCloudStorageToken: () => {
-//       dispatch(generateCloudStorageToken())
-//     }
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleShowNavBar: () => {
+      dispatch(toggleShowNavBar())
+    }
+  }
+}
 
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps)(App))
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, mapDispatchToProps)(App))
