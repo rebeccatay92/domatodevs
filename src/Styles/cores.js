@@ -1,12 +1,15 @@
+// coreColors usable in both font color, background, border, box shadow etc
+
 export const coreColors = {
+  whiteSolid: 'rgba(255, 255, 255, 1)',
+  white07: 'rgba(255, 255, 255, 0.7)',
+  white03: 'rgba(255, 255, 255, 0.3)',
   blackSolid: 'rgba(60, 58, 68, 1)',
   black07: 'rgba(60, 58, 68, 0.7)',
   black03: 'rgba(60, 58, 68, 0.3)',
   black01: 'rgba(60, 58, 68, 0.1)',
   pinkSolid: 'rgba(223, 56, 107, 1)',
-  pink07: 'rgba(223, 56, 107, 0.7)',
-  pink03: 'rgba(223, 56, 107, 0.3)',
-  pink01: 'rgba(223, 56, 107, 0.1)'
+  greenSolid: 'rgba(67, 132, 150, 1)'
 }
 
 export const coreFonts = {

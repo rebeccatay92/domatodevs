@@ -9,10 +9,8 @@ import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
-const unclickedTabStyle = {cursor: 'pointer', height: '100%', fontFamily: 'Roboto, sans-serif', fontSize: '24px', fontWeight: '300', marginTop: '1px', marginRight: '40px', paddingTop: '16px', paddingBottom: '16px', color: 'rgba(60, 58, 68, 0.3)'}
-const clickedTabStyle = {...unclickedTabStyle, color: 'rgba(223, 56, 107, 1)', borderBottom: '3px solid rgba(223, 56, 107, 1)'}
-
-const profilePicTintStyle = {background: `rgba(255, 255, 255, 0.3)`, width: '97px', height: '97px', borderRadius: '50%', position: 'absolute', top: '0', left: '0', textAlign: 'center', padding: '30px 0 30px 0', cursor: 'pointer', opacity: 0, ':hover': {opacity: '1'}}
+// use alias to shorten style names
+import { userDashboardStyles as styles } from '../../Styles/UserDashboardStyles'
 
 class UserDashboardPage extends Component {
   constructor (props) {
@@ -32,10 +30,6 @@ class UserDashboardPage extends Component {
     }
     this.handleScrollBound = (e) => this.handleScroll(e)
   }
-
-  // focusTab (tabName) {
-  //   this.setState({focusedTab: tabName})
-  // }
 
   focusTab (tabName) {
     this.props.history.push(`/user/${tabName}`)
@@ -189,32 +183,31 @@ class UserDashboardPage extends Component {
         {/* PROFILE SECTION */}
         <div style={{margin: '48px 0 32px 0', width: '100%', height: '97px', display: 'inline-flex'}}>
           <label>
-            <div style={{position: 'relative', width: '97px', height: '97px'}}>
-              <div style={profilePicTintStyle}>
-                <span style={{fontSize: '16px', textShadow: '2px 2px 0 rgb(255, 255, 255)'}}>CHANGE</span>
+            <div style={styles.profilePicContainer}>
+              <div style={styles.profilePicTint}>
+                <span style={styles.profilePicTintText}>CHANGE</span>
               </div>
-              <img src={this.state.profilePic} width='97px' height='97px' style={{borderRadius: '50%', display: 'inline-block'}} />
+              <img src={this.state.profilePic} width='97px' height='97px' style={styles.profilePic} />
             </div>
             <input type='file' accept='.jpeg, .jpg, .png' onChange={e => this.uploadProfilePic(e)} style={{display: 'none'}} />
           </label>
 
-          <div style={{width: 'calc(100% - 97px)', height: '97px', padding: '0 20px 0 20px'}}>
-            <h1 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontSize: '55px', lineHeight: '66px', fontWeight: 100, color: 'rgba(60, 58, 68, 0.7)'}}>{profile.username}</h1>
+          <div style={styles.bioSectionContainer}>
+            <h1 style={styles.username}>{profile.username}</h1>
             {!this.state.editingBio &&
-              <div style={{display: 'inline-flex', justifyContent: 'flex-start', alignItems: 'center', width: 'auto'}}>
+              <div style={styles.bioTextContainer}>
                 {this.state.bio &&
-                  <h4 style={{fontFamily: 'EB Garamond, serif', fontSize: '24px', lineHeight: '31px', fontWeight: 400, color: 'rgba(60, 58, 68, 1)', margin: '0'}}>{this.state.bio}</h4>
+                  <h4 style={styles.bioText}>{this.state.bio}</h4>
                 }
                 {!this.state.bio &&
-                  <h4>You don't have a bio!</h4>
+                  <h4 style={styles.bioText}>You don't have a bio!</h4>
                 }
                 <i className='material-icons' onClick={() => this.makeBioEditable()} style={{cursor: 'pointer', marginLeft: '10px'}}>mode_edit</i>
               </div>
             }
             {this.state.editingBio &&
-              <div style={{display: 'inline-flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-                <textarea value={this.state.bio} placeholder={'Describe yourself in 255 characters'} onChange={e => this.handleChange(e, 'bio')} onKeyDown={(e) => this.onBioKeyDown(e)} style={{fontFamily: 'EB Garamond, serif', fontSize: '24px', lineHeight: '31px', height: '31px', fontWeight: 400, color: 'rgba(60, 58, 68, 1)', margin: '0', padding: '0', width: '100%', resize: 'none'}} />
-                {/* <i className='material-icons' onClick={() => this.saveBio()} style={{cursor: 'pointer'}}>save</i> */}
+              <div style={styles.bioTextAreaContainer}>
+                <textarea value={this.state.bio} placeholder={'Describe yourself in 255 characters'} onChange={e => this.handleChange(e, 'bio')} onKeyDown={(e) => this.onBioKeyDown(e)} style={styles.bioTextArea} />
                 {/* <span>{100 - this.state.bio.length} characters left</span> */}
               </div>
             }
@@ -222,15 +215,16 @@ class UserDashboardPage extends Component {
         </div>
 
         {/* TABS BECOME STICKY AFTER SCROLLPOINT */}
-        <div className={'dashboardTabs'} style={{boxSizing: 'border-box', borderBottom: '1px solid rgba(60, 58, 68, 0.3)', display: 'flex', justifyContent: 'flex-start', height: '56px', background: 'white', position: stickyTabs ? 'fixed' : 'relative', top: stickyTabs ? '50px' : '0', width: stickyTabs ? '1265px' : '100%'}}>
+        <div className={'dashboardTabs'} style={stickyTabs ? styles.tabsBarSticky : styles.tabsBarNonSticky}>
           {this.state.tabsArray.map((obj, i) => {
             return (
-              <h3 key={i} style={this.state.focusedTab === obj.tab ? clickedTabStyle : unclickedTabStyle} onClick={() => this.focusTab(obj.tab)}>{obj.text}</h3>
+              <h3 key={i} style={this.state.focusedTab === obj.tab ? styles.clickedTab : styles.unclickedTab} onClick={() => this.focusTab(obj.tab)}>{obj.text}</h3>
             )
           })}
         </div>
+        {/* GHOST DIV TO MAINTAIN POSITIONING AFTER TABS BECOME POSITION FIXED (LEAVES DOM FLOW) */}
         {stickyTabs &&
-          <div style={{width: '100%', height: '60px'}} />
+          <div style={{width: '100%', height: '56px'}} />
         }
         <DashboardTabsHOC focusedTab={this.state.focusedTab} lock={this.props.lock} />
       </div>
