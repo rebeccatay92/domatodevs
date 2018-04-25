@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Router, Route } from 'react-router-dom'
+import { Router, Route, Redirect } from 'react-router-dom'
 import { toggleShowNavBar } from '../actions/navBarActions'
 
 import { connect } from 'react-redux'
@@ -46,6 +46,9 @@ class App extends Component {
               <HomePage lock={lock} {...props} />
             )} />
             <Route path='/passwordChanged' component={PasswordChanged} />
+            {/* <Route exact path='/user'>
+              <Redirect to='/user/account' />
+            </Route> */}
             <Route exact path='/user/:tab' render={(props) => (
               <UserDashboardPage {...props} />
             )} />
