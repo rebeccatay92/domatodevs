@@ -49,7 +49,7 @@ class NavbarInstance extends Component {
           {isLoggedIn &&
             <React.Fragment>
               <span onClick={() => this.props.lock.logout()} style={{cursor: 'pointer'}}>Log out</span>
-              <Link to={'/user'}>
+              <Link to={'/user/media'}>
                 <img src={profilePic} width='35px' height='35px' style={{background: 'black', borderRadius: '50%', marginLeft: '10px'}} />
               </Link>
             </React.Fragment>

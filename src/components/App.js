@@ -46,7 +46,7 @@ class App extends Component {
               <HomePage lock={lock} {...props} />
             )} />
             <Route path='/passwordChanged' component={PasswordChanged} />
-            <Route path='/user' render={(props) => (
+            <Route path='/user/:tab' render={(props) => (
               <UserDashboardPage lock={lock} {...props} />
             )} />
             <Route path='/itineraries' render={(props) => (

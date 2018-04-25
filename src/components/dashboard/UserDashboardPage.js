@@ -33,8 +33,12 @@ class UserDashboardPage extends Component {
     this.handleScrollBound = (e) => this.handleScroll(e)
   }
 
+  // focusTab (tabName) {
+  //   this.setState({focusedTab: tabName})
+  // }
+
   focusTab (tabName) {
-    this.setState({focusedTab: tabName})
+    this.props.history.push(`/user/${tabName}`)
   }
 
   makeBioEditable () {
@@ -118,8 +122,12 @@ class UserDashboardPage extends Component {
   }
 
   componentDidMount () {
-    // check and refresh token
-    // this.props.retrieveCloudStorageToken()
+    console.log('this.props', this.props)
+    let tab = this.props.match.params.tab
+    console.log('tab in route', tab)
+    this.setState({
+      focusedTab: tab
+    })
 
     if (this.props.userProfile.id) {
       this.setState({
@@ -127,7 +135,6 @@ class UserDashboardPage extends Component {
         bio: this.props.userProfile.bio || ''
       })
     }
-
     document.addEventListener('scroll', this.handleScrollBound)
   }
 
@@ -156,13 +163,18 @@ class UserDashboardPage extends Component {
         bio: nextProps.userProfile.bio || ''
       })
     }
-    if (nextProps.cloudStorageToken !== this.props.cloudStorageToken) {
-      nextProps.cloudStorageToken
-        .then(returning => {
-          // console.log('token', returning.token)
-          this.apiToken = returning.token
-        })
+    if (nextProps.match.params.tab !== this.props.match.params.tab) {
+      this.setState({
+        focusedTab: nextProps.match.params.tab
+      })
     }
+    // if (nextProps.cloudStorageToken !== this.props.cloudStorageToken) {
+    //   nextProps.cloudStorageToken
+    //     .then(returning => {
+    //       // console.log('token', returning.token)
+    //       this.apiToken = returning.token
+    //     })
+    // }
   }
 
   render () {
