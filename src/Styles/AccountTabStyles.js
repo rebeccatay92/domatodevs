@@ -23,6 +23,8 @@ const rightColumnContainer = {
   paddingLeft: '24px'
 }
 
+/* ----------------------------- */
+
 const unclickedTab = {
   ...coreFonts.garamondRegular,
   lineHeight: '23px',
@@ -34,9 +36,68 @@ const unclickedTab = {
 }
 const clickedTab = {
   ...unclickedTab,
-  borderLeft: `4px solid ${coreFonts.blackSolid}`
+  borderLeft: `4px solid ${coreColors.blackSolid}`
 }
 
+/* ----------------------------- */
+const headerText = {
+  ...coreFonts.garamondRegular,
+  color: coreColors.blackSolid,
+  fontSize: '18px',
+  margin: '24px 0 0 0'
+}
+
+const nameInputField = {
+  ...coreFonts.garamondRegular,
+  color: coreColors.blackSolid,
+  fontSize: '18px',
+  lineHeight: '41px',
+  height: '41px',
+  width: '340px',
+  padding: '8px',
+  marginTop: '8px'
+}
+
+const countryDropdown = {
+  ...coreFonts.garamondRegular,
+  color: coreColors.blackSolid,
+  background: coreColors.whiteSolid,
+  fontSize: '18px',
+  lineHeight: '41px',
+  height: '41px',
+  width: '340px',
+  border: 'none',
+  outline: `1px solid ${coreColors.black03}`,
+  padding: '8px',
+  marginTop: '8px'
+}
+
+/* ----------------------------- */
+
+const saveButton = {
+  ...coreFonts.garamondRegular,
+  fontSize: '18px',
+  background: coreColors.whiteSolid,
+  marginTop: '24px',
+  display: 'block'
+}
+
+const deleteButton = {
+  ...saveButton
+}
+
+const changePasswordButton = {
+  ...coreFonts.garamondRegular,
+  fontSize: '18px',
+  lineHeight: '41px',
+  height: '41px',
+  marginTop: '8px',
+  border: 'none',
+  outline: `1px solid ${coreColors.black03}`,
+  background: 'rgb(185, 255, 131)'
+}
+
+/* ----------------------------- */
 export const AccountTabStyles = {
   // left column
   leftColumnContainer,
@@ -44,5 +105,11 @@ export const AccountTabStyles = {
   unclickedTab,
   clickedTab,
   // right column
-  rightColumnContainer
+  rightColumnContainer,
+  headerText,
+  nameInputField,
+  countryDropdown,
+  saveButton,
+  deleteButton,
+  changePasswordButton
 }
