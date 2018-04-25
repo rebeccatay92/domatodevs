@@ -13,6 +13,7 @@ import { toggleSpinner } from '../../../actions/spinnerActions'
 
 import { updateBlogHeading } from '../../../apollo/blogHeading'
 import { queryBlog } from '../../../apollo/blog'
+import { updatePost, updateMultiplePosts } from '../../../apollo/post'
 import { reorderBlogContent } from '../../../apollo/reorderBlogContent'
 
 const eventIconStyle = {
@@ -31,8 +32,12 @@ const pageSource = {
     return props.page
   },
   endDrag (props, monitor) {
+    // For all types
+    const draggedPage = monitor.getItem()
     const indexOfEmptyGap = props.pagesArr.findIndex(page => page.isEmpty)
-    const newPagesArr = [...props.pagesArr.slice(0, indexOfEmptyGap), ...[monitor.getItem()], ...props.pagesArr.slice(indexOfEmptyGap + 1)].map((page, i) => {
+    const newPagesArr = [...props.pagesArr.slice(0, indexOfEmptyGap), ...[draggedPage], ...draggedPage.Post && draggedPage.Post.childPosts.slice().sort((a, b) => a.loadSequence - b.loadSequence).map(post => {
+      return {type: 'Post', modelId: post.id, Post: {ParentPostId: draggedPage.modelId}}
+    }), ...props.pagesArr.slice(indexOfEmptyGap + 1)].map((page, i) => {
       return {...page, ...{loadSequence: i + 1}}
     })
     const loadSeqArr = newPagesArr.map(page => {
@@ -48,6 +53,61 @@ const pageSource = {
     props.reorderBlogContent({
       variables: {
         input: loadSeqArr
+      }
+    })
+    .then(() => {
+      let indexOfNextHeaderOrPost = newPagesArr.findIndex((page, i) => {
+        return i > indexOfEmptyGap && (page.type === 'BlogHeading' || (page.type === 'Post' && !page.Post.ParentPostId))
+      })
+      if (indexOfNextHeaderOrPost === -1) {
+        indexOfNextHeaderOrPost = newPagesArr.length
+      }
+      let subpostsArr = [] // Array of subposts that need to change parent.
+      if (indexOfNextHeaderOrPost > indexOfEmptyGap + 1) {
+        subpostsArr = newPagesArr.slice(indexOfEmptyGap + 1, indexOfNextHeaderOrPost).map(page => {
+          return {
+            id: page.modelId,
+            ParentPostId: draggedPage.modelId
+          }
+        })
+      }
+      // Subpost to Subpost
+      if (draggedPage.type === 'Post' && draggedPage.Post.ParentPostId && props.dragDropType === 'subpost') {
+        let indexOfPrevParentPost = -1
+        newPagesArr.slice(0, indexOfEmptyGap).forEach((page, i) => {
+          if (page.type === 'Post' && !page.Post.ParentPostId) indexOfPrevParentPost = i
+        })
+        return props.updateMultiplePosts({
+          variables: {
+            input: [{
+              id: draggedPage.modelId,
+              ParentPostId: newPagesArr[indexOfPrevParentPost].modelId
+            }]
+          }
+        })
+        // Subpost to Post
+      } else if (draggedPage.type === 'Post' && draggedPage.Post.ParentPostId && props.dragDropType === 'post') {
+        const droppedPageInput = {
+          id: draggedPage.modelId,
+          ParentPostId: null
+        }
+        const newPostsArr = [...[droppedPageInput], ...subpostsArr]
+        return props.updateMultiplePosts({
+          variables: {
+            input: newPostsArr
+          }
+        })
+        // Post to Post
+      } else if (draggedPage.type === 'Post' && props.dragDropType === 'post') {
+        const newPostsArr = subpostsArr
+        return props.updateMultiplePosts({
+          variables: {
+            input: newPostsArr
+          }
+        })
+        // Post to Subpost
+      } else if (draggedPage.type === 'Post' && props.dragDropType === 'subpost') {
+        
       }
     })
     .then(() => {
@@ -85,6 +145,15 @@ const pageTarget = {
       newPagesArr = [...newPagesArrWithoutGap.slice(0, props.i), ...[{...draggedPage, ...{modelId: null, isEmpty: true}}], ...newPagesArrWithoutGap.slice(props.i)]
       .filter(page => {
         return page.modelId !== draggedPage.modelId || page.type !== draggedPage.type
+      }).filter(page => {
+        // filter out subPosts if a parent post is dragged
+        let isNotSubPostOfDraggedPage = true
+        if (draggedPage.type === 'Post' && page.type === 'Post' && draggedPage.Post.childPosts.length > 0) {
+          draggedPage.Post.childPosts.forEach(child => {
+            if (page.modelId === child.id) isNotSubPostOfDraggedPage = false
+          })
+        }
+        return isNotSubPostOfDraggedPage
       })
     }
     props.initializePosts(newPagesArr)
@@ -151,7 +220,7 @@ class EditorPostsListRow extends Component {
     }
 
     this.dropdownStyle = () => {
-      return {color: this.state.dropdown ? '#ed685a' : '#3C3A44', fontSize: '16px', marginLeft: '4px', cursor: 'pointer', opacity: this.props.hover || this.state.dropdown ? '1.0' : 0, position: 'absolute', ':hover': {color: '#ed685a'}}
+      return {color: this.state.dropdown ? '#ed685a' : '#3C3A44', fontSize: '16px', marginLeft: '4px', cursor: 'pointer', opacity: (this.props.hover || this.state.dropdown) && !this.props.getItem ? '1.0' : 0, position: 'absolute', ':hover': {color: '#ed685a'}}
     }
   }
 
@@ -360,5 +429,7 @@ const options = {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryBlog, options),
   graphql(updateBlogHeading, { name: 'updateBlogHeading' }),
+  graphql(updatePost, { name: 'updatePost' }),
+  graphql(updateMultiplePosts, { name: 'updateMultiplePosts' }),
   graphql(reorderBlogContent, { name: 'reorderBlogContent' })
 )(MouseHoverHOC(DragSource('page', pageSource, collectSource)(DropTarget(['page'], pageTarget, collectTarget)(Radium(EditorPostsListRow))))))

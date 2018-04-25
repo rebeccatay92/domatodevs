@@ -20,7 +20,7 @@ class EditorMediaContent extends Component {
     // }
     const mediaArr = this.props.page.media
     return (
-      <div style={{position: 'fixed', zIndex: 1, top: '56px', left: '15vw', width: '45vw', height: 'calc(100vh - 56px)', display: 'inline-block', verticalAlign: 'top', backgroundColor: '#F5F5F5'}}>
+      <div style={{position: 'fixed', zIndex: 1, left: '15vw', width: '45vw', height: 'calc(100vh - 56px)', display: 'inline-block', verticalAlign: 'top', backgroundColor: '#F5F5F5'}}>
         <div style={{position: 'relative', width: '100%', padding: '16px 0', overflow: 'hidden'}}>
           <div style={{maxHeight: 'calc((100vh - 60px - 32px) / 7 * 6)', overflowY: 'scroll', width: 'calc(100% + 17px)', paddingRight: '17px', overscrollBehaviorY: 'contain'}}>
             <div style={{width: '45vw'}}>
