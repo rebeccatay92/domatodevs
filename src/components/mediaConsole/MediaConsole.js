@@ -10,6 +10,8 @@ import { getUserAlbums, updateAlbum, createAlbum, deleteAlbum } from '../../apol
 import { createMedia, deleteMedia, moveMediaToAlbum } from '../../apollo/media'
 import _ from 'lodash'
 
+import { MediaConsoleStyles as styles } from '../../Styles/MediaConsoleStyles'
+
 class MediaConsole extends Component {
   constructor (props) {
     super(props)
@@ -517,26 +519,26 @@ class MediaConsole extends Component {
       return e.id === this.props.mediaConsole.focusedAlbumId
     })
     return (
-      <div style={{backgroundColor: 'rgba(180, 180, 180, 0.5)', position: 'fixed', top: 0, left: 0, bottom: 0, right: 0, zIndex: 999, overflow: 'auto', maxHeight: '100vh', maxWidth: '100vw'}} tabIndex='0' onKeyDown={e => this.onMediaConsoleKeyDown(e)}>
+      <div style={styles.mediaConsoleGrayTint} tabIndex='0' onKeyDown={e => this.onMediaConsoleKeyDown(e)}>
         <Style rules={{html: {overflowY: 'hidden'}}} />
 
-        <i className='material-icons' style={{position: 'fixed', top: '10vh', left: 'calc((100vw - 1134px)/2 - 50px)', fontSize: '36px', cursor: 'pointer'}} onClick={() => this.props.closeMediaConsole()}>close</i>
+        <i className='material-icons' style={styles.closeConsoleIcon} onClick={() => this.props.closeMediaConsole()}>close</i>
 
-        <div style={mediaConsoleContainerStyle}>
+        <div style={styles.mediaConsoleContainer}>
 
           {/* MEDIA CONSOLE LEFT COL */}
-          <div style={{width: '274px', height: '100%', background: 'rgba(67, 132, 150, 1)', paddingTop: '24px', paddingBottom: '24px', color: 'white'}}>
+          <div style={styles.leftColumnContainer}>
 
             {/* TOP SECTION */}
-            <div style={{width: '274px', height: '324px', padding: 0, margin: 0}}>
+            <div style={styles.topSectionContainer}>
               {/* ALBUM LIST AND + ICON */}
-              <div style={{display: 'flex', height: '29px', width: '100%', paddingLeft: '16px', marginBottom: '8px'}}>
-                <span style={{fontFamily: 'Roboto, sans-serif', fontSize: '24px', lineHeight: '29px', fontWeight: '300'}}>Album List</span>
-                <i className='material-icons' style={{marginLeft: '10px', cursor: 'pointer', lineHeight: '29px'}} onClick={() => this.createNewAlbum()}>add</i>
+              <div style={styles.albumListHeaderContainer}>
+                <span style={styles.albumListHeaderText}>Album List</span>
+                <i className='material-icons' style={styles.addAlbumIcon} onClick={() => this.createNewAlbum()}>add</i>
               </div>
 
               {/* DIV TO CONTAIN ALBUM NAMES WITH BORDER LEFT */}
-              <div style={{width: 'calc(100% - 8px)', height: '287px', paddingRight: '16px', marginLeft: '8px', boxSizing: 'border-box', overflow: 'scroll', display: 'flex', flexFlow: 'column nowrap', justifyContent: 'flex-start'}}>
+              <div style={styles.albumListContainer}>
                 {this.props.mediaConsole.albums.map((album, i) => {
                   if (focusedAlbum) {
                     var isFocusedAlbum = album.id === focusedAlbum.id
@@ -549,12 +551,12 @@ class MediaConsole extends Component {
                   })
                   let selectedMediaCount = selectedArrBelongingToAlbum.length
                   return (
-                    <div key={i} style={isFocusedAlbum ? focusedAlbumStyle : unfocusedAlbumStyle} onClick={() => this.setFocusedAlbum(album.id)}>
-                      <span key={i} style={albumNameStyle}>{album.title}</span>
+                    <div key={i} style={isFocusedAlbum ? styles.focusedAlbumDiv : styles.unfocusedAlbumDiv} onClick={() => this.setFocusedAlbum(album.id)}>
+                      <span key={i} style={styles.albumNameText}>{album.title}</span>
                       {selectedMediaCount > 0 &&
                         <React.Fragment>
-                          <hr style={{flexGrow: '1', color: 'rgb(255, 255, 255, 0.3)', margin: '0 5px 0 5px'}} />
-                          <span style={albumNameStyle}>{selectedMediaCount}</span>
+                          <hr style={styles.albumNameLine} />
+                          <span style={styles.albumNameText}>{selectedMediaCount}</span>
                         </React.Fragment>
                       }
                     </div>
@@ -563,25 +565,25 @@ class MediaConsole extends Component {
               </div>
             </div>
 
-            <hr style={{margin: '0px 16px 0px 16px', color: 'rgba(255, 255, 255, 0.3)'}} />
+            <hr style={styles.leftColumnHorizontalRule} />
 
             {/* ALBUM INFO */}
             {focusedAlbum &&
-              <div style={{width: '100%', height: '372px', padding: '24px 16px 0 16px'}}>
-                <label style={{width: '100%', margin: 0, padding: 0}}>
-                  <h5 style={editAlbumHeaderStyle}>Album Title</h5>
-                  <input type='text' value={this.state.title} placeholder={'Untitled Album'} style={editAlbumInputFieldStyle} onChange={e => this.handleChange(e, 'title')} />
+              <div style={styles.albumInfoContainer}>
+                <label style={styles.albumInfoInputFieldLabel}>
+                  <h5 style={styles.albumInfoHeader}>Album Title</h5>
+                  <input type='text' value={this.state.title} placeholder={'Untitled Album'} style={styles.albumInfoInputField} onChange={e => this.handleChange(e, 'title')} />
                 </label>
-                <label style={{width: '100%', margin: 0, padding: 0}}>
-                  <h5 style={editAlbumHeaderStyle}>Location / Tags</h5>
-                  <input type='text' style={editAlbumInputFieldStyle} />
+                <label style={styles.albumInfoInputFieldLabel}>
+                  <h5 style={styles.albumInfoHeader}>Location / Tags</h5>
+                  <input type='text' style={styles.albumInfoInputField} />
                 </label>
-                <label style={{width: '100%', margin: 0, padding: 0}}>
-                  <h5 style={editAlbumHeaderStyle}>Album Description</h5>
-                  <textarea value={this.state.description} placeholder={'No description available'} style={editAlbumDescriptionStyle} onChange={e => this.handleChange(e, 'description')} />
+                <label style={styles.albumInfoInputFieldLabel}>
+                  <h5 style={styles.albumInfoHeader}>Album Description</h5>
+                  <textarea value={this.state.description} placeholder={'No description available'} style={styles.albumInfoTextArea} onChange={e => this.handleChange(e, 'description')} />
                 </label>
-                <span key={'albumButton1'} style={editAlbumButtonStyle} onClick={() => this.editAlbum()}>Save changes</span>
-                <span key={'albumButton2'} style={editAlbumButtonStyle} onClick={() => this.cancelEditAlbum()}>Cancel</span>
+                <span key={'albumButton1'} style={styles.albumInfoButton} onClick={() => this.editAlbum()}>Save changes</span>
+                <span key={'albumButton2'} style={styles.albumInfoButton} onClick={() => this.cancelEditAlbum()}>Cancel</span>
 
               </div>
             }
@@ -590,27 +592,27 @@ class MediaConsole extends Component {
 
           {/* MEDIA CONSOLE RIGHT SIDE */}
           {this.props.mediaConsole.focusedAlbumId &&
-            <div style={{width: '864px', height: '100%'}}>
+            <div style={styles.rightColumnContainer}>
 
               {/* TOP SECTION -> THUMBNAILS */}
-              <div style={mediaConsoleThumbnailContainerStyle}>
+              <div style={styles.thumbnailsSectionContainer}>
                 {!this.state.isAddYoutubeComponentOpen &&
-                  <div style={mediaConsoleAddMediumContainerStyle}>
-                    <label key={'mediaConsoleAddPhotoButton'} style={mediaConsoleAddMediumButtonStyle}>
+                  <div style={styles.addMediumContainer}>
+                    <label key={'mediaConsoleAddPhotoButton'} style={styles.addMediumButton}>
                       <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
-                      <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>collections</i>
-                      <h5 style={mediaConsoleAddMediumTextStyle}>Add a photo</h5>
+                      <i className='material-icons' style={styles.addMediumIcon}>collections</i>
+                      <h5 style={styles.addMediumButtonText}>Add a photo</h5>
                       <input type='file' multiple accept='.jpeg, .jpg, .png' style={{display: 'none'}} onChange={e => this.uploadPhotos(e)} />
                     </label>
-                    <div key={'mediaConsoleAddYoutubeButton'} style={mediaConsoleAddMediumButtonStyle} onClick={() => this.displayAddYoutubeComponent()}>
+                    <div key={'mediaConsoleAddYoutubeButton'} style={styles.addMediumButton} onClick={() => this.displayAddYoutubeComponent()}>
                       <h5 style={{height: '10px', width: '100%', visibility: 'hidden'}}>flex spacing</h5>
-                      <i className='material-icons' style={{color: 'gray', fontSize: '32px'}}>videocam</i>
-                      <h5 style={mediaConsoleAddMediumTextStyle}>Embed Youtube video</h5>
+                      <i className='material-icons' style={styles.addMediumIcon}>videocam</i>
+                      <h5 style={styles.addMediumButtonText}>Embed Youtube video</h5>
                     </div>
                   </div>
                 }
                 {this.state.isAddYoutubeComponentOpen &&
-                  <div style={{position: 'relative', width: '256px', height: '144px', margin: '12px', border: '2px solid rgba(60, 58, 68, 0.5)'}}>
+                  <div style={styles.addYoutubeContainer}>
                     <label>
                       Paste youtube link here
                       <input type='text' style={{width: '90%', margin: '0 auto'}} autoFocus onChange={e => this.handleChange(e, 'youtubeUrl')} onKeyDown={e => this.onYoutubeInputKeyDown(e)} />
@@ -621,20 +623,19 @@ class MediaConsole extends Component {
                 }
                 {focusedAlbum && focusedAlbum.media.map((medium, i) => {
                   // 256 X 144. 24px spacing
-                  // find medium obj in selectedMedia arr
                   let isSelectedMedia = _.find(this.props.mediaConsole.selectedMedia, e => {
                     return e.id === medium.id
                   })
                   return (
-                    <div key={i} style={{position: 'relative', width: '256px', height: '144px', margin: '12px'}}>
+                    <div key={i} style={styles.thumbnailContainer}>
                       {medium.type === 'Photo' &&
-                        <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                        <img src={medium.imageUrl} style={styles.imageThumbnail} />
                       }
                       {medium.type === 'Youtube' &&
-                        <iframe key={i} src={`${medium.youtubeUrl}?modestbranding=1&rel=0`} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
+                        <iframe key={i} src={`${medium.youtubeUrl}?modestbranding=1&rel=0`} width='256px' height='144px' frameBorder={0} allowFullScreen />
                       }
-                      <div style={mediaConsoleThumbnailCheckboxContainerStyle} onClick={() => this.onCheckboxClick(medium)}>
-                        <div key={`mediaThumbnailUnchecked${i}`} style={isSelectedMedia ? mediaConsoleThumbnailCheckedStyle : mediaConsoleThumbnailUncheckedStyle}>
+                      <div style={styles.checkboxContainer} onClick={() => this.onCheckboxClick(medium)}>
+                        <div key={`mediaThumbnailUnchecked${i}`} style={isSelectedMedia ? styles.checkboxTicked : styles.checkboxUnticked}>
                           <i className='material-icons' style={{color: 'white'}}>done</i>
                         </div>
                       </div>
@@ -644,14 +645,14 @@ class MediaConsole extends Component {
               </div>
 
               {/* BOTTOM BAR -> ACTION BUTTONS */}
-              <div style={{width: '100%', height: '47px', padding: '0 24px 0 24px'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '100%', padding: '0 8px 0 8px', borderTop: '2px solid rgba(60, 58, 68, 0.3)'}}>
+              <div style={styles.actionBarContainer}>
+                <div style={styles.actionBar}>
                   <div style={{position: 'relative'}}>
-                    <button key={'mediaButton1'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteMedia()}>Delete</button>
-                    {/* <button key={'mediaButton2'} style={mediaButtonLeftStyle}>Download</button> */}
-                    <button key={'mediaButton3'} style={mediaButtonLeftStyle} onClick={() => this.toggleMoveToAlbumDropdown()}>Move to</button>
+                    <button key={'mediaButton1'} style={styles.actionBarLeftButtons} onClick={() => this.confirmDeleteMedia()}>Delete</button>
+                    {/* <button key={'mediaButton2'} style={styles.actionBarLeftButtons}>Download</button> */}
+                    <button key={'mediaButton3'} style={styles.actionBarLeftButtons} onClick={() => this.toggleMoveToAlbumDropdown()}>Move to</button>
                     {this.state.isMoveToAlbumDropdownOpen &&
-                      <div style={{border: '1px solid red', position: 'absolute', bottom: '30px', background: 'white', width: '200px', height: '200px', overflowY: 'scroll'}}>
+                      <div style={styles.shiftAlbumDropdown}>
                         <h4>Select an album</h4>
                         {this.props.mediaConsole.albums.map((album, i) => {
                           return (
@@ -660,13 +661,13 @@ class MediaConsole extends Component {
                         })}
                       </div>
                     }
-                    <button key={'mediaButton4'} style={mediaButtonLeftStyle} onClick={() => this.confirmDeleteAlbum()}>Delete album</button>
+                    <button key={'mediaButton4'} style={styles.actionBarLeftButtons} onClick={() => this.confirmDeleteAlbum()}>Delete album</button>
                   </div>
                   <div>
-                    <button key={'mediaButton5'} style={mediaButtonRightStyle} onClick={() => this.uncheckAll()}>Uncheck all</button>
-                    <button key={'mediaButton6'} style={mediaButtonRightStyle} onClick={() => this.checkAll()}>Check all</button>
+                    <button key={'mediaButton5'} style={styles.actionBarRightButtons} onClick={() => this.uncheckAll()}>Uncheck all</button>
+                    <button key={'mediaButton6'} style={styles.actionBarRightButtons} onClick={() => this.checkAll()}>Check all</button>
                     {this.props.mediaConsole.openedFrom === 'editor' &&
-                    <button key={'mediaButton7'} style={mediaButtonRightStyle} onClick={() => this.updateActivePageMedia()}>Post</button>
+                    <button key={'mediaButton7'} style={styles.actionBarRightButtons} onClick={() => this.updateActivePageMedia()}>Post</button>
                     }
                   </div>
                 </div>
@@ -683,30 +684,6 @@ class MediaConsole extends Component {
     )
   }
 }
-
-const mediaConsoleAddMediumContainerStyle = {position: 'relative', width: '256px', height: '144px', margin: '12px', display: 'flex', justifyContent: 'space-between'}
-const mediaConsoleAddMediumButtonStyle = {width: '45%', height: '100%', border: '2px solid rgba(60, 58, 68, 0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', cursor: 'pointer', ':hover': {border: '2px solid rgba(60, 58, 68, 0.5)'}}
-const mediaConsoleAddMediumTextStyle = {height: '30px', lineHeight: '15px', fontSize: '13px', width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '400', color: 'rgba(60, 58, 68, 0.7)'}
-
-const mediaButtonLeftStyle = {border: 'none', fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '13px', color: 'rgba(60, 58, 68, 0.7)', padding: 0, outline: 'none', ':hover': {color: 'rgba(60, 58, 68, 1)'}, marginRight: '24px'}
-const mediaButtonRightStyle = {...mediaButtonLeftStyle, marginRight: '0', marginLeft: '24px'}
-
-const unfocusedAlbumStyle = {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px', cursor: 'pointer', marginTop: '8px', marginBottom: '8px', borderLeft: '4px solid transparent', minHeight: '15px'}
-const focusedAlbumStyle = {...unfocusedAlbumStyle, borderLeft: '4px solid white'}
-const albumNameStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', lineHeight: '15px', width: 'auto', padding: '0', margin: '0'}
-
-const editAlbumHeaderStyle = {margin: 0, padding: 0, fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '400', color: 'white'}
-const editAlbumInputFieldStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '31px'}
-const editAlbumDescriptionStyle = {margin: '16px 0 16px 0', padding: '8px', fontFamily: 'Roboto, sans-serif', fontSize: '13px', fontWeight: '300', color: 'rgba(60, 58, 68, 0.7)', width: '100%', height: '121px', lineHeight: '18px', resize: 'none'}
-const editAlbumButtonStyle = {fontFamily: 'Roboto, sans-serif', fontSize: '13px', lineHeight: '15px', fontWeight: '300', color: 'rgba(255,255,255,0.3)', background: 'none', float: 'right', marginLeft: '8px', cursor: 'pointer', ':hover': {color: 'rgba(255,255,255,1)'}}
-
-const mediaConsoleContainerStyle = {marginLeft: 'calc((100vw - 1138px)/2)', top: '10vh', width: '1138px', height: '744px', background: 'white', boxSizing: 'border-box', boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', display: 'inline-flex'}
-const mediaConsoleThumbnailContainerStyle = {display: 'inline-flex', flexFlow: 'row wrap', alignContent: 'flex-start', width: '100%', height: '696px', boxSizing: 'border-box', paddingLeft: '12px', paddingTop: '12px', overflowY: 'scroll'}
-
-const mediaConsoleThumbnailCheckboxContainerStyle = {position: 'absolute', right: '8px', top: '8px', width: '35px', height: '35px', background: 'rgba(60, 58, 68, 0.7)', border: '2px solid white', boxSizing: 'border-box', borderRadius: '50%', cursor: 'pointer'}
-
-const mediaConsoleThumbnailCheckedStyle = {width: '100%', height: '100%', borderRadius: '50%', background: 'rgb(67, 132, 150)', opacity: '1', display: 'flex', alignItems: 'center', justifyContent: 'center'}
-const mediaConsoleThumbnailUncheckedStyle = {...mediaConsoleThumbnailCheckedStyle, opacity: 0}
 
 const mapStateToProps = (state) => {
   return {
