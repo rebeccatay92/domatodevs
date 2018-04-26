@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import onClickOutside from 'react-onclickoutside'
 import { toggleShowNavBar } from '../actions/navBarActions'
+import Radium from 'radium'
+import { NavSideBarStyles as styles } from '../Styles/NavSideBarStyles'
 
 let navLinksArray = [
   {icon: 'home', text: 'Home', redirect: '/'},
@@ -12,44 +14,99 @@ let navLinksArray = [
 ]
 
 class NavSideBar extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      // none, more, less
+      showExpand: 'none'
+    }
+  }
+
   handleClickOutside (event) {
     this.props.toggleShowNavBar()
   }
 
   onNavLinkClick (redirectUrl) {
-    // console.log('redirect to', redirectUrl)
-    // console.log('props', this.props)
     this.props.history.push(redirectUrl)
     this.props.toggleShowNavBar()
   }
 
+  componentDidMount () {
+    console.log('props', this.props.userProfile)
+    let itineraryList = this.props.userProfile.itineraries
+    let length = itineraryList.length
+
+    if (length <= 7) {
+      this.setState({showExpand: 'none'})
+    } else if (length > 7) {
+      this.setState({showExpand: 'more'})
+    }
+  }
+
   render () {
     return (
-      <div style={{display: 'flex', flexFlow: 'column nowrap', position: 'fixed', top: '52px', width: '220px', height: 'calc(100vh - 52px)', zIndex: '200', background: 'rgb(250, 250, 250)', padding: '0 24px 0 24px', borderRight: '1px solid rgba(60, 58, 68, 0.3)', color: 'rgba(60, 58, 68, 0.7)', fontFamily: 'Roboto, sans-serif', fontWeight: '400'}}>
-        {navLinksArray.map((obj, i) => {
-          return (
-            <div key={i} style={{display: 'flex', margin: '12px 0 12px 0', cursor: 'pointer'}} onClick={() => this.onNavLinkClick(obj.redirect)}>
-              <i className='material-icons' style={{fontSize: '24px', marginRight: '20px'}}>{obj.icon}</i>
-              <span style={{fontSize: '15px', lineHeight: '24px'}}>{obj.text}</span>
+      <div style={styles.navSideBarContainer}>
+        <div style={styles.navSection}>
+          {navLinksArray.map((obj, i) => {
+            return (
+              <div key={i} style={styles.navLinkContainer} onClick={() => this.onNavLinkClick(obj.redirect)}>
+                <i className='material-icons' style={styles.navLinkIcon}>{obj.icon}</i>
+                <span style={styles.navLinkText}>{obj.text}</span>
+              </div>
+            )
+          })}
+        </div>
+
+        <hr style={styles.sectionDivider} />
+
+        <div style={styles.middleItinerarySection}>
+          <span style={styles.itineraryHeaderText}>ITINERARIES</span>
+          <div style={this.state.showExpand === 'more' ? {height: '280px', overflow: 'hidden'} : {}}>
+            {this.props.userProfile.itineraries.map((itinerary, i) => {
+              return (
+                <div key={`itinerary${i}`} style={styles.navLinkContainer}>
+                  <div style={{display: 'inline-block', width: '24px', height: '24px', borderRadius: '50%', marginRight: '22px', border: '1px solid black'}} />
+                  <span style={styles.itineraryName}>{itinerary.name}</span>
+                </div>
+              )
+            })}
+          </div>
+          {/* FONT SIZE INCREASED TO 24PX FOR EXPAND ICON. MARGINRIGHT ADJUST TO 22PX INSTEAD OF  25 PX TO MATCH ITINERARIES */}
+          {this.state.showExpand === 'more' &&
+            <div style={styles.navLinkContainer} key={'showMoreItineraries'} onClick={() => this.setState({showExpand: 'less'})}>
+              <i className='material-icons' style={{...styles.navLinkIcon, fontSize: '24px', marginRight: '22px'}}>expand_more</i>
+              <span style={styles.navLinkText}>Show more</span>
             </div>
-          )
-        })}
-        <hr style={{margin: 0, padding: 0}} />
-        <div style={{width: '100%', height: '300px', margin: '12px 0 12px 0', display: 'flex', flexFlow: 'column nowrap'}}>
-          <span style={{margin: '12px 0 12px 0', fontSize: '18px'}}>ITINERARIES</span>
-          {/* USERS ITINERARIES */}
+          }
+          {this.state.showExpand === 'less' &&
+            <div style={styles.navLinkContainer} key={'showMoreItineraries'} onClick={() => this.setState({showExpand: 'more'})}>
+              <i className='material-icons' style={{...styles.navLinkIcon, fontSize: '24px', marginRight: '22px'}}>expand_less</i>
+              <span style={styles.navLinkText}>Show less</span>
+            </div>
+          }
         </div>
-        <hr style={{margin: 0, padding: 0}} />
-        <div style={{display: 'flex', alignItems: 'center', margin: '12px 0 12px 0', cursor: 'pointer'}}>
-          <i className='material-icons' style={{fontSize: '24px', marginRight: '20px'}}>settings</i>
-          <span style={{fontSize: '15px', lineHeight: '24px'}} onClick={() => this.onNavLinkClick('/user/account')}>Settings</span>
+
+        <hr style={styles.sectionDivider} />
+
+        <div style={styles.navSection}>
+          <div style={styles.navLinkContainer} key={'navSideBar-Settings'}>
+            <i className='material-icons' style={styles.navLinkIcon}>settings</i>
+            <span style={styles.navLinkText} onClick={() => this.onNavLinkClick('/user/account')}>Settings</span>
+          </div>
+          <div style={styles.navLinkContainer} key={'navSideBar-Feedback'}>
+            <i className='material-icons' style={styles.navLinkIcon}>chat_bubble</i>
+            <span style={styles.navLinkText}>Feedback</span>
+          </div>
         </div>
-        <div style={{display: 'flex', alignItems: 'center', margin: '12px 0 12px 0', cursor: 'pointer'}}>
-          <i className='material-icons' style={{fontSize: '24px', marginRight: '20px'}}>chat_bubble</i>
-          <span style={{fontSize: '15px', lineHeight: '24px'}}>Feedback</span>
-        </div>
+
       </div>
     )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.userProfile
   }
 }
 
@@ -61,4 +118,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(withRouter((onClickOutside(NavSideBar))))
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter((onClickOutside(Radium(NavSideBar)))))

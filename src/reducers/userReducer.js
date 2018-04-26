@@ -13,10 +13,14 @@ export const userReducer = (state = {}, action) => {
 {
 userId
 fullName
-email
 username
+email
 profilePic
 CountryId
+country {
+id, name, code
+}
 bio
+itineraries [ {id, name} ]
 }
 */
