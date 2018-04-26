@@ -255,6 +255,7 @@ class EditorTextContent extends Component {
   }
 
   handleHashtagAddition (tag) {
+    if (this.props.page.hashtags.map(obj => obj.text).includes(tag.text)) return
     this.props.updateActivePage('hashtags', [...this.props.page.hashtags, ...[tag]])
   }
 

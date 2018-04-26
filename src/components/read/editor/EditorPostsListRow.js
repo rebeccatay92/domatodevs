@@ -71,12 +71,12 @@ const pageSource = {
           }
         })
       }
+      let indexOfPrevParentPost = -1
+      newPagesArr.slice(0, indexOfEmptyGap).forEach((page, i) => {
+        if (page.type === 'Post' && !page.Post.ParentPostId) indexOfPrevParentPost = i
+      })
       // Subpost to Subpost
       if (draggedPage.type === 'Post' && draggedPage.Post.ParentPostId && props.dragDropType === 'subpost') {
-        let indexOfPrevParentPost = -1
-        newPagesArr.slice(0, indexOfEmptyGap).forEach((page, i) => {
-          if (page.type === 'Post' && !page.Post.ParentPostId) indexOfPrevParentPost = i
-        })
         return props.updateMultiplePosts({
           variables: {
             input: [{
@@ -107,7 +107,22 @@ const pageSource = {
         })
         // Post to Subpost
       } else if (draggedPage.type === 'Post' && props.dragDropType === 'subpost') {
-        
+        const droppedPageInput = {
+          id: draggedPage.modelId,
+          ParentPostId: newPagesArr[indexOfPrevParentPost].modelId
+        }
+        subpostsArr = newPagesArr.slice(indexOfEmptyGap + 1, indexOfNextHeaderOrPost).map(page => {
+          return {
+            id: page.modelId,
+            ParentPostId: newPagesArr[indexOfPrevParentPost].modelId
+          }
+        })
+        const newPostsArr = [...[droppedPageInput], ...subpostsArr]
+        return props.updateMultiplePosts({
+          variables: {
+            input: newPostsArr
+          }
+        })
       }
     })
     .then(() => {
