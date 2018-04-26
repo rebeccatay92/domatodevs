@@ -150,7 +150,8 @@ class UserDashboardPage extends Component {
     const distFromTop = rect.top
     // console.log('tabs distFromTop', distFromTop)
 
-    if (distFromTop <= 50 && !this.props.userDashboard.stickyTabs) {
+    // 52px is height of nav bar.
+    if (distFromTop <= 52 && !this.props.userDashboard.stickyTabs) {
       this.props.setStickyTabs(true)
     }
   }
