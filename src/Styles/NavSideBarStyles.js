@@ -61,7 +61,8 @@ const itineraryHeaderText = {
   color: coreColors.black07,
   fontSize: '14px',
   margin: '0 24px 0 24px',
-  lineHeight: '40px'
+  lineHeight: '40px',
+  cursor: 'pointer'
 }
 
 // const fixedHeightItineraryList = {

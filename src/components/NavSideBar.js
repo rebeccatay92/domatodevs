@@ -60,7 +60,7 @@ class NavSideBar extends Component {
         <hr style={styles.sectionDivider} />
 
         <div style={styles.middleItinerarySection}>
-          <span style={styles.itineraryHeaderText}>ITINERARIES</span>
+          <span style={styles.itineraryHeaderText} onClick={() => this.onNavLinkClick('/user/itineraries')}>ITINERARIES</span>
           <div style={this.state.showExpand === 'more' ? {height: '280px', overflow: 'hidden'} : {}}>
             {this.props.userProfile.itineraries.map((itinerary, i) => {
               return (

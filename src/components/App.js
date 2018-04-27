@@ -14,7 +14,7 @@ import ItineraryPage from './itinerary/ItineraryPage'
 import PlannerPage from './PlannerPage'
 import ReadPage from './read/ReadPage'
 import BlogEditorPage from './read/editor/BlogEditorPage'
-import Navbar from './Navbar'
+import NavBar from './NavBar'
 import MapPlannerPage from './mapPlanner/MapPlannerPage'
 import UserDashboardPage from './dashboard/UserDashboardPage'
 import ConfirmWindow from './misc/ConfirmWindow'
@@ -35,7 +35,7 @@ class App extends Component {
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
-          <Navbar lock={lock} />
+          <NavBar lock={lock} />
 
           {this.props.navBar.showNavBar &&
             <NavSideBar outsideClickIgnoreClass={'ignoreNavBarHamburger'} />
