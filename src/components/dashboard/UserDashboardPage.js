@@ -116,9 +116,9 @@ class UserDashboardPage extends Component {
   }
 
   componentDidMount () {
-    console.log('this.props', this.props)
+    // console.log('this.props', this.props)
     let tab = this.props.match.params.tab
-    console.log('tab in route', tab)
+    // console.log('tab in route', tab)
 
     if (tab !== 'account' && tab !== 'blogs' && tab !== 'itineraries' && tab !== 'media' && tab !== 'savedArticles' && tab !== 'bucket') {
       console.log('no match with tab. default to account')

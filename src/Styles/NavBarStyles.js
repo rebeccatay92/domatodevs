@@ -1,4 +1,5 @@
 import { coreColors, coreFonts } from './cores.js'
+// NEEDS RADIUM ?  YES
 
 const navBarContainer = {
   display: 'flex',
@@ -14,6 +15,7 @@ const navBarContainer = {
   background: 'white',
   zIndex: '200'
 }
+
 /* ----------------------------- */
 const alignLeftContainer = {
   height: '100%',

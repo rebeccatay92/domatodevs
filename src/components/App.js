@@ -46,9 +46,10 @@ class App extends Component {
               <HomePage lock={lock} {...props} />
             )} />
             <Route path='/passwordChanged' component={PasswordChanged} />
-            {/* <Route exact path='/user'>
-              <Redirect to='/user/account' />
-            </Route> */}
+            {/* ERROR CASE ROUTE FOR /USER OR /USER/. LOGIC IN COMPONENT WILL DISPLAY ACCOUNT TAB INSTEAD. */}
+            <Route exact path='/user' render={props => (
+              <UserDashboardPage {...props} />
+            )} />
             <Route exact path='/user/:tab' render={(props) => (
               <UserDashboardPage {...props} />
             )} />
