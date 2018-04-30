@@ -6,8 +6,7 @@ import { openMediaConsole, initializeMediaConsoleAlbums, setFocusedAlbumId } fro
 import MediaConsole from '../mediaConsole/MediaConsole'
 import { setStickyTabs, setStickySidebar } from '../../actions/userDashboardActions'
 
-const unfocusedTabStyle = {paddingLeft: '4px', cursor: 'pointer', color: 'rgba(60, 58, 68, 1)', fontFamily: 'EB Garamond, serif', fontSize: '16px', lineHeight: '21px', fontWeight: '400', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', height: '21px', marginTop: '24px', borderLeft: '4px solid transparent'}
-const focusedTabStyle = {...unfocusedTabStyle, borderLeft: '4px solid rgba(60, 58, 68, 1)'}
+import { MediaTabStyles as styles } from '../../Styles/MediaTabStyles'
 
 class MediaTab extends Component {
   constructor (props) {
@@ -61,11 +60,11 @@ class MediaTab extends Component {
     const rect = el.getBoundingClientRect()
     const distFromTop = rect.top
     // console.log('componnet distFromTop', distFromTop)
-    if (distFromTop >= 110 && this.props.userDashboard.stickyTabs) {
+    if (distFromTop >= 108 && this.props.userDashboard.stickyTabs) {
       this.props.setStickyTabs(false)
       this.props.setStickySidebar(false)
     }
-    if (distFromTop < 110 && !this.props.userDashboard.stickySidebar) {
+    if (distFromTop < 108 && !this.props.userDashboard.stickySidebar) {
       this.props.setStickySidebar(true)
     }
   }
@@ -84,7 +83,7 @@ class MediaTab extends Component {
     let stickySidebar = this.props.userDashboard.stickySidebar
 
     return (
-      <div className={'mediaTabComponent'} style={{width: '100%', height: 'calc(100vh - 270px)', boxSizing: 'border-box'}}>
+      <div className={'mediaTabComponent'} style={styles.mediaTabContainer}>
 
         {mediaConsole.isOpen &&
           <MediaConsole />
@@ -92,42 +91,42 @@ class MediaTab extends Component {
 
         {/* STICKY SIDEBAR SPACER DIV */}
         {stickySidebar &&
-          <div style={{display: 'inline-block', width: '265px', height: 'calc(100vh - 110px)'}} />
+          <div style={{display: 'inline-block', width: '265px', height: 'calc(100vh - 108px)'}} />
         }
 
         {/* ENTIRE LEFT TABS COLUMN */}
-        <div style={{display: 'inline-block', width: '265px', height: 'calc(100vh - 110px)', verticalAlign: 'top', paddingTop: '24px', paddingBottom: '24px', paddingLeft: '2px', background: 'white', position: stickySidebar ? 'fixed' : 'relative', top: stickySidebar ? '106px' : '0', left: stickySidebar ? 'calc((100vw - 1265px)/2)' : '0'}}>
+        <div style={stickySidebar ? styles.leftColumnSticky : styles.leftColumnNonSticky}>
           {/* HIGHLIGHTED LINE DIV */}
-          <div style={{borderRight: '1px solid rgba(60, 58, 68, 0.3)', width: '100%', height: '100%'}}>
+          <div style={styles.leftColumnRightBorderDiv}>
 
-            <div style={{display: 'flex', alignItems: 'center', height: '24px', cursor: 'pointer'}} onClick={() => this.openMediaConsole()}>
-              <h4 style={{paddingLeft: '8px', fontSize: '24px', fontFamily: 'EB Garamond, serif', fontWeight: '400'}}>Album list</h4>
-              <i className='material-icons' style={{color: 'rgba(60, 58, 68, 0.3)', marginLeft: '10px'}}>settings</i>
+            <div style={styles.albumListHeaderContainer} onClick={() => this.openMediaConsole()}>
+              <h4 style={styles.albumListHeaderText}>Album list</h4>
+              <i className='material-icons' style={styles.albumListHeaderIcon}>settings</i>
             </div>
 
-            <div style={{width: '100%', height: 'calc(100% - 24px)', overflow: 'scroll'}}>
+            <div style={styles.albumListContainer}>
               {mediaConsole.albums.map((album, i) => {
                 let isFocusedAlbum = mediaConsole.focusedAlbumId === album.id
                 return (
-                  <h4 style={isFocusedAlbum ? focusedTabStyle : unfocusedTabStyle} key={i} onClick={() => this.switchFocusedAlbum(album.id)}>{album.title}</h4>
+                  <h4 style={isFocusedAlbum ? styles.clickedTab : styles.unclickedTab} key={i} onClick={() => this.switchFocusedAlbum(album.id)}>{album.title}</h4>
                 )
               })}
             </div>
           </div>
         </div>
 
-        <div style={{display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignContent: 'flex-start', verticalAlign: 'top', width: 'calc(100% - 265px)', height: '100%', boxSizing: 'border-box', paddingLeft: '24px', paddingTop: '24px'}}>
+        <div style={styles.rightColumn}>
           {/* <iframe src={'https://www.youtube.com/embed/L5TRm2iADhE'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} frameBorder={0} allowFullScreen /> */}
           {/* <img src={'http://img.youtube.com/vi/L5TRm2iADhE/0.jpg'} width='256px' height='144px' style={{margin: '0px 12px 24px 0px'}} /> */}
           {focusedAlbum && focusedAlbum.media.map((medium, i) => {
             // 256 X 144. 24px spacing
             return (
-              <div key={i} style={{width: '256px', height: '144px', margin: '0px 24px 24px 0px'}}>
+              <div key={i} style={styles.mediaThumbnailContainer}>
                 {medium.type === 'Photo' &&
-                  <img src={medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                  <img src={medium.imageUrl} style={styles.imageThumbnail} />
                 }
                 {medium.type === 'Youtube' &&
-                  <iframe key={i} src={`${medium.youtubeUrl}?modestbranding=1&rel=0`} width='256px' height='144px' style={{margin: '0px 24px 24px 0px'}} frameBorder={0} allowFullScreen />
+                  <iframe key={i} src={`${medium.youtubeUrl}?modestbranding=1&rel=0`} width='256px' height='144px' frameBorder={0} allowFullScreen />
                 }
               </div>
             )

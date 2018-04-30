@@ -19,6 +19,7 @@ class Lock {
         }
       },
       autoclose: true,
+      // closable: true,
       rememberLastLogin: true
     }
   )
@@ -48,7 +49,7 @@ class Lock {
           'authorization': `Bearer ${window.localStorage.getItem('access_token')}`
         },
         body: JSON.stringify({
-          query: `{getUserProfile {id,fullName,email,username,profilePic,CountryId,bio, country{id, name, code}}}`
+          query: `{getUserProfile {id,fullName,email,username,profilePic,CountryId,bio, country{id, name, code},itineraries{id, name}}}`
         })
       })
       .then(response => {
@@ -215,6 +216,7 @@ class Lock {
       .then(json => {
         console.log('ticket url', json.ticket)
         window.location.assign(json.ticket)
+        // window.open(json.ticket)
       })
       .catch(err => console.log('err', err))
     })

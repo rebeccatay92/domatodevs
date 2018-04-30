@@ -1,50 +1,13 @@
-import { Navbar, FormGroup, FormControl, InputGroup, Button, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-// import jwt from 'jsonwebtoken'
-import { primaryColor } from '../Styles/styles'
+import Radium from 'radium'
+import { toggleShowNavBar } from '../actions/navBarActions'
 
-const dropdownIconStyle = {
-  lineHeight: '54px',
-  left: '2vw',
-  position: 'absolute',
-  color: primaryColor,
-  cursor: 'pointer'
-}
+import { NavBarStyles as styles } from '../Styles/NavBarStyles'
 
-const searchIconStyle = {
-  fontSize: '18px'
-}
-
-const bucketLogoStyle = {
-  lineHeight: '54px',
-  fontSize: '36px',
-  // marginLeft: '1vw',
-  color: primaryColor,
-  cursor: 'pointer'
-}
-
-class NavbarInstance extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      showSideBar: 'false'
-    }
-  }
-
-  toggleNavSideBar () {
-    this.setState({showSideBar: !this.state.showSideBar})
-  }
-
+class NavBar extends Component {
   render () {
-    // const isAuthenticated = this.props.lock.isAuthenticated()
-    // if (isAuthenticated) {
-    //   var userProfile = this.props.userProfile
-    //   var profilePic = userProfile.profilePic
-    // }
-    // dont depend on local storage token expiry time for loggedin/logged out status. take from redux profile.
-    // if token is expired it will be automatically refreshed. taking from redux state avoids the small window between findind expired token and receiving refreshed token (bug which shows logged out even if user is logged in)
     var userProfile = this.props.userProfile
     var isLoggedIn = userProfile.id ? true : false
     if (isLoggedIn) {
@@ -52,36 +15,31 @@ class NavbarInstance extends Component {
     }
 
     return (
-      <Navbar style={{backgroundColor: 'white', position: 'fixed', top: '0', backfaceVisibility: 'hidden', zIndex: '200', height: '53px'}}>
-        <Navbar.Header>
-          <i style={dropdownIconStyle} className='material-icons' onClick={() => console.log('show side bar')}>menu</i>
-          <i style={bucketLogoStyle} className='material-icons'>delete</i>
-        </Navbar.Header>
-        <Navbar.Form style={{margin: '10px 0', marginLeft: '89px', paddingLeft: '0', display: 'inline-block'}}>
-          <FormGroup style={{boxShadow: '2px 2px 10px -1px rgba(0, 0, 0, .2)'}}>
-            <InputGroup>
-              <FormControl type='text' placeholder='Discover' style={{width: '30vw', borderRadius: '0'}} />
-              <InputGroup.Button>
-                <Button style={{paddingBottom: '3px', borderRadius: '0'}}><i style={searchIconStyle} className='material-icons md-18'>search</i></Button>
-              </InputGroup.Button>
-            </InputGroup>
-          </FormGroup>
-          {' '}
-        </Navbar.Form>
-        <Nav bsStyle='pills' pullRight>
+      <div style={styles.navBarContainer}>
+        <div style={styles.alignLeftContainer}>
+          <i className='material-icons ignoreNavBarHamburger' style={styles.hamburgerIcon} onClick={() => this.props.toggleShowNavBar()}>menu</i>
+          <Link to={'/'} >
+            <img src={`${process.env.PUBLIC_URL}/img/marcoLogo.png`} style={styles.marcoLogo} />
+          </Link>
+          <input type='text' placeholder={'Search'} style={styles.searchInputField} />
+          <div style={styles.searchIconContainer}>
+            <i className='material-icons' style={styles.searchIcon}>search</i>
+          </div>
+        </div>
+        <div style={styles.alignRightContainer}>
           {isLoggedIn &&
             <React.Fragment>
-              <NavItem onClick={() => this.props.lock.logout()}>Log Out</NavItem>
-              <Link to={'/user'}>
-                <img src={profilePic} width='50px' height='50px' style={{background: 'black', borderRadius: '50%'}} />
+              <span onClick={() => this.props.lock.logout()} style={styles.logInlogOutText}>Log out</span>
+              <Link to={'/user/media'}>
+                <img src={profilePic} style={styles.profilePic} />
               </Link>
             </React.Fragment>
           }
           {!isLoggedIn &&
-            <NavItem onClick={() => this.props.lock.login()}>Log In / Sign up</NavItem>
+            <span onClick={() => this.props.lock.login()} style={styles.logInlogOutText}>Log In / Sign Up</span>
           }
-        </Nav>
-      </Navbar>
+        </div>
+      </div>
     )
   }
 }
@@ -92,4 +50,12 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(NavbarInstance)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleShowNavBar: () => {
+      dispatch(toggleShowNavBar())
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Radium(NavBar))

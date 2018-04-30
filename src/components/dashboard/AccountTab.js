@@ -6,12 +6,7 @@ import { allCountries } from '../../apollo/country'
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
 
-const unfocusedTabStyle = {fontFamily: 'EB Garamond, serif', fontSize: '18px', fontWeight: '400', lineHeight: '23px', borderLeft: '4px solid transparent', paddingLeft: '4px', color: 'rgba(60, 58, 68, 1)', cursor: 'pointer', margin: '0px 0px 24px 0px'}
-const focusedTabStyle = {...unfocusedTabStyle, borderLeft: '4px solid rgba(60, 58, 68, 1)'}
-
-const accountHeaderStyle = {fontFamily: 'EB Garamond, serif', fontSize: '18px', fontWeight: '400', color: 'rgba(60, 58, 68, 1)', margin: '24px 0 0 0'}
-
-const accountInputFieldStyle = {height: '41px', width: '340px', padding: '8px', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px', lineHeight: '41px', color: 'rgba(60, 58, 68, 1)', marginTop: '8px'}
+import { AccountTabStyles as styles } from '../../Styles/AccountTabStyles'
 
 class AccountTab extends Component {
   constructor (props) {
@@ -68,24 +63,24 @@ class AccountTab extends Component {
     return (
       <div style={{width: '100%', height: 'calc(100vh - 270px)', boxSizing: 'border-box'}}>
 
-        {/* LEFT COLUMN CONTAINER*/}
-        <div style={{display: 'inline-block', width: '167px', height: 'calc(100vh - 110px)', paddingTop: '24px', paddingBottom: '24px', paddingLeft: '2px'}}>
+        {/* LEFT COLUMN CONTAINER */}
+        <div style={styles.leftColumnContainer}>
           {/* LEFT COLUMN DIV WITH BORDER RIGHT */}
-          <div style={{width: '100%', height: '100%', borderRight: '1px solid rgba(60,58,68,0.3)'}}>
-            <h4 style={this.state.focusedTab === 'profile' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'profile'})}>Profile Information</h4>
-            <h4 style={this.state.focusedTab === 'security' ? focusedTabStyle : unfocusedTabStyle} onClick={() => this.setState({focusedTab: 'security'})}>Security</h4>
+          <div style={styles.leftColumnRightBorderDiv}>
+            <h4 style={this.state.focusedTab === 'profile' ? styles.clickedTab : styles.unclickedTab} onClick={() => this.setState({focusedTab: 'profile'})}>Profile Information</h4>
+            <h4 style={this.state.focusedTab === 'security' ? styles.clickedTab : styles.unclickedTab} onClick={() => this.setState({focusedTab: 'security'})}>Security</h4>
           </div>
         </div>
 
-        <div style={{display: 'inline-block', verticalAlign: 'top', width: 'calc(100% - 167px)', height: 'calc(100vh - 110px)', boxSizing: 'border-box', paddingLeft: '24px'}}>
+        <div style={styles.rightColumnContainer}>
           {this.state.focusedTab === 'profile' &&
             <React.Fragment>
-              <h4 style={accountHeaderStyle}>Username: {profile.username}</h4>
-              <h4 style={accountHeaderStyle}>Email: {profile.email}</h4>
-              <h4 style={accountHeaderStyle}>Name: </h4>
-              <input type='text' value={this.state.fullName} placeholder={`What's your name?`} onChange={e => this.handleChange(e, 'fullName')} style={accountInputFieldStyle} />
-              <h4 style={accountHeaderStyle}>Country:</h4>
-              <select onChange={e => this.selectCountry(e)} value={this.state.CountryId} style={{background: 'white', width: '340px', height: '41px', border: 'none', outline: '1px solid rgba(60, 58, 68, 0.3)', padding: '8px', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px', lineHeight: '41px', marginTop: '8px'}}>
+              <h4 style={styles.headerText}>Username: {profile.username}</h4>
+              <h4 style={styles.headerText}>Email: {profile.email}</h4>
+              <h4 style={styles.headerText}>Name: </h4>
+              <input type='text' value={this.state.fullName} placeholder={`What's your name?`} onChange={e => this.handleChange(e, 'fullName')} style={styles.nameInputField} />
+              <h4 style={styles.headerText}>Country:</h4>
+              <select onChange={e => this.selectCountry(e)} value={this.state.CountryId} style={styles.countryDropdown}>
                 <option value={''}>Select a country</option>
                 {allCountries.map((country, i) => {
                   return (
@@ -93,15 +88,14 @@ class AccountTab extends Component {
                   )
                 })}
               </select>
-              <button style={{display: 'block', marginTop: '24px', background: 'white', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px'}} onClick={() => this.updateProfile()}>Save changes</button>
+              <button style={styles.saveButton} onClick={() => this.updateProfile()}>Save changes</button>
             </React.Fragment>
           }
           {this.state.focusedTab === 'security' &&
             <React.Fragment>
-              <h4 style={accountHeaderStyle}>Change password</h4>
-              <button onClick={() => this.props.lock.changePassword()} style={{background: `rgb(211, 247, 183)`, border: 'none', outline: '1px solid rgba(60, 58, 68, 0.3)', height: '41px', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px', lineHeight: '41px', marginTop: '8px'}}>Click here to change your password</button>
-
-              <button style={{display: 'block', marginTop: '24px', background: 'white', fontFamily: 'EB Garamond, serif', fontWeight: '400', fontSize: '18px'}}>Delete account</button>
+              <h4 style={styles.headerText}>Change password</h4>
+              <button onClick={() => this.props.lock.changePassword()} style={styles.changePasswordButton}>Click here to change your password</button>
+              <button style={styles.deleteButton}>Delete account</button>
             </React.Fragment>
           }
         </div>

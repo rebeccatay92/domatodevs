@@ -15,6 +15,10 @@ export const getUserProfile = gql`
         code
       }
       bio
+      itineraries {
+        id
+        name
+      }
     }
   }
 `
