@@ -1,5 +1,63 @@
 import { gql } from 'react-apollo'
 
+export const getAllPublishedBlogs = gql`
+  query getAllPublishedBlogs {
+    getAllPublishedBlogs {
+      id
+      UserId
+      user {
+        id
+        username
+        profilePic
+      }
+      published
+      views
+      shares
+      likes {
+        id
+        username
+      }
+      title
+      textContent
+      days
+      # pages {
+      #   type
+      #   modelId
+      #   loadSequence
+      #   BlogHeading {
+      #     id
+      #     loadSequence
+      #     title
+      #   }
+      #   Post {
+      #     id
+      #     loadSequence
+      #     title
+      #   }
+      # }
+      hashtags {
+        id
+        name
+      }
+      media {
+        id
+        MediumId
+        BlogId
+        loadSequence
+        caption
+        AlbumId
+        type
+        objectName
+        imageUrl
+        youtubeUrl
+      }
+      createdAt
+      updatedAt
+      publishDate
+    }
+  }
+`
+
 export const queryBlog = gql`
   query queryBlog($id: ID!) {
     findBlog(id: $id) {

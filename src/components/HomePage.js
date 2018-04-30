@@ -1,46 +1,72 @@
 import React, { Component } from 'react'
-import jwt from 'jsonwebtoken'
-import moment from 'moment'
+import { connect } from 'react-redux'
+import { graphql } from 'react-apollo'
+import { getAllPublishedBlogs } from '../apollo/blog'
 
+import Radium from 'radium'
+import { HomePageStyles as styles } from '../Styles/HomePageStyles'
+
+// PUBLIC ROUTE. CAN VIEW WITHOUT LOGGING IN
 class HomePage extends Component {
-  render () {
-    var access_token = window.localStorage.getItem('access_token')
-    var id_token = window.localStorage.getItem('id_token')
-    var expires_at = window.localStorage.getItem('expires_at')
-    var expiresAtString = moment.unix(expires_at / 1000).format('ddd, DD MMM YYYY, hh:mm A')
-    // console.log('expires at', expiresAtString)
-    const isAuthenticated = this.props.lock.isAuthenticated()
-    // console.log('isAuthenticated', isAuthenticated)
-
-    if (id_token) {
-      var decodedIdToken = jwt.decode(id_token)
-      var idTokenExpiry = decodedIdToken.exp
-      var idTokenExpiryString = moment.unix(idTokenExpiry).format('DD MMM YYYY, hh:mm A')
+  constructor (props) {
+    super(props)
+    this.state = {
+      focusedTab: 'blogs'
     }
-
+  }
+  render () {
+    if (this.props.data.loading) return (<h1>Loading</h1>)
+    console.log('blogs', this.props.data.getAllPublishedBlogs)
     return (
-      <div style={{width: '70%', height: '100%', margin: '0 auto', border: '1px solid blue'}}>
-        <h1>HOMEPAGE</h1>
-
-        {/* <React.Fragment>
-          <h3>isAuthenticated ===> {isAuthenticated ? 'true' : 'false'}</h3>
-          <h3>Access token: {access_token}</h3>
-          <h3>Access token Expires at: {expires_at}, {expiresAtString}</h3>
-          <h3>Id token: {id_token}</h3>
-          {id_token &&
-            <React.Fragment>
-              <h3>id token expiry: {idTokenExpiry}, {idTokenExpiryString}</h3>
-              <h3>ID token claims</h3>
-              <h3>{decodedIdToken.name}</h3>
-              <h3>{decodedIdToken.sub}</h3>
-              <img src={decodedIdToken.picture} height={'200px'} width={'200px'} />
-            </React.Fragment>
-          }
-        </React.Fragment> */}
-
+      <div style={styles.homePageContainer}>
+        {/* HORIZONTAL TABS */}
+        <div style={styles.tabsBar}>
+          <h3 style={this.state.focusedTab === 'blogs' ? styles.clickedTab : styles.unclickedTab} onClick={() => this.setState({focusedTab: 'blogs'})}>Blogs</h3>
+          <h3 style={this.state.focusedTab === 'itineraries' ? styles.clickedTab : styles.unclickedTab} onClick={() => this.setState({focusedTab: 'itineraries'})}>Itineraries</h3>
+        </div>
+        <div style={styles.blogSectionContainer}>
+          {this.props.data.getAllPublishedBlogs.map((blog, i) => {
+            return (
+              <div key={i} style={styles.blogThumbnailContainer}>
+                {/* TOP INFO ROW */}
+                <div style={styles.blogThumbnailTopInfoRow}>
+                  <div style={styles.blogThumbnailAuthorContainer}>
+                    {/* AUTHOR PROFILE PIC */}
+                    <img src={blog.user.profilePic} style={styles.authorProfilePic} />
+                    {/* AUTHOR NAME AND PUBLISH DATE */}
+                    <div style={styles.publishInfoContainer}>
+                      <span style={styles.authorName}>
+                        By <span style={styles.authorNameHover} key={`authorName${i}`}>{blog.user.username}</span>
+                      </span>
+                      <span style={styles.publishDate}>{blog.publishDate}</span>
+                    </div>
+                  </div>
+                  {/* COUNTRY. RIGHT ALIGN */}
+                  <span key={`countryName${i}`} style={styles.countryName}>South Korea</span>
+                </div>
+                {/* THUMBNAIL IMAGE */}
+                <div style={styles.thumbnailImageContainer}>
+                  {blog.media[0] &&
+                    <img src={blog.media[0].imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                  }
+                </div>
+                {/* BOTTOM INFO ROW */}
+                <div style={styles.blogThumbnailBottomInfoRow}>
+                  hjkh
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
   }
 }
 
-export default HomePage
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.userProfile
+  }
+}
+
+export default connect(mapStateToProps)(graphql(getAllPublishedBlogs)(Radium(HomePage)))

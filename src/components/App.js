@@ -43,8 +43,9 @@ class App extends Component {
 
           <div style={{width: '100%', marginTop: '52px'}}>
             <Route exact path='/' render={(props) => (
-              <HomePage lock={lock} {...props} />
+              <HomePage {...props} />
             )} />
+            {/* <Route exact path='/' component={HomePage} /> */}
             <Route path='/passwordChanged' component={PasswordChanged} />
             {/* ERROR CASE ROUTE FOR /USER OR /USER/. LOGIC IN COMPONENT WILL DISPLAY ACCOUNT TAB INSTEAD. */}
             <Route exact path='/user' render={props => (
