@@ -52,7 +52,20 @@ class HomePage extends Component {
                 </div>
                 {/* BOTTOM INFO ROW */}
                 <div style={styles.blogThumbnailBottomInfoRow}>
-                  hjkh
+                  <span style={styles.blogTitle}>Work Trip to Melbourne</span>
+                  <div style={styles.blogTagsRow}>
+                    {blog.hashtags.map((hashtag, i) => {
+                      return (
+                        <div key={`blogHashTagDiv${i}`}>
+                          {i !== 0 &&
+                            <span style={styles.blogTagsSpacer}>&#8226;</span>
+                          }
+                          <span style={styles.blogTags}>{hashtag.name}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <span style={styles.blogViewsText}>{blog.views} views</span>
                 </div>
               </div>
             )

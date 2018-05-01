@@ -48,7 +48,7 @@ const blogSectionContainer = {
 
 const blogThumbnailContainer = {
   width: '256px',
-  height: '250px', // for top row, img, bottom row
+  height: '254px', // for top row, img, bottom row
   margin: '12px' // 24px spacing between thumbnails
 }
 
@@ -126,10 +126,54 @@ const thumbnailImageContainer = {
 
 const blogThumbnailBottomInfoRow = {
   width: '100%',
-  height: 'calc(250px - 50px - 144px)',
-  border: '1px solid red'
+  height: 'calc(254px - 50px - 144px)' // equals 60px
+  // 3 lines of text. 24px + 18px + 18px
 }
 
+const blogTitle = {
+  display: 'block',
+  ...coreFonts.garamondRegular,
+  color: coreColors.black07,
+  fontSize: '18px',
+  lineHeight: '24px',
+  height: '24px',
+  width: '100%',
+  overflow: 'hidden'
+}
+
+const blogTagsRow = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  height: '18px',
+  overflow: 'hidden'
+}
+
+const blogTags = {
+  ...coreFonts.garamondRegular,
+  color: coreColors.greenSolid,
+  fontSize: '14px',
+  lineHeight: '18px',
+  cursor: 'pointer'
+  // ':hover': {
+  //   color: 'rgba(59, 119, 135, 1)' // doesnt work even with unique keys.
+  // }
+}
+
+const blogTagsSpacer = {
+  color: coreColors.greenSolid,
+  fontSize: '14px',
+  lineHeight: '18px',
+  margin: '0 5px'
+}
+
+const blogViewsText = {
+  ...coreFonts.garamondRegular,
+  fontSize: '14px',
+  lineHeight: '18px',
+  color: coreColors.pinkSolid
+}
 /* ----------------------------- */
 export const HomePageStyles = {
   homePageContainer,
@@ -152,5 +196,10 @@ export const HomePageStyles = {
   // image
   thumbnailImageContainer,
   // bottom info row
-  blogThumbnailBottomInfoRow
+  blogThumbnailBottomInfoRow,
+  blogTitle,
+  blogTagsRow,
+  blogTags,
+  blogTagsSpacer,
+  blogViewsText
 }
