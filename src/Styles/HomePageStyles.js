@@ -130,15 +130,18 @@ const blogThumbnailBottomInfoRow = {
   // 3 lines of text. 24px + 18px + 18px
 }
 
+const blogTitleRow = {
+  height: '24px',
+  width: '100%',
+  overflow: 'hidden'
+}
+
 const blogTitle = {
   display: 'block',
   ...coreFonts.garamondRegular,
   color: coreColors.black07,
   fontSize: '18px',
-  lineHeight: '24px',
-  height: '24px',
-  width: '100%',
-  overflow: 'hidden'
+  lineHeight: '24px'
 }
 
 const blogTagsRow = {
@@ -197,6 +200,7 @@ export const HomePageStyles = {
   thumbnailImageContainer,
   // bottom info row
   blogThumbnailBottomInfoRow,
+  blogTitleRow,
   blogTitle,
   blogTagsRow,
   blogTags,
