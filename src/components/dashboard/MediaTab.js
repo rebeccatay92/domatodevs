@@ -52,6 +52,8 @@ class MediaTab extends Component {
 
   componentWillUnmount () {
     document.removeEventListener('scroll', this.handleScrollBound)
+    this.props.setStickySidebar(false)
+    // clear stickiness of sidebar as other tabs might not have sidebar. prevent sidebar from mounting as sticky when moving from media (with sticky sidebar) -> component with no sidebar -> back to media (needs to unstick)
   }
 
   handleScroll (e) {
@@ -82,7 +84,7 @@ class MediaTab extends Component {
     // let media = mediaConsole.focusedAlbum.media
 
     let stickySidebar = this.props.userDashboard.stickySidebar
-
+    console.log('STICKY SIDEBAR', stickySidebar)
     return (
       <div className={'mediaTabComponent'} style={styles.mediaTabContainer}>
 
