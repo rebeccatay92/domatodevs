@@ -39,7 +39,7 @@ class BlogsTab extends Component {
     console.log('blogs tab PROPS', this.props.data.getUserBlogs)
     return (
       <div className={'blogsTabComponent'} style={styles.blogsTabContainer}>
-        Dashboard blogs
+        insert thumbnail here
       </div>
     )
   }
