@@ -59,7 +59,8 @@ class MediaTab extends Component {
     if (!el) return
     const rect = el.getBoundingClientRect()
     const distFromTop = rect.top
-    // console.log('componnet distFromTop', distFromTop)
+    // console.log('component distFromTop', distFromTop)
+    // 108 px is navbar + horizontal tabs
     if (distFromTop >= 108 && this.props.userDashboard.stickyTabs) {
       this.props.setStickyTabs(false)
       this.props.setStickySidebar(false)

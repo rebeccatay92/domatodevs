@@ -44,7 +44,7 @@ class HomePage extends Component {
                       <span style={styles.authorName}>
                         By <span style={styles.authorNameHover} key={`authorName${i}`}>{blog.user.username}</span>
                       </span>
-                      <span style={styles.publishDate}>{blog.publishDate}</span>
+                      <span style={styles.timeFromPublishDate}>{blog.timeFromPublishDate}</span>
                     </div>
                   </div>
                   {/* COUNTRY. RIGHT ALIGN */}

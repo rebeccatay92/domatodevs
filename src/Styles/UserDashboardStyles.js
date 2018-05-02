@@ -31,7 +31,7 @@ const tabsBarNonSticky = {
 const tabsBarSticky = {
   ...tabsBarNonSticky,
   position: 'fixed',
-  top: '50px',
+  top: '52px',
   width: '1265px'
 }
 /* ----------------------------- */

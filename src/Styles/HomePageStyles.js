@@ -96,7 +96,7 @@ const authorNameHover = {
   }
 }
 
-const publishDate = {
+const timeFromPublishDate = {
   display: 'block',
   height: '18px',
   lineHeight: '18px',
@@ -194,7 +194,7 @@ export const HomePageStyles = {
   publishInfoContainer,
   authorName,
   authorNameHover,
-  publishDate,
+  timeFromPublishDate,
   countryName,
   // image
   thumbnailImageContainer,

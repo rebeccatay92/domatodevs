@@ -8,6 +8,7 @@ const leftColumnContainer = {
   paddingBottom: '24px',
   paddingLeft: '2px'
 }
+
 const leftColumnRightBorderDiv = {
   width: '100%',
   height: '100%',

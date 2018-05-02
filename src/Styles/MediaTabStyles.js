@@ -9,7 +9,6 @@ const mediaTabContainer = {
 const leftColumnNonSticky = {
   display: 'inline-block',
   width: '265px',
-  // height: 'calc(100vh - 110px)',
   height: 'calc(100vh - 52px - 56px)', // minus navbar and horizontal tabs
   verticalAlign: 'top',
   paddingTop: '24px',
@@ -24,7 +23,6 @@ const leftColumnNonSticky = {
 const leftColumnSticky = {
   ...leftColumnNonSticky,
   position: 'fixed',
-  // top: '106px' // original
   top: '108px', // 52px nav + 56px horizontal tabs
   left: 'calc((100vw - 1265px)/2)'
 }
