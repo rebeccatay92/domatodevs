@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 
+import BlogThumbnailDropdown from './BlogThumbnailDropdown'
+
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
 import { getUserBlogs } from '../../apollo/blog'
@@ -11,7 +13,9 @@ import { BlogsTabStyles as styles } from '../../Styles/BlogsTabStyles'
 class BlogsTab extends Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      showDropdownIndex: null // if dropdown is open, i >= 0 (index of blog)
+    }
     this.handleScrollBound = (e) => this.handleScroll(e)
   }
 
@@ -35,8 +39,12 @@ class BlogsTab extends Component {
     }
   }
 
-  toggleBlogThumbnailDropdown () {
-    console.log('toggle dropdown for edit, public view, privacy toggle, delete')
+  toggleBlogThumbnailDropdown (i) {
+    if (typeof (this.state.showDropdownIndex) === 'number') {
+      this.setState({showDropdownIndex: null})
+    } else {
+      this.setState({showDropdownIndex: i})
+    }
   }
 
   render () {
@@ -66,9 +74,12 @@ class BlogsTab extends Component {
               <div style={styles.bottomInfoContainer}>
                 <div style={styles.countryAndTimeFromPublishDateRow}>
                   <span style={styles.timeFromPublishDate}>{blog.timeFromPublishDate}</span>
-                  <div style={{display: 'flex', alignItems: 'center'}}>
+                  <div style={{display: 'flex', alignItems: 'center', position: 'relative'}}>
                     <span style={styles.countryName}>South Korea</span>
-                    <i className='material-icons' style={{cursor: 'pointer'}} onClick={() => this.toggleBlogThumbnailDropdown()}>more_horiz</i>
+                    <i className='material-icons ignoreBlogThumbnailDropdownIcon' style={{cursor: 'pointer'}} onClick={() => this.toggleBlogThumbnailDropdown(i)}>more_vert</i>
+                    {typeof (this.state.showDropdownIndex) === 'number' && this.state.showDropdownIndex === i &&
+                      <BlogThumbnailDropdown toggleBlogThumbnailDropdown={() => this.toggleBlogThumbnailDropdown()} outsideClickIgnoreClass={'ignoreBlogThumbnailDropdownIcon'} />
+                    }
                   </div>
                 </div>
                 <div style={styles.blogTitleRow}>

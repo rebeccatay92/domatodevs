@@ -84,7 +84,7 @@ class MediaTab extends Component {
     // let media = mediaConsole.focusedAlbum.media
 
     let stickySidebar = this.props.userDashboard.stickySidebar
-    console.log('STICKY SIDEBAR', stickySidebar)
+    // console.log('STICKY SIDEBAR', stickySidebar)
     return (
       <div className={'mediaTabComponent'} style={styles.mediaTabContainer}>
 
