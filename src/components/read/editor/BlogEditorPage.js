@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
-import { EditorState } from 'draft-js'
+import { EditorState, convertFromRaw } from 'draft-js'
 import moment from 'moment'
 
 import { readPageStyle } from '../../../Styles/styles'
@@ -56,7 +56,7 @@ class BlogEditorPage extends Component {
           modelId: blog.id,
           type: 'Blog',
           title: blog.title,
-          textContent: EditorState.createEmpty(),
+          textContent: blog.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(blog.textContent))) : EditorState.createEmpty(),
           days: blog.days,
           hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
             return {
@@ -88,7 +88,7 @@ class BlogEditorPage extends Component {
           modelId: blog.id,
           type: 'Blog',
           title: blog.title,
-          textContent: EditorState.createEmpty(),
+          textContent: blog.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(blog.textContent))) : EditorState.createEmpty(),
           isSubPost: false,
           startDay: '',
           endDay: '',
@@ -112,7 +112,7 @@ class BlogEditorPage extends Component {
           type,
           title: pageObj.title || pageObj.description,
           isSubPost: !!pageObj.ParentPostId,
-          textContent: EditorState.createEmpty(),
+          textContent: pageObj.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(pageObj.textContent))) : EditorState.createEmpty(),
           eventType: pageObj.eventType,
           startDay: {value: pageObj.startDay},
           endDay: {value: pageObj.endDay},

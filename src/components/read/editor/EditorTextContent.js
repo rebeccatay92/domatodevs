@@ -7,16 +7,18 @@ import 'react-select/dist/react-select.css'
 import 'draft-js-inline-toolbar-plugin/lib/plugin.css'
 // import editorStyles from './editorStyles.css'
 
-import Editor, { createEditorStateWithText } from 'draft-js-plugins-editor'
-import createInlineToolbarPlugin from 'draft-js-inline-toolbar-plugin'
-import { EditorState, convertToRaw } from 'draft-js'
-import {
-  ItalicButton,
-  BoldButton,
-  UnderlineButton,
-  UnorderedListButton,
-  OrderedListButton
-} from 'draft-js-buttons'
+import EditorTextContentEditor from './EditorTextContentEditor'
+
+// import Editor, { createEditorStateWithText } from 'draft-js-plugins-editor'
+// import createInlineToolbarPlugin from 'draft-js-inline-toolbar-plugin'
+import { convertToRaw } from 'draft-js'
+// import {
+//   ItalicButton,
+//   BoldButton,
+//   UnderlineButton,
+//   UnorderedListButton,
+//   OrderedListButton
+// } from 'draft-js-buttons'
 
 import { updateActivePage, initializeActivePage } from '../../../actions/blogEditorActivePageActions'
 import { changeActivePost } from '../../../actions/readActions'
@@ -30,18 +32,17 @@ import { getAllHashtags } from '../../../apollo/hashtag'
 
 import LocationSearch from '../../location/LocationSearch'
 
-const inlineToolbarPlugin = createInlineToolbarPlugin({
-  structure: [
-    BoldButton,
-    ItalicButton,
-    UnderlineButton,
-    UnorderedListButton,
-    OrderedListButton
-  ]
-})
-const { InlineToolbar } = inlineToolbarPlugin
-const plugins = [inlineToolbarPlugin]
-const text = 'In this editor a toolbar shows up once you select part of the text …'
+// const inlineToolbarPlugin = createInlineToolbarPlugin({
+//   structure: [
+//     BoldButton,
+//     ItalicButton,
+//     UnderlineButton,
+//     UnorderedListButton,
+//     OrderedListButton
+//   ]
+// })
+// const { InlineToolbar } = inlineToolbarPlugin
+// const plugins = [inlineToolbarPlugin]
 
 class EditorTextContent extends Component {
   constructor (props) {
@@ -79,14 +80,14 @@ class EditorTextContent extends Component {
       variables: {
         id: this.props.page.modelId,
         title: this.props.page.title,
-        textContent: this.props.page.textContent,
+        textContent: JSON.stringify(convertToRaw(this.props.page.textContent.getCurrentContent())),
         days: this.props.page.days,
         hashtags: this.props.page.hashtags.map(hashtag => {
           return hashtag.text.toString()
         }),
         media: this.props.page.media.map(medium => {
           return {
-            MediumId: medium.id,
+            MediumId: medium.MediumId,
             caption: medium.caption,
             loadSequence: medium.loadSequence
           }
@@ -158,55 +159,11 @@ class EditorTextContent extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
-    console.log({
-      ...{
-        id: this.props.page.modelId,
-        textContent: this.props.page.textContent,
-        eventType: this.props.page.eventType,
-        contentOnly: !this.props.page.eventType,
-        hashtags: this.props.page.hashtags.map(hashtag => {
-          return hashtag.text.toString()
-        }),
-        media: this.props.page.media.map(medium => {
-          return {
-            MediumId: medium.MediumId,
-            caption: medium.caption,
-            loadSequence: medium.loadSequence
-          }
-        }),
-        startDay: this.props.page.startDay && this.props.page.startDay.value,
-        endDay: this.props.page.endDay && this.props.page.endDay.value,
-        startTime: startUnix,
-        endTime: endUnix
-      },
-      ...this.props.page.eventType && {
-        description: this.props.page.title,
-        title: ''
-      },
-      ...!this.props.page.eventType && {
-        title: this.props.page.title,
-        description: '',
-        startDay: null,
-        endDay: null,
-        startTime: null,
-        endTime: null
-      },
-      ...this.props.page.isSubPost && {
-        ParentPostId: parentPostId
-      },
-      ...!this.props.page.isSubPost && {
-        ParentPostId: null
-      },
-      ...this.props.page.googlePlaceData.placeId && {
-        googlePlaceData: this.props.page.googlePlaceData
-      }
-    });
-
     this.props.updatePost({
       variables: {
         ...{
           id: this.props.page.modelId,
-          textContent: this.props.page.textContent,
+          textContent: JSON.stringify(convertToRaw(this.props.page.textContent.getCurrentContent())),
           eventType: this.props.page.eventType,
           contentOnly: !this.props.page.eventType,
           hashtags: this.props.page.hashtags.map(hashtag => {
@@ -440,7 +397,7 @@ class EditorTextContent extends Component {
         <label style={{margin: '8px 0'}}>Content</label>
         {/* <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} /> */}
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
-        <div style={{padding: '8px', minHeight: '100px', border: '1px solid rgba(60, 58, 68, 0.2)', cursor: 'text'}} onClick={this.focus}>
+        {/* <div style={{padding: '8px', minHeight: '100px', border: '1px solid rgba(60, 58, 68, 0.2)', cursor: 'text'}} onClick={this.focus}>
           <Editor
             editorState={textContent}
             onChange={this.onChange}
@@ -448,7 +405,8 @@ class EditorTextContent extends Component {
             ref={(element) => { this.editor = element }}
           />
           <InlineToolbar />
-        </div>
+        </div> */}
+        <EditorTextContentEditor />
         <label style={{margin: '8px 0'}}>Tags</label>
         <div style={{marginBottom: '40px'}}>
           <div>
