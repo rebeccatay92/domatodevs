@@ -21,7 +21,7 @@ import { googleCloudTokenReducer } from './reducers/googleCloudTokenReducer'
 import { editorPostsListDragDropReducer } from './reducers/editorPostsListDragDropReducer'
 import { navBarReducer } from './reducers/navBarReducer'
 
-import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo'
+import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
 const networkInterface = createNetworkInterface({
   uri: 'http://localhost:3001/graphql'
@@ -69,4 +69,5 @@ const store = createStore(combineReducers({
 compose(applyMiddleware(client.middleware()))
 )
 
+// redux store applied as a middleware for apollo client 1.0
 export { store, client }

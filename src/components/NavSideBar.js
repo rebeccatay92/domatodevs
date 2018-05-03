@@ -64,7 +64,7 @@ class NavSideBar extends Component {
           <div style={this.state.showExpand === 'more' ? {height: '280px', overflow: 'hidden'} : {}}>
             {this.props.userProfile.itineraries.map((itinerary, i) => {
               return (
-                <div key={`itinerary${i}`} style={styles.navLinkContainer}>
+                <div key={`itinerary${i}`} style={styles.navLinkContainer} onClick={() => this.onNavLinkClick(`/planner/${i + 1}`)}>
                   <div style={{display: 'inline-block', width: '24px', height: '24px', borderRadius: '50%', marginRight: '22px', border: '1px solid black'}} />
                   <span style={styles.itineraryName}>{itinerary.name}</span>
                 </div>

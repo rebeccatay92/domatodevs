@@ -20,21 +20,6 @@ export const getAllPublishedBlogs = gql`
       title
       textContent
       days
-      # pages {
-      #   type
-      #   modelId
-      #   loadSequence
-      #   BlogHeading {
-      #     id
-      #     loadSequence
-      #     title
-      #   }
-      #   Post {
-      #     id
-      #     loadSequence
-      #     title
-      #   }
-      # }
       hashtags {
         id
         name
@@ -53,7 +38,33 @@ export const getAllPublishedBlogs = gql`
       }
       createdAt
       updatedAt
+      # eg 10th april 2018
       publishDate
+      # eg 2 hrs ago
+      timeFromPublishDate
+    }
+  }
+`
+
+export const getUserBlogs = gql`
+  query getUserBlogs {
+    getUserBlogs {
+      id
+      title
+      published
+      views
+      publishDate
+      timeFromPublishDate
+      media {
+        id
+        MediumId
+        BlogId
+        imageUrl
+      }
+      hashtags {
+        id
+        name
+      }
     }
   }
 `

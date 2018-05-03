@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import AccountTab from './AccountTab'
 import MediaTab from './MediaTab'
+import BlogsTab from './BlogsTab'
 
 class DashboardTabsHOC extends Component {
   // constructor (props) {
@@ -15,6 +16,8 @@ class DashboardTabsHOC extends Component {
       return (
         <MediaTab />
       )
+    } else if (this.props.focusedTab === 'blogs') {
+      return <BlogsTab />
     } else {
       return <div>Component</div>
     }

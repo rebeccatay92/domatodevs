@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { allCountries } from '../../apollo/country'
 import { updateUserProfile } from '../../apollo/user'
 import { setUserProfile } from '../../actions/userActions'
+import { setStickyTabs } from '../../actions/userDashboardActions'
 
 import { AccountTabStyles as styles } from '../../Styles/AccountTabStyles'
 
@@ -32,6 +33,9 @@ class AccountTab extends Component {
 
   componentDidMount () {
     // console.log('userProfile', this.props.userProfile)
+    // force tabs bar to unstick
+    this.props.setStickyTabs(false)
+
     this.setState({
       fullName: this.props.userProfile.fullName || '',
       CountryId: this.props.userProfile.CountryId || ''
@@ -115,6 +119,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setUserProfile: (userProfile) => {
       dispatch(setUserProfile(userProfile))
+    },
+    setStickyTabs: (sticky) => {
+      dispatch(setStickyTabs(sticky))
     }
   }
 }
