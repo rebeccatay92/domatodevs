@@ -39,8 +39,7 @@ const blogPublishedIconContainer = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  background: coreColors.greenSolid,
-  cursor: 'pointer'
+  background: coreColors.greenSolid
 }
 
 const blogPrivateIconContainer = {

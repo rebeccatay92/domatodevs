@@ -73,12 +73,14 @@ class BlogsTab extends Component {
               {/* BOTTOM INFO SECTION. 4 ROWS. REUSED FROM HOMEPAGE */}
               <div style={styles.bottomInfoContainer}>
                 <div style={styles.countryAndTimeFromPublishDateRow}>
-                  <span style={styles.timeFromPublishDate}>{blog.timeFromPublishDate}</span>
+                  <span style={styles.countryName}>South Korea</span>
                   <div style={{display: 'flex', alignItems: 'center', position: 'relative'}}>
-                    <span style={styles.countryName}>South Korea</span>
+                    {blog.published &&
+                      <span style={styles.timeFromPublishDate}>{blog.timeFromPublishDate}</span>
+                    }
                     <i className='material-icons ignoreBlogThumbnailDropdownIcon' style={{cursor: 'pointer'}} onClick={() => this.toggleBlogThumbnailDropdown(i)}>more_vert</i>
                     {typeof (this.state.showDropdownIndex) === 'number' && this.state.showDropdownIndex === i &&
-                      <BlogThumbnailDropdown toggleBlogThumbnailDropdown={() => this.toggleBlogThumbnailDropdown()} outsideClickIgnoreClass={'ignoreBlogThumbnailDropdownIcon'} />
+                      <BlogThumbnailDropdown toggleBlogThumbnailDropdown={() => this.toggleBlogThumbnailDropdown()} outsideClickIgnoreClass={'ignoreBlogThumbnailDropdownIcon'} blogId={blog.id} published={blog.published} />
                     }
                   </div>
                 </div>
