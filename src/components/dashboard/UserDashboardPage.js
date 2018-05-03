@@ -24,7 +24,7 @@ class UserDashboardPage extends Component {
         {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
-      focusedTab: 'media',
+      focusedTab: 'blogs',
       bio: '',
       editingBio: false
     }
@@ -178,7 +178,7 @@ class UserDashboardPage extends Component {
     if (!profile.id) return <p>Not logged in</p>
 
     let stickyTabs = this.props.userDashboard.stickyTabs
-    console.log('STICKYTABS STATUS', stickyTabs)
+    // console.log('STICKYTABS STATUS', stickyTabs)
     return (
       // remove marginBottom. minHeight is 100vh - profile section - profile top and bottom margin, and add back the horizontal tabs bar. this ensures that if component does not need scroll, user can only scroll until tabs bar moves up to the navbar, but no further scrolling down for stickybar.
       <div style={{margin: '52px auto 0px auto', width: '1265px', minHeight: 'calc(100vh + 97px + 48px + 32px - 56px)', boxSizing: 'border-box'}}>

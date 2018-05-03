@@ -42,7 +42,7 @@ const blogSectionContainer = {
   width: 'calc(100% + 24px)',
   minHeight: 'calc(100vh - 52px - 56px)',
   // negative margin to counter 1st and last thumbnail
-  margin: '12px -12px'
+  margin: '12px 0 -12px -12px'
 }
 /* ----------------------------- */
 
