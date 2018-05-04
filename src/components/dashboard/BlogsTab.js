@@ -58,7 +58,7 @@ class BlogsTab extends Component {
               {/* IMAGE CONTAINER -> IMAGE AND ICON */}
               <div style={styles.thumbnailImageContainer}>
                 {blog.media[0] &&
-                  <img src={blog.media[0].imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                  <img src={blog.media[0].imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer'}} onClick={() => console.log('redirect to public view?')} />
                 }
                 {/* PUBLIC / PRIVATE TOGGLE ICON */}
                 <div style={blog.published ? styles.blogPublishedIconContainer : styles.blogPrivateIconContainer}>
@@ -78,9 +78,9 @@ class BlogsTab extends Component {
                     {blog.published &&
                       <span style={styles.timeFromPublishDate}>{blog.timeFromPublishDate}</span>
                     }
-                    <i className='material-icons ignoreBlogThumbnailDropdownIcon' style={{cursor: 'pointer'}} onClick={() => this.toggleBlogThumbnailDropdown(i)}>more_vert</i>
+                    <i className='material-icons ignore-react-onclickoutside' style={{cursor: 'pointer'}} onClick={() => this.toggleBlogThumbnailDropdown(i)}>more_vert</i>
                     {typeof (this.state.showDropdownIndex) === 'number' && this.state.showDropdownIndex === i &&
-                      <BlogThumbnailDropdown toggleBlogThumbnailDropdown={() => this.toggleBlogThumbnailDropdown()} outsideClickIgnoreClass={'ignoreBlogThumbnailDropdownIcon'} blogId={blog.id} published={blog.published} />
+                      <BlogThumbnailDropdown toggleBlogThumbnailDropdown={() => this.toggleBlogThumbnailDropdown()} blogId={blog.id} published={blog.published} />
                     }
                   </div>
                 </div>

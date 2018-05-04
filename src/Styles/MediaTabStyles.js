@@ -2,7 +2,7 @@ import { coreColors, coreFonts } from './cores.js'
 
 const mediaTabContainer = {
   width: '100%',
-  height: 'calc(100vh - 270px)',
+  height: 'calc(100vh - 108px)',
   boxSizing: 'border-box'
 }
 

@@ -1,9 +1,15 @@
 import { coreColors, coreFonts } from './cores.js'
 
+const accountTabContainer = {
+  width: '100%',
+  height: 'calc(100vh - 108px)',
+  boxSizing: 'border-box'
+}
+
 const leftColumnContainer = {
   display: 'inline-block',
   width: '167px',
-  height: 'calc(100vh - 110px)',
+  height: 'calc(100vh - 108px)',
   paddingTop: '24px',
   paddingBottom: '24px',
   paddingLeft: '2px'
@@ -19,7 +25,7 @@ const rightColumnContainer = {
   display: 'inline-block',
   verticalAlign: 'top',
   width: 'calc(100% - 167px)',
-  height: 'calc(100vh - 110px)',
+  height: 'calc(100vh - 108px)',
   boxSizing: 'border-box',
   paddingLeft: '24px'
 }
@@ -100,6 +106,7 @@ const changePasswordButton = {
 
 /* ----------------------------- */
 export const AccountTabStyles = {
+  accountTabContainer,
   // left column
   leftColumnContainer,
   leftColumnRightBorderDiv,
