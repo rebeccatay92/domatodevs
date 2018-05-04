@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+import { EditorState, convertFromRaw } from 'draft-js'
 import { readPageStyle } from '../../Styles/styles'
 
 import PostsList from './PostsList'
@@ -20,7 +21,7 @@ class ReadPage extends Component {
       <div style={readPageStyle}>
         <PostsList pages={this.props.pages} />
         <PostMediaContent pages={this.props.pages} blogMedia={this.props.data.findBlog.media} />
-        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={this.props.data.findBlog.textContent} blogAuthor={this.props.data.findBlog.user.username} blogHashtags={this.props.data.findBlog.hashtags} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} noOfShares={this.props.data.findBlog.shares} dateCreated={this.props.data.findBlog.createdAt} />
+        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.data.findBlog.textContent)))} blogAuthor={this.props.data.findBlog.user.username} blogHashtags={this.props.data.findBlog.hashtags} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} noOfShares={this.props.data.findBlog.shares} dateCreated={this.props.data.findBlog.createdAt} />
       </div>
     )
   }
