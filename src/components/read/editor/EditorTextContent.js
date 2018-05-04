@@ -4,6 +4,21 @@ import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import Select from 'react-select'
 import 'react-select/dist/react-select.css'
+import 'draft-js-inline-toolbar-plugin/lib/plugin.css'
+// import editorStyles from './editorStyles.css'
+
+import EditorTextContentEditor from './EditorTextContentEditor'
+
+// import Editor, { createEditorStateWithText } from 'draft-js-plugins-editor'
+// import createInlineToolbarPlugin from 'draft-js-inline-toolbar-plugin'
+import { convertToRaw } from 'draft-js'
+// import {
+//   ItalicButton,
+//   BoldButton,
+//   UnderlineButton,
+//   UnorderedListButton,
+//   OrderedListButton
+// } from 'draft-js-buttons'
 
 import { updateActivePage, initializeActivePage } from '../../../actions/blogEditorActivePageActions'
 import { changeActivePost } from '../../../actions/readActions'
@@ -17,22 +32,17 @@ import { getAllHashtags } from '../../../apollo/hashtag'
 
 import LocationSearch from '../../location/LocationSearch'
 
-// function getPageInfo (props) {
-//   const post = props.pages.pagesArr[props.pages.activePostIndex]
-//   if (post && post.type === 'BlogHeading') return {}
-//   let title, location, content, startDay, endDay
-//   if (props.pages.activePostIndex === 'home') {
-//     title = props.blogTitle
-//     content = props.blogContent
-//   } else if (props.pages.activePostIndex !== 'fin') {
-//     title = post.Post.title || post.Post.description
-//     content = post.Post.textContent
-//   }
-//   return {
-//     title,
-//     content
-//   }
-// }
+// const inlineToolbarPlugin = createInlineToolbarPlugin({
+//   structure: [
+//     BoldButton,
+//     ItalicButton,
+//     UnderlineButton,
+//     UnorderedListButton,
+//     OrderedListButton
+//   ]
+// })
+// const { InlineToolbar } = inlineToolbarPlugin
+// const plugins = [inlineToolbarPlugin]
 
 class EditorTextContent extends Component {
   constructor (props) {
@@ -43,6 +53,15 @@ class EditorTextContent extends Component {
       editingEndTime: false,
       editingStartDay: false,
       editingEndDay: false
+    }
+
+    this.onChange = (editorState) => {
+      console.log(convertToRaw(editorState.getCurrentContent()))
+      this.props.updateActivePage('textContent', editorState)
+    }
+
+    this.focus = () => {
+      this.editor.focus()
     }
   }
 
@@ -61,14 +80,14 @@ class EditorTextContent extends Component {
       variables: {
         id: this.props.page.modelId,
         title: this.props.page.title,
-        textContent: this.props.page.textContent,
+        textContent: JSON.stringify(convertToRaw(this.props.page.textContent.getCurrentContent())),
         days: this.props.page.days,
         hashtags: this.props.page.hashtags.map(hashtag => {
           return hashtag.text.toString()
         }),
         media: this.props.page.media.map(medium => {
           return {
-            MediumId: medium.id,
+            MediumId: medium.MediumId,
             caption: medium.caption,
             loadSequence: medium.loadSequence
           }
@@ -140,55 +159,11 @@ class EditorTextContent extends Component {
       endUnix = (endHours * 60 * 60) + (endMins * 60)
     }
 
-    console.log({
-      ...{
-        id: this.props.page.modelId,
-        textContent: this.props.page.textContent,
-        eventType: this.props.page.eventType,
-        contentOnly: !this.props.page.eventType,
-        hashtags: this.props.page.hashtags.map(hashtag => {
-          return hashtag.text.toString()
-        }),
-        media: this.props.page.media.map(medium => {
-          return {
-            MediumId: medium.MediumId,
-            caption: medium.caption,
-            loadSequence: medium.loadSequence
-          }
-        }),
-        startDay: this.props.page.startDay && this.props.page.startDay.value,
-        endDay: this.props.page.endDay && this.props.page.endDay.value,
-        startTime: startUnix,
-        endTime: endUnix
-      },
-      ...this.props.page.eventType && {
-        description: this.props.page.title,
-        title: ''
-      },
-      ...!this.props.page.eventType && {
-        title: this.props.page.title,
-        description: '',
-        startDay: null,
-        endDay: null,
-        startTime: null,
-        endTime: null
-      },
-      ...this.props.page.isSubPost && {
-        ParentPostId: parentPostId
-      },
-      ...!this.props.page.isSubPost && {
-        ParentPostId: null
-      },
-      ...this.props.page.googlePlaceData.placeId && {
-        googlePlaceData: this.props.page.googlePlaceData
-      }
-    });
-
     this.props.updatePost({
       variables: {
         ...{
           id: this.props.page.modelId,
-          textContent: this.props.page.textContent,
+          textContent: JSON.stringify(convertToRaw(this.props.page.textContent.getCurrentContent())),
           eventType: this.props.page.eventType,
           contentOnly: !this.props.page.eventType,
           hashtags: this.props.page.hashtags.map(hashtag => {
@@ -255,6 +230,7 @@ class EditorTextContent extends Component {
   }
 
   handleHashtagAddition (tag) {
+    if (this.props.page.hashtags.map(obj => obj.text).includes(tag.text)) return
     this.props.updateActivePage('hashtags', [...this.props.page.hashtags, ...[tag]])
   }
 
@@ -350,7 +326,7 @@ class EditorTextContent extends Component {
     if (post && post.type === 'BlogHeading') return null
     if (this.props.pages.activePostIndex === 'fin') return null
     return (
-      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '16px 24px', fontSize: '13px', minHeight: 'calc(100vh - 60px)', zIndex: 0}}>
+      <div style={{left: '60vw', width: '40vw', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '16px 24px', fontSize: '13px', minHeight: 'calc(100vh - 60px)'}}>
         {this.props.pages.activePostIndex === 'home' && <React.Fragment>
           <label style={{margin: '8px 0'}}>Blog Title</label>
           <input type='text' style={{width: '100%', padding: '8px'}} value={title} onChange={(e) => this.props.updateActivePage('title', e.target.value)} />
@@ -419,8 +395,18 @@ class EditorTextContent extends Component {
           </div>
         </React.Fragment>}
         <label style={{margin: '8px 0'}}>Content</label>
-        <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} />
+        {/* <textarea rows={10} style={{width: '100%', padding: '8px'}} value={textContent} onChange={(e) => this.props.updateActivePage('textContent', e.target.value)} /> */}
         {/* <input className='hashtagInput' type='text' placeholder='Add hashtags to get discovered by others' style={{width: '100%', padding: '8px', margin: '8px 0'}} /> */}
+        {/* <div style={{padding: '8px', minHeight: '100px', border: '1px solid rgba(60, 58, 68, 0.2)', cursor: 'text'}} onClick={this.focus}>
+          <Editor
+            editorState={textContent}
+            onChange={this.onChange}
+            plugins={plugins}
+            ref={(element) => { this.editor = element }}
+          />
+          <InlineToolbar />
+        </div> */}
+        <EditorTextContentEditor />
         <label style={{margin: '8px 0'}}>Tags</label>
         <div style={{marginBottom: '40px'}}>
           <div>

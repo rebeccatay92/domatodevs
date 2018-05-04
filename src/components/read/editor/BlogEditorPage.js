@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
-import { readPageStyle } from '../../../Styles/styles'
+import { EditorState, convertFromRaw } from 'draft-js'
 import moment from 'moment'
+
+import { readPageStyle } from '../../../Styles/styles'
 
 import EditorPostsList from './EditorPostsList'
 import EditorTextContent from './EditorTextContent'
@@ -47,14 +49,14 @@ class BlogEditorPage extends Component {
       const blog = nextProps.data.findBlog
       const allPages = blog.pages
       console.log('NEXTPROPS FINDBLOG', blog)
-      // console.log(allPages)
+      console.log(allPages)
       this.props.initializePosts(allPages)
       if (this.props.pages.activePostIndex === 'home') {
         const page = {
           modelId: blog.id,
           type: 'Blog',
           title: blog.title,
-          textContent: blog.textContent,
+          textContent: blog.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(blog.textContent))) : EditorState.createEmpty(),
           days: blog.days,
           hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
             return {
@@ -73,7 +75,7 @@ class BlogEditorPage extends Component {
         modelId: '',
         type: '',
         title: '',
-        textContent: '',
+        textContent: EditorState.createEmpty(),
         isSubPost: false,
         startDay: '',
         endDay: '',
@@ -86,7 +88,7 @@ class BlogEditorPage extends Component {
           modelId: blog.id,
           type: 'Blog',
           title: blog.title,
-          textContent: blog.textContent,
+          textContent: blog.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(blog.textContent))) : EditorState.createEmpty(),
           isSubPost: false,
           startDay: '',
           endDay: '',
@@ -110,7 +112,7 @@ class BlogEditorPage extends Component {
           type,
           title: pageObj.title || pageObj.description,
           isSubPost: !!pageObj.ParentPostId,
-          textContent: pageObj.textContent || '',
+          textContent: pageObj.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(pageObj.textContent))) : EditorState.createEmpty(),
           eventType: pageObj.eventType,
           startDay: {value: pageObj.startDay},
           endDay: {value: pageObj.endDay},

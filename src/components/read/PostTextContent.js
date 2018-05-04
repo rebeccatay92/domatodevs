@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
+import { Editor } from 'draft-js'
 import { changeActivePost } from '../../actions/readActions'
 
 class PostTextContent extends Component {
@@ -51,16 +52,17 @@ class PostTextContent extends Component {
               })}</span>
             )}
             {this.props.pages.activePostIndex === 'home' && (
-              <span>
-                {this.props.blogContent.split('\n').map((content, i) => {
-                  return (
-                    <span key={i}>
-                      {content}
-                      <br />
-                    </span>
-                  )
-                })}
-              </span>
+              // <span>
+              //   {this.props.blogContent.split('\n').map((content, i) => {
+              //     return (
+              //       <span key={i}>
+              //         {content}
+              //         <br />
+              //       </span>
+              //     )
+              //   })}
+              // </span>
+              <Editor editorState={this.props.blogContent} readOnly />
             )}
             {this.props.pages.activePostIndex === 'home' && this.props.blogHashtags.length > 0 && (
               <div style={{color: '#ed685a'}}>

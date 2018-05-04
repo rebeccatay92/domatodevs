@@ -129,6 +129,7 @@ export const queryBlog = gql`
           endTime
           childPosts {
             id
+            loadSequence
           }
           media {
             id

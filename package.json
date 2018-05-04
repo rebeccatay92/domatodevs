@@ -37,7 +37,8 @@
     "react-spinners": "^0.2.6",
     "react-tag-input": "^5.0.1",
     "redux": "^3.7.2",
-    "request": "^2.85.0"
+    "request": "^2.85.0",
+    "ua-parser-js": "^0.7.17"
   },
   "scripts": {
     "start": "react-scripts start",
