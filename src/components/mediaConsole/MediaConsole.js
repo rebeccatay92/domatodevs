@@ -337,7 +337,7 @@ class MediaConsole extends Component {
     let finalMediaArr = concatArr.map((medium, i) => {
       return {...medium, loadSequence: i + 1}
     })
-    console.log('finalarr', finalMediaArr)
+    // console.log('finalarr', finalMediaArr)
 
 
     this.props.updateActivePage('media', finalMediaArr)

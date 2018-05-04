@@ -65,8 +65,7 @@ class AccountTab extends Component {
     let allCountries = this.props.data.allCountries
     // console.log('allCountries', allCountries)
     return (
-      <div style={{width: '100%', height: 'calc(100vh - 270px)', boxSizing: 'border-box'}}>
-
+      <div style={styles.accountTabContainer}>
         {/* LEFT COLUMN CONTAINER */}
         <div style={styles.leftColumnContainer}>
           {/* LEFT COLUMN DIV WITH BORDER RIGHT */}

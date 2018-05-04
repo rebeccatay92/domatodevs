@@ -3,7 +3,7 @@ import { coreColors, coreFonts } from './cores'
 
 const dropdownContainer = {
   position: 'absolute',
-  top: '26px',
+  bottom: '26px',
   right: '0',
   width: '100px',
   height: 'calc(36px * 4)', // 4 options, each 36px height

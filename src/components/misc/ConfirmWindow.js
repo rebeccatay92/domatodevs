@@ -7,7 +7,8 @@ class ConfirmWindow extends Component {
   render () {
     return (
       <div style={{position: 'fixed', top: '0', left: '0', height: '100vh', width: '100vw', backgroundColor: 'rgba(255, 255, 255, 0.5)', zIndex: '9999'}}>
-        <div style={{border: '1px solid black', margin: '0 auto', width: '40vw', minHeight: '30vh', backgroundColor: 'white', position: 'relative', top: '33%', transform: 'translateY(-50%)', padding: '24px'}}>
+        <div style={{border: '1px solid black', margin: '0 auto', width: '40vw', minHeight: '30vh', backgroundColor: 'white', position: 'relative', top: '33%', transform: 'translateY(-50%)', padding: '24px'}} className={'ignore-react-onclickoutside'}>
+          {/* ignore-react-onclickoutside mean clicking in confirm window is not counted as onclickoutside for whichever component this opens in. eg blog thumbnail dropdown. */}
           <span>{this.props.confirmWindow.message}</span>
           <br /><br />
           <span>{this.props.confirmWindow.secondaryMessage}</span>
