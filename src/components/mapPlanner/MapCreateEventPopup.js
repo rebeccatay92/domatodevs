@@ -15,10 +15,10 @@ import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { graphql, compose } from 'react-apollo'
 import { queryItinerary } from '../../apollo/itinerary'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
-import { createActivity } from '../../apollo/activity'
-import { createFood } from '../../apollo/food'
-import { createLodging } from '../../apollo/lodging'
-import { createLandTransport } from '../../apollo/landtransport'
+// import { createActivity } from '../../apollo/activity'
+// import { createFood } from '../../apollo/food'
+// import { createLodging } from '../../apollo/lodging'
+// import { createLandTransport } from '../../apollo/landtransport'
 
 const _ = require('lodash')
 
@@ -408,9 +408,9 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(null, mapDispatchToProps)(compose(
-  graphql(createActivity, {name: 'createActivity'}),
-  graphql(createFood, {name: 'createFood'}),
-  graphql(createLodging, {name: 'createLodging'}),
-  graphql(createLandTransport, {name: 'createLandTransport'}),
+  // graphql(createActivity, {name: 'createActivity'}),
+  // graphql(createFood, {name: 'createFood'}),
+  // graphql(createLodging, {name: 'createLodging'}),
+  // graphql(createLandTransport, {name: 'createLandTransport'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(MapCreateEventPopup))

@@ -8,11 +8,11 @@ import { constructGooglePlaceDataObj } from '../helpers/location'
 import updateEventLoadSeqAssignment from '../helpers/updateEventLoadSeqAssignment'
 import LocationSearch from './location/LocationSearch'
 
-import { updateActivity } from '../apollo/activity'
-import { updateFlightBooking } from '../apollo/flight'
-import { updateLodging } from '../apollo/lodging'
-import { updateLandTransport } from '../apollo/landtransport'
-import { updateFood } from '../apollo/food'
+// import { updateActivity } from '../apollo/activity'
+// import { updateFlightBooking } from '../apollo/flight'
+// import { updateLodging } from '../apollo/lodging'
+// import { updateLandTransport } from '../apollo/landtransport'
+// import { updateFood } from '../apollo/food'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
 
 import { queryItinerary } from '../apollo/itinerary'
@@ -310,10 +310,10 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps)(compose(
-  graphql(updateActivity, { name: 'updateActivity' }),
-  graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
-  graphql(updateLandTransport, { name: 'updateLandTransport' }),
-  graphql(updateLodging, { name: 'updateLodging' }),
-  graphql(updateFood, { name: 'updateFood' }),
+  // graphql(updateActivity, { name: 'updateActivity' }),
+  // graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
+  // graphql(updateLandTransport, { name: 'updateLandTransport' }),
+  // graphql(updateLodging, { name: 'updateLodging' }),
+  // graphql(updateFood, { name: 'updateFood' }),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(onClickOutside(ActivityInfo)))

@@ -3,11 +3,11 @@ import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
-import { deleteActivity } from '../apollo/activity'
-import { deleteFood } from '../apollo/food'
-import { deleteFlightBooking } from '../apollo/flight'
-import { deleteLandTransport } from '../apollo/landtransport'
-import { deleteLodging } from '../apollo/lodging'
+// import { deleteActivity } from '../apollo/activity'
+// import { deleteFood } from '../apollo/food'
+// import { deleteFlightBooking } from '../apollo/flight'
+// import { deleteLandTransport } from '../apollo/landtransport'
+// import { deleteLodging } from '../apollo/lodging'
 import { queryItinerary } from '../apollo/itinerary'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
 import { deleteEventReassignSequence } from '../helpers/deleteEventReassignSequence'
@@ -72,10 +72,10 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps)(compose(
-  graphql(deleteFood, { name: 'deleteFood' }),
-  graphql(deleteActivity, { name: 'deleteActivity' }),
-  graphql(deleteFlightBooking, { name: 'deleteFlightBooking' }),
-  graphql(deleteLodging, { name: 'deleteLodging' }),
-  graphql(deleteLandTransport, { name: 'deleteLandTransport' }),
+  // graphql(deleteFood, { name: 'deleteFood' }),
+  // graphql(deleteActivity, { name: 'deleteActivity' }),
+  // graphql(deleteFlightBooking, { name: 'deleteFlightBooking' }),
+  // graphql(deleteLodging, { name: 'deleteLodging' }),
+  // graphql(deleteLandTransport, { name: 'deleteLandTransport' }),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(onClickOutside(Radium(EventDropdownMenu))))

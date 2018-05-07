@@ -11,9 +11,9 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle, primaryColor } from '../../Styles/styles'
 
-import { createLandTransport } from '../../apollo/landtransport'
-import { createTrain } from '../../apollo/train'
-import { createSeaTransport } from '../../apollo/seatransport'
+// import { createLandTransport } from '../../apollo/landtransport'
+// import { createTrain } from '../../apollo/train'
+// import { createSeaTransport } from '../../apollo/seatransport'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
@@ -210,10 +210,10 @@ const mapStateToProps = (state) => {
   }
 }
 
+{/* graphql(createLandTransport, {name: 'createLandTransport'}),
+graphql(createSeaTransport, {name: 'createSeaTransport'}),
+graphql(createTrain, {name: 'createTrain'}), */}
 export default connect(mapStateToProps)(compose(
-  graphql(createLandTransport, {name: 'createLandTransport'}),
-  graphql(createSeaTransport, {name: 'createSeaTransport'}),
-  graphql(createTrain, {name: 'createTrain'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(Radium(IntuitiveTransportInput)))

@@ -9,7 +9,7 @@ import DatePicker from 'react-datepicker'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle } from '../../Styles/styles'
-import { createFlightBooking } from '../../apollo/flight'
+// import { createFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
@@ -443,8 +443,8 @@ const mapStateToProps = (state) => {
   }
 }
 
+{/* graphql(createFlightBooking, {name: 'createFlightBooking'}), */}
 export default connect(mapStateToProps)(compose(
-  graphql(createFlightBooking, {name: 'createFlightBooking'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(Radium(IntuitiveFlightInput)))

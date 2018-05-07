@@ -4,13 +4,13 @@ import { DropTarget } from 'react-dnd'
 
 import { dayTimelineContainerStyle, dayTimelineWordStyle } from '../Styles/styles'
 
-import { updateActivity } from '../apollo/activity'
-import { updateFlightBooking } from '../apollo/flight'
-import { updateLodging } from '../apollo/lodging'
-import { updateLandTransport } from '../apollo/landtransport'
-import { updateSeaTransport } from '../apollo/seatransport'
-import { updateTrain } from '../apollo/train'
-import { updateFood } from '../apollo/food'
+// import { updateActivity } from '../apollo/activity'
+// import { updateFlightBooking } from '../apollo/flight'
+// import { updateLodging } from '../apollo/lodging'
+// import { updateLandTransport } from '../apollo/landtransport'
+// import { updateSeaTransport } from '../apollo/seatransport'
+// import { updateTrain } from '../apollo/train'
+// import { updateFood } from '../apollo/food'
 import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
 
 const dayTarget = {
@@ -80,12 +80,12 @@ class PlannerTimelineDayButton extends Component {
 }
 
 export default compose(
-  graphql(updateActivity, { name: 'updateActivity' }),
-  graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
-  graphql(updateLandTransport, { name: 'updateLandTransport' }),
-  graphql(updateLodging, { name: 'updateLodging' }),
-  graphql(updateFood, { name: 'updateFood' }),
-  graphql(updateSeaTransport, {name: 'updateSeaTransport'}),
-  graphql(updateTrain, {name: 'updateTrain'}),
+  // graphql(updateActivity, { name: 'updateActivity' }),
+  // graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
+  // graphql(updateLandTransport, { name: 'updateLandTransport' }),
+  // graphql(updateLodging, { name: 'updateLodging' }),
+  // graphql(updateFood, { name: 'updateFood' }),
+  // graphql(updateSeaTransport, {name: 'updateSeaTransport'}),
+  // graphql(updateTrain, {name: 'updateTrain'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(DropTarget(['activity', 'plannerActivity'], dayTarget, collectTarget)(PlannerTimelineDayButton))

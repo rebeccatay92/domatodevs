@@ -16,7 +16,7 @@ import FlightInstanceNotesAttachments from '../eventFormComponents/FlightInstanc
 import SubmitCancelForm from '../eventFormComponents/SubmitCancelForm'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
-import { createFlightBooking } from '../../apollo/flight'
+// import { createFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
@@ -385,7 +385,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps)(compose(
-  graphql(createFlightBooking, {name: 'createFlightBooking'}),
+  // graphql(createFlightBooking, {name: 'createFlightBooking'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(Radium(CreateFlightForm)))

@@ -14,7 +14,7 @@ import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 import ScheduleOfEvents from '../eventFormComponents/ScheduleOfEvents'
 
-import { createFood } from '../../apollo/food'
+// import { createFood } from '../../apollo/food'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
@@ -370,6 +370,6 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps)(compose(
-  graphql(createFood, {name: 'createFood'}),
+  // graphql(createFood, {name: 'createFood'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(Radium(CreateFoodForm)))

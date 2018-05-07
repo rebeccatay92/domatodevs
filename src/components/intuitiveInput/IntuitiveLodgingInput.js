@@ -12,7 +12,7 @@ import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle, primaryColor } from '../../Styles/styles'
 
-import { createLodging } from '../../apollo/lodging'
+// import { createLodging } from '../../apollo/lodging'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
@@ -216,8 +216,8 @@ const mapStateToProps = (state) => {
   }
 }
 
+{/* graphql(createLodging, {name: 'createLodging'}), */}
 export default connect(mapStateToProps)(compose(
-  graphql(createLodging, {name: 'createLodging'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
 )(Radium(IntuitiveLodgingInput)))

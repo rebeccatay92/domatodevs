@@ -1,7 +1,7 @@
 import { gql } from 'react-apollo'
 
-export const findItinerary = gql`
-  query findItinerary($id: ID!) {
+export const queryItinerary = gql`
+  query queryItinerary($id: ID!) {
     findItinerary(id: $id){
       id
       name

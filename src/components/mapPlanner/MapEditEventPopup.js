@@ -15,10 +15,10 @@ import { Button } from 'react-bootstrap'
 import { graphql, compose } from 'react-apollo'
 import { queryItinerary } from '../../apollo/itinerary'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
-import { updateActivity } from '../../apollo/activity'
-import { updateFood } from '../../apollo/food'
-import { updateLodging } from '../../apollo/lodging'
-import { updateLandTransport } from '../../apollo/landtransport'
+// import { updateActivity } from '../../apollo/activity'
+// import { updateFood } from '../../apollo/food'
+// import { updateLodging } from '../../apollo/lodging'
+// import { updateLandTransport } from '../../apollo/landtransport'
 
 import moment from 'moment'
 const _ = require('lodash')
@@ -483,9 +483,9 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(null, mapDispatchToProps)(compose(
-  graphql(updateActivity, {name: 'updateActivity'}),
-  graphql(updateFood, {name: 'updateFood'}),
-  graphql(updateLodging, {name: 'updateLodging'}),
-  graphql(updateLandTransport, {name: 'updateLandTransport'}),
+  // graphql(updateActivity, {name: 'updateActivity'}),
+  // graphql(updateFood, {name: 'updateFood'}),
+  // graphql(updateLodging, {name: 'updateLodging'}),
+  // graphql(updateLandTransport, {name: 'updateLandTransport'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'})
 )(MapEditEventPopup))

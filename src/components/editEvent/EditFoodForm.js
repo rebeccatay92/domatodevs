@@ -14,7 +14,7 @@ import Notes from '../eventFormComponents/Notes'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
-import { updateFood, deleteFood } from '../../apollo/food'
+// import { updateFood, deleteFood } from '../../apollo/food'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
@@ -513,7 +513,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(updateFood, {name: 'updateFood'}),
+  // graphql(updateFood, {name: 'updateFood'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
-  graphql(deleteFood, {name: 'deleteFood'})
+  // graphql(deleteFood, {name: 'deleteFood'})
 )(Radium(EditFoodForm)))

@@ -4,11 +4,11 @@ import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
 import { columnValueContainerStyle, expandEventIconStyle } from '../Styles/styles'
 
-import { updateActivity } from '../apollo/activity'
-import { updateFlightBooking, updateFlightInstance } from '../apollo/flight'
-import { updateLodging } from '../apollo/lodging'
-import { updateLandTransport } from '../apollo/landtransport'
-import { updateFood } from '../apollo/food'
+// import { updateActivity } from '../apollo/activity'
+// import { updateFlightBooking, updateFlightInstance } from '../apollo/flight'
+// import { updateLodging } from '../apollo/lodging'
+// import { updateLandTransport } from '../apollo/landtransport'
+// import { updateFood } from '../apollo/food'
 
 import { queryItinerary } from '../apollo/itinerary'
 
@@ -246,10 +246,10 @@ class PlannerColumnValue extends Component {
 }
 
 export default compose(
-  graphql(updateActivity, { name: 'updateActivity' }),
-  graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
-  graphql(updateFlightInstance, { name: 'updateFlightInstance' }),
-  graphql(updateLandTransport, { name: 'updateLandTransport' }),
-  graphql(updateLodging, { name: 'updateLodging' }),
-  graphql(updateFood, { name: 'updateFood' })
+  // graphql(updateActivity, { name: 'updateActivity' }),
+  // graphql(updateFlightBooking, { name: 'updateFlightBooking' }),
+  // graphql(updateFlightInstance, { name: 'updateFlightInstance' }),
+  // graphql(updateLandTransport, { name: 'updateLandTransport' }),
+  // graphql(updateLodging, { name: 'updateLodging' }),
+  // graphql(updateFood, { name: 'updateFood' })
 )(onClickOutside(Radium(PlannerColumnValue)))
