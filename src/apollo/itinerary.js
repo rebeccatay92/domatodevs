@@ -1,484 +1,60 @@
 import { gql } from 'react-apollo'
 
-export const queryItinerary = gql`
-  query queryItinerary($id: ID!) {
+export const findItinerary = gql`
+  query findItinerary($id: ID!) {
     findItinerary(id: $id){
       id
       name
       description
-      # countries {
-      #   id
-      #   name
-      #   code
-      # }
+      countries {
+        id
+        name
+        code
+      }
       days
       startDate
       events {
-        modelId
-        type
+        id
+        ItineraryId
+        eventType
+        startDay
+        startTime
+        endTime
         loadSequence
-        start
-        day
-        time
-        utcOffset
-        timeUtcZero
-        Activity {
+        notes
+        cost
+        currency
+        bookingService
+        bookingConfirmation
+        location {
           id
-          description
-          startTime
-          endTime
+          verified
+          placeId
+          name
+          address
+          telephone
+          latitude
+          longitude
           utcOffset
-          location {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
+          openingHours {
+            open {
+              day
+              time
             }
-            openingHoursText
-            imageUrl
+            close {
+              day
+              time
+            }
           }
-          locationAlias
-          startDay
-          endDay
-          loadSequence
-          currency
-          cost
-          bookedThrough
-          bookingConfirmation
-          bookingStatus
-          notes
-          attachments {
-            id
-            fileName
-            fileAlias
-            fileType
-            fileSize
-          }
-          backgroundImage
-          openingHoursValidation
-          allDayEvent
+          openingHoursText
+          imageUrl
         }
-        Food {
+        attachments {
           id
-          description
-          location {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          locationAlias
-          startDay
-          endDay
-          startTime
-          endTime
-          utcOffset
-          loadSequence
-          currency
-          cost
-          bookedThrough
-          bookingConfirmation
-          bookingStatus
-          notes
-          attachments {
-            id
-            fileName
-            fileAlias
-            fileType
-            fileSize
-          }
-          backgroundImage
-          openingHoursValidation
-          allDayEvent
-        }
-        Lodging {
-          id
-          description
-          location {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          locationAlias
-          startDay
-          endDay
-          startTime
-          endTime
-          startLoadSequence
-          endLoadSequence
-          currency
-          cost
-          bookedThrough
-          bookingConfirmation
-          bookingStatus
-          arrivalNotes
-          departureNotes
-          attachments {
-            id
-            fileName
-            fileAlias
-            fileType
-            fileSize
-            arrivalDeparture
-          }
-          backgroundImage
-        }
-        LandTransport {
-          id
-          departureLocation {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          arrivalLocation {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          departureLocationAlias
-          arrivalLocationAlias
-          startDay
-          startTime
-          endDay
-          endTime
-          startLoadSequence
-          endLoadSequence
-          currency
-          cost
-          bookedThrough
-          bookingConfirmation
-          bookingStatus
-          departureNotes
-          arrivalNotes
-          attachments {
-            id
-            fileName
-            fileAlias
-            fileType
-            fileSize
-            arrivalDeparture
-          }
-          backgroundImage
-        }
-        SeaTransport {
-          id
-          departureLocation {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          arrivalLocation {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          departureLocationAlias
-          arrivalLocationAlias
-          startDay
-          startTime
-          endDay
-          endTime
-          startLoadSequence
-          endLoadSequence
-          currency
-          cost
-          bookedThrough
-          bookingConfirmation
-          bookingStatus
-          departureNotes
-          arrivalNotes
-          attachments {
-            id
-            fileName
-            fileAlias
-            fileType
-            fileSize
-            arrivalDeparture
-          }
-          backgroundImage
-        }
-        Train {
-          id
-          departureLocation {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          arrivalLocation {
-            id
-            placeId
-            name
-            address
-            telephone
-            latitude
-            longitude
-            utcOffset
-            openingHours {
-              open {
-                day
-                time
-              }
-              close {
-                day
-                time
-              }
-            }
-            openingHoursText
-            imageUrl
-          }
-          departureLocationAlias
-          arrivalLocationAlias
-          startDay
-          startTime
-          endDay
-          endTime
-          startLoadSequence
-          endLoadSequence
-          currency
-          cost
-          bookedThrough
-          bookingConfirmation
-          bookingStatus
-          departureNotes
-          arrivalNotes
-          attachments {
-            id
-            fileName
-            fileAlias
-            fileType
-            fileSize
-            arrivalDeparture
-          }
-          backgroundImage
-        }
-        Flight {
-          FlightInstance {
-            id
-            FlightBookingId
-            flightNumber
-            airlineCode
-            airlineName
-            departureIATA
-            arrivalIATA
-            departureAirport
-            arrivalAirport
-            departureCityCountry
-            arrivalCityCountry
-            durationMins
-            departureLocation {
-              id
-              placeId
-              name
-              address
-              telephone
-              latitude
-              longitude
-              utcOffset
-              openingHours {
-                open {
-                  day
-                  time
-                }
-                close {
-                  day
-                  time
-                }
-              }
-              openingHoursText
-              imageUrl
-            }
-            arrivalLocation {
-              id
-              placeId
-              name
-              address
-              telephone
-              latitude
-              longitude
-              utcOffset
-              openingHours {
-                open {
-                  day
-                  time
-                }
-                close {
-                  day
-                }
-              }
-              openingHoursText
-              imageUrl
-            }
-            departureTerminal
-            arrivalTerminal
-            startDay
-            endDay
-            startTime
-            endTime
-            startLoadSequence
-            endLoadSequence
-            departureNotes
-            arrivalNotes
-            firstFlight
-            attachments {
-              id
-              fileName
-              fileAlias
-              fileType
-              fileSize
-              arrivalDeparture
-            }
-          }
-          FlightBooking {
-            id
-            ItineraryId
-            paxAdults
-            paxChildren
-            paxInfants
-            cost
-            currency
-            classCode
-            departureIATA
-            arrivalIATA
-            departureName
-            arrivalName
-            departureDate
-            returnDate
-            bookingStatus
-            bookedThrough
-            bookingConfirmation
-            backgroundImage
-          }
+          fileName
+          fileAlias
+          fileSize
+          fileType
         }
       }
     }
@@ -538,7 +114,7 @@ export const itinerariesByUser = gql`
 export const createItinerary = gql`
   mutation createItinerary(
     $UserId: Int!,
-    # $CountryId: Int,
+    $CountryId: Int,
     $name: String!,
     $description: String,
     $days: Int!,
@@ -546,7 +122,7 @@ export const createItinerary = gql`
   ) {
     createItinerary(
       UserId:$UserId,
-      # CountryId: $CountryId,
+      CountryId: $CountryId,
       name: $name,
       description: $description,
       days: $days,
@@ -557,7 +133,12 @@ export const createItinerary = gql`
       days
       startDate
       description
-    }
+      countries {
+        id
+        name
+        code
+      }
+      }
   }`
 
 export const updateItineraryDetails = gql`
@@ -590,12 +171,12 @@ export const deleteItinerary = gql`
 
 export const createCountriesItineraries = gql`
   mutation createCountriesItineraries(
-    $ItineraryId: Int!,
-    $countryCode: String!
+    $ItineraryId: ID!,
+    $CountryId: ID!
   ) {
     createCountriesItineraries(
       ItineraryId: $ItineraryId,
-      countryCode: $countryCode
+      CountryId: $CountryId
     ) {
       ItineraryId
       CountryId
