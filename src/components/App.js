@@ -24,14 +24,15 @@ import history from './Auth0/history'
 import Lock from './Auth0/lock'
 
 import GoogleCloudStorage from './Google/GoogleCloudStorage'
-const GoogleCloudStorageInstance = new GoogleCloudStorage()
 
+import PlannerSideBar from './PlannerSideBar'
+
+const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 
 class App extends Component {
   render () {
     // var isAuthenticated = lock.isAuthenticated()
-    // var userId = window.localStorage.getItem('user_id')
     return (
       <Router history={history}>
         <div style={{backgroundColor: '#FFFFFF'}}>
@@ -42,6 +43,8 @@ class App extends Component {
           }
 
           <div style={{width: '100%', marginTop: '52px'}}>
+            <PlannerSideBar />
+            {/* REACT-ROUTER NEEDS TO CHANGE TO V4 FOR CONDITIONAL RENDERING. PUBLIC/PRIVATE */}
             <Route exact path='/' render={(props) => (
               <HomePage {...props} />
             )} />
