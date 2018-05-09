@@ -29,8 +29,18 @@ class PlannerSideBar extends Component {
                 <i className='material-icons' style={styles.icon}>schedule</i>
               </div>
               <div style={styles.inputSection}>
-                date, startTime, endTime
-                <span style={styles.labelText}>Date and Time</span>
+                <label style={styles.labelContainer}>
+                  <span style={styles.labelText}>Day / Date</span>
+                  <select style={styles.dayDropdown}>
+                    <option style={{margin: 0}}>Day 1</option>
+                  </select>
+                </label>
+                <label style={styles.labelContainer}>
+                  <span style={styles.labelText}>Time</span>
+                  <input type='time' style={styles.timeInput} />
+                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '14px', color: 'rgba(60, 58, 68, 0.7)', margin: '0 5px 0 5px'}}>to</span>
+                  <input type='time' style={styles.timeInput} />
+                </label>
               </div>
             </div>
             <hr style={styles.sectionDivider} />
@@ -40,28 +50,28 @@ class PlannerSideBar extends Component {
               </div>
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
-                  <input type='text' placeholder={'-'} style={styles.inputField} />
                   <span style={styles.labelText}>Event Type</span>
+                  <input type='text' placeholder={'-'} style={styles.inputField} />
                 </label>
               </div>
             </div>
             <hr style={styles.sectionDivider} />
-            <div style={{width: '100%', height: 'calc(64px * 3)', display: 'flex'}}>
+            <div style={styles.minHeightSection}>
               <div style={styles.iconSection}>
                 <i className='material-icons' style={styles.icon}>map</i>
               </div>
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
+                  <span style={styles.labelText}>Location name</span>
                   <input type='text' placeholder='-' style={styles.inputField} />
-                  <span style={styles.labelText}>Location</span>
                 </label>
                 <label style={styles.labelContainer}>
-                  <textarea placeholder='-' style={styles.inputField} />
                   <span style={styles.labelText}>Address</span>
+                  <span style={styles.addressText}>Lorong 12 Geylang Singapore 123456 </span>
                 </label>
                 <label style={styles.labelContainer}>
-                  <input type='text' placeholder='-' style={styles.inputField} />
                   <span style={styles.labelText}>Opening Hours</span>
+                  <input type='text' placeholder='-' style={styles.inputField} />
                 </label>
               </div>
             </div>
@@ -72,24 +82,24 @@ class PlannerSideBar extends Component {
               </div>
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
-                  <input type='number' placeholder={'-'} style={styles.inputField} />
                   <span style={styles.labelText}>Cost</span>
+                  <input type='number' placeholder={'-'} style={styles.inputField} />
                 </label>
               </div>
             </div>
             <hr style={styles.sectionDivider} />
-            <div style={{width: '100%', height: 'calc(64px * 2)', display: 'flex'}}>
+            <div style={styles.minHeightSection}>
               <div style={styles.iconSection}>
                 <i className='material-icons' style={styles.icon}>credit_card</i>
               </div>
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
-                  <input type='text' placeholder={'-'} style={styles.inputField} />
                   <span style={styles.labelText}>Booking service</span>
+                  <input type='text' placeholder={'-'} style={styles.inputField} />
                 </label>
                 <label style={styles.labelContainer}>
-                  <input type='text' placeholder={'-'} style={styles.inputField} />
                   <span style={styles.labelText}>Confirmation number</span>
+                  <input type='text' placeholder={'-'} style={styles.inputField} />
                 </label>
               </div>
             </div>
@@ -100,13 +110,13 @@ class PlannerSideBar extends Component {
               </div>
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
-                  <textarea placeholder={'-'} style={styles.inputField} />
                   <span style={styles.labelText}>Notes</span>
+                  <textarea placeholder={'-'} style={styles.notesTextArea} />
                 </label>
               </div>
             </div>
             <hr style={styles.sectionDivider} />
-            <div style={{width: '100%', height: '235px', display: 'flex'}}>
+            <div style={{width: '100%', display: 'flex'}}>
               <div style={styles.iconSection}>
                 <i className='material-icons' style={styles.icon}>attach_file</i>
               </div>

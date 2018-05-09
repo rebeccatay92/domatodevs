@@ -54,28 +54,28 @@ const tabText = {
 
 const mainAreaContainer = {
   zIndex: 1,
-  width: '344px', // entire content bar width
+  // 1920/12*2 col = 320px
+  width: '320px', // entire content bar width
   height: '872px',
   background: 'rgb(245, 245, 245)',
   border: `1px solid ${coreColors.blackSolid}`,
-  padding: '8px'
+  padding: '16px' // more padding else too close to edge
 }
 
 const sectionDivider = {
-  margin: '0 0 0 40px',
+  margin: '8px 0 8px 0',
   border: `1px solid ${coreColors.black01}`
 }
 
 const minHeightSection = {
-  width: '328px', // 344px - 16px
-  height: '64px',
+  width: '288px', // 320px - (16px padding *2)
+  minHeight: '60px', // 25px label + 35px input field
   display: 'flex'
 }
 
 const iconSection = {
   height: '100%',
   width: '40px',
-  // border: '1px solid red',
   display: 'flex',
   justifyContent: 'center'
 }
@@ -83,42 +83,78 @@ const iconSection = {
 const icon = {
   width: '24px',
   height: '24px',
-  marginTop: '8px'
+  marginRight: '16px'
 }
 
-// const locationSection = {
-//   ...minHeightSection,
-//
-// }
 /* ----------------------------- */
 
 const inputSection = {
-  width: '288px', // 344px
+  width: '248px', // 288px - 24px - 16px marginRight
   height: '100%'
 }
 
 const labelContainer = {
-  width: '288px',
+  width: '248px',
   margin: 0
 }
 
 const inputField = {
-  width: '288px',
-  height: '40px',
+  width: '248px',
+  height: '35px',
   ...coreFonts.robotoLight,
   fontSize: '16px',
+  lineHeight: '24px',
   color: coreColors.blackSolid,
   outline: 'none',
   background: 'rgb(245, 245, 245)'
 }
 
+const dayDropdown = {
+  width: '100px',
+  height: '35px',
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  color: coreColors.blackSolid,
+  background: 'rgb(245, 245, 245)',
+  border: 'none',
+  marginLeft: '-7px'
+}
+
+const timeInput = {
+  height: '35px',
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  color: coreColors.blackSolid,
+  background: 'rgb(245,245,245)',
+  outline: 'none',
+  margin: 0
+}
+
 const labelText = {
   display: 'block',
   ...coreFonts.robotoLight,
-  fontSize: '13px',
+  fontSize: '14px',
   lineHeight: '24px',
   height: '24px',
   color: coreColors.black07
+}
+
+const addressText = {
+  display: 'block',
+  ...coreFonts.robotoLight,
+  color: coreColors.blackSolid,
+  fontSize: '16px',
+  lineHeight: '24px'
+}
+
+const notesTextArea = {
+  width: '100%',
+  height: '48px',
+  background: 'rgb(245,245,245)',
+  lineHeight: '24px',
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  color: coreColors.blackSolid
 }
 
 const attachFileLabelText = {
@@ -126,8 +162,9 @@ const attachFileLabelText = {
   ...coreFonts.robotoLight,
   fontSize: '16px',
   color: coreColors.blackSolid,
-  lineHeight: '40px',
-  height: '40px'
+  lineHeight: '24px',
+  height: '24px',
+  margin: 0
 }
 /* ----------------------------- */
 export const PlannerSideBarStyles = {
@@ -143,7 +180,11 @@ export const PlannerSideBarStyles = {
   icon,
   inputSection,
   labelContainer,
+  dayDropdown,
+  timeInput,
   inputField,
   labelText,
+  addressText,
+  notesTextArea,
   attachFileLabelText
 }
