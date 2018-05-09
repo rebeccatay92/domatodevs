@@ -54,23 +54,22 @@ const tabText = {
 
 const mainAreaContainer = {
   zIndex: 1,
-  width: '344px',
+  width: '344px', // entire content bar width
   height: '872px',
   background: 'rgb(245, 245, 245)',
   border: `1px solid ${coreColors.blackSolid}`,
-  padding: '9px'
+  padding: '8px'
 }
 
 const sectionDivider = {
   margin: '0 0 0 40px',
-  border: `1px solid ${coreColors.black03}`
+  border: `1px solid ${coreColors.black01}`
 }
 
 const minHeightSection = {
-  width: '100%',
+  width: '328px', // 344px - 16px
   height: '64px',
   display: 'flex'
-  // border: '1px solid blue'
 }
 
 const iconSection = {
@@ -94,10 +93,41 @@ const icon = {
 /* ----------------------------- */
 
 const inputSection = {
-  width: 'calc(100% - 40px)',
-  height: '100%',
-  border: '1px solid green',
-  padding: '8px'
+  width: '288px', // 344px
+  height: '100%'
+}
+
+const labelContainer = {
+  width: '288px',
+  margin: 0
+}
+
+const inputField = {
+  width: '288px',
+  height: '40px',
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  color: coreColors.blackSolid,
+  outline: 'none',
+  background: 'rgb(245, 245, 245)'
+}
+
+const labelText = {
+  display: 'block',
+  ...coreFonts.robotoLight,
+  fontSize: '13px',
+  lineHeight: '24px',
+  height: '24px',
+  color: coreColors.black07
+}
+
+const attachFileLabelText = {
+  display: 'block',
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  color: coreColors.blackSolid,
+  lineHeight: '40px',
+  height: '40px'
 }
 /* ----------------------------- */
 export const PlannerSideBarStyles = {
@@ -111,5 +141,9 @@ export const PlannerSideBarStyles = {
   minHeightSection,
   iconSection,
   icon,
-  inputSection
+  inputSection,
+  labelContainer,
+  inputField,
+  labelText,
+  attachFileLabelText
 }
