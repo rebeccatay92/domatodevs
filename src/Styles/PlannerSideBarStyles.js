@@ -154,7 +154,8 @@ const notesTextArea = {
   lineHeight: '24px',
   ...coreFonts.robotoLight,
   fontSize: '16px',
-  color: coreColors.blackSolid
+  color: coreColors.blackSolid,
+  resize: 'none'
 }
 
 const attachFileLabelText = {
