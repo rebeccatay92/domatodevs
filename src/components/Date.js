@@ -68,7 +68,8 @@ class DateBox extends Component {
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} daysArr={this.props.daysArr} />
+              {/* <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} daysArr={this.props.daysArr} /> */}
+              <th></th>
               <th style={dateTableFirstHeaderStyle} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
                 <Element name={'day-' + this.props.day}>
                   <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px', cursor: 'default'}}>
@@ -83,18 +84,17 @@ class DateBox extends Component {
                   </div>
                 </Element>
               </th>
-              {[1, 2, 3].map(i => {
+              {/* {[1, 2, 3].map(i => {
                 return !this.props.firstDay && (
                   <th style={dateTableOtherHeaderStyle} key={i} />
                 )
-              })}
-              {this.props.firstDay && (
+              })} */}
+              {/* {this.props.firstDay && (
               this.props.columns.map((column, i) => {
                 return (
                   <PlannerColumnHeader key={i} column={column} index={i} />
                 )
-              })
-            )}
+              }))} */}
             </tr>
             <tr>
               <td style={timelineColumnStyle()}>

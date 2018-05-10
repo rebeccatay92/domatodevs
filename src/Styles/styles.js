@@ -115,7 +115,7 @@ export const eventBoxStyle = (draggable, activityId, clash, allDay) => {
   }
 }
 export const eventBoxFirstColumnStyle = (activity, minHeight, draggedItem) => {
-  return { lineHeight: '100%', padding: '0', minHeight: '80px', position: 'relative', border: !activity.modelId ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.modelId === activity.modelId ? 'none' : 'none') }
+  return { lineHeight: '100%', padding: '0', minHeight: '80px', position: 'relative', border: !activity.id ? '1px dotted black' : (draggedItem.type === activity.type && draggedItem.id === activity.id ? 'none' : 'none') }
 }
 export const expandedEventPropStyle = {color: mainFontColor}
 export const expandedEventValueStyle = {color: mainFontColor}

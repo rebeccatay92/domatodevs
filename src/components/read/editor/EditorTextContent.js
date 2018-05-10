@@ -11,7 +11,7 @@ import EditorTextContentEditor from './EditorTextContentEditor'
 
 // import Editor, { createEditorStateWithText } from 'draft-js-plugins-editor'
 // import createInlineToolbarPlugin from 'draft-js-inline-toolbar-plugin'
-import { convertToRaw } from 'draft-js'
+import { convertToRaw, convertFromRaw, EditorState } from 'draft-js'
 // import {
 //   ItalicButton,
 //   BoldButton,
@@ -249,7 +249,7 @@ class EditorTextContent extends Component {
           modelId: blog.id,
           type: 'Blog',
           title: blog.title,
-          textContent: blog.textContent,
+          textContent: blog.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(blog.textContent))) : EditorState.createEmpty(),
           days: blog.days,
           hashtags: blog.hashtags ? blog.hashtags.map(hashtag => {
             return {
@@ -269,7 +269,7 @@ class EditorTextContent extends Component {
           type,
           title: pageObj.title || pageObj.description,
           isSubPost: !!pageObj.ParentPostId,
-          textContent: pageObj.textContent || '',
+          textContent: pageObj.textContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(pageObj.textContent))) : EditorState.createEmpty(),
           eventType: pageObj.eventType,
           startDay: {value: pageObj.startDay},
           endDay: {value: pageObj.endDay},

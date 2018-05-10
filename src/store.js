@@ -21,6 +21,9 @@ import { googleCloudTokenReducer } from './reducers/googleCloudTokenReducer'
 import { editorPostsListDragDropReducer } from './reducers/editorPostsListDragDropReducer'
 import { navBarReducer } from './reducers/navBarReducer'
 
+// Reducers for v2
+import { columnsReducer } from './reducers/planner/columnsReducer'
+
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
 const networkInterface = createNetworkInterface({
@@ -63,6 +66,7 @@ const store = createStore(combineReducers({
   confirmWindow: confirmWindowReducer,
   editorPostsListDragDrop: editorPostsListDragDropReducer,
   navBar: navBarReducer,
+  columns: columnsReducer,
   apollo: client.reducer()
 }),
 {},

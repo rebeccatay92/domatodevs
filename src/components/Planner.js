@@ -5,10 +5,9 @@ import { initializePlanner } from '../actions/plannerActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
-import { Scrollbars } from 'react-custom-scrollbars'
 import { plannerContainerStyle } from '../Styles/styles'
-import DateBox from './Date'
-import PlannerHeader from './PlannerHeader'
+import DateBox from './planner/Date'
+// import PlannerHeader from './PlannerHeader'
 
 const _ = require('lodash')
 
@@ -25,7 +24,7 @@ const getDates = (startDate, days) => {
 class Planner extends Component {
   constructor (props) {
     super(props)
-    this.handleScrollBound = (e) => this.handleScroll(e)
+    // this.handleScrollBound = (e) => this.handleScroll(e)
 
     this.state = {
       draggable: true
@@ -69,12 +68,12 @@ class Planner extends Component {
         } thumbSize={60} onScroll={(e) => this.handleScroll(e)}> */}
         {/* PLANNER HEADER TAKES DATE PROP OF TYPE MILLISECS (GETTIME) */}
         <div>
-          {newDates &&
+          {/* {newDates &&
             <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} startDate={newDates[0]} endDate={newDates[newDates.length - 1]} />
           }
           {!newDates &&
             <PlannerHeader name={this.props.data.findItinerary.name} description={this.props.data.findItinerary.description} id={this.props.id} days={days} />
-          }
+          } */}
           <div>
             {daysArr.map((day, i) => {
               // if newDates exists, find date using day
@@ -109,34 +108,34 @@ class Planner extends Component {
     document.removeEventListener('scroll', this.handleScrollBound)
   }
 
-  handleScroll (e) {
-    function offset (el) {
-      const rect = el.getBoundingClientRect()
-        // scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      return { top: rect.top }
-    }
-
-    var div = document.querySelector('#timeline-top')
-    var divOffset
-    divOffset = offset(div)
-    const days = this.props.data.findItinerary.days
-    let obj = {}
-    for (var i = 1; i <= days; i++) {
-      var dateDiv = document.querySelector(`#day-${i}`)
-      if (i === 1 || offset(dateDiv).top < 100) {
-        Object.keys(obj).forEach(key => {
-          obj[key] = false
-        })
-        obj[`day ${i}`] = i === 1 ? true : offset(dateDiv).top < 100
-      }
-    }
-    // console.log(_.isEqual(obj, this.state.dateOffsets))
-    // if ((divOffset.top < 0) === this.props.timelineDay.timelineAtTop && _.isEqual(obj, this.props.timelineDay.dateOffsets)) return
-    this.props.toggleTimelineDay({
-      timelineAtTop: divOffset.top < 50,
-      dateOffsets: obj
-    })
-  }
+  // handleScroll (e) {
+  //   function offset (el) {
+  //     const rect = el.getBoundingClientRect()
+  //       // scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  //     return { top: rect.top }
+  //   }
+  //
+  //   var div = document.querySelector('#timeline-top')
+  //   var divOffset
+  //   divOffset = offset(div)
+  //   const days = this.props.data.findItinerary.days
+  //   let obj = {}
+  //   for (var i = 1; i <= days; i++) {
+  //     var dateDiv = document.querySelector(`#day-${i}`)
+  //     if (i === 1 || offset(dateDiv).top < 100) {
+  //       Object.keys(obj).forEach(key => {
+  //         obj[key] = false
+  //       })
+  //       obj[`day ${i}`] = i === 1 ? true : offset(dateDiv).top < 100
+  //     }
+  //   }
+  //   // console.log(_.isEqual(obj, this.state.dateOffsets))
+  //   // if ((divOffset.top < 0) === this.props.timelineDay.timelineAtTop && _.isEqual(obj, this.props.timelineDay.dateOffsets)) return
+  //   this.props.toggleTimelineDay({
+  //     timelineAtTop: divOffset.top < 50,
+  //     dateOffsets: obj
+  //   })
+  // }
 
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {

@@ -24,13 +24,13 @@ const columnValues = {
   }
 }
 
-const flightBookingOrInstance = {
-  Price: 'FlightBooking',
-  'Booking Status': 'FlightBooking',
-  'Booking Platform': 'FlightBooking',
-  'Booking Number': 'FlightBooking',
-  Notes: 'FlightInstance'
-}
+// const flightBookingOrInstance = {
+//   Price: 'FlightBooking',
+//   'Booking Status': 'FlightBooking',
+//   'Booking Platform': 'FlightBooking',
+//   'Booking Number': 'FlightBooking',
+//   Notes: 'FlightInstance'
+// }
 
 class PlannerColumnValue extends Component {
   constructor (props) {
@@ -38,29 +38,26 @@ class PlannerColumnValue extends Component {
 
     let value, currency
 
-    if (props.activity && props.activity.type !== 'Flight') currency = props.activity[props.activity.type].currency
-    else if (props.activity) currency = props.activity.Flight.FlightBooking.currency
+    currency = props.activity.currency
 
-    if (!props.expandedEvent && props.column !== 'Notes') value = props.activity[props.activity.type][columnValues[props.column]]
+    if (!props.expandedEvent && props.column !== 'Notes') value = props.activity[columnValues[props.column]]
     if (!props.expandedEvent && props.column === 'Notes') {
-      if (props.activity.type === 'Flight') {
-        if (props.activity.start) {
-          value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column].departure]
-        } else {
-          value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column].arrival]
-        }
-      } else if (props.activity.type === 'LandTransport') {
-        if (props.activity.start) {
-          value = props.activity[props.activity.type][columnValues[props.column].departure]
-        } else {
-          value = props.activity[props.activity.type][columnValues[props.column].arrival]
-        }
-      } else {
-        value = props.activity[props.activity.type][columnValues[props.column].single]
-      }
+      // if (props.activity.type === 'Flight') {
+      //   if (props.activity.start) {
+      //     value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column].departure]
+      //   } else {
+      //     value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column].arrival]
+      //   }
+      // } else if (props.activity.type === 'LandTransport') {
+      //   if (props.activity.start) {
+      //     value = props.activity[props.activity.type][columnValues[props.column].departure]
+      //   } else {
+      //     value = props.activity[props.activity.type][columnValues[props.column].arrival]
+      //   }
+      // } else {
+      value = props.activity[columnValues[props.column].single]
+      // }
     }
-
-    if (!props.expandedEvent && props.activity.type === 'Flight' && props.column !== 'Notes') value = props.activity[props.activity.type][flightBookingOrInstance[props.column]][columnValues[props.column]]
 
     this.state = {
       editing: false,
@@ -73,25 +70,26 @@ class PlannerColumnValue extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.expandedEvent) return
     let value
-    value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column]]
-    if (!nextProps.expandedEvent && nextProps.column === 'Notes') {
-      if (nextProps.activity.type === 'Flight') {
-        if (nextProps.activity.start) {
-          value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column].departure]
-        } else {
-          value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column].arrival]
-        }
-      } else if (nextProps.activity.type === 'LandTransport') {
-        if (nextProps.activity.start) {
-          value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].departure]
-        } else {
-          value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].arrival]
-        }
-      } else {
-        value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].single]
-      }
-    }
-    if (nextProps.activity.type === 'Flight' && nextProps.column !== 'Notes') value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column]]
+    value = nextProps.activity[columnValues[nextProps.column]]
+    // if (!nextProps.expandedEvent && nextProps.column === 'Notes') {
+    //   if (nextProps.activity.type === 'Flight') {
+    //     if (nextProps.activity.start) {
+    //       value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column].departure]
+    //     } else {
+    //       value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column].arrival]
+    //     }
+    //   } else
+    //   if (nextProps.activity.type === 'LandTransport') {
+    //     if (nextProps.activity.start) {
+    //       value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].departure]
+    //     } else {
+    //       value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].arrival]
+    //     }
+    //   } else {
+    //     value = nextProps.activity[nextProps.activity.type][columnValues[nextProps.column].single]
+    //   }
+    // }
+    // if (nextProps.activity.type === 'Flight' && nextProps.column !== 'Notes') value = nextProps.activity[nextProps.activity.type][flightBookingOrInstance[nextProps.column]][columnValues[nextProps.column]]
 
     if (this.state.value !== value) {
       this.setState({
@@ -114,58 +112,58 @@ class PlannerColumnValue extends Component {
     }
   }
 
-  handleEdit () {
-    this.setState({
-      editing: false
-    })
+  // handleEdit () {
+  //   this.setState({
+  //     editing: false
+  //   })
+  //
+  //   if (this.state.value === this.state.newValue) return
+  //
+  //   this.setState({
+  //     value: this.state.newValue
+  //   })
 
-    if (this.state.value === this.state.newValue) return
+    // let noteType
+    // if (this.props.activity.type === 'Flight' || this.props.activity.type === 'LandTransport') {
+    //   if (this.props.activity.start) {
+    //     noteType = 'departure'
+    //   } else {
+    //     noteType = 'arrival'
+    //   }
+    // } else {
+    // noteType = 'single'
+    // }
 
-    this.setState({
-      value: this.state.newValue
-    })
+    // const update = {
+    //   Activity: this.props.updateActivity,
+    //   Flight: flightBookingOrInstance[this.props.column] === 'FlightBooking' ? this.props.updateFlightBooking : this.props.updateFlightInstance,
+    //   Lodging: this.props.updateLodging,
+    //   Food: this.props.updateFood,
+    //   LandTransport: this.props.updateLandTransport
+    // }
 
-    let noteType
-    if (this.props.activity.type === 'Flight' || this.props.activity.type === 'LandTransport') {
-      if (this.props.activity.start) {
-        noteType = 'departure'
-      } else {
-        noteType = 'arrival'
-      }
-    } else {
-      noteType = 'single'
-    }
-
-    const update = {
-      Activity: this.props.updateActivity,
-      Flight: flightBookingOrInstance[this.props.column] === 'FlightBooking' ? this.props.updateFlightBooking : this.props.updateFlightInstance,
-      Lodging: this.props.updateLodging,
-      Food: this.props.updateFood,
-      LandTransport: this.props.updateLandTransport
-    }
-
-    update[this.props.activity.type]({
-      variables: {
-        ...{
-          id: flightBookingOrInstance[this.props.column] === 'FlightInstance' && this.props.activity.Flight ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
-          flightInstances: []
-        },
-        ...this.props.column === 'Booking Number' && {
-          bookingStatus: this.state.newValue
-        },
-        ...this.props.column === 'Notes' && {
-          [columnValues[this.props.column][noteType]]: this.state.newValue
-        },
-        ...this.props.column !== 'Notes' && {
-          [columnValues[this.props.column]]: this.state.newValue
-        }
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: { id: this.props.itineraryId }
-      }]
-    })
-  }
+  //   update[this.props.activity.type]({
+  //     variables: {
+  //       ...{
+  //         id: flightBookingOrInstance[this.props.column] === 'FlightInstance' && this.props.activity.Flight ? this.props.activity.Flight.FlightInstance.id : this.props.activity.modelId,
+  //         flightInstances: []
+  //       },
+  //       ...this.props.column === 'Booking Number' && {
+  //         bookingStatus: this.state.newValue
+  //       },
+  //       ...this.props.column === 'Notes' && {
+  //         [columnValues[this.props.column][noteType]]: this.state.newValue
+  //       },
+  //       ...this.props.column !== 'Notes' && {
+  //         [columnValues[this.props.column]]: this.state.newValue
+  //       }
+  //     },
+  //     refetchQueries: [{
+  //       query: queryItinerary,
+  //       variables: { id: this.props.itineraryId }
+  //     }]
+  //   })
+  // }
 
   handleClick (e, clickOutsideInput) {
     if (clickOutsideInput && this.state.editing) {
@@ -208,37 +206,41 @@ class PlannerColumnValue extends Component {
   }
 
   renderInfo () {
-    const start = !this.props.activity.dropzone && (this.props.activity.start || typeof this.props.activity.start !== 'boolean')
+    // const start = !this.props.activity.dropzone && (this.props.activity.start || typeof this.props.activity.start !== 'boolean')
     let value = this.state.value
     switch (this.props.column) {
       case 'Notes':
         return {value: value || '', display: true}
       case 'Price':
-        if (this.props.activity.type === 'Flight' && this.props.firstInFlightBooking && start) {
-          return {value: this.state.currency + ' ' + value || '', display: true}
-        } else if (this.props.activity.type === 'Flight') {
-          return {value: '', display: false}
-        } else {
-          if (start) return {value: this.state.currency + ' ' + value || '', display: true}
-          else {
-            return {value: '', display: false}
-          }
-        }
+        // if (this.props.activity.type === 'Flight' && this.props.firstInFlightBooking) {
+        //   return {value: this.state.currency + ' ' + value || '', display: true}
+        // } else if (this.props.activity.type === 'Flight') {
+        //   return {value: '', display: false}
+        // } else {
+          // if (start)
+        return {value: this.state.currency + ' ' + value || '', display: true}
+          // else {
+          //   return {value: '', display: false}
+          // }
+        // }
       case 'Booking Status':
-        if (start) return {value: value === false ? 'Not Booked' : 'Booked', display: true}
-        else {
-          return {value: '', display: false}
-        }
+        // if (start)
+        return {value: value === false ? 'Not Booked' : 'Booked', display: true}
+        // else {
+        //   return {value: '', display: false}
+        // }
       case 'Booking Platform':
-        if (start) return {value: value, display: true}
-        else {
-          return {value: '', display: false}
-        }
+        // if (start)
+        return {value: value, display: true}
+        // else {
+        //   return {value: '', display: false}
+        // }
       case 'Booking Number':
-        if (start) return {value: value, display: true}
-        else {
-          return {value: '', display: false}
-        }
+        // if (start)
+        return {value: value, display: true}
+        // else {
+        //   return {value: '', display: false}
+        // }
       default:
         return {value: value, display: true}
     }
