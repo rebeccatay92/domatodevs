@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { graphql } from 'react-apollo'
+import { itinerariesByUser } from '../../apollo/itinerary'
 
 import { ItinerariesTabStyles as styles } from '../../Styles/ItinerariesTabStyles'
 
@@ -8,12 +10,21 @@ class ItinerariesTab extends Component {
     this.state = {}
   }
   render () {
+    if (this.props.data.loading) return (<h1>Loading</h1>)
+    console.log('itineraries', this.props.data.itinerariesByUser)
+    let itineraries = this.props.data.itinerariesByUser
     return (
       <div style={styles.itinerariesTabContainer}>
-        Itineraries tab
+        {itineraries.map((itinerary, i) => {
+          return (
+            <div key={i}>
+              {itinerary.name}
+            </div>
+          )
+        })}
       </div>
     )
   }
 }
 
-export default ItinerariesTab
+export default graphql(itinerariesByUser)(ItinerariesTab)

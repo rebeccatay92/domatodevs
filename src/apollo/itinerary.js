@@ -93,11 +93,11 @@ export const itinerariesByUser = gql`
       description
       days
       startDate
-      # countries {
-      #   id
-      #   name
-      #   code
-      # }
+      countries {
+        id
+        name
+        code
+      }
       owner {
         id
         username

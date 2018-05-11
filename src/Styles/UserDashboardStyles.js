@@ -1,40 +1,20 @@
 import { coreColors, coreFonts } from './cores.js'
 // NEEDS RADIUM? YES
 /* ----------------------------- */
-const unclickedTab = {
-  ...coreFonts.robotoLight,
-  color: coreColors.black03,
-  cursor: 'pointer',
-  height: '100%',
-  fontSize: '24px',
-  marginTop: '1px',
-  marginRight: '40px',
-  paddingTop: '16px',
-  paddingBottom: '16px'
+const dashboardPageContainer = {
+  margin: '52px auto 0 auto',
+  width: '1265px',
+  minHeight: 'calc(100vh + 177px - 56px)'
+  // min height is full height + profile section, minus duplicated height of sticky tabs bar.
 }
-const clickedTab = {
-  ...unclickedTab,
-  color: coreColors.pinkSolid,
-  borderBottom: `3px solid ${coreColors.pinkSolid}`
+
+const profileSectionContainer = {
+  width: '1265px',
+  height: '177px',
+  padding: '48px 0 32px 0',
+  display: 'flex'
 }
-const tabsBarNonSticky = {
-  boxSizing: 'border-box',
-  borderBottom: `1px solid ${coreColors.black03}`,
-  display: 'flex',
-  justifyContent: 'flex-start',
-  height: '56px',
-  background: coreColors.whiteSolid,
-  position: 'relative',
-  top: '0',
-  width: '100%'
-}
-const tabsBarSticky = {
-  ...tabsBarNonSticky,
-  position: 'fixed',
-  top: '52px',
-  width: '1265px'
-}
-/* ----------------------------- */
+
 const profilePicContainer = {
   position: 'relative',
   width: '97px',
@@ -99,15 +79,45 @@ const bioTextArea = {
   width: '100%',
   resize: 'none'
 }
-
+/* ----------------------------- */
+const unclickedTab = {
+  ...coreFonts.robotoLight,
+  color: coreColors.black03,
+  cursor: 'pointer',
+  height: '100%',
+  fontSize: '24px',
+  marginTop: '1px',
+  marginRight: '40px',
+  paddingTop: '16px',
+  paddingBottom: '16px'
+}
+const clickedTab = {
+  ...unclickedTab,
+  color: coreColors.pinkSolid,
+  borderBottom: `3px solid ${coreColors.pinkSolid}`
+}
+const tabsBarNonSticky = {
+  boxSizing: 'border-box',
+  borderBottom: `1px solid ${coreColors.black03}`,
+  display: 'flex',
+  justifyContent: 'flex-start',
+  height: '56px',
+  background: coreColors.whiteSolid,
+  position: 'relative',
+  top: '0',
+  width: '100%'
+}
+const tabsBarSticky = {
+  ...tabsBarNonSticky,
+  position: 'fixed',
+  top: '52px',
+  width: '1265px'
+}
 /* ----------------------------- */
 // EXPORT OBJ TO REDUCE NUMBER OF NAMED IMPORTS {FOO, BAR, ETC}
 export const userDashboardStyles = {
-  // HORIZONTAL MENU TABS
-  tabsBarNonSticky,
-  tabsBarSticky,
-  unclickedTab,
-  clickedTab,
+  dashboardPageContainer,
+  profileSectionContainer,
   // PROFILE PIC CONTAINER, IMG, TINT
   profilePicContainer,
   profilePicTint,
@@ -119,6 +129,11 @@ export const userDashboardStyles = {
   bioTextContainer, // display version container
   bioText,
   bioTextAreaContainer, // editable textarea container
-  bioTextArea
+  bioTextArea,
+  // HORIZONTAL MENU TABS
+  tabsBarNonSticky,
+  tabsBarSticky,
+  unclickedTab,
+  clickedTab
 }
 /* ----------------------------- */

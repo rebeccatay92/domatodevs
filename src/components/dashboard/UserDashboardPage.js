@@ -24,7 +24,7 @@ class UserDashboardPage extends Component {
         {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
-      focusedTab: 'blogs',
+      focusedTab: 'itineraries',
       bio: '',
       editingBio: false
     }
@@ -180,11 +180,10 @@ class UserDashboardPage extends Component {
     let stickyTabs = this.props.userDashboard.stickyTabs
     // console.log('STICKYTABS STATUS', stickyTabs)
     return (
-      // remove marginBottom. minHeight is 100vh - profile section - profile top and bottom margin, and add back the horizontal tabs bar. this ensures that if component does not need scroll, user can only scroll until tabs bar moves up to the navbar, but no further scrolling down for stickybar.
-      <div style={{margin: '52px auto 0px auto', width: '1265px', minHeight: 'calc(100vh + 97px + 48px + 32px - 56px)', boxSizing: 'border-box'}}>
-
+      <div style={styles.dashboardPageContainer}>
         {/* PROFILE SECTION */}
-        <div style={{margin: '48px 0 32px 0', width: '100%', height: '97px', display: 'inline-flex'}}>
+        <div style={styles.profileSectionContainer}>
+          {/* LEFT -> PROFILE PIC */}
           <label>
             <div style={styles.profilePicContainer}>
               <div style={styles.profilePicTint}>
@@ -194,7 +193,7 @@ class UserDashboardPage extends Component {
             </div>
             <input type='file' accept='.jpeg, .jpg, .png' onChange={e => this.uploadProfilePic(e)} style={{display: 'none'}} />
           </label>
-
+          {/* RIGHT -> USERNAME + BIO */}
           <div style={styles.bioSectionContainer}>
             <h1 style={styles.username}>{profile.username}</h1>
             {!this.state.editingBio &&
