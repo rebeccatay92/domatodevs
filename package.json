@@ -1,6 +1,6 @@
 {
   "name": "trip-planner-dnd",
-  "version": "0.1.0",
+  "version": "1.6.0",
   "private": true,
   "dependencies": {
     "auth0-js": "^9.3.3",
@@ -29,6 +29,7 @@
     "react-fittext": "^1.0.0",
     "react-google-maps": "^9.4.5",
     "react-map-gl": "^3.2.7",
+    "react-mapbox-gl": "^3.8.0",
     "react-onclickoutside": "^6.6.3",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
