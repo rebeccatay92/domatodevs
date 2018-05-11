@@ -43,9 +43,6 @@ class ItinerariesTab extends Component {
         {itineraries.map((itinerary, i) => {
           return (
             <div key={i} style={styles.itineraryContainer}>
-              <div style={styles.timeSinceCreatedContainer}>
-                <span style={styles.timeSinceCreated}>2 years ago</span>
-              </div>
               <div style={styles.daysDatesCountriesContainer}>
                 <div>
                   <span style={styles.daysNumber}>{itinerary.days} </span>
@@ -73,6 +70,9 @@ class ItinerariesTab extends Component {
               </div>
               <div style={styles.budgetContainer}>
                 <span style={styles.budgetText}>SGD 1000 / pax</span>
+              </div>
+              <div style={styles.timeSinceCreatedContainer}>
+                <span style={styles.timeSinceCreated}>2 years ago</span>
               </div>
               <div style={styles.privacyToggleContainer}>
                 {/* <i className='material-icons'>visibility</i> */}

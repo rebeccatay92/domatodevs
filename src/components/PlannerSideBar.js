@@ -6,7 +6,7 @@ class PlannerSideBar extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      clickedTab: 'event'
+      clickedTab: 'none'
     }
   }
   render () {
