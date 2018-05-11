@@ -27,6 +27,8 @@ import GoogleCloudStorage from './Google/GoogleCloudStorage'
 
 import PlannerSideBar from './PlannerSideBar'
 
+import MapboxPage from './mapbox/MapboxPage'
+
 const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 
@@ -64,6 +66,8 @@ class App extends Component {
             <Route path='/map/:itineraryId' component={MapPlannerPage} />
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />
+
+            <Route path='/mapbox' component={MapboxPage} />
           </div>
 
           {this.props.showSpinner && (
