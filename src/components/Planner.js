@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
-import { initializePlanner } from '../actions/plannerActions'
+import { EditorState, convertFromRaw } from 'draft-js'
+import { initializeEvents } from '../actions/planner/eventsActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
@@ -32,13 +33,17 @@ class Planner extends Component {
   }
 
   shouldComponentUpdate (nextProps) {
-    if (_.isEqual(nextProps.activities, this.props.activities) && _.isEqual(nextProps.data.findItinerary, this.props.data.findItinerary)) return false
-    else return true
+    if (!nextProps.events.refetch) {
+      return false
+    } else {
+      return true
+    }
   }
 
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
     // console.log('apollo', this.props.data.findItinerary)
+    // console.log(this.props.events);
 
     const startDate = new Date(this.props.data.findItinerary.startDate * 1000)
 
@@ -85,10 +90,10 @@ class Planner extends Component {
               }
               // DATE BOX TAKES JS DATE OBJ ARR, DATE OBJ.
               return (
-                <DateBox days={days} daysArr={daysArr} timelineAtTop={this.state.timelineAtTop} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={day} date={date} dates={dates} countries={this.props.data.findItinerary.countries} activities={this.props.activities.filter(
-                    activity => {
-                      let activityDay = activity.day || activity.departureDay || activity.startDay || activity.endDay
-                      return activityDay === day
+                <DateBox days={days} daysArr={daysArr} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={day} date={date} dates={dates} countries={this.props.data.findItinerary.countries} events={this.props.events.events.filter(
+                    event => {
+                      let eventDay = event.startDay
+                      return eventDay === day
                     }
                   )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length - 1} />
               )
@@ -139,12 +144,22 @@ class Planner extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
-      const allEvents = nextProps.data.findItinerary.events
+      const allEvents = nextProps.data.findItinerary.events.map(event => {
+        return {
+          ...event,
+          ...{
+            eventType: EditorState.createEmpty(),
+            location: EditorState.createEmpty(),
+            cost: EditorState.createEmpty(),
+            notes: EditorState.createEmpty()
+          }
+        }
+      })
       // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
       // console.log(activitiesWithTimelineErrors)
       // this.props.initializePlanner(activitiesWithTimelineErrors)
       console.log(allEvents)
-      this.props.initializePlanner(allEvents)
+      this.props.initializeEvents(allEvents)
       setTimeout(() => this.props.toggleSpinner(false), 750)
     }
   }
@@ -160,17 +175,14 @@ const options = {
 
 const mapStateToProps = (state) => {
   return {
-    activities: state.plannerActivities
+    events: state.events
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    initializePlanner: (activities) => {
-      dispatch(initializePlanner(activities))
-    },
-    toggleTimelineDay: (options) => {
-      dispatch(toggleTimelineDay(options))
+    initializeEvents: (events) => {
+      dispatch(initializeEvents(events))
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))

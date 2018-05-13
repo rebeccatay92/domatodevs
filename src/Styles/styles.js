@@ -5,7 +5,7 @@ const secondaryFontColor = '#9FACBC'
 const backgroundColor = '#FFFFFF'
 
 // Planner Table dimensions
-const tableWidth = 1006
+const tableWidth = 1274
 
 // Create event form dimensions
 const totalWidth = 1007
@@ -20,12 +20,12 @@ const rightPanelWidth = totalWidth - leftPanelWidth
 export const plannerPageStyles = {
   fontFamily: '\'Roboto\', sans-serif',
   color: mainFontColor,
-  margin: '50px calc(50vw - 508px + 110px) 0 calc(50vw - 508px - 110px)',
-  width: '1116px',
+  margin: '50px auto',
+  width: '1274px',
   fontWeight: '300'
 }
 
-export const plannerStyle = {display: 'inline-block', width: '1116px', verticalAlign: 'top'}
+export const plannerStyle = {display: 'inline-block', width: '1274px', verticalAlign: 'top'}
 export const bucketStyle = {display: 'inline-block', width: '335px', verticalAlign: 'top', padding: '14px 0 0 14px'}
 export const bucketTitleStyle = {textAlign: 'left', fontSize: '24px'}
 
@@ -79,7 +79,7 @@ export const timelineStyle = {
   backgroundColor: 'rgba(237, 104, 90, 0.28)'
 }
 
-export const dateTableStyle = {tableLayout: 'fixed', width: '1117px'}
+export const dateTableStyle = {tableLayout: 'auto'}
 export const timelineColumnStyle = (clash, allDay) => {
   return {width: '110px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
 }
@@ -103,7 +103,7 @@ export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 16px', fo
 export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '8px', fontWeight: '300'}
 export const dateTableOtherHeaderStyle = {width: '214px'}
 export const dateTableHorizontalLineStyle = isFirstDay => {
-  return {marginBottom: '0', marginTop: isFirstDay ? '0' : '1vh', width: tableWidth + 'px', borderTop: '1px solid rgba(60, 58, 68, 0.2)'}
+  return {marginBottom: '0', marginTop: isFirstDay ? '0' : '1vh', width: '100%', borderTop: '1px solid rgba(60, 58, 68, 0.2)'}
 }
 
 // PlannerActivity.js styles
