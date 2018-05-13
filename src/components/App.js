@@ -67,7 +67,7 @@ class App extends Component {
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />
 
-            <Route path='/mapbox' component={MapboxPage} />
+            <Route path='/mapbox/:ItineraryId' component={MapboxPage} />
           </div>
 
           {this.props.showSpinner && (
