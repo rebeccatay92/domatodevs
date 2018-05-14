@@ -54,7 +54,7 @@ class DateBox extends Component {
 
   render () {
     // console.log(this.props.events);
-    const { connectDropTarget, day } = this.props
+    const { connectDropTarget, day, firstIndex } = this.props
     const timeline = (
       <div style={timelineStyle} />
     )
@@ -123,7 +123,7 @@ class DateBox extends Component {
               })}
             </tr>}
             {this.props.events.map((event, i) => {
-              return <EventRow key={i} event={event} index={i} day={day} id={event.id} />
+              return <EventRow key={i} event={event} index={i + firstIndex} day={day} />
             })}
           </tbody>
         </table>

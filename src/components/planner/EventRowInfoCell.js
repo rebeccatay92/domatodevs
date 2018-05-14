@@ -4,6 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState } from 'draft-js'
 
 import { updateEvent } from '../../actions/planner/eventsActions'
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 
 const _ = require('lodash')
 
@@ -17,7 +18,7 @@ const eventPropertyNames = {
 class EventRowInfoCell extends Component {
   constructor (props) {
     super(props)
-    const { column, id } = props
+    const { column, index } = props
     const property = eventPropertyNames[column]
 
     // this.state = {
@@ -25,7 +26,7 @@ class EventRowInfoCell extends Component {
     // }
 
     this.onChange = (editorState) => {
-      this.props.updateEvent(id, property, editorState)
+      this.props.updateEvent(index, property, editorState)
       // this.setState({editorState: editorState})
     }
 
@@ -46,7 +47,7 @@ class EventRowInfoCell extends Component {
   // }
 
   render () {
-    const { column, id } = this.props
+    const { column, index } = this.props
     const { events } = this.props.events
     const getEventProp = (columnInput, eventInput) => {
       const eventProperties = {
@@ -59,10 +60,12 @@ class EventRowInfoCell extends Component {
       return eventProperties[columnInput]
     }
 
-    const value = getEventProp(column, events.filter(event => event.id === id)[0])
+    const value = getEventProp(column, events[index])
 
     return (
-      <Editor editorState={value} onChange={this.onChange} />
+      <div onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word'}}>
+        <Editor editorState={value} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.props.updateActiveEvent('')} onFocus={() => this.props.updateActiveEvent(index)} />
+      </div>
     )
   }
 }
@@ -75,8 +78,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateEvent: (id, property, value) => {
-      return dispatch(updateEvent(id, property, value))
+    updateEvent: (index, property, value) => {
+      return dispatch(updateEvent(index, property, value))
+    },
+    updateActiveEvent: (index) => {
+      return dispatch(updateActiveEvent(index))
     }
   }
 }

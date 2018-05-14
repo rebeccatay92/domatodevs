@@ -5,10 +5,10 @@ export const initializeEvents = (events) => {
   }
 }
 
-export const updateEvent = (id, property, value) => {
+export const updateEvent = (index, property, value) => {
   return {
     type: 'UPDATE_EVENT',
-    id,
+    index,
     property,
     value
   }

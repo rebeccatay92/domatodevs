@@ -24,6 +24,7 @@ import { navBarReducer } from './reducers/navBarReducer'
 // Reducers for v2
 import { columnsReducer } from './reducers/planner/columnsReducer'
 import { eventsReducer } from './reducers/planner/eventsReducer'
+import { activeEventReducer } from './reducers/planner/activeEventReducer'
 
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
@@ -69,6 +70,7 @@ const store = createStore(combineReducers({
   navBar: navBarReducer,
   columns: columnsReducer,
   events: eventsReducer,
+  activeEventIndex: activeEventReducer,
   apollo: client.reducer()
 }),
 {},
