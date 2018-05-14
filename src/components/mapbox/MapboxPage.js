@@ -5,6 +5,8 @@ import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
 import { graphql } from 'react-apollo'
 import { queryItinerary } from '../../apollo/itinerary'
 
+import _ from 'lodash'
+
 // react wrapper factory
 const Map = ReactMapboxGL({
   accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
@@ -16,6 +18,9 @@ class MapboxPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      geocodeInputField: '',
+      showDropdown: false,
+      geocodingResults: [],
       center: [0, 0], // lng/lat in that order to match GeoJSON
       zoom: [1], // needs to be wrapped in array
       containerStyle: {
@@ -23,6 +28,7 @@ class MapboxPage extends Component {
         width: '1585px' // has to start with larger version. if smaller, changing containerStyle does not fetch more tiles.
       }
     }
+    this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
   }
   // for 1920px width, map will toggle betwen 1585 and 1265
   // hook it up to state of event sidebar
@@ -33,6 +39,19 @@ class MapboxPage extends Component {
         width: this.state.containerStyle.width === '1585px' ? '1265px' : '1585px'
       }
     })
+  }
+
+  onGeocodeInputChange (e) {
+    let queryStr = e.target.value
+    this.setState({
+      geocodeInputField: queryStr,
+      showDropdown: true
+    })
+    this.queryMapboxGeocodingService(queryStr)
+  }
+
+  queryMapboxGeocodingService (str) {
+    console.log('debounced', str)
   }
 
   // synx state with map's final zoom and center
@@ -50,7 +69,7 @@ class MapboxPage extends Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.data.findItinerary !== this.props.data.findItinerary) {
       let itinerary = nextProps.data.findItinerary
-      console.log('itinerary from backend', itinerary)
+      // console.log('itinerary from backend', itinerary)
     }
   }
 
@@ -60,13 +79,17 @@ class MapboxPage extends Component {
     }
     return (
       <div style={{display: 'flex'}}>
+        {/* LEFT SIDEBAR -> EVENTS */}
         <div style={{width: '335px', height: '872px', border: '1px solid black'}}>
           <button onClick={() => this.toggleMapSize()}>Change map size</button>
         </div>
         <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
           <ZoomControl position='top-left' />
-
+          <div style={{position: 'absolute', top: '15px', left: '50px', width: '400px', height: '35px'}}>
+            <input type='text' style={{width: '400px', height: '35px', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', lineHeight: '19px', padding: '8px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onGeocodeInputChange(e)} value={this.state.geocodeInputField} />
+          </div>
         </Map>
+        {/* RIGHT SIDE EVENTS SIDEBAR (move from app.js -> to planner / map only) */}
       </div>
     )
   }

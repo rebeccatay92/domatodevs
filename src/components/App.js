@@ -45,13 +45,12 @@ class App extends Component {
           }
 
           <div style={{width: '100%', marginTop: '52px'}}>
-            <PlannerSideBar />
-            {/* REACT-ROUTER NEEDS TO CHANGE TO V4 FOR CONDITIONAL RENDERING. PUBLIC/PRIVATE */}
             <Route exact path='/' render={(props) => (
               <HomePage {...props} />
             )} />
             {/* <Route exact path='/' component={HomePage} /> */}
             <Route path='/passwordChanged' component={PasswordChanged} />
+
             {/* ERROR CASE ROUTE FOR /USER OR /USER/. LOGIC IN COMPONENT WILL DISPLAY ACCOUNT TAB INSTEAD. */}
             <Route exact path='/user' render={props => (
               <UserDashboardPage {...props} />
@@ -59,15 +58,20 @@ class App extends Component {
             <Route exact path='/user/:tab' render={(props) => (
               <UserDashboardPage {...props} />
             )} />
+
             <Route path='/itineraries' render={(props) => (
               <ItineraryPage lock={lock} {...props} />
             )} />
+
+            {/* SIDEBAR SHOULD RENDER INSIDE THESE 2 ROUTES INSTEAD OF GLOBALLY  */}
+            <PlannerSideBar />
             <Route path='/planner/:itineraryId' component={PlannerPage} />
-            <Route path='/map/:itineraryId' component={MapPlannerPage} />
+            {/* <Route path='/map/:itineraryId' component={MapPlannerPage} /> */}
+            <Route path='/map/:ItineraryId' component={MapboxPage} />
+
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />
 
-            <Route path='/mapbox/:ItineraryId' component={MapboxPage} />
           </div>
 
           {this.props.showSpinner && (
