@@ -6,10 +6,11 @@ import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 
 import EventRowInfoCell from './EventRowInfoCell'
+import EventRowTimeCell from './EventRowTimeCell'
 
 class EventRow extends Component {
   render () {
-    const { columns, event, index, day, id } = this.props
+    const { columns, index, id } = this.props
     let columnState = []
     columns.forEach(column => {
       if (columnState.filter(e => e.name === column).length === 0) {
@@ -19,14 +20,16 @@ class EventRow extends Component {
       }
     })
 
-    const startTime = new Date(event.startTime * 1000).toGMTString().substring(17, 22)
+    // const startTime = new Date(event.startTime * 1000).toGMTString().substring(17, 22)
     return (
       <tr>
         <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
-        <td style={{width: '114px', textAlign: 'center'}}>{startTime}</td>
+        <td style={{width: '114px', textAlign: 'center'}}>
+          <EventRowTimeCell index={index} id={id} />
+        </td>
         {columnState.map((column, i) => {
           return <td key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
-            <EventRowInfoCell column={column.name} index={index} day={day} id={id} />
+            <EventRowInfoCell column={column.name} index={index} id={id} />
           </td>
         })}
       </tr>
