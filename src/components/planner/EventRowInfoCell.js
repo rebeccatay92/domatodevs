@@ -4,7 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState } from 'draft-js'
 
 import { updateEvent } from '../../actions/planner/eventsActions'
-// import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 
 const _ = require('lodash')
 
@@ -81,10 +81,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateEvent: (index, property, value) => {
       return dispatch(updateEvent(index, property, value))
+    },
+    updateActiveEvent: (index) => {
+      return dispatch(updateActiveEvent(index))
     }
-    // updateActiveEvent: (index) => {
-    //   return dispatch(updateActiveEvent(index))
-    // }
   }
 }
 
