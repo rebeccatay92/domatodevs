@@ -126,13 +126,13 @@ class PlannerActivity extends Component {
         }
       }} />
     )
-    const startTime = this.props.activity.type === 'Flight' ? this.props.activity[type].FlightInstance.startTime : this.props.activity[type].startTime
-    const endTime = this.props.activity.type === 'Flight' ? this.props.activity[type].FlightInstance.endTime : this.props.activity[type].endTime
+    const startTime = this.props.activity.startTime
+    const endTime = this.props.activity.endTime
     let activityBox = (
-      <tr style={eventBoxStyle(this.state.draggable && !this.state.expanded, this.props.activity.modelId, this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow, this.props.activity[type].allDayEvent)} onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
-        <td style={timelineColumnStyle(this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow, this.props.activity[type].allDayEvent)}>
-          {this.props.timeline.events && timeline}
-          {this.props.timeline.events && <PlannerActivityTimeline activity={this.props.activity} doNotShowTime={this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow || this.props.activity[type].allDayEvent} day={this.props.day} start={this.props.activity.start} type={this.props.activity.type} checkout={this.props.activity.type === 'Lodging' && !this.props.activity.start} isLast={this.props.isLast} lastDay={this.props.lastDay} startTime={startTime} endTime={endTime} id={this.props.activity.modelId} draggingItem={getItem} expanded={this.state.expanded} startLocation={!this.props.empty && (this.props.activity[type].location || this.props.activity[type].departureLocation || (this.props.activity[type].FlightInstance && this.props.activity[type].FlightInstance.departureLocation))} endLocation={!this.props.empty && (this.props.activity[type].location || this.props.activity[type].arrivalLocation || (this.props.activity[type].FlightInstance && this.props.activity[type].FlightInstance.arrivalLocation))} />}
+      <tr style={eventBoxStyle(this.state.draggable && !this.state.expanded, this.props.activity.modelId, this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow, this.props.activity.allDayEvent)} onMouseEnter={() => this.setState({hover: true})} onMouseLeave={() => this.setState({hover: false})}>
+        <td style={timelineColumnStyle(this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow, this.props.activity.allDayEvent)}>
+          {/* {this.props.timeline.events && timeline}
+          {this.props.timeline.events && <PlannerActivityTimeline activity={this.props.activity} doNotShowTime={this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow || this.props.activity.allDayEvent} day={this.props.day} isLast={this.props.isLast} lastDay={this.props.lastDay} startTime={startTime} endTime={endTime} id={this.props.activity.id} draggingItem={getItem} expanded={this.state.expanded} startLocation={!this.props.empty && (this.props.activity.location)} endLocation={!this.props.empty && (this.props.activity.location)} />} */}
         </td>
         <td colSpan={this.state.expanded ? '4' : '1'} style={dateTableFirstHeaderStyle}>
           {/* I HID THE FORMS HOC BECAUSE APOLLO IMPORT WILL FAIL */}
@@ -141,8 +141,8 @@ class PlannerActivity extends Component {
             <EditEventFormHOC eventType={this.state.editEventType} ItineraryId={this.props.itineraryId} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} event={this.props.activity[`${this.state.editEventType}`]} toggleEditEventType={() => this.handleEditEventClick()} />
           } */}
           {connectDragPreview(<div style={eventBoxFirstColumnStyle(this.props.activity, minHeight, getItem || {})} key={this.props.activity.modelId}>
-            {!this.state.editing && this.state.hover && !this.state.expanded && this.props.activity.type !== 'Flight' && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 0.7, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a', opacity: getItem ? 0 : 1}}}>unfold_more</i>)}
-            {this.renderInfo(this.props.activity.type, this.state.expanded)}
+            {!this.state.editing && this.state.hover && !this.state.expanded && connectDragSource(<i className='material-icons' style={{opacity: getItem ? 0 : 0.7, position: 'absolute', top: '22px', left: '-12px', cursor: 'move', zIndex: 2, ':hover': {color: '#ed685a', opacity: getItem ? 0 : 1}}}>unfold_more</i>)}
+            {this.renderInfo()}
           </div>)}
         </td>
         {this.state.editEventType && <td style={plannerBlurredBackgroundStyle} />}
@@ -181,7 +181,7 @@ class PlannerActivity extends Component {
     // )
     const createEventBox = (
       <div>
-        <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} daysArr={this.props.daysArr} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} handleIntuitiveInput={(eventType) => this.handleIntuitiveInput(eventType)} />
+        {/* <IntuitiveInputHOC intuitiveInputType={this.state.intuitiveInputType} itineraryId={this.props.itineraryId} dates={this.props.dates} day={this.props.day} daysArr={this.props.daysArr} date={this.props.date} toggleIntuitiveInput={() => this.handleIntuitiveInput()} handleCreateEventClick={(eventType) => this.handleCreateEventClick(eventType)} handleIntuitiveInput={(eventType) => this.handleIntuitiveInput(eventType)} /> */}
       </div>
     )
     if (this.props.empty) {
@@ -275,7 +275,7 @@ class PlannerActivity extends Component {
     }
   }
 
-  renderInfo (type, expanded) {
+  renderInfo (expanded) {
     const activityBoxStyle = {
       fontSize: '16px',
       marginLeft: '16px',
@@ -316,137 +316,137 @@ class PlannerActivity extends Component {
         <i key='expandButton' id={this.props.activity.type + this.props.activity.modelId + this.props.activity.start} className='material-icons' style={{cursor: 'pointer', marginLeft: '8px', fontSize: '20px', position: 'absolute', top: '-3px', color: '#ed685a'}} onClick={() => this.setState({expandedMenu: false})}>more_horiz</i>
       )
     }
-    const errorIcon = (this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i onMouseEnter={() => this.setState({showClashes: true})} onMouseLeave={() => this.setState({showClashes: false})} className='material-icons' style={{position: 'absolute', top: '-2px', marginLeft: '4px', color: 'red'}}>error</i>
+    // const errorIcon = (this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i onMouseEnter={() => this.setState({showClashes: true})} onMouseLeave={() => this.setState({showClashes: false})} className='material-icons' style={{position: 'absolute', top: '-2px', marginLeft: '4px', color: 'red'}}>error</i>
+    //
+    // const errorBox = this.state.showClashes && errorIcon && <span style={{display: 'block', position: 'absolute', width: 'fit-content', left: this.props.activity.type === 'Food' || this.props.activity.type === 'Activity' ? '117px' : '72px', top: '11px', backgroundColor: 'white', zIndex: 1, color: 'black', boxShadow: '0px 1px 5px 2px rgba(0, 0, 0, .2)'}}>{this.props.activity.timelineClash && <span style={{display: 'block', padding: '8px'}}>Timing Clash</span>}{this.props.activity.inBetweenStartEndRow && <span style={{display: 'block', padding: '8px'}}>Event happens between a flight/transport</span>}</span>
 
-    const errorBox = this.state.showClashes && errorIcon && <span style={{display: 'block', position: 'absolute', width: 'fit-content', left: this.props.activity.type === 'Food' || this.props.activity.type === 'Activity' ? '117px' : '72px', top: '11px', backgroundColor: 'white', zIndex: 1, color: 'black', boxShadow: '0px 1px 5px 2px rgba(0, 0, 0, .2)'}}>{this.props.activity.timelineClash && <span style={{display: 'block', padding: '8px'}}>Timing Clash</span>}{this.props.activity.inBetweenStartEndRow && <span style={{display: 'block', padding: '8px'}}>Event happens between a flight/transport</span>}</span>
-
-    let startTime = new Date(this.props.activity[type].startTime * 1000).toGMTString().substring(17, 22)
-    if (type === 'Flight') startTime = new Date(this.props.activity[type].FlightInstance.startTime * 1000).toGMTString().substring(17, 22)
-    let endTime = new Date(this.props.activity[type].endTime * 1000).toGMTString().substring(17, 22)
-    if (type === 'Flight') endTime = new Date(this.props.activity[type].FlightInstance.endTime * 1000).toGMTString().substring(17, 22)
+    let startTime = new Date(this.props.activity.startTime * 1000).toGMTString().substring(17, 22)
+    // if (type === 'Flight') startTime = new Date(this.props.activity.FlightInstance.startTime * 1000).toGMTString().substring(17, 22)
+    let endTime = new Date(this.props.activity.endTime * 1000).toGMTString().substring(17, 22)
+    // if (type === 'Flight') endTime = new Date(this.props.activity.FlightInstance.endTime * 1000).toGMTString().substring(17, 22)
 
     let suggestedStartTime = this.props.activity.suggestedStartTime && new Date(this.props.activity.suggestedStartTime * 1000).toGMTString().substring(17, 22)
     let suggestedEndTime = this.props.activity.suggestedEndTime && new Date(this.props.activity.suggestedEndTime * 1000).toGMTString().substring(17, 22)
 
     if (!expanded) {
-      switch (type) {
-        case 'Activity':
-          return (
-            <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} editing={this.state.editing} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location && this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} editing={this.state.editing} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
-                <span style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </span>
-              </p>
-              <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime} newDay={this.props.activity.newDay} />
-            </div>
-          )
-        case 'Flight':
-          if (this.props.activity.start) {
-            return (
-              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-                <p style={nameStyle}><ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='departureLocation' value={this.props.activity[type].FlightInstance.departureLocation.name} />
-                  <span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                  <span style={typeStyle}>Flight Departure</span>
-                </p>
-                <div style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='departureTime' value={startTime} />{errorIcon}{errorBox}</p>
-              </div>
-            )
-          } else if (!this.props.activity.start) {
-            return (
-              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-                <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalLocation' value={this.props.activity[type].FlightInstance.arrivalLocation.name} />
-                  <span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                  <span style={typeStyle}>Flight Arrival</span>
-                </p>
-                <div style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </div>
-                <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalTime' value={endTime} />{errorIcon}{errorBox}</p>
-              </div>
-            )
-          }
-          break
-        case 'Food':
-          return (
-            <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
-                <span style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </span>
-              </p>
-              <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity[type].allDayEvent} event={this.props.activity[type]} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
-                newDay={this.props.activity.newDay} />
-            </div>
-          )
-        case 'LandTransport':
-          if (this.props.activity.start) {
-            return (
-              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-                <p style={nameStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='departureGooglePlaceData' value={this.props.activity[type].departureLocation.name} googlePlaceData={this.props.activity[type].departureLocation} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                  <span style={typeStyle}>Departure</span>
-                </p>
-                <div style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </div>
-                <p style={timeStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity[type]} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} />{errorIcon}{errorBox}</p>
-              </div>
-            )
-          } else if (!this.props.activity.start) {
-            return (
-              <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-                <p style={nameStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalGooglePlaceData' value={this.props.activity[type].arrivalLocation.name} googlePlaceData={this.props.activity[type].arrivalLocation} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                  <span style={typeStyle}>Arrival</span>
-                </p>
-                <div style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </div>
-                <p style={timeStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity[type]} editing={this.props.activity.isDropped || this.state.editing} suggestedEndTime={suggestedEndTime} />{errorIcon}{errorBox}</p>
-              </div>
-            )
-          }
-          break
-        case 'Lodging':
-          let time, name
-          if (this.props.activity.start) {
-            time = startTime
-            name = 'startTime'
-          } else {
-            time = endTime
-            name = 'endTime'
-          }
-          return (
-            <div style={{...activityBoxStyle, ...{height: '80px'}}}>
-              <div style={{display: 'inline'}}>
-                <p style={nameStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} />
-                  <span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                  <span style={typeStyle}>{this.props.activity.start ? 'Check In' : 'Check Out'}</span>
-                </p>
-                <div style={{position: 'relative', display: 'inline'}}>
-                  {expandButton}
-                  {expandMenu}
-                </div>
-                <p style={timeStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity[type]} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
-                  newDay={this.props.activity.newDay} />{errorIcon}{errorBox}</p>
-              </div>
-            </div>
-          )
-        default:
-          return null
-      }
+      // switch (type) {
+      //   case 'Activity':
+      return (
+        <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+          <p style={nameStyle}>
+            <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.id} editing={this.state.editing} itineraryId={this.props.itineraryId} name='googlePlaceData' value={this.props.activity.location && this.props.activity.location.name} googlePlaceData={this.props.activity.location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+            <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} editing={this.state.editing} itineraryId={this.props.itineraryId} name='description' value={this.props.activity.description} />
+            <span style={{position: 'relative', display: 'inline'}}>
+              {expandButton}
+              {expandMenu}
+            </span>
+          </p>
+          <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} allDay={this.props.activity.allDayEvent} event={this.props.activity} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime} newDay={this.props.activity.newDay} />
+        </div>
+      )
+      //   case 'Flight':
+      //     if (this.props.activity.start) {
+      //       return (
+      //         <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+      //           <p style={nameStyle}><ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='departureLocation' value={this.props.activity.FlightInstance.departureLocation.name} />
+      //             <span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+      //             <span style={typeStyle}>Flight Departure</span>
+      //           </p>
+      //           <div style={{position: 'relative', display: 'inline'}}>
+      //             {expandButton}
+      //             {expandMenu}
+      //           </div>
+      //           <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='departureTime' value={startTime} />{errorIcon}{errorBox}</p>
+      //         </div>
+      //       )
+      //     } else if (!this.props.activity.start) {
+      //       return (
+      //         <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+      //           <p style={nameStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalLocation' value={this.props.activity.FlightInstance.arrivalLocation.name} />
+      //             <span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+      //             <span style={typeStyle}>Flight Arrival</span>
+      //           </p>
+      //           <div style={{position: 'relative', display: 'inline'}}>
+      //             {expandButton}
+      //             {expandMenu}
+      //           </div>
+      //           <p style={timeStyle}><ActivityInfo activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalTime' value={endTime} />{errorIcon}{errorBox}</p>
+      //         </div>
+      //       )
+      //     }
+      //     break
+      //   case 'Food':
+      //     return (
+      //       <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+      //         <p style={nameStyle}>
+      //           <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity.location.name} googlePlaceData={this.props.activity.location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+      //           <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity.description} />
+      //           <span style={{position: 'relative', display: 'inline'}}>
+      //             {expandButton}
+      //             {expandMenu}
+      //           </span>
+      //         </p>
+      //         <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='time' startTime={startTime} endTime={endTime} timeStyle={timeStyle} typeStyle={typeStyle} errorBox={errorBox} errorIcon={errorIcon} allDay={this.props.activity.allDayEvent} event={this.props.activity} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
+      //           newDay={this.props.activity.newDay} />
+      //       </div>
+      //     )
+      //   case 'LandTransport':
+      //     if (this.props.activity.start) {
+      //       return (
+      //         <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+      //           <p style={nameStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='departureGooglePlaceData' value={this.props.activity.departureLocation.name} googlePlaceData={this.props.activity.departureLocation} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+      //             <span style={typeStyle}>Departure</span>
+      //           </p>
+      //           <div style={{position: 'relative', display: 'inline'}}>
+      //             {expandButton}
+      //             {expandMenu}
+      //           </div>
+      //           <p style={timeStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='startTime' value={startTime} event={this.props.activity} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} />{errorIcon}{errorBox}</p>
+      //         </div>
+      //       )
+      //     } else if (!this.props.activity.start) {
+      //       return (
+      //         <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+      //           <p style={nameStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='arrivalGooglePlaceData' value={this.props.activity.arrivalLocation.name} googlePlaceData={this.props.activity.arrivalLocation} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+      //             <span style={typeStyle}>Arrival</span>
+      //           </p>
+      //           <div style={{position: 'relative', display: 'inline'}}>
+      //             {expandButton}
+      //             {expandMenu}
+      //           </div>
+      //           <p style={timeStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='endTime' value={endTime} event={this.props.activity} editing={this.props.activity.isDropped || this.state.editing} suggestedEndTime={suggestedEndTime} />{errorIcon}{errorBox}</p>
+      //         </div>
+      //       )
+      //     }
+      //     break
+      //   case 'Lodging':
+      //     let time, name
+      //     if (this.props.activity.start) {
+      //       time = startTime
+      //       name = 'startTime'
+      //     } else {
+      //       time = endTime
+      //       name = 'endTime'
+      //     }
+      //     return (
+      //       <div style={{...activityBoxStyle, ...{height: '80px'}}}>
+      //         <div style={{display: 'inline'}}>
+      //           <p style={nameStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity.location.name} googlePlaceData={this.props.activity.location} />
+      //             <span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+      //             <span style={typeStyle}>{this.props.activity.start ? 'Check In' : 'Check Out'}</span>
+      //           </p>
+      //           <div style={{position: 'relative', display: 'inline'}}>
+      //             {expandButton}
+      //             {expandMenu}
+      //           </div>
+      //           <p style={timeStyle}><ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} activityId={this.props.activity.modelId} toggleDraggable={() => this.toggleDraggable()} itineraryId={this.props.itineraryId} type={type} name={name} value={time} event={this.props.activity} editing={this.props.activity.isDropped || this.state.editing} suggestedStartTime={suggestedStartTime} suggestedEndTime={suggestedEndTime}
+      //             newDay={this.props.activity.newDay} />{errorIcon}{errorBox}</p>
+      //         </div>
+      //       </div>
+      //     )
+      //   default:
+      //     return null
+      // }
     } else if (expanded) {
       const expandedEventIcons = (
         <div style={expandedEventIconsBoxStyle}>
@@ -454,157 +454,157 @@ class PlannerActivity extends Component {
           <i key='expandedActivityMap' className='material-icons' style={{...expandedEventIconsStyle, ...{marginRight: '5px'}}}>map</i>
         </div>
       )
-      switch (type) {
-        case 'Activity' :
-          return (
-            <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location && this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
-              </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
-              <div style={expandedEventBoxStyle}>
-                {expandedEventIcons}
-                <div style={expandedEventBoxImageContainerStyle}>
-                  <img src={this.props.activity[type].backgroundImage} style={expandedEventBoxImageStyle} />
-                </div>
-                <div style={expandedEventBoxTextBoxStyle}>
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Details</p>
-                  {this.props.activity[type].allDayEvent ? <p style={{fontWeight: 'bold'}}>Time: <span style={{color: '#438496'}}>Unassigned Time</span></p> :
-                  <PlannerEventExpandedInfo name='Time:' value={`${startTime} to ${endTime}`} />}{(this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i className='material-icons' style={{position: 'absolute', top: '17px', left: '120px', color: 'red'}}>error</i>}
-                  {this.props.activity[type].location && <PlannerEventExpandedInfo name='Location:' value={`${this.props.activity[type].location.name}`} />}
-                  {this.props.activity[type].locationAlias && <PlannerEventExpandedInfo name='Alias:' value={`${this.props.activity[type].locationAlias}`} />}
-                  {this.props.activity[type].location && this.props.activity[type].location.address && <PlannerEventExpandedInfo name='Address:' value={`${this.props.activity[type].location.address}`} />}
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Booking Details</p>
-                  <PlannerEventExpandedInfo name='Booking Service:' value={this.props.activity[type].bookedThrough} />
-                  <PlannerEventExpandedInfo name='Confirmation Number:' value={this.props.activity[type].bookingConfirmation} />
-                  {this.props.activity[type].cost && <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity[type].currency} ${this.props.activity[type].cost}`} />}
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Notes</p>
-                  <PlannerEventExpandedInfo name='' value={this.props.activity[type].notes} />
-                </div>
-              </div>
+      // switch (type) {
+      //   case 'Activity' :
+      return (
+        <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
+          <p style={nameStyle}>
+            <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} name='googlePlaceData' value={this.props.activity.location && this.props.activity.location.name} googlePlaceData={this.props.activity.location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+            <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} name='description' value={this.props.activity.description} />
+          </p>
+          <div style={{position: 'relative', display: 'inline'}}>
+            {expandButton}
+            {expandMenu}
+          </div>
+          <div style={expandedEventBoxStyle}>
+            {expandedEventIcons}
+            <div style={expandedEventBoxImageContainerStyle}>
+              <img src={this.props.activity.backgroundImage} style={expandedEventBoxImageStyle} />
             </div>
-          )
-        case 'Food':
-          return (
-            <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity[type].description} />
-              </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
-              <div style={expandedEventBoxStyle}>
-                {expandedEventIcons}
-                <div style={expandedEventBoxImageContainerStyle}>
-                  <img src={this.props.activity[type].backgroundImage} style={expandedEventBoxImageStyle} />
-                </div>
-                <div style={expandedEventBoxTextBoxStyle}>
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Details</p>
-                  {this.props.activity[type].allDayEvent ? <p style={{fontWeight: 'bold'}}>Time: <span style={{color: '#438496'}}>Unassigned Time</span></p> :
-                  <PlannerEventExpandedInfo name='Time:' value={`${startTime} to ${endTime}`} />}{(this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i className='material-icons' style={{position: 'absolute', top: '17px', left: '120px', color: 'red'}}>error</i>}
-                  <PlannerEventExpandedInfo name='Location:' value={`${this.props.activity[type].location.name}`} />
-                  {this.props.activity[type].locationAlias && <PlannerEventExpandedInfo name='Alias:' value={`${this.props.activity[type].locationAlias}`} />}
-                  <PlannerEventExpandedInfo name='Address:' value={`${this.props.activity[type].location.address}`} />
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Booking Details</p>
-                  <PlannerEventExpandedInfo name='Booking Service:' value={this.props.activity[type].bookedThrough} />
-                  <PlannerEventExpandedInfo name='Confirmation Number:' value={this.props.activity[type].bookingConfirmation} />
-                  <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity[type].currency} ${this.props.activity[type].cost}`} />
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Notes</p>
-                  <PlannerEventExpandedInfo name='' value={this.props.activity[type].notes} />
-                </div>
-              </div>
+            <div style={expandedEventBoxTextBoxStyle}>
+              <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Details</p>
+              {this.props.activity.allDayEvent ? <p style={{fontWeight: 'bold'}}>Time: <span style={{color: '#438496'}}>Unassigned Time</span></p> :
+              <PlannerEventExpandedInfo name='Time:' value={`${startTime} to ${endTime}`} />}{(this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i className='material-icons' style={{position: 'absolute', top: '17px', left: '120px', color: 'red'}}>error</i>}
+              {this.props.activity.location && <PlannerEventExpandedInfo name='Location:' value={`${this.props.activity.location.name}`} />}
+              {this.props.activity.locationAlias && <PlannerEventExpandedInfo name='Alias:' value={`${this.props.activity.locationAlias}`} />}
+              {this.props.activity.location && this.props.activity.location.address && <PlannerEventExpandedInfo name='Address:' value={`${this.props.activity.location.address}`} />}
+              <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Booking Details</p>
+              <PlannerEventExpandedInfo name='Booking Service:' value={this.props.activity.bookedThrough} />
+              <PlannerEventExpandedInfo name='Confirmation Number:' value={this.props.activity.bookingConfirmation} />
+              {this.props.activity.cost && <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity.currency} ${this.props.activity.cost}`} />}
+              <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Notes</p>
+              <PlannerEventExpandedInfo name='' value={this.props.activity.notes} />
             </div>
-          )
-        case 'LandTransport':
-          return (
-            <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name={this.props.activity.start ? 'departureGooglePlaceData' : 'arrivalGooglePlaceData'} value={this.props.activity.start ? this.props.activity[type].departureLocation.name : this.props.activity[type].arrivalLocation.name} googlePlaceData={this.props.activity.start ? this.props.activity[type].departureLocation : this.props.activity[type].arrivalLocation} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <span style={typeStyle}>{this.props.activity.start ? ' Departure' : ' Arrival'}</span>
-              </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
-              <div style={expandedEventBoxStyle}>
-                {expandedEventIcons}
-                <div style={expandedEventBoxImageContainerStyle}>
-                  <img src={this.props.activity[type].backgroundImage} style={expandedEventBoxImageStyle} />
-                </div>
-                <div style={expandedEventBoxTextBoxStyle}>
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>{this.props.activity.start ? 'Departure Location Details' : 'Arrival Location Details'}</p>
-                  <PlannerEventExpandedInfo name={this.props.activity.start ? 'Departure Time:' : 'Arrival Time:'} value={this.props.activity.start ? startTime : endTime} />
-                  <PlannerEventExpandedInfo name='Location:' value={this.props.activity.start ? `${this.props.activity[type].departureLocation.name}` : `${this.props.activity[type].arrivalLocation.name}`} />
-                  <PlannerEventExpandedInfo name='Address:' value={this.props.activity.start ? `${this.props.activity[type].departureLocation.address}` : `${this.props.activity[type].arrivalLocation.address}`} />
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Booking Details</p>
-                  <PlannerEventExpandedInfo name='Booking Service:' value={this.props.activity[type].bookedThrough} />
-                  <PlannerEventExpandedInfo name='Confirmation Number:' value={this.props.activity[type].bookingConfirmation} />
-                  <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity[type].currency} ${this.props.activity[type].cost}`} />
-                  <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Notes</p>
-                  <PlannerEventExpandedInfo name='' value={this.props.activity.start ? this.props.activity[type].departureNotes : this.props.activity[type].arrivalNotes} />
-                </div>
-              </div>
-            </div>
-          )
-        case 'Lodging':
-          return (
-            <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity[type].location.name} googlePlaceData={this.props.activity[type].location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <span style={typeStyle}>{this.props.activity.start ? ' Check In' : ' Check Out'}</span>
-              </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
-              <div style={expandedEventBoxStyle}>
-                {expandedEventIcons}
-                <div style={expandedEventBoxImageContainerStyle}>
-                  <img src={this.props.activity[type].backgroundImage} style={expandedEventBoxImageStyle} />
-                </div>
-                <div style={expandedEventBoxTextBoxStyle}>
-                  <PlannerEventExpandedInfo name={this.props.activity.start ? 'Check In Time:' : 'Check Out Time:'} value={this.props.activity.start ? startTime : endTime} />
-                  <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity[type].currency} ${this.props.activity[type].cost}`} />
-                  <PlannerEventExpandedInfo name='Booking Platform:' value={this.props.activity[type].bookedThrough} />
-                  <PlannerEventExpandedInfo name='Booking Number:' value={this.props.activity[type].bookingConfirmation} />
-                  <PlannerEventExpandedInfo name='Notes:' value={this.props.activity[type].notes} />
-                </div>
-              </div>
-            </div>
-          )
-        case 'Flight':
-          return (
-            <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
-              <p style={nameStyle}>
-                <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity.start ? this.props.activity[type].FlightInstance.departureLocation.name : this.props.activity[type].FlightInstance.arrivalLocation.name} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
-                <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value={this.props.activity.start ? 'Flight Departure' : 'Flight Arrival'} />
-              </p>
-              <div style={{position: 'relative', display: 'inline'}}>
-                {expandButton}
-                {expandMenu}
-              </div>
-              <div style={expandedEventBoxStyle}>
-                {expandedEventIcons}
-                <div style={expandedEventBoxImageContainerStyle}>
-                  <img src={this.props.activity[type].FlightBooking.backgroundImage} style={expandedEventBoxImageStyle} />
-                </div>
-                <div style={expandedEventBoxTextBoxStyle}>
-                  <PlannerEventExpandedInfo name={this.props.activity.start ? 'Departure Time:' : 'Arrival Time:'} value={this.props.activity.start ? startTime : endTime} />
-                  <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity[type].FlightBooking.currency} ${this.props.activity[type].FlightBooking.cost}`} />
-                  <PlannerEventExpandedInfo name='Booking Platform:' value={this.props.activity[type].FlightBooking.bookedThrough} />
-                  <PlannerEventExpandedInfo name='Booking Number:' value={this.props.activity[type].FlightBooking.bookingConfirmation} />
-                  <PlannerEventExpandedInfo name='Notes:' value={this.props.activity[type].FlightInstance.notes} />
-                </div>
-              </div>
-            </div>
-          )
-      }
+          </div>
+        </div>
+      )
+    //     case 'Food':
+    //       return (
+    //         <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
+    //           <p style={nameStyle}>
+    //             <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity.location.name} googlePlaceData={this.props.activity.location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+    //             <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='description' value={this.props.activity.description} />
+    //           </p>
+    //           <div style={{position: 'relative', display: 'inline'}}>
+    //             {expandButton}
+    //             {expandMenu}
+    //           </div>
+    //           <div style={expandedEventBoxStyle}>
+    //             {expandedEventIcons}
+    //             <div style={expandedEventBoxImageContainerStyle}>
+    //               <img src={this.props.activity.backgroundImage} style={expandedEventBoxImageStyle} />
+    //             </div>
+    //             <div style={expandedEventBoxTextBoxStyle}>
+    //               <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Details</p>
+    //               {this.props.activity.allDayEvent ? <p style={{fontWeight: 'bold'}}>Time: <span style={{color: '#438496'}}>Unassigned Time</span></p> :
+    //               <PlannerEventExpandedInfo name='Time:' value={`${startTime} to ${endTime}`} />}{(this.props.activity.timelineClash || this.props.activity.inBetweenStartEndRow) && <i className='material-icons' style={{position: 'absolute', top: '17px', left: '120px', color: 'red'}}>error</i>}
+    //               <PlannerEventExpandedInfo name='Location:' value={`${this.props.activity.location.name}`} />
+    //               {this.props.activity.locationAlias && <PlannerEventExpandedInfo name='Alias:' value={`${this.props.activity.locationAlias}`} />}
+    //               <PlannerEventExpandedInfo name='Address:' value={`${this.props.activity.location.address}`} />
+    //               <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Booking Details</p>
+    //               <PlannerEventExpandedInfo name='Booking Service:' value={this.props.activity.bookedThrough} />
+    //               <PlannerEventExpandedInfo name='Confirmation Number:' value={this.props.activity.bookingConfirmation} />
+    //               <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity.currency} ${this.props.activity.cost}`} />
+    //               <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Notes</p>
+    //               <PlannerEventExpandedInfo name='' value={this.props.activity.notes} />
+    //             </div>
+    //           </div>
+    //         </div>
+    //       )
+    //     case 'LandTransport':
+    //       return (
+    //         <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
+    //           <p style={nameStyle}>
+    //             <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name={this.props.activity.start ? 'departureGooglePlaceData' : 'arrivalGooglePlaceData'} value={this.props.activity.start ? this.props.activity.departureLocation.name : this.props.activity.arrivalLocation.name} googlePlaceData={this.props.activity.start ? this.props.activity.departureLocation : this.props.activity.arrivalLocation} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+    //             <span style={typeStyle}>{this.props.activity.start ? ' Departure' : ' Arrival'}</span>
+    //           </p>
+    //           <div style={{position: 'relative', display: 'inline'}}>
+    //             {expandButton}
+    //             {expandMenu}
+    //           </div>
+    //           <div style={expandedEventBoxStyle}>
+    //             {expandedEventIcons}
+    //             <div style={expandedEventBoxImageContainerStyle}>
+    //               <img src={this.props.activity.backgroundImage} style={expandedEventBoxImageStyle} />
+    //             </div>
+    //             <div style={expandedEventBoxTextBoxStyle}>
+    //               <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>{this.props.activity.start ? 'Departure Location Details' : 'Arrival Location Details'}</p>
+    //               <PlannerEventExpandedInfo name={this.props.activity.start ? 'Departure Time:' : 'Arrival Time:'} value={this.props.activity.start ? startTime : endTime} />
+    //               <PlannerEventExpandedInfo name='Location:' value={this.props.activity.start ? `${this.props.activity.departureLocation.name}` : `${this.props.activity.arrivalLocation.name}`} />
+    //               <PlannerEventExpandedInfo name='Address:' value={this.props.activity.start ? `${this.props.activity.departureLocation.address}` : `${this.props.activity.arrivalLocation.address}`} />
+    //               <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Booking Details</p>
+    //               <PlannerEventExpandedInfo name='Booking Service:' value={this.props.activity.bookedThrough} />
+    //               <PlannerEventExpandedInfo name='Confirmation Number:' value={this.props.activity.bookingConfirmation} />
+    //               <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity.currency} ${this.props.activity.cost}`} />
+    //               <p style={{textDecoration: 'underline', fontWeight: 'bold'}}>Notes</p>
+    //               <PlannerEventExpandedInfo name='' value={this.props.activity.start ? this.props.activity.departureNotes : this.props.activity.arrivalNotes} />
+    //             </div>
+    //           </div>
+    //         </div>
+    //       )
+    //     case 'Lodging':
+    //       return (
+    //         <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
+    //           <p style={nameStyle}>
+    //             <ActivityInfo handleEdit={this.state.handleEdit} toggleEdit={() => this.toggleEdit()} editing={this.state.editing} toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity.location.name} googlePlaceData={this.props.activity.location} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+    //             <span style={typeStyle}>{this.props.activity.start ? ' Check In' : ' Check Out'}</span>
+    //           </p>
+    //           <div style={{position: 'relative', display: 'inline'}}>
+    //             {expandButton}
+    //             {expandMenu}
+    //           </div>
+    //           <div style={expandedEventBoxStyle}>
+    //             {expandedEventIcons}
+    //             <div style={expandedEventBoxImageContainerStyle}>
+    //               <img src={this.props.activity.backgroundImage} style={expandedEventBoxImageStyle} />
+    //             </div>
+    //             <div style={expandedEventBoxTextBoxStyle}>
+    //               <PlannerEventExpandedInfo name={this.props.activity.start ? 'Check In Time:' : 'Check Out Time:'} value={this.props.activity.start ? startTime : endTime} />
+    //               <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity.currency} ${this.props.activity.cost}`} />
+    //               <PlannerEventExpandedInfo name='Booking Platform:' value={this.props.activity.bookedThrough} />
+    //               <PlannerEventExpandedInfo name='Booking Number:' value={this.props.activity.bookingConfirmation} />
+    //               <PlannerEventExpandedInfo name='Notes:' value={this.props.activity.notes} />
+    //             </div>
+    //           </div>
+    //         </div>
+    //       )
+    //     case 'Flight':
+    //       return (
+    //         <div style={{...activityBoxStyle, ...{marginBottom: '20px'}}}>
+    //           <p style={nameStyle}>
+    //             <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='googlePlaceData' value={this.props.activity.start ? this.props.activity.FlightInstance.departureLocation.name : this.props.activity.FlightInstance.arrivalLocation.name} /><span style={{...typeStyle, ...{padding: '1px 4px'}}}> - </span>
+    //             <ActivityInfo toggleDraggable={() => this.toggleDraggable()} activityId={this.props.activity.modelId} itineraryId={this.props.itineraryId} type={type} name='name' value={this.props.activity.start ? 'Flight Departure' : 'Flight Arrival'} />
+    //           </p>
+    //           <div style={{position: 'relative', display: 'inline'}}>
+    //             {expandButton}
+    //             {expandMenu}
+    //           </div>
+    //           <div style={expandedEventBoxStyle}>
+    //             {expandedEventIcons}
+    //             <div style={expandedEventBoxImageContainerStyle}>
+    //               <img src={this.props.activity.FlightBooking.backgroundImage} style={expandedEventBoxImageStyle} />
+    //             </div>
+    //             <div style={expandedEventBoxTextBoxStyle}>
+    //               <PlannerEventExpandedInfo name={this.props.activity.start ? 'Departure Time:' : 'Arrival Time:'} value={this.props.activity.start ? startTime : endTime} />
+    //               <PlannerEventExpandedInfo name='Price:' value={`${this.props.activity.FlightBooking.currency} ${this.props.activity.FlightBooking.cost}`} />
+    //               <PlannerEventExpandedInfo name='Booking Platform:' value={this.props.activity.FlightBooking.bookedThrough} />
+    //               <PlannerEventExpandedInfo name='Booking Number:' value={this.props.activity.FlightBooking.bookingConfirmation} />
+    //               <PlannerEventExpandedInfo name='Notes:' value={this.props.activity.FlightInstance.notes} />
+    //             </div>
+    //           </div>
+    //         </div>
+    //       )
+    //   }
     }
   }
 
