@@ -1,6 +1,6 @@
-export const updateActiveEvent = (index) => {
+export const updateActiveEvent = (id) => {
   return {
     type: 'UPDATE_ACTIVE_EVENT',
-    index
+    id
   }
 }
