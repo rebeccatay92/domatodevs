@@ -79,7 +79,7 @@ export const timelineStyle = {
   backgroundColor: 'rgba(237, 104, 90, 0.28)'
 }
 
-export const dateTableStyle = {tableLayout: 'auto'}
+export const dateTableStyle = {tableLayout: 'auto', width: '1152px'}
 export const timelineColumnStyle = (clash, allDay) => {
   return {width: '110px', position: 'relative', borderTop: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderBottom: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderLeft: clash || allDay ? '1px hidden ' + backgroundColor : 'none', borderRight: clash ? '1px solid red' : (allDay ? '1px solid #438496' : 'none')}
 }
