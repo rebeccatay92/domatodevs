@@ -68,16 +68,14 @@ class EventRowInfoCell extends Component {
     const { events } = this.props.events
 
     const value = getEventProp(column, events.filter(event => event.id === id)[0])
-    // console.log('events in infocells', events, 'index', index)
-    // CHANGE TO USE EVENTID INSTEAD OF INDEX? _.FIND() / _.GET
     return (
       <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word'}}>
-        <Editor editorState={value} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.props.updateActiveEvent('')} onFocus={() => this.props.updateActiveEvent(id)} />
+        <Editor editorState={value} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => this.props.updateActiveEvent(id)} />
       </div>
     )
   }
 }
-
+// onBlur={() => this.props.updateActiveEvent('')}
 const mapStateToProps = (state) => {
   return {
     events: state.events

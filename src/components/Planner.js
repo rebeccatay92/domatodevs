@@ -148,15 +148,16 @@ class Planner extends Component {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
       // console.log('nextProps allevents', nextProps.data.findItinerary.events)
       const allEvents = nextProps.data.findItinerary.events.map(event => {
-        // console.log('nextprops event', event)
         return {
           ...event,
           ...{
             eventType: event.eventType ? EditorState.createWithContent(ContentState.createFromText(event.eventType)) : EditorState.createEmpty(),
             location: EditorState.createEmpty(),
+            currency: event.currency ? EditorState.createWithContent(ContentState.createFromText(event.currency)) : EditorState.createEmpty(),
             cost: event.cost ? EditorState.createWithContent(ContentState.createFromText(event.cost)) : EditorState.createEmpty(),
-            // notes: event.notes ? EditorState.createWithContent(convertFromRaw(JSON.parse(event.notes))) : EditorState.createEmpty()
-            notes: event.notes ? EditorState.createWithContent(ContentState.createFromText(event.notes)) : EditorState.createEmpty()
+            notes: event.notes ? EditorState.createWithContent(ContentState.createFromText(event.notes)) : EditorState.createEmpty(),
+            bookingService: event.bookingService ? EditorState.createWithContent(ContentState.createFromText(event.bookingService)) : EditorState.createEmpty(),
+            bookingConfirmation: event.bookingConfirmation ? EditorState.createWithContent(ContentState.createFromText(event.bookingConfirmation)) : EditorState.createEmpty()
           }
         }
       })
