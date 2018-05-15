@@ -15,7 +15,7 @@ class PlannerHeader extends Component {
         </div>
         <PlannerHeaderInfo type='description' style={itineraryDescStyle} value={this.props.description} id={this.props.id} />
         {/* <p style={itineraryDescStyle}>{this.props.description}</p> */}
-        <div style={plannerHeaderIconsContainerStyle}>
+        {/* <div style={plannerHeaderIconsContainerStyle}>
           <div style={userIconsContainerStyle}>
             <Image src='https://scontent-sin6-2.xx.fbcdn.net/v/t1.0-9/14225571_677406772406900_4575646425482055747_n.jpg?oh=935665cd290c11b5c698a4b91772fe91&oe=5AACAA18' circle style={userIconStyle} />
             <Image src='https://scontent-sin6-2.xx.fbcdn.net/v/t1.0-9/13335715_630881200392791_5149958966299133966_n.jpg?oh=c360bd9cf2063d1daf86cd294e3e231f&oe=5A9CF157' circle style={userIconStyle} />
@@ -23,7 +23,7 @@ class PlannerHeader extends Component {
             <i className='material-icons person-add' style={{...plannerIconStyle, ...{verticalAlign: 'middle', margin: '0 0 0 8px'}}}>add</i>
           </div>
           <PlannerHeaderRightBarIcons id={this.props.id} />
-        </div>
+        </div> */}
       </div>
     )
   }

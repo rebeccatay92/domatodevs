@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
 import Radium from 'radium'
 import Scroll from 'react-scroll'
-import PlannerActivity from './PlannerActivity'
-import PlannerTimelineHeader from './PlannerTimelineHeader'
-import DateDropdownMenu from './DateDropdownMenu'
+// import PlannerActivity from './PlannerActivity'
+import EventRow from './EventRow'
+import ColumnHeader from './ColumnHeader'
+import DateDropdownMenu from '../DateDropdownMenu'
 import { graphql, compose } from 'react-apollo'
-import { changingLoadSequence } from '../apollo/changingLoadSequence'
-import { updateItineraryDetails, queryItinerary } from '../apollo/itinerary'
+import { changingLoadSequence } from '../../apollo/changingLoadSequence'
+import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
-import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../actions/plannerActions'
-import { addActivityToBucket, deleteActivityFromBucket } from '../actions/bucketActions'
-import { toggleTimeline } from '../actions/plannerTimelineActions'
-import PlannerColumnHeader from './PlannerColumnHeader'
-import { primaryColor, timelineStyle, dateTableStyle, timelineColumnStyle, timelineTitleStyle, timelineTitleWordStyle, dayTimelineStyle, dayTimelineContainerStyle, dayTimelineWordStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableOtherHeaderStyle, dateTableHorizontalLineStyle } from '../Styles/styles'
+import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../../actions/plannerActions'
+import { addActivityToBucket, deleteActivityFromBucket } from '../../actions/bucketActions'
+import { toggleTimeline } from '../../actions/plannerTimelineActions'
+import { timelineStyle, dateTableStyle, timelineColumnStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableHorizontalLineStyle } from '../../Styles/styles'
 
 const Element = Scroll.Element
 
@@ -53,7 +53,8 @@ class DateBox extends Component {
   }
 
   render () {
-    const { connectDropTarget } = this.props
+    // console.log(this.props.events);
+    const { connectDropTarget, day, firstIndex } = this.props
     const timeline = (
       <div style={timelineStyle} />
     )
@@ -63,14 +64,22 @@ class DateBox extends Component {
     } else if (this.state.showDateMenu) {
       expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: false})} className='material-icons dateMenu' style={{cursor: 'pointer', position: 'absolute', top: '-5px', marginLeft: '8px', fontSize: '20px', color: '#ed685a'}} >more_horiz</i>
     }
+    let columnState = []
+    this.props.columns.forEach(column => {
+      if (columnState.filter(e => e.name === column).length === 0) {
+        columnState.push({name: column, width: 1})
+      } else if (columnState.filter(e => e.name === column).length > 0) {
+        columnState[columnState.length - 1].width++
+      }
+    })
     return (
       <div ref={elem => { this.elem = elem }}>
         <table style={dateTableStyle}>
           <thead>
             <tr>
               {/* <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} daysArr={this.props.daysArr} /> */}
-              <th></th>
-              <th style={dateTableFirstHeaderStyle} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
+              <th style={{width: '0px'}}></th>
+              <th colSpan={this.props.columns.length + 1} style={dateTableFirstHeaderStyle} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
                 <Element name={'day-' + this.props.day}>
                   <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px', cursor: 'default'}}>
                     <h3 style={headerDayStyle}>Day {this.props.day} </h3>
@@ -100,25 +109,23 @@ class DateBox extends Component {
               <td style={timelineColumnStyle()}>
                 {!this.props.firstDay && this.props.timeline.events && timeline}
               </td>
-              <td colSpan='4'>
+              <td colSpan='6'>
                 <hr style={dateTableHorizontalLineStyle(this.props.firstDay)} />
               </td>
             </tr>
           </thead>
-          {connectDropTarget(
-            <tbody>
-              {this.props.activities.map((activity, i, array) => {
-                let isFirstInFlightBooking
-                if (activity.type === 'Flight') {
-                  isFirstInFlightBooking = activity.Flight.FlightInstance.firstFlight
-                }
-                return (
-                  <PlannerActivity mouseOverTimeline={this.state.mouseOverTimeline} day={this.props.day} itineraryId={this.props.itineraryId} draggable={this.props.draggable} activity={activity} key={i} index={i} isLast={i === array.length - 1} columns={this.props.columns} date={this.props.date} daysArr={this.props.daysArr} firstDay={this.props.firstDay} lastDay={this.props.lastDay} dates={this.props.dates} firstInFlightBooking={isFirstInFlightBooking} countries={this.props.countries} />
-                )
+          <tbody>
+            {this.props.firstDay && <tr>
+              <td style={{width: '0px'}}></td>
+              <td style={{textAlign: 'center', width: '114px'}}>Time</td>
+              {columnState.map((column, i) => {
+                return <ColumnHeader key={i} name={column.name} colSpan={column.width} />
               })}
-              <PlannerActivity empty itineraryId={this.props.itineraryId} activity={{day: this.props.day, type: 'empty', empty: {}, location: {name: ''}}} index={this.props.activities.length} lastDay={this.props.lastDay} day={this.props.day} date={this.props.date} dates={this.props.dates} daysArr={this.props.daysArr} />
-            </tbody>
-          )}
+            </tr>}
+            {this.props.events.map((event, i) => {
+              return <EventRow key={i} event={event} index={i + firstIndex} day={day} />
+            })}
+          </tbody>
         </table>
       </div>
     )
@@ -143,27 +150,26 @@ class DateBox extends Component {
 
     const checkIfNoBlankBoxes = array => {
       let result = true
-      array.forEach(activity => {
-        if (!activity.modelId) result = false
+      array.forEach(event => {
+        if (!event.id) result = false
       })
       return result
     }
 
-    if (!checkIfNoBlankBoxes(this.props.activities) && checkIfNoBlankBoxes(nextProps.activities) && nextProps.isOver) {
+    if (!checkIfNoBlankBoxes(this.props.events) && checkIfNoBlankBoxes(nextProps.events) && nextProps.isOver) {
       // console.log(nextProps.activities)
       // let loadSequenceArr = []
       // console.log(this.elem);
       const changeLoadSeq = () => {
-        const loadSequenceArr = nextProps.activities.map((activity, i) => {
-          const day = activity.day
-          const diff = activity.type === 'Food' || activity.type === 'Activity' ? activity[activity.type].endDay - activity[activity.type].startDay : 0
+        const loadSequenceArr = nextProps.events.map((event, i) => {
+          const day = event.day
+          const diff = event.type === 'Food' || event.type === 'Activity' ? event[event.type].endDay - event[event.type].startDay : 0
           // console.log(diff, activity[activity.type].location.name)
           return {...{
-            id: activity.type === 'Flight' ? activity.Flight.FlightInstance.id : activity.modelId,
-            type: activity.type === 'Flight' ? 'FlightInstance' : activity.type,
+            id: event.id,
             loadSequence: i + 1,
             day: day,
-            start: activity.start
+            start: event.start
           },
             ...diff && {diff: diff}
           }
@@ -226,7 +232,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
-    columns: state.plannerColumns,
+    columns: state.columns,
     timeline: state.plannerTimeline,
     timelineDay: state.plannerTimelineDay
   }
