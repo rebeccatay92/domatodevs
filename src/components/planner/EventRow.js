@@ -9,7 +9,7 @@ import EventRowInfoCell from './EventRowInfoCell'
 
 class EventRow extends Component {
   render () {
-    const { columns, event, index, day } = this.props
+    const { columns, event, index, day, id } = this.props
     let columnState = []
     columns.forEach(column => {
       if (columnState.filter(e => e.name === column).length === 0) {
@@ -26,7 +26,7 @@ class EventRow extends Component {
         <td style={{width: '114px', textAlign: 'center'}}>{startTime}</td>
         {columnState.map((column, i) => {
           return <td key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
-            <EventRowInfoCell column={column.name} index={index} day={day} />
+            <EventRowInfoCell column={column.name} index={index} day={day} id={id} />
           </td>
         })}
       </tr>

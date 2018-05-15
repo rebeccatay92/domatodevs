@@ -90,14 +90,13 @@ class Planner extends Component {
                 date = null
               }
               // DATE BOX TAKES JS DATE OBJ ARR, DATE OBJ.
-              const firstEventIndexOfDay = this.props.events.events.findIndex(event => event.startDay === day)
               return (
                 <DateBox days={days} daysArr={daysArr} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={day} date={date} dates={dates} countries={this.props.data.findItinerary.countries} events={this.props.events.events.filter(
                     event => {
                       let eventDay = event.startDay
                       return eventDay === day
                     }
-                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length - 1} firstIndex={firstEventIndexOfDay} />
+                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length - 1} />
               )
             })}
           </div>

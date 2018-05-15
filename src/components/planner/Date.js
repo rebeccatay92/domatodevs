@@ -123,7 +123,7 @@ class DateBox extends Component {
               })}
             </tr>}
             {this.props.events.map((event, i) => {
-              return <EventRow key={i} event={event} index={i + firstIndex} day={day} />
+              return <EventRow key={i} event={event} index={i + firstIndex} day={day} id={event.id} />
             })}
           </tbody>
         </table>

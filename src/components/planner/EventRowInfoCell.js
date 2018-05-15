@@ -15,10 +15,22 @@ const eventPropertyNames = {
   Location: 'location'
 }
 
+const getEventProp = (columnInput, eventInput) => {
+  const eventProperties = {
+    Event: eventInput.eventType,
+    Location: eventInput.location,
+    Price: eventInput.cost,
+    Notes: eventInput.notes
+  }
+
+  return eventProperties[columnInput]
+}
+
 class EventRowInfoCell extends Component {
   constructor (props) {
     super(props)
-    const { column, index } = props
+    const { column, id } = props
+    const { events } = this.props.events
     const property = eventPropertyNames[column]
 
     // this.state = {
@@ -26,12 +38,17 @@ class EventRowInfoCell extends Component {
     // }
 
     this.onChange = (editorState) => {
-      this.props.updateEvent(index, property, editorState)
+      this.props.updateEvent(id, property, editorState)
       // this.setState({editorState: editorState})
     }
 
-    this.focus = () => {
+    this.focus = (e) => {
       this.editor.focus()
+      // check whether the click is within the text, or within the cell but outside of the text, if outside of text, move cursor to the end
+      if (e.target.className === 'planner-table-cell') {
+        const value = getEventProp(column, events.filter(event => event.id === id)[0])
+        this.props.updateEvent(id, property, EditorState.moveFocusToEnd(value))
+      }
     }
   }
 
@@ -47,25 +64,15 @@ class EventRowInfoCell extends Component {
   // }
 
   render () {
-    const { column, index } = this.props
+    const { column, id } = this.props
     const { events } = this.props.events
-    const getEventProp = (columnInput, eventInput) => {
-      const eventProperties = {
-        Event: eventInput.eventType,
-        Location: eventInput.location,
-        Price: eventInput.cost,
-        Notes: eventInput.notes
-      }
 
-      return eventProperties[columnInput]
-    }
-
-    const value = getEventProp(column, events[index])
+    const value = getEventProp(column, events.filter(event => event.id === id)[0])
     // console.log('events in infocells', events, 'index', index)
     // CHANGE TO USE EVENTID INSTEAD OF INDEX? _.FIND() / _.GET
     return (
-      <div onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word'}}>
-        <Editor editorState={value} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.props.updateActiveEvent('')} onFocus={() => this.props.updateActiveEvent(index)} />
+      <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word'}}>
+        <Editor editorState={value} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.props.updateActiveEvent('')} onFocus={() => this.props.updateActiveEvent(id)} />
       </div>
     )
   }
@@ -79,11 +86,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateEvent: (index, property, value) => {
-      return dispatch(updateEvent(index, property, value))
+    updateEvent: (id, property, value) => {
+      return dispatch(updateEvent(id, property, value))
     },
-    updateActiveEvent: (index) => {
-      return dispatch(updateActiveEvent(index))
+    updateActiveEvent: (id) => {
+      return dispatch(updateActiveEvent(id))
     }
   }
 }
