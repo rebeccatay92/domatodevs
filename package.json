@@ -3,6 +3,7 @@
   "version": "1.6.0",
   "private": true,
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^2.2.0",
     "auth0-js": "^9.3.3",
     "auth0-lock": "^11.4.0",
     "blob-stream": "^0.1.3",

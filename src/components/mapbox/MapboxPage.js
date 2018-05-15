@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo'
 import { queryItinerary } from '../../apollo/itinerary'
 
 import _ from 'lodash'
+import Geocoder from './Geocoder'
 
 // react wrapper factory
 const Map = ReactMapboxGL({
@@ -50,8 +51,22 @@ class MapboxPage extends Component {
     this.queryMapboxGeocodingService(queryStr)
   }
 
-  queryMapboxGeocodingService (str) {
-    console.log('debounced', str)
+  queryMapboxGeocodingService (queryStr) {
+    console.log('debounced', queryStr)
+    if (!queryStr) return
+    let geocodingEndpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${queryStr}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
+
+    fetch(geocodingEndpoint)
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        console.log('json', json)
+        this.setState({geocodingResults: json.features})
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   // synx state with map's final zoom and center
@@ -87,7 +102,16 @@ class MapboxPage extends Component {
           <ZoomControl position='top-left' />
           <div style={{position: 'absolute', top: '15px', left: '50px', width: '400px', height: '35px'}}>
             <input type='text' style={{width: '400px', height: '35px', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', lineHeight: '19px', padding: '8px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onGeocodeInputChange(e)} value={this.state.geocodeInputField} />
+            {true &&
+              <div style={{width: '400px', background: 'white'}}>
+                {this.state.geocodingResults.map((result, i) => {
+                  return <h6 key={i} style={{cursor: 'pointer', margin: 0, padding: '8px', minHeight: '35px'}}>{result.place_name} latlng={result.center[0]}, {result.center[1]}</h6>
+                })}
+              </div>
+            }
           </div>
+          {/* IMPORTED PACKAGE */}
+          <Geocoder />
         </Map>
         {/* RIGHT SIDE EVENTS SIDEBAR (move from app.js -> to planner / map only) */}
       </div>
