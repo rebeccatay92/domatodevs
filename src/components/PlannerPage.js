@@ -7,9 +7,9 @@ class PlannerPage extends Component {
   render () {
     return (
       <div style={plannerPageStyles}>
-        {/* <div style={plannerStyle}>
+        <div style={plannerStyle}>
           <Planner id={this.props.match.params.itineraryId} />
-        </div> */}
+        </div>
       </div>
     )
   }

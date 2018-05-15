@@ -4,7 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState } from 'draft-js'
 
 import { updateEvent } from '../../actions/planner/eventsActions'
-import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+// import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 
 const _ = require('lodash')
 
@@ -61,7 +61,8 @@ class EventRowInfoCell extends Component {
     }
 
     const value = getEventProp(column, events[index])
-
+    // console.log('events in infocells', events, 'index', index)
+    // CHANGE TO USE EVENTID INSTEAD OF INDEX? _.FIND() / _.GET
     return (
       <div onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word'}}>
         <Editor editorState={value} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.props.updateActiveEvent('')} onFocus={() => this.props.updateActiveEvent(index)} />
@@ -80,10 +81,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateEvent: (index, property, value) => {
       return dispatch(updateEvent(index, property, value))
-    },
-    updateActiveEvent: (index) => {
-      return dispatch(updateActiveEvent(index))
     }
+    // updateActiveEvent: (index) => {
+    //   return dispatch(updateActiveEvent(index))
+    // }
   }
 }
 

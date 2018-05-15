@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
-import { EditorState, convertFromRaw } from 'draft-js'
+import { EditorState, convertFromRaw, ContentState } from 'draft-js'
 import { initializeEvents } from '../actions/planner/eventsActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { toggleSpinner } from '../actions/spinnerActions'
@@ -145,21 +145,33 @@ class Planner extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
+      // console.log('nextProps allevents', nextProps.data.findItinerary.events)
       const allEvents = nextProps.data.findItinerary.events.map(event => {
+        // console.log('nextprops event', event)
         return {
           ...event,
           ...{
-            eventType: EditorState.createEmpty(),
+            eventType: event.eventType ? EditorState.createWithContent(ContentState.createFromText(event.eventType)) : EditorState.createEmpty(),
             location: EditorState.createEmpty(),
-            cost: EditorState.createEmpty(),
-            notes: EditorState.createEmpty()
+            cost: event.cost ? EditorState.createWithContent(ContentState.createFromText(event.cost)) : EditorState.createEmpty(),
+            // notes: event.notes ? EditorState.createWithContent(convertFromRaw(JSON.parse(event.notes))) : EditorState.createEmpty()
+            notes: event.notes ? EditorState.createWithContent(ContentState.createFromText(event.notes)) : EditorState.createEmpty()
           }
         }
       })
+
+      // TESTING REVERSING EDITOR STATE INTO PLAIN TEXT
+      let testingJSON = '{"blocks":[{"key":"dhq60","text":"Visiting India had been my goal since a long time ago. Everyone had been discouraging me to go to India based on their impression that it’s especially unsafe for female travellers. I mean, I know so many female travellers who visit India alone. I would not say India is 100% safe, but then again which part of this world is guaranteed to be safe? Nothing should stop you from exploring places as long as you plan well and know what you are doing. It would be best if you have someone to travel with you should you be concerned about traveling alone.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"4ep2t","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"1l0pu","text":"I first heard about Ladakh two years ago from my good friend KW. We agreed to make it happen this year. Unfortunately, just a month before the trip, KW had to stand us up because of his work schedule. Eventually it became a duo trip of just me and ST, which was a new experience! Haha.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8r73d","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8e8l1","text":"We had only 9 days and the highlight of the trip was Ladakh. We didn’t think it was possible to include Jaipur and Taj Mahal in our initial plan due to our short travel period, but because I insisted (HAHA), it took me almost a week to come out with the following itinerary, which then unexpectedly gave us an extra day at the end (read on to find out how we earned the extra day).","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}'
+      let editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(testingJSON)))
+      let contentState = editorState.getCurrentContent()
+      console.log('content state', contentState)
+      let plainText = contentState.getPlainText()
+      console.log('plaintext', plainText)
+
       // const activitiesWithTimelineErrors = checkForTimelineErrorsInPlanner(allEvents)
       // console.log(activitiesWithTimelineErrors)
       // this.props.initializePlanner(activitiesWithTimelineErrors)
-      console.log(allEvents)
+      // console.log('allEvents after draftjs mapping', allEvents)
       this.props.initializeEvents(allEvents)
       setTimeout(() => this.props.toggleSpinner(false), 750)
     }
