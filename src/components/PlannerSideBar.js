@@ -1,4 +1,10 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Editor, EditorState } from 'draft-js'
+import { updateEvent } from '../actions/planner/eventsActions'
+
+import _ from 'lodash'
+
 
 import { PlannerSideBarStyles as styles } from '../Styles/PlannerSideBarStyles'
 
@@ -9,7 +15,20 @@ class PlannerSideBar extends Component {
       clickedTab: 'none'
     }
   }
+
+  handleEditorChange (editorState, field) {
+    this.props.updateEvent(this.props.activeEventId, field, editorState)
+  }
+
   render () {
+    // console.log('activeEventId', this.props.activeEventId)
+    // console.log('redux events arr', this.props.events.events)
+    let reduxEventsArr = this.props.events.events
+    let activeEvent = _.find(reduxEventsArr, e => {
+      return e.id === this.props.activeEventId
+    })
+
+    console.log('activeEvent', activeEvent)
     return (
       <div style={styles.sidebarContainer}>
         {/* TABS */}
@@ -17,12 +36,14 @@ class PlannerSideBar extends Component {
           <div style={this.state.clickedTab === 'bucket' ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.setState({clickedTab: 'bucket'})}>
             <span style={styles.tabText}>Bucket</span>
           </div>
-          <div style={this.state.clickedTab === 'event' ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.setState({clickedTab: 'event'})}>
-            <span style={styles.tabText}>Event</span>
-          </div>
+          {this.props.activeEventId &&
+            <div style={this.props.activeEventId ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.setState({clickedTab: 'event'})}>
+              <span style={styles.tabText}>Event</span>
+            </div>
+          }
         </div>
         {/* MAINAREA ITSELF */}
-        {this.state.clickedTab === 'event' &&
+        {this.props.activeEventId &&
           <div style={styles.mainAreaContainer}>
             <div style={styles.minHeightSection}>
               <div style={styles.iconSection}>
@@ -51,7 +72,8 @@ class PlannerSideBar extends Component {
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Event Type</span>
-                  <input type='text' placeholder={'-'} style={styles.inputField} />
+                  {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
+                  <Editor editorState={activeEvent.eventType} onChange={editorState => this.handleEditorChange(editorState, 'eventType')} />
                 </label>
               </div>
             </div>
@@ -83,7 +105,8 @@ class PlannerSideBar extends Component {
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Cost</span>
-                  <input type='number' placeholder={'-'} style={styles.inputField} />
+                  {/* <input type='number' placeholder={'-'} style={styles.inputField} /> */}
+                  <Editor editorState={activeEvent.cost} onChange={editorState => this.handleEditorChange(editorState, 'cost')} />
                 </label>
               </div>
             </div>
@@ -95,11 +118,13 @@ class PlannerSideBar extends Component {
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Booking service</span>
-                  <input type='text' placeholder={'-'} style={styles.inputField} />
+                  {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
+                  <Editor editorState={activeEvent.bookingService} onChange={editorState => this.handleEditorChange(editorState, 'bookingService')} />
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Confirmation number</span>
-                  <input type='text' placeholder={'-'} style={styles.inputField} />
+                  {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
+                  <Editor editorState={activeEvent.bookingConfirmation} onChange={editorState => this.handleEditorChange(editorState, 'bookingConfirmation')} />
                 </label>
               </div>
             </div>
@@ -111,7 +136,8 @@ class PlannerSideBar extends Component {
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Notes</span>
-                  <textarea placeholder={'-'} style={styles.notesTextArea} />
+                  {/* <textarea placeholder={'-'} style={styles.notesTextArea} /> */}
+                  <Editor editorState={activeEvent.notes} onChange={editorState => this.handleEditorChange(editorState, 'notes')} />
                 </label>
               </div>
             </div>
@@ -131,4 +157,19 @@ class PlannerSideBar extends Component {
   }
 }
 
-export default PlannerSideBar
+const mapStateToProps = (state) => {
+  return {
+    events: state.events,
+    activeEventId: state.activeEventId
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateEvent: (id, property, value) => {
+      return dispatch(updateEvent(id, property, value))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlannerSideBar)
