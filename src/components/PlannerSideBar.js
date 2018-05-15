@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-
+import { connect } from 'react-redux'
+import _ from 'lodash'
 import { PlannerSideBarStyles as styles } from '../Styles/PlannerSideBarStyles'
 
 class PlannerSideBar extends Component {
@@ -9,7 +10,13 @@ class PlannerSideBar extends Component {
       clickedTab: 'none'
     }
   }
+
   render () {
+    // let activeEvent = _.find(this.props.events, e => {
+    //   return e.id === '1'
+    // })
+    //
+    // console.log('activeEvent', activeEvent)
     return (
       <div style={styles.sidebarContainer}>
         {/* TABS */}
@@ -131,4 +138,11 @@ class PlannerSideBar extends Component {
   }
 }
 
-export default PlannerSideBar
+const mapStateToProps = (state) => {
+  return {
+    events: state.events
+    // activeEventId: state.activeEventId // soon to be id.
+  }
+}
+
+export default connect(mapStateToProps)(PlannerSideBar)

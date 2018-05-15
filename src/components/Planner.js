@@ -9,8 +9,9 @@ import { queryItinerary } from '../apollo/itinerary'
 import { plannerContainerStyle } from '../Styles/styles'
 import DateBox from './planner/Date'
 // import PlannerHeader from './PlannerHeader'
+import PlannerSideBar from './PlannerSideBar'
 
-const _ = require('lodash')
+import _ from 'lodash'
 
 const getDates = (startDate, days) => {
   let dateArray = []
@@ -102,6 +103,7 @@ class Planner extends Component {
           </div>
         </div>
         {/* </Scrollbars> */}
+        <PlannerSideBar />
       </div>
     )
   }

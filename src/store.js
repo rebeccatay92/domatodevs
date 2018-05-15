@@ -70,7 +70,7 @@ const store = createStore(combineReducers({
   navBar: navBarReducer,
   columns: columnsReducer,
   events: eventsReducer,
-  activeEventIndex: activeEventReducer,
+  activeEventId: activeEventReducer,
   apollo: client.reducer()
 }),
 {},

@@ -25,7 +25,7 @@ import Lock from './Auth0/lock'
 
 import GoogleCloudStorage from './Google/GoogleCloudStorage'
 
-import PlannerSideBar from './PlannerSideBar'
+// import PlannerSideBar from './PlannerSideBar'
 
 import MapboxPage from './mapbox/MapboxPage'
 
@@ -64,9 +64,8 @@ class App extends Component {
             )} />
 
             {/* SIDEBAR SHOULD RENDER INSIDE THESE 2 ROUTES INSTEAD OF GLOBALLY  */}
-            <PlannerSideBar />
+            {/* <PlannerSideBar /> */}
             <Route path='/planner/:itineraryId' component={PlannerPage} />
-            {/* <Route path='/map/:itineraryId' component={MapPlannerPage} /> */}
             <Route path='/map/:ItineraryId' component={MapboxPage} />
 
             <Route path='/blog/:blogId' component={ReadPage} />
