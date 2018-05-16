@@ -6,10 +6,11 @@ import { initializeEvents } from '../actions/planner/eventsActions'
 import { toggleTimelineDay } from '../actions/plannerTimelineDayActions'
 import { toggleSpinner } from '../actions/spinnerActions'
 import { queryItinerary } from '../apollo/itinerary'
-import { plannerContainerStyle } from '../Styles/styles'
+// import { plannerContainerStyle } from '../Styles/styles'
 import DateBox from './planner/Date'
 // import PlannerHeader from './PlannerHeader'
-import PlannerSideBar from './PlannerSideBar'
+
+import { PlannerStyles as styles } from '../Styles/PlannerStyles'
 
 import _ from 'lodash'
 
@@ -63,7 +64,8 @@ class Planner extends Component {
     var daysArr = _.range(1, days + 1)
 
     return (
-      <div style={plannerContainerStyle}>
+      // TABLE PLANNER CONTAINER IS 1274PX, HORIZONTALLY CENTERED.
+      <div style={styles.tablePlannerContainer}>
         {/* <Scrollbars renderThumbVertical={({ style }) =>
           <div style={{ ...style, backgroundColor: primaryColor, right: '-4px' }} />
         } renderThumbHorizontal={({ style }) =>
@@ -92,17 +94,16 @@ class Planner extends Component {
               // DATE BOX TAKES JS DATE OBJ ARR, DATE OBJ.
               return (
                 <DateBox days={days} daysArr={daysArr} dateOffsets={this.state.dateOffsets || {'day 1': true}} itineraryId={this.props.id} day={day} date={date} dates={dates} countries={this.props.data.findItinerary.countries} events={this.props.events.events.filter(
-                    event => {
-                      let eventDay = event.startDay
-                      return eventDay === day
-                    }
-                  )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length - 1} />
+                  event => {
+                    let eventDay = event.startDay
+                    return eventDay === day
+                  }
+                )} draggable={this.state.draggable} key={i} firstDay={i === 0} lastDay={i === daysArr.length - 1} />
               )
             })}
           </div>
         </div>
         {/* </Scrollbars> */}
-        <PlannerSideBar />
       </div>
     )
   }

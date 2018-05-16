@@ -26,8 +26,6 @@ export const plannerPageStyles = {
 }
 
 export const plannerStyle = {display: 'inline-block', width: '1274px', verticalAlign: 'top'}
-export const bucketStyle = {display: 'inline-block', width: '335px', verticalAlign: 'top', padding: '14px 0 0 14px'}
-export const bucketTitleStyle = {textAlign: 'left', fontSize: '24px'}
 
 // Planner.js styles
 export const plannerContainerStyle = {
@@ -186,18 +184,10 @@ export const columnValueContainerStyle = (columnType) => {
 
 export const expandEventIconStyle = {color: 'rgba(60, 58, 68, 0.7)', cursor: 'pointer', position: 'absolute', right: '0px', top: '28px', height: '14px', ':hover': {color: primaryColor}}
 
-// Create Event Form Styles
-// export const createEventFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - ${totalWidth / 2}px)`, top: `calc(50% - ${totalHeight / 2}px)`, width: totalWidth + 'px', height: totalHeight + 'px', zIndex: 999, color: 'white'}
-
 export const createEventFormContainerStyle = {display: 'block', width: totalWidth + 'px', height: totalHeight + 'px', color: 'white', margin: `calc(50vh - ${totalHeight / 2}px) auto`}
-
-// Create Flight Form Styles
-// export const createFlightFormContainerStyle = {backgroundColor: 'transparent', position: 'fixed', left: `calc(50% - 645px)`, top: `calc(50% - 434.5px)`, width: '1290px', height: '869px', zIndex: 999, color: 'white'}
 
 export const createFlightFormContainerStyle = {display: 'block', width: '1290px', height: '869px', color: 'white', margin: `calc(50vh - ${869 / 2}px) auto`}
 
-// export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '90%'}
-// height 100% since attachments is no longer at bottom
 export const createEventFormBoxShadow = {boxShadow: '2px 2px 10px 2px rgba(0, 0, 0, .2)', height: '100%'}
 export const createEventFormLeftPanelStyle = (url, type) => {
   return {backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: type === 'flight' ? '494px' : leftPanelWidth + 'px', height: '100%', display: 'inline-block', verticalAlign: 'top', position: 'relative', padding: '32px'}
