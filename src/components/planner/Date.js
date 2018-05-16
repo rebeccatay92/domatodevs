@@ -15,6 +15,8 @@ import { addActivityToBucket, deleteActivityFromBucket } from '../../actions/buc
 import { toggleTimeline } from '../../actions/plannerTimelineActions'
 import { timelineStyle, dateTableStyle, timelineColumnStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableHorizontalLineStyle } from '../../Styles/styles'
 
+import moment from 'moment'
+
 const Element = Scroll.Element
 
 const dateTarget = {
@@ -53,6 +55,10 @@ class DateBox extends Component {
   }
 
   render () {
+    // console.log('PROPS DATE UNIX', this.props.date)
+    let dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
+    let dateStringUpcase = dateString.toUpperCase()
+
     // console.log(this.props.events);
     const { connectDropTarget, day, firstIndex } = this.props
     const timeline = (
@@ -84,7 +90,9 @@ class DateBox extends Component {
                   <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px', cursor: 'default'}}>
                     <h3 style={headerDayStyle}>Day {this.props.day} </h3>
                     {this.props.date &&
-                      <span style={headerDateStyle}>{new Date(this.props.date).toDateString().toUpperCase()}</span>
+                      <span style={headerDateStyle}>
+                        {dateStringUpcase}
+                      </span>
                     }
                     <div style={{position: 'relative', display: 'inline'}}>
                       {expandButton}

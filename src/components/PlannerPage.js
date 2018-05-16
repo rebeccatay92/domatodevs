@@ -1,8 +1,27 @@
 import React, { Component } from 'react'
-import Planner from './Planner'
 
+import { graphql } from 'react-apollo'
+import { queryItinerary } from '../apollo/itinerary'
+
+import { connect } from 'react-redux'
+import { toggleSpinner } from '../actions/spinnerActions'
+import { initializeEvents } from '../actions/planner/eventsActions'
+
+import { EditorState, convertFromRaw, ContentState } from 'draft-js'
+
+import Planner from './Planner'
 import PlannerRightBar from './planner/PlannerRightBar'
 import PlannerBottomBar from './planner/PlannerBottomBar'
+
+import _ from 'lodash'
+
+function generateDatesUnixArr (startDateUnixSecs, numOfDaysInt) {
+  let tempArr = []
+  while (tempArr.length < numOfDaysInt) {
+    tempArr.push(startDateUnixSecs + (tempArr.length * 86400))
+  }
+  return tempArr
+}
 
 class PlannerPage extends Component {
   constructor (props) {
@@ -19,16 +38,62 @@ class PlannerPage extends Component {
     })
   }
 
-  // NEED TO INITALIZE EVENTS ARR IN THIS COMPONENT, SO SHARED BETWEEN TABLE, MAP, SIDEBARS.
+  // WILL SWITCH TO CONTENT STATE (MERGE YT)
+  componentWillReceiveProps (nextProps) {
+    if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
+      // console.log('nextProps allevents', nextProps.data.findItinerary.events)
+      const allEvents = nextProps.data.findItinerary.events.map(event => {
+        return {
+          ...event,
+          ...{
+            eventType: event.eventType ? EditorState.createWithContent(ContentState.createFromText(event.eventType)) : EditorState.createEmpty(),
+            location: EditorState.createEmpty(),
+            currency: event.currency ? EditorState.createWithContent(ContentState.createFromText(event.currency)) : EditorState.createEmpty(),
+            cost: event.cost ? EditorState.createWithContent(ContentState.createFromText(event.cost)) : EditorState.createEmpty(),
+            notes: event.notes ? EditorState.createWithContent(ContentState.createFromText(event.notes)) : EditorState.createEmpty(),
+            bookingService: event.bookingService ? EditorState.createWithContent(ContentState.createFromText(event.bookingService)) : EditorState.createEmpty(),
+            bookingConfirmation: event.bookingConfirmation ? EditorState.createWithContent(ContentState.createFromText(event.bookingConfirmation)) : EditorState.createEmpty()
+          }
+        }
+      })
+
+      // TESTING REVERSING EDITOR STATE INTO PLAIN TEXT
+      let testingJSON = '{"blocks":[{"key":"dhq60","text":"Visiting India had been my goal since a long time ago. Everyone had been discouraging me to go to India based on their impression.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8r73d","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8e8l1","text":"We had only 9 days and the highlight of the trip was Ladakh. We didn’t think it was possible to include).","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}'
+      let editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(testingJSON)))
+      let contentState = editorState.getCurrentContent()
+      // console.log('content state', contentState)
+      let plainText = contentState.getPlainText()
+      // console.log('plaintext', plainText)
+
+      // console.log('allEvents after draftjs mapping', allEvents)
+      this.props.initializeEvents(allEvents)
+      setTimeout(() => this.props.toggleSpinner(false), 750)
+    }
+  }
 
   // PUBLIC VS PRIVATE ROUTE: REPLACE COMPONENTS WITH A PUBLIC FACING COMPONENT?
   render () {
+    if (this.props.data.loading) return (<h1>Loading</h1>)
+
+    // CALCULATE DATES, DAYS HERE. DATES ARR IN UNIX (SECS).
+    const startDateUnix = this.props.data.findItinerary.startDate
+    const numOfDaysInt = this.props.data.findItinerary.days
+
+    // [1, 2, 3 ...days] props to pass Planner
+    let daysIntArr = _.range(1, numOfDaysInt + 1)
+
+    // props to pass Planner. either null or []
+    let datesUnixArr = null
+    if (startDateUnix) {
+      datesUnixArr = generateDatesUnixArr(startDateUnix, numOfDaysInt)
+    }
+
     return (
       <div style={{width: '100vw', minHeight: 'calc(100vh - 52px)'}}>
         {/* PLANNER VIEW. */}
         {/* STYLING FOR CENTERING IS IN PLANNER ITSELF */}
         {this.state.plannerView === 'planner' &&
-          <Planner id={this.props.match.params.itineraryId} />
+          <Planner itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
         }
 
         {/* CUSTOM LOCATION VIEW. ONLY HAS MAP + RIGHT SIDEBAR */}
@@ -43,4 +108,23 @@ class PlannerPage extends Component {
   }
 }
 
-export default PlannerPage
+const options = {
+  options: props => ({
+    variables: {
+      id: props.match.params.itineraryId
+    }
+  })
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    initializeEvents: (events) => {
+      dispatch(initializeEvents(events))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
+    }
+  }
+}
+
+export default connect(null, mapDispatchToProps)(graphql(queryItinerary, options)(PlannerPage))
