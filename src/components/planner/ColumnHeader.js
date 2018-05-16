@@ -7,7 +7,7 @@ class ColumnHeader extends Component {
   render () {
     const { name, colSpan } = this.props
     return (
-      <td colSpan={colSpan} style={{width: `calc(232px * ${colSpan})`}}>{name}</td>
+      <td colSpan={colSpan} style={{width: `calc(232px * ${colSpan})`, padding: '0 8px'}}>{name}</td>
     )
   }
 }

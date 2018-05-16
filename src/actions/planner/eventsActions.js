@@ -5,11 +5,12 @@ export const initializeEvents = (events) => {
   }
 }
 
-export const updateEvent = (id, property, value) => {
+export const updateEvent = (id, property, value, fromSidebar) => {
   return {
     type: 'UPDATE_EVENT',
     id,
     property,
-    value
+    value,
+    fromSidebar
   }
 }

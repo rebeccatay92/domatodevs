@@ -152,13 +152,13 @@ class Planner extends Component {
           ...event,
           ...{
             startTime: new Date(event.startTime * 1000).toGMTString().substring(17, 22),
-            eventType: event.eventType ? EditorState.createWithContent(ContentState.createFromText(event.eventType)) : EditorState.createEmpty(),
-            location: EditorState.createEmpty(),
-            currency: event.currency ? EditorState.createWithContent(ContentState.createFromText(event.currency)) : EditorState.createEmpty(),
-            cost: event.cost ? EditorState.createWithContent(ContentState.createFromText(event.cost)) : EditorState.createEmpty(),
-            notes: event.notes ? EditorState.createWithContent(ContentState.createFromText(event.notes)) : EditorState.createEmpty(),
-            bookingService: event.bookingService ? EditorState.createWithContent(ContentState.createFromText(event.bookingService)) : EditorState.createEmpty(),
-            bookingConfirmation: event.bookingConfirmation ? EditorState.createWithContent(ContentState.createFromText(event.bookingConfirmation)) : EditorState.createEmpty()
+            eventType: event.eventType ? ContentState.createFromText(event.eventType) : ContentState.createFromText(''),
+            location: ContentState.createFromText(''),
+            currency: event.currency ? ContentState.createFromText(event.currency) : ContentState.createFromText(''),
+            cost: event.cost ? ContentState.createFromText(event.cost) : ContentState.createFromText(''),
+            notes: event.notes ? ContentState.createFromText(event.notes) : ContentState.createFromText(''),
+            bookingService: event.bookingService ? ContentState.createFromText(event.bookingService) : ContentState.createFromText(''),
+            bookingConfirmation: event.bookingConfirmation ? ContentState.createFromText(event.bookingConfirmation) : ContentState.createFromText('')
           }
         }
       })

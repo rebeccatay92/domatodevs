@@ -3,8 +3,9 @@ import { connect } from 'react-redux'
 import { Editor, EditorState } from 'draft-js'
 import { updateEvent } from '../actions/planner/eventsActions'
 
-import _ from 'lodash'
+import PlannerSideBarInfoField from './planner/PlannerSideBarInfoField'
 
+import _ from 'lodash'
 
 import { PlannerSideBarStyles as styles } from '../Styles/PlannerSideBarStyles'
 
@@ -16,19 +17,19 @@ class PlannerSideBar extends Component {
     }
   }
 
-  handleEditorChange (editorState, field) {
-    this.props.updateEvent(this.props.activeEventId, field, editorState)
-  }
+  // handleEditorChange (editorState, field) {
+  //   this.props.updateEvent(this.props.activeEventId, field, editorState)
+  // }
 
   render () {
     // console.log('activeEventId', this.props.activeEventId)
     // console.log('redux events arr', this.props.events.events)
-    let reduxEventsArr = this.props.events.events
-    let activeEvent = _.find(reduxEventsArr, e => {
-      return e.id === this.props.activeEventId
-    })
+    // let reduxEventsArr = this.props.events.events
+    // let activeEvent = _.find(reduxEventsArr, e => {
+    //   return e.id === this.props.activeEventId
+    // })
 
-    console.log('activeEvent', activeEvent)
+    // console.log('activeEvent', activeEvent)
     return (
       <div style={styles.sidebarContainer}>
         {/* TABS */}
@@ -73,7 +74,8 @@ class PlannerSideBar extends Component {
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Event Type</span>
                   {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
-                  <Editor editorState={activeEvent.eventType} onChange={editorState => this.handleEditorChange(editorState, 'eventType')} />
+                  <PlannerSideBarInfoField property='eventType' id={this.props.activeEventId} />
+                  {/* <Editor editorState={activeEvent.eventType} onChange={editorState => this.handleEditorChange(editorState, 'eventType')} /> */}
                 </label>
               </div>
             </div>
@@ -106,7 +108,8 @@ class PlannerSideBar extends Component {
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Cost</span>
                   {/* <input type='number' placeholder={'-'} style={styles.inputField} /> */}
-                  <Editor editorState={activeEvent.cost} onChange={editorState => this.handleEditorChange(editorState, 'cost')} />
+                  <PlannerSideBarInfoField property='cost' id={this.props.activeEventId} />
+                  {/* <Editor editorState={activeEvent.cost} onChange={editorState => this.handleEditorChange(editorState, 'cost')} /> */}
                 </label>
               </div>
             </div>
@@ -119,12 +122,14 @@ class PlannerSideBar extends Component {
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Booking service</span>
                   {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
-                  <Editor editorState={activeEvent.bookingService} onChange={editorState => this.handleEditorChange(editorState, 'bookingService')} />
+                  <PlannerSideBarInfoField property='bookingService' id={this.props.activeEventId} />
+                  {/* <Editor editorState={activeEvent.bookingService} onChange={editorState => this.handleEditorChange(editorState, 'bookingService')} /> */}
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Confirmation number</span>
                   {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
-                  <Editor editorState={activeEvent.bookingConfirmation} onChange={editorState => this.handleEditorChange(editorState, 'bookingConfirmation')} />
+                  <PlannerSideBarInfoField property='bookingConfirmation' id={this.props.activeEventId} />
+                  {/* <Editor editorState={activeEvent.bookingConfirmation} onChange={editorState => this.handleEditorChange(editorState, 'bookingConfirmation')} /> */}
                 </label>
               </div>
             </div>
@@ -137,7 +142,8 @@ class PlannerSideBar extends Component {
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Notes</span>
                   {/* <textarea placeholder={'-'} style={styles.notesTextArea} /> */}
-                  <Editor editorState={activeEvent.notes} onChange={editorState => this.handleEditorChange(editorState, 'notes')} />
+                  <PlannerSideBarInfoField property='notes' id={this.props.activeEventId} />
+                  {/* <Editor editorState={activeEvent.notes} onChange={editorState => this.handleEditorChange(editorState, 'notes')} /> */}
                 </label>
               </div>
             </div>
