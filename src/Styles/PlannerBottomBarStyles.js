@@ -13,11 +13,14 @@ const plannerBottomBarContainer = {
   alignItems: 'center'
 }
 
-const tabText = {
+const tabContainer = {
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   ...coreFonts.robotoRegular,
   color: coreColors.blackSolid,
   fontSize: '16px',
-  lineHeight: '51px',
   padding: '0 20px',
   cursor: 'pointer',
   ':hover': {
@@ -28,5 +31,5 @@ const tabText = {
 
 export const PlannerBottomBarStyles = {
   plannerBottomBarContainer,
-  tabText
+  tabContainer
 }

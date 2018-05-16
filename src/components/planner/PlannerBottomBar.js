@@ -13,14 +13,24 @@ class PlannerBottomBar extends Component {
     return (
       <div style={styles.plannerBottomBarContainer}>
         {this.props.plannerView === 'planner' &&
-          <span key={'plannerBottomBarTab1'} style={styles.tabText} onClick={() => this.props.changePlannerView()}>Switch to map</span>
+          <div key={'plannerBottomBarTab1'} style={styles.tabContainer} onClick={() => this.props.changePlannerView()}>
+            <span>Switch to map</span>
+          </div>
         }
         {this.props.plannerView === 'map' &&
-          <span key={'plannerBottomBarTab2'} style={styles.tabText} onClick={() => this.props.changePlannerView()}>Switch to planner</span>
+          <div key={'plannerBottomBarTab2'} style={styles.tabContainer} onClick={() => this.props.changePlannerView()}>
+            <span>Switch to planner</span>
+          </div>
         }
-        <span key={'plannerBottomBarTab3'} style={styles.tabText}>Add Day</span>
-        <span key={'plannerBottomBarTab4'} style={styles.tabText}>Add Event</span>
-        <span key={'plannerBottomBarTab5'} style={styles.tabText}>Information</span>
+        <div key={'plannerBottomBarTab3'} style={styles.tabContainer}>
+          <span>Add Day</span>
+        </div>
+        <div key={'plannerBottomBarTab4'} style={styles.tabContainer}>
+          <span>Add Event</span>
+        </div>
+        <div key={'plannerBottomBarTab5'} style={styles.tabContainer}>
+          <span>Information</span>
+        </div>
       </div>
     )
   }
