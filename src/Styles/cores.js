@@ -17,5 +17,6 @@ export const coreFonts = {
   robotoLight: {fontFamily: 'Roboto, sans-serif', fontWeight: '300'},
   robotoRegular: {fontFamily: 'Roboto, sans-serif', fontWeight: '400'},
   robotoMedium: {fontFamily: 'Roboto, sans-serif', fontWeight: '500'},
+  robotoBold: {fontFamily: 'Roboto, sans-serif', fontWeight: '700'},
   garamondRegular: {fontFamily: 'EB Garamond, serif', fontWeight: '400'}
 }

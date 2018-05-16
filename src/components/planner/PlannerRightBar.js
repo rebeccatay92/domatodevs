@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Editor, EditorState } from 'draft-js'
-import { updateEvent } from '../actions/planner/eventsActions'
+import { updateEvent } from '../../actions/planner/eventsActions'
 
-import PlannerSideBarInfoField from './planner/PlannerSideBarInfoField'
+import PlannerSideBarInfoField from './PlannerSideBarInfoField'
 
-import _ from 'lodash'
+import { PlannerRightBarStyles as styles } from '../../Styles/PlannerRightBarStyles'
 
-import { PlannerSideBarStyles as styles } from '../Styles/PlannerSideBarStyles'
-
-class PlannerSideBar extends Component {
+class PlannerRightBar extends Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -178,4 +176,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PlannerSideBar)
+export default connect(mapStateToProps, mapDispatchToProps)(PlannerRightBar)
