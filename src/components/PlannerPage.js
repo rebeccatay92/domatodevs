@@ -10,6 +10,8 @@ import { initializeEvents } from '../actions/planner/eventsActions'
 import { EditorState, convertFromRaw, ContentState } from 'draft-js'
 
 import Planner from './Planner'
+
+import PlannerLeftBar from './planner/PlannerLeftBar'
 import PlannerRightBar from './planner/PlannerRightBar'
 import PlannerBottomBar from './planner/PlannerBottomBar'
 
@@ -90,7 +92,6 @@ class PlannerPage extends Component {
 
     return (
       <div style={{width: '100vw', minHeight: 'calc(100vh - 52px)'}}>
-        {/* PLANNER VIEW. */}
         {/* STYLING FOR CENTERING IS IN PLANNER ITSELF */}
         {this.state.plannerView === 'planner' &&
           <Planner itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
@@ -99,6 +100,14 @@ class PlannerPage extends Component {
         {/* CUSTOM LOCATION VIEW. ONLY HAS MAP + RIGHT SIDEBAR */}
 
         {/* MAP PLANNER VIEW. SWOP PLANNER OUT WITH PLANNER LEFT BAR, MAP COMPONENT */}
+        {this.state.plannerView === 'map' &&
+          <div style={{display: 'flex'}}>
+            <PlannerLeftBar />
+            <div style={{minHeight: '872px', height: 'calc(100vh - 52px - 51px)', border: '1px solid blue', width: 'calc(100vw - 335px)'}}>
+              Mapbox here. width needs to adjust depending on right bar, screen width.
+            </div>
+          </div>
+        }
 
         {/* ALWAYS VISIBLE REGARDLESS OF VIEW */}
         <PlannerRightBar />
