@@ -24,7 +24,7 @@ class PlannerPage extends Component {
   // PUBLIC VS PRIVATE ROUTE: REPLACE COMPONENTS WITH A PUBLIC FACING COMPONENT?
   render () {
     return (
-      <div>
+      <div style={{width: '100vw', minHeight: 'calc(100vh - 52px)'}}>
         {/* PLANNER VIEW. */}
         {/* STYLING FOR CENTERING IS IN PLANNER ITSELF */}
         {this.state.plannerView === 'planner' &&
