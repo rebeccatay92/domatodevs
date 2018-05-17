@@ -6,12 +6,16 @@ class LeftBarEventRow extends Component {
     this.state = {}
   }
   render () {
+    // console.log('this.props.event', this.props.event)
     return (
-      <tr style={{width: '100%', height: '83px', border: '1px solid blue'}}>
+      <tr style={{width: '100%', height: '83px'}}>
         <td>
-          <i className='material-icons'>brightness_1</i>
+          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <i className='material-icons'>brightness_1</i>
+          </div>
         </td>
-        <td>input</td>
+        <td style={{width: '113px', textAlign: 'center'}}>time</td>
+        <td>EventType + Location inputs</td>
       </tr>
     )
   }

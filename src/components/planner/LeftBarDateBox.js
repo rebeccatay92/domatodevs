@@ -17,19 +17,17 @@ class LeftBarDateBox extends Component {
       <div>
         <table style={{width: '100%'}}>
           <thead>
-            <tr style={{width: '100%', height: '40px', border: '1px solid red'}}>
-              <th style={{width: '35px', border: '1px solid black'}}>spacer</th>
-              <th>Day {this.props.day} {dateStringUpcase}</th>
+            <tr style={{width: '100%', height: '40px'}}>
+              {/* APPROX 35PX SPACER FOR ICON */}
+              <th style={{width: '35px'}} />
+              <th colSpan={2}>
+                <div style={{borderBottom: '1px solid rgba(60, 58, 68, 0.3)'}}>
+                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, color: 'rgba(60, 58, 68, 1)', fontSize: '24px', margin: '0 8px'}}>Day {this.props.day}</span>
+                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, color: 'rgba(60, 58, 68, 1)', fontSize: '16px'}}>{dateStringUpcase}</span>
+                </div>
+              </th>
             </tr>
           </thead>
-          {/* <thead style={{width: '100%', height: '40px', border: '1px solid red'}}>
-            <div style={{display: 'inline-block'}}>
-              <h3 style={{margin: '0 0 0 16px'}}>Day {this.props.day}</h3>
-            </div>
-            <div style={{display: 'inline-block'}}>
-              {dateStringUpcase}
-            </div>
-          </thead> */}
           <tbody>
             {this.props.events.map((event, i) => {
               return <LeftBarEventRow key={i} event={event} />
