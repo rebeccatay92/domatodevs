@@ -55,8 +55,8 @@ class EventRowInfoCell extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.events.updatedFromSidebar) {
-      const { column, id } = this.props
+    if (nextProps.events.updatedFromSidebar || nextProps.column !== this.props.column) {
+      const { column, id } = nextProps
       const { events } = nextProps.events
       const value = getEventProp(column, events.filter(event => event.id === id)[0])
       this.setState({editorState: EditorState.createWithContent(value)})
@@ -67,7 +67,9 @@ class EventRowInfoCell extends Component {
     const { column, id } = this.props
     const { refetch, updatedId, updatedProperty } = this.props.events
     const property = eventPropertyNames[column]
-    if (refetch) {
+    if (column !== nextProps.column) {
+      return true
+    } else if (refetch) {
       return true
     } else if (updatedId === id && updatedProperty === property) {
       return true
