@@ -15,6 +15,8 @@ import PlannerLeftBar from './planner/PlannerLeftBar'
 import PlannerRightBar from './planner/PlannerRightBar'
 import PlannerBottomBar from './planner/PlannerBottomBar'
 
+import MapboxMap from './planner/MapboxMap'
+
 import _ from 'lodash'
 
 function generateDatesUnixArr (startDateUnixSecs, numOfDaysInt) {
@@ -103,10 +105,10 @@ class PlannerPage extends Component {
         {/* MAP PLANNER VIEW. SWOP PLANNER OUT WITH PLANNER LEFT BAR, MAP COMPONENT */}
         {this.state.plannerView === 'map' &&
           <div style={{display: 'flex'}}>
-            <PlannerLeftBar />
-            <div style={{minHeight: '872px', height: 'calc(100vh - 52px - 51px)', border: '1px solid blue', width: 'calc(100vw - 335px)'}}>
-              Mapbox here. width needs to adjust depending on right bar, screen width.
-            </div>
+            {/* LEFT BAR 376 PX ON 1920PX. */}
+            <PlannerLeftBar itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
+
+            {/* <MapboxMap /> */}
           </div>
         }
 

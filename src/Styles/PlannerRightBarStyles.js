@@ -58,7 +58,8 @@ const tabText = {
 const mainAreaContainer = {
   zIndex: 1,
   // 1920/12*2 col = 320px
-  width: '320px', // entire content bar width
+  // width: '320px', // entire content bar width
+  width: '344px',
   // height: '872px',
   height: '100%',
   background: 'rgb(245, 245, 245)',
@@ -72,7 +73,7 @@ const sectionDivider = {
 }
 
 const minHeightSection = {
-  width: '288px', // 320px - (16px padding *2)
+  width: '312px', // 320px - (16px padding *2)
   minHeight: '60px', // 25px label + 35px input field
   display: 'flex'
 }
@@ -93,17 +94,17 @@ const icon = {
 /* ----------------------------- */
 
 const inputSection = {
-  width: '248px', // 288px - 24px - 16px marginRight
+  width: '272px', // 312px - 24px - 16px marginRight
   height: '100%'
 }
 
 const labelContainer = {
-  width: '248px',
+  width: '272px',
   margin: 0
 }
 
 const inputField = {
-  width: '248px',
+  width: '272px',
   height: '35px',
   ...coreFonts.robotoLight,
   fontSize: '16px',

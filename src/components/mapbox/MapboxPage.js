@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-// import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl'
 import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
 
 import { graphql } from 'react-apollo'
@@ -128,22 +127,3 @@ const options = {
 }
 
 export default graphql(queryItinerary, options)(MapboxPage)
-
-/* <ReactMapGL {...this.state.viewport} mapStyle={'mapbox://styles/mapbox/streets-v10'} mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN} onViewportChange={(viewport) => this.setState({viewport})}>
-<div style={{position: 'absolute', left: 0}}>
-<NavigationControl onViewportChange={(viewport) => this.setState({viewport})} showCompass={false} />
-</div>
-<Marker latitude={0} longitude={0}>
-<div style={{borderRadius: '50%', width: '50px', height: '50px', background: 'red'}}>Testing</div>
-</Marker>
-</ReactMapGL> */
-
-// this.state = {
-//   viewport: {
-//     width: 1265, // 1920px - 335 left bar.
-//     height: 872,
-//     latitude: 1.3521,
-//     longitude: 103.8198,
-//     zoom: 8
-//   }
-// }

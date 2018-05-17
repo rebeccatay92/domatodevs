@@ -21,11 +21,8 @@ class Planner extends Component {
   }
 
   shouldComponentUpdate (nextProps) {
-    if (!nextProps.events.refetch) {
-      return false
-    } else {
-      return true
-    }
+    // if refetch is true return true
+    return nextProps.events.refetch
   }
 
   render () {
