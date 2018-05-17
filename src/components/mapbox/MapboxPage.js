@@ -5,7 +5,7 @@ import { graphql } from 'react-apollo'
 import { queryItinerary } from '../../apollo/itinerary'
 
 import _ from 'lodash'
-import Geocoder from './Geocoder'
+// import Geocoder from './Geocoder'
 
 // react wrapper factory
 const Map = ReactMapboxGL({
@@ -110,7 +110,7 @@ class MapboxPage extends Component {
             }
           </div>
           {/* IMPORTED PACKAGE */}
-          <Geocoder />
+          {/* <Geocoder /> */}
         </Map>
         {/* RIGHT SIDE EVENTS SIDEBAR (move from app.js -> to planner / map only) */}
       </div>

@@ -85,9 +85,9 @@ class PlannerPage extends Component {
           {this.props.plannerView.leftBar &&
             <PlannerLeftBar itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
           }
-          {/* {this.props.plannerView.mapbox &&
+          {this.props.plannerView.mapbox &&
             <MapboxMap />
-          } */}
+          }
         </div>
 
         <PlannerRightBar />
