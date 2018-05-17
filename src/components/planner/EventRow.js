@@ -19,6 +19,7 @@ class EventRow extends Component {
         columnState[columnState.length - 1].width++
       }
     })
+    console.log(columnState);
 
     // const startTime = new Date(event.startTime * 1000).toGMTString().substring(17, 22)
     return (
