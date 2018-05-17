@@ -3,9 +3,7 @@ import { coreColors, coreFonts } from './cores'
 // sidebar container = tabs container (both bucket and event tab) + actual mainAreaContainer
 const sidebarContainer = {
   zIndex: 2,
-  // height: '872px',
   // height depends on view height (mac is higher)
-  minHeight: '872px',
   height: 'calc(100vh - 52px - 51px)',
   // dont specify width. depends on whether sidebar is rendered or tabs only
   position: 'fixed',
@@ -60,7 +58,6 @@ const mainAreaContainer = {
   // 1920/12*2 col = 320px
   // width: '320px', // entire content bar width
   width: '344px',
-  // height: '872px',
   height: '100%',
   background: 'rgb(245, 245, 245)',
   border: `1px solid ${coreColors.blackSolid}`,

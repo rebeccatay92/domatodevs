@@ -1,18 +1,18 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 
-import { plannerReducer } from './reducers/plannerReducer'
-import { bucketReducer } from './reducers/bucketReducer'
+// import { plannerReducer } from './reducers/plannerReducer'
+// import { bucketReducer } from './reducers/bucketReducer'
 import { userReducer } from './reducers/userReducer'
 import { plannerColumnReducer } from './reducers/plannerColumnReducer'
 import { plannerTimelineReducer } from './reducers/plannerTimelineReducer'
 import { plannerTimelineDayReducer } from './reducers/plannerTimelineDayReducer'
 import { spinnerReducer } from './reducers/spinnerReducer'
-import { mapPlannerCurrentFocusReducer } from './reducers/mapPlannerCurrentFocusReducer'
-import { mapPlannerDaysFilterReducer } from './reducers/mapPlannerDaysFilterReducer'
+// import { mapPlannerCurrentFocusReducer } from './reducers/mapPlannerCurrentFocusReducer'
+// import { mapPlannerDaysFilterReducer } from './reducers/mapPlannerDaysFilterReducer'
 import { readReducer } from './reducers/readReducer'
-import { mapPlannerOpenCreateFormReducer } from './reducers/mapPlannerOpenCreateFormReducer'
-import { mapPlannerOpenEditFormReducer } from './reducers/mapPlannerOpenEditFormReducer'
-import { mapPlannerSearchReducer } from './reducers/mapPlannerSearchReducer'
+// import { mapPlannerOpenCreateFormReducer } from './reducers/mapPlannerOpenCreateFormReducer'
+// import { mapPlannerOpenEditFormReducer } from './reducers/mapPlannerOpenEditFormReducer'
+// import { mapPlannerSearchReducer } from './reducers/mapPlannerSearchReducer'
 import {mediaConsoleReducer} from './reducers/mediaConsoleReducer'
 import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageReducer'
 import { userDashboardReducer } from './reducers/userDashboardReducer'
@@ -26,6 +26,7 @@ import { columnsReducer } from './reducers/planner/columnsReducer'
 import { eventsReducer } from './reducers/planner/eventsReducer'
 import { activeEventReducer } from './reducers/planner/activeEventReducer'
 import { activeFieldReducer } from './reducers/planner/activeFieldReducer'
+import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
 
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
@@ -49,19 +50,19 @@ const client = new ApolloClient({
 })
 
 const store = createStore(combineReducers({
-  plannerActivities: plannerReducer,
-  bucketList: bucketReducer,
+  // plannerActivities: plannerReducer,
+  // bucketList: bucketReducer,
   plannerColumns: plannerColumnReducer,
   plannerTimeline: plannerTimelineReducer,
   plannerTimelineDay: plannerTimelineDayReducer,
   userProfile: userReducer,
   showSpinner: spinnerReducer,
-  currentlyFocusedEvent: mapPlannerCurrentFocusReducer,
-  mapPlannerDaysFilterArr: mapPlannerDaysFilterReducer,
+  // currentlyFocusedEvent: mapPlannerCurrentFocusReducer,
+  // mapPlannerDaysFilterArr: mapPlannerDaysFilterReducer,
   blogPosts: readReducer,
-  openCreateFormParams: mapPlannerOpenCreateFormReducer,
-  openEditFormParams: mapPlannerOpenEditFormReducer,
-  mapPlannerSearch: mapPlannerSearchReducer,
+  // openCreateFormParams: mapPlannerOpenCreateFormReducer,
+  // openEditFormParams: mapPlannerOpenEditFormReducer,
+  // mapPlannerSearch: mapPlannerSearchReducer,
   mediaConsole: mediaConsoleReducer,
   blogEditorActivePage: blogEditorActivePageReducer,
   userDashboard: userDashboardReducer,
@@ -73,6 +74,7 @@ const store = createStore(combineReducers({
   events: eventsReducer,
   activeEventId: activeEventReducer,
   activeField: activeFieldReducer,
+  plannerView: plannerViewReducer,
   apollo: client.reducer()
 }),
 {},

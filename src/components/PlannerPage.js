@@ -30,19 +30,9 @@ function generateDatesUnixArr (startDateUnixSecs, numOfDaysInt) {
 class PlannerPage extends Component {
   constructor (props) {
     super(props)
-    this.state = {
-      plannerView: 'planner'
-    }
-    // MOVE PLANNER VIEW STATE INTO REDUX
+    // PLANNER VIEW STATE IN REDUX
   }
 
-  changePlannerView () {
-    this.setState({
-      plannerView: this.state.plannerView === 'planner' ? 'map' : 'planner'
-    })
-  }
-
-  // WILL SWITCH TO CONTENT STATE (MERGE YT)
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
       // console.log('nextProps allevents', nextProps.data.findItinerary.events)
@@ -61,16 +51,6 @@ class PlannerPage extends Component {
           }
         }
       })
-
-      // TESTING REVERSING EDITOR STATE INTO PLAIN TEXT
-      let testingJSON = '{"blocks":[{"key":"dhq60","text":"Visiting India had been my goal since a long time ago. Everyone had been discouraging me to go to India based on their impression.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8r73d","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8e8l1","text":"We had only 9 days and the highlight of the trip was Ladakh. We didn’t think it was possible to include).","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}'
-      let editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(testingJSON)))
-      let contentState = editorState.getCurrentContent()
-      // console.log('content state', contentState)
-      let plainText = contentState.getPlainText()
-      // console.log('plaintext', plainText)
-
-      // console.log('allEvents after draftjs mapping', allEvents)
       this.props.initializeEvents(allEvents)
       setTimeout(() => this.props.toggleSpinner(false), 750)
     }
@@ -96,25 +76,22 @@ class PlannerPage extends Component {
     return (
       <div style={{width: '100vw', minHeight: 'calc(100vh - 52px)'}}>
         {/* STYLING FOR CENTERING IS IN PLANNER ITSELF */}
-        {this.state.plannerView === 'planner' &&
+        {this.props.plannerView.tablePlanner &&
           <Planner itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
         }
 
         {/* CUSTOM LOCATION VIEW. ONLY HAS MAP + RIGHT SIDEBAR */}
-
-        {/* MAP PLANNER VIEW. SWOP PLANNER OUT WITH PLANNER LEFT BAR, MAP COMPONENT */}
-        {this.state.plannerView === 'map' &&
-          <div style={{display: 'flex'}}>
-            {/* LEFT BAR 376 PX ON 1920PX. */}
+        <div style={{display: 'flex'}}>
+          {this.props.plannerView.leftBar &&
             <PlannerLeftBar itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
+          }
+          {/* {this.props.plannerView.mapbox &&
+            <MapboxMap />
+          } */}
+        </div>
 
-            {/* <MapboxMap /> */}
-          </div>
-        }
-
-        {/* ALWAYS VISIBLE REGARDLESS OF VIEW */}
         <PlannerRightBar />
-        <PlannerBottomBar plannerView={this.state.plannerView} changePlannerView={() => this.changePlannerView()} />
+        <PlannerBottomBar />
       </div>
     )
   }
@@ -128,6 +105,12 @@ const options = {
   })
 }
 
+const mapStateToProps = (state) => {
+  return {
+    plannerView: state.plannerView
+  }
+}
+
 const mapDispatchToProps = (dispatch) => {
   return {
     initializeEvents: (events) => {
@@ -139,4 +122,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(graphql(queryItinerary, options)(PlannerPage))
+export default connect(mapStateToProps, mapDispatchToProps)(graphql(queryItinerary, options)(PlannerPage))
