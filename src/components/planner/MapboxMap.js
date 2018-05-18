@@ -13,9 +13,6 @@ const Map = ReactMapboxGL({
 
 const mapStyle = 'mapbox://styles/mapbox/streets-v10'
 
-const hereAppId = `6zyEOpP82pdhe55QJFph`
-const hereAppCode = `RQpxLvVZd9i_pag3u_ysvQ`
-
 class MapboxMap extends Component {
   constructor (props) {
     super(props)
@@ -59,7 +56,7 @@ class MapboxMap extends Component {
       })
       .then(json => {
         console.log('json', json)
-        // this.setState({geocodingResults: json.features})
+        this.setState({geocodingResults: json.features})
       })
       .catch(err => {
         console.log('err', err)

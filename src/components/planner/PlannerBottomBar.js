@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import { connect } from 'react-redux'
 import { switchToTableView, switchToMapView } from '../../actions/planner/plannerViewActions'
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 
 import Radium from 'radium'
 import { PlannerBottomBarStyles as styles } from '../../Styles/PlannerBottomBarStyles'
@@ -12,16 +13,26 @@ class PlannerBottomBar extends Component {
     this.state = {}
   }
 
+  switchToMapView () {
+    this.props.updateActiveEvent('')
+    this.props.switchToMapView()
+  }
+
+  switchToTableView () {
+    this.props.updateActiveEvent('')
+    this.props.switchToTableView()
+  }
+
   render () {
     return (
       <div style={styles.plannerBottomBarContainer}>
         {this.props.plannerView.tablePlanner &&
-          <div key={'plannerBottomBarTab1'} style={styles.tabContainer} onClick={() => this.props.switchToMapView()}>
+          <div key={'plannerBottomBarTab1'} style={styles.tabContainer} onClick={() => this.switchToMapView()}>
             <span>Switch to map</span>
           </div>
         }
         {this.props.plannerView.mapbox &&
-          <div key={'plannerBottomBarTab2'} style={styles.tabContainer} onClick={() => this.props.switchToTableView()}>
+          <div key={'plannerBottomBarTab2'} style={styles.tabContainer} onClick={() => this.switchToTableView()}>
             <span>Switch to planner</span>
           </div>
         }
@@ -52,6 +63,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     switchToTableView: () => {
       dispatch(switchToTableView())
+    },
+    updateActiveEvent: (id) => {
+      dispatch(updateActiveEvent(id))
     }
   }
 }
