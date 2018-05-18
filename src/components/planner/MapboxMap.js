@@ -59,7 +59,7 @@ class MapboxMap extends Component {
       })
       .then(json => {
         console.log('json', json)
-        this.setState({geocodingResults: json.features})
+        // this.setState({geocodingResults: json.features})
       })
       .catch(err => {
         console.log('err', err)
@@ -113,8 +113,8 @@ class MapboxMap extends Component {
   }
 
   componentDidMount () {
-    // check if active event
-    if (this.props.activeEventId) {
+    // check if rightBar is displayed
+    if (this.props.plannerView.rightBar) {
       console.log('active event. right bar is open, map needs to shrink')
       this.setState({
         containerStyle: {
@@ -125,6 +125,26 @@ class MapboxMap extends Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.plannerView.rightBar !== this.props.plannerView.rightBar) {
+      if (nextProps.plannerView.rightBar) {
+        this.setState({
+          containerStyle: {
+            ...this.state.containerStyle,
+            width: 'calc(100vw - 376px - 344px)'
+          }
+        })
+      } else {
+        // if rightBar is ''
+        this.setState({
+          containerStyle: {
+            ...this.state.containerStyle,
+            width: 'calc(100vw - 376px)'
+          }
+        })
+      }
+    }
+  }
   render () {
     return (
       <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
@@ -137,7 +157,7 @@ class MapboxMap extends Component {
               {this.state.geocodingResults.map((result, i) => {
                 return <h6 key={i} style={{cursor: 'pointer', margin: 0, padding: '8px', minHeight: '35px'}}>
                   {/* MAPBOX GEOCODER */}
-                  {result.place_name} latlng={result.center[0]}, {result.center[1]}
+                  {/* {result.place_name} latlng={result.center[0]}, {result.center[1]} */}
                   {/* HERE AUTOSUGGEST */}
                   {/* Title: {result.title} Vicinity: {result.vicinity} */}
                   {/* HERE PLACES */}
@@ -157,7 +177,8 @@ class MapboxMap extends Component {
 const mapStateToProps = (state) => {
   return {
     events: state.events,
-    activeEventId: state.activeEventId
+    activeEventId: state.activeEventId,
+    plannerView: state.plannerView
   }
 }
 
