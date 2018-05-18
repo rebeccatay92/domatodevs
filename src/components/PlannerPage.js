@@ -15,7 +15,7 @@ import PlannerLeftBar from './planner/PlannerLeftBar'
 import PlannerRightBar from './planner/PlannerRightBar'
 import PlannerBottomBar from './planner/PlannerBottomBar'
 
-import MapboxMap from './planner/MapboxMap'
+import MapboxMap from './planner/mapbox/MapboxMap'
 
 import _ from 'lodash'
 
@@ -43,7 +43,7 @@ class PlannerPage extends Component {
             startTime: new Date(event.startTime * 1000).toGMTString().substring(17, 22),
             eventType: event.eventType ? ContentState.createFromText(event.eventType) : ContentState.createFromText(''),
             location: event.location ? ContentState.createFromText(event.location.name) : ContentState.createFromText(''),
-            locationData: event.location,
+            locationObj: event.location,
             currency: event.currency ? ContentState.createFromText(event.currency) : ContentState.createFromText(''),
             cost: event.cost ? ContentState.createFromText(event.cost) : ContentState.createFromText(''),
             notes: event.notes ? ContentState.createFromText(event.notes) : ContentState.createFromText(''),

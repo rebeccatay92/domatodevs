@@ -1,4 +1,10 @@
-export const eventsReducer = (state = {events: [], refetch: true, updatedId: '', updatedProperty: '', updatedFromSidebar: false}, action) => {
+export const eventsReducer = (state = {
+  events: [],
+  refetch: true,
+  updatedId: '',
+  updatedProperty: '',
+  updatedFromSidebar: false
+}, action) => {
   switch (action.type) {
     case 'INITIALIZE_EVENTS':
       return {

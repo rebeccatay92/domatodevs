@@ -7,6 +7,7 @@ import { graphql, compose } from 'react-apollo'
 
 import EventRowInfoCell from './EventRowInfoCell'
 import EventRowTimeCell from './EventRowTimeCell'
+import EventRowLocationCell from './EventRowLocationCell'
 
 class EventRow extends Component {
   render () {
@@ -19,7 +20,7 @@ class EventRow extends Component {
         columnState[columnState.length - 1].width++
       }
     })
-    console.log(columnState);
+    // console.log('columnState', columnState)
 
     // const startTime = new Date(event.startTime * 1000).toGMTString().substring(17, 22)
     return (
@@ -30,7 +31,12 @@ class EventRow extends Component {
         </td>
         {columnState.map((column, i) => {
           return <td key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
-            <EventRowInfoCell column={column.name} index={index} id={id} />
+            {column.name === 'Location' &&
+              <EventRowLocationCell id={id} />
+            }
+            {column.name !== 'Location' &&
+              <EventRowInfoCell column={column.name} index={index} id={id} />
+            }
           </td>
         })}
       </tr>
