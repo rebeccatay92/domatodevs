@@ -13,9 +13,6 @@ import { PlannerRightBarStyles as styles } from '../../Styles/PlannerRightBarSty
 class PlannerRightBar extends Component {
   constructor (props) {
     super(props)
-    this.state = {
-      // clickedTab: 'none'
-    }
   }
 
   render () {

@@ -15,7 +15,7 @@ import PlannerPage from './PlannerPage'
 import ReadPage from './read/ReadPage'
 import BlogEditorPage from './read/editor/BlogEditorPage'
 import NavBar from './NavBar'
-// import MapPlannerPage from './mapPlanner/MapPlannerPage'
+
 import UserDashboardPage from './dashboard/UserDashboardPage'
 import ConfirmWindow from './misc/ConfirmWindow'
 
@@ -61,9 +61,8 @@ class App extends Component {
               <ItineraryPage lock={lock} {...props} />
             )} />
 
-            {/* SIDEBAR SHOULD RENDER INSIDE THESE 2 ROUTES INSTEAD OF GLOBALLY  */}
+            {/* PLANNER WILL CONDITIONALLY RENDER COMPONENTS.  */}
             <Route path='/planner/:itineraryId' component={PlannerPage} />
-            <Route path='/map/:ItineraryId' component={MapboxPage} />
 
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />

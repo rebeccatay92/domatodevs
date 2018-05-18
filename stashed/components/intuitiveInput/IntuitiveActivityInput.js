@@ -6,19 +6,19 @@ import DatePicker from 'react-datepicker'
 import Radium from 'radium'
 import LocationSearch from '../location/LocationSearch'
 
-import { constructGooglePlaceDataObj } from '../../helpers/location'
-import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
+// import { constructGooglePlaceDataObj } from '../../helpers/location'
+// import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle } from '../../Styles/styles'
 
-// import { createFood } from '../../apollo/food'
+// import { createActivity } from '../../apollo/activity'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
-const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}foodDefaultBackground.jpg`
+const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}activityDefaultBackground.jpg`
 
-class IntuitiveFoodInput extends Component {
+class IntuitiveActivityInput extends Component {
   constructor (props) {
     super(props)
 
@@ -41,7 +41,11 @@ class IntuitiveFoodInput extends Component {
   resetState () {
     this.setState({
       googlePlaceData: {name: ''},
-      search: ''
+      search: '',
+      description: '',
+      endDate: '',
+      startTime: '',
+      endTime: ''
     })
   }
 
@@ -63,7 +67,7 @@ class IntuitiveFoodInput extends Component {
   handleSubmit () {
     const validations = [
       {
-        type: 'googlePlaceData',
+        type: 'googlePlaceData'['name'],
         notification: 'locRequired'
       },
       {
@@ -87,7 +91,6 @@ class IntuitiveFoodInput extends Component {
     })
     if (!validated) return
 
-    // Assign Start/End Time based on previous/next event within that day.
     var startUnix, endUnix
     if (this.state.startTime) {
       var startHours = this.state.startTime.split(':')[0]
@@ -101,8 +104,10 @@ class IntuitiveFoodInput extends Component {
     }
 
     const startDay = this.props.day
+    console.log('startDay', startDay)
 
-    const newFood = {
+
+    const newActivity = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
       startDay: startDay,
       endDay: endUnix < startUnix ? startDay + 1 : startDay,
@@ -115,17 +120,17 @@ class IntuitiveFoodInput extends Component {
     }
 
     if (this.state.googlePlaceData.placeId) {
-      newFood.googlePlaceData = this.state.googlePlaceData
-      newFood.utcOffset = this.state.googlePlaceData.utcOffset
+      newActivity.googlePlaceData = this.state.googlePlaceData
+      newActivity.utcOffset = this.state.googlePlaceData.utcOffset
     }
     // IF LOCATION MISSING, CHECK DAY'S EVENTS AND ASSIGN A UTC OFFSET.
     if (!this.state.googlePlaceData.placeId) {
       var daysEvents = this.props.events.filter(e => {
-        return e.day === newFood.startDay
+        return e.day === newActivity.startDay
       })
       console.log('daysEvents', daysEvents)
       if (!daysEvents.length) {
-        newFood.utcOffset = 0
+        newActivity.utcOffset = 0
       } else {
         var utcOffsetHolder = daysEvents[0].utcOffset
         var isDifferent = false
@@ -135,25 +140,26 @@ class IntuitiveFoodInput extends Component {
           }
         })
         if (isDifferent) {
-          newFood.utcOffset = 0
+          newActivity.utcOffset = 0
         } else {
-          newFood.utcOffset = utcOffsetHolder
+          newActivity.utcOffset = utcOffsetHolder
         }
       }
     }
 
-    let startEndTimeOutput = newFood
+    // Assign Start/End Time based on previous/next event within that day.
+    let startEndTimeOutput = newActivity
     if (!this.state.startTime && !this.state.endTime) {
       // add default time as all-day event here
-      startEndTimeOutput = checkStartAndEndTime(this.props.events, newFood, 'allDayEvent')
+      startEndTimeOutput = checkStartAndEndTime(this.props.events, newActivity, 'allDayEvent')
     } else if (!this.state.startTime) {
-      startEndTimeOutput = checkStartAndEndTime(this.props.events, newFood, 'startTimeMissing')
+      startEndTimeOutput = checkStartAndEndTime(this.props.events, newActivity, 'startTimeMissing')
     } else if (!this.state.endTime) {
-      startEndTimeOutput = checkStartAndEndTime(this.props.events, newFood, 'endTimeMissing')
+      startEndTimeOutput = checkStartAndEndTime(this.props.events, newActivity, 'endTimeMissing')
     }
 
     // TESTING LOAD SEQUENCE ASSIGNMENT (ASSUMING ALL START/END TIMES ARE PRESENT)
-    var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Food', startEndTimeOutput)
+    var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Activity', startEndTimeOutput)
     // console.log('helper output', helperOutput)
 
     this.props.changingLoadSequence({
@@ -162,7 +168,7 @@ class IntuitiveFoodInput extends Component {
       }
     })
 
-    this.props.createFood({
+    this.props.createActivity({
       variables: helperOutput.newEvent,
       refetchQueries: [{
         query: queryItinerary,
@@ -171,7 +177,12 @@ class IntuitiveFoodInput extends Component {
     })
 
     this.resetState()
-    this.props.toggleIntuitiveInput()
+    // this.props.toggleIntuitiveInput()
+    this.setState({
+      justCreated: true
+    }, () => this.setState({
+      justCreated: false
+    }))
   }
 
   componentDidMount () {
@@ -184,26 +195,45 @@ class IntuitiveFoodInput extends Component {
       <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', padding: '10px 0'}}}>
         <div style={{display: 'inline-block'}}>
           {this.state.descRequired && this.state.locRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Description or Location Required)</span>}
-          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Eatery'} currentLocation={this.state.googlePlaceData} inputFocus={(e) => this.props.inputFocus(e)} inputBlur={(e) => this.props.inputBlur(e)} />
+          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={this.state.googlePlaceData} inputFocus={(e) => this.props.inputFocus(e)} inputBlur={(e) => this.props.inputBlur(e)} focus={this.state.justCreated} />
         </div>
         <div style={{display: 'inline-block'}}>
           <div>
-            <input type='text' placeholder='Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
+            <input type='text' placeholder='Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} value={this.state.description} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
           </div>
         </div>
         <div style={{display: 'inline-block'}}>
           <div style={{position: 'relative'}}>
-            {!this.state.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingStartTime: true})} />}
-            {(this.state.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={(e) => this.setState({editingStartTime: false})} />}
-            {!this.state.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingEndTime: true})} />}
-            {(this.state.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={(e) => this.setState({editingEndTime: false})} />}
-            {!this.state.endDate && !this.state.editingEndDate && <input type='text' placeholder='End Date' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingEndDate: true})} />}
+            {!this.state.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              this.setState({editingStartTime: true})
+              this.props.inputFocus(e)
+            }} />}
+            {(this.state.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={(e) => {
+              this.setState({editingStartTime: false})
+              this.props.inputBlur(e)
+            }} />}
+            {!this.state.endTime && !this.state.editingEndTime && <input type='text' placeholder='End Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              this.setState({editingEndTime: true})
+              this.props.inputFocus(e)
+            }} />}
+            {(this.state.endTime || this.state.editingEndTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={(e) => {
+              this.setState({editingEndTime: false})
+              this.props.inputBlur(e)
+            }} />}
+            {!this.state.endDate && !this.state.editingEndDate && <input type='text' placeholder='End Date' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => {
+              this.setState({editingEndDate: true})
+              this.props.inputFocus(e)
+            }} />}
             {(this.state.endDate || this.state.editingEndDate) && <div style={{display: 'inline-block', width: '86px', marginLeft: '8px'}} className='quickInputCalender'>
               <DatePicker
                 autoFocus
                 selected={this.state.endDate}
                 onChange={(e) => this.setState({endDate: moment(e._d)})}
-                onBlur={(e) => this.setState({editingEndDate: false})}
+                onBlur={(e) => {
+                  this.setState({editingEndDate: false})
+                  this.props.inputBlur(e)
+                }}
+                onFocus={(e) => this.props.inputFocus(e)}
                 minDate={moment(this.props.date)}
                 maxDate={moment(this.props.dates[this.props.dates.length - 1])}
               />
@@ -212,7 +242,7 @@ class IntuitiveFoodInput extends Component {
         </div>
         <div style={{marginTop: '6px', display: 'inline-block', textAlign: 'right', width: '100%'}}>
           <button onClick={() => this.handleSubmit()} style={{marginRight: '8px', backgroundColor: '#ed685a', border: 'none', color: 'white', height: '31px', fontSize: '13px', padding: '8px'}}>Submit</button>
-          <button onClick={() => this.props.handleCreateEventClick('Food')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>More</button>
+          <button onClick={() => this.props.handleCreateEventClick('Activity')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>More</button>
         </div>
       </div>
     )
@@ -225,8 +255,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-{/* graphql(createFood, {name: 'createFood'}), */}
+{/* graphql(createActivity, {name: 'createActivity'}), */}
 export default connect(mapStateToProps)(compose(
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
-)(Radium(IntuitiveFoodInput)))
+)(Radium(IntuitiveActivityInput)))

@@ -17,13 +17,13 @@ import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 // import { updateLodging, deleteLodging } from '../../apollo/lodging'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
-
-import { removeAllAttachments } from '../../helpers/cloudStorage'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
-import moment from 'moment'
-import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
-import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
+//
+// import { removeAllAttachments } from '../../helpers/cloudStorage'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
+// import moment from 'moment'
+// import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
+// import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}lodgingDefaultBackground.jpg`
 

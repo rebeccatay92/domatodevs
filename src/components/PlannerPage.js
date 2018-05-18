@@ -35,14 +35,15 @@ class PlannerPage extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
-      // console.log('nextProps allevents', nextProps.data.findItinerary.events)
+      console.log('nextProps allevents', nextProps.data.findItinerary.events)
       const allEvents = nextProps.data.findItinerary.events.map(event => {
         return {
           ...event,
           ...{
             startTime: new Date(event.startTime * 1000).toGMTString().substring(17, 22),
             eventType: event.eventType ? ContentState.createFromText(event.eventType) : ContentState.createFromText(''),
-            location: ContentState.createFromText(''),
+            location: event.location ? ContentState.createFromText(event.location.name) : ContentState.createFromText(''),
+            locationData: event.location,
             currency: event.currency ? ContentState.createFromText(event.currency) : ContentState.createFromText(''),
             cost: event.cost ? ContentState.createFromText(event.cost) : ContentState.createFromText(''),
             notes: event.notes ? ContentState.createFromText(event.notes) : ContentState.createFromText(''),

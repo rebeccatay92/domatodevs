@@ -29,25 +29,10 @@ export const queryItinerary = gql`
         location {
           id
           verified
-          placeId
           name
           address
-          telephone
           latitude
           longitude
-          utcOffset
-          openingHours {
-            open {
-              day
-              time
-            }
-            close {
-              day
-              time
-            }
-          }
-          openingHoursText
-          imageUrl
         }
         attachments {
           id

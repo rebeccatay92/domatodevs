@@ -10,7 +10,7 @@ import { graphql, compose } from 'react-apollo'
 // import { deleteLodging } from '../apollo/lodging'
 import { queryItinerary } from '../apollo/itinerary'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
-import { deleteEventReassignSequence } from '../helpers/deleteEventReassignSequence'
+// import { deleteEventReassignSequence } from '../helpers/deleteEventReassignSequence'
 
 class EventDropdownMenu extends Component {
   handleClickOutside (event) {
@@ -18,33 +18,34 @@ class EventDropdownMenu extends Component {
   }
 
   deleteEvent () {
-    const apolloNaming = {
-      Activity: 'deleteActivity',
-      Food: 'deleteFood',
-      Flight: 'deleteFlightBooking',
-      LandTransport: 'deleteLandTransport',
-      Lodging: 'deleteLodging'
-    }
-    var eventType = this.props.event.type
-    var deleteMutationNaming = apolloNaming[eventType]
-    var modelId = this.props.event.modelId
+    console.log('need to switch to V2 helper')
+    // const apolloNaming = {
+    //   Activity: 'deleteActivity',
+    //   Food: 'deleteFood',
+    //   Flight: 'deleteFlightBooking',
+    //   LandTransport: 'deleteLandTransport',
+    //   Lodging: 'deleteLodging'
+    // }
+    // var eventType = this.props.event.type
+    // var deleteMutationNaming = apolloNaming[eventType]
+    // var modelId = this.props.event.modelId
 
-    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, eventType, modelId)
+    // var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, eventType, modelId)
 
-    this.props.changingLoadSequence({
-      variables: {
-        input: loadSequenceInputArr
-      }
-    })
-    this.props[`${deleteMutationNaming}`]({
-      variables: {
-        id: modelId
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: { id: this.props.itineraryId }
-      }]
-    })
+    // this.props.changingLoadSequence({
+    //   variables: {
+    //     input: loadSequenceInputArr
+    //   }
+    // })
+    // this.props[`${deleteMutationNaming}`]({
+    //   variables: {
+    //     id: modelId
+    //   },
+    //   refetchQueries: [{
+    //     query: queryItinerary,
+    //     variables: { id: this.props.itineraryId }
+    //   }]
+    // })
     this.props.toggleEventDropdown()
   }
 

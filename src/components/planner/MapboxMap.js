@@ -23,10 +23,8 @@ class MapboxMap extends Component {
       center: [0, 0], // lng/lat in that order to match GeoJSON
       zoom: [1], // needs to be wrapped in array
       containerStyle: {
-        height: 'calc(100vh - 52px - 51px)', // depends on what 100% vh is
-        width: 'calc(100vw - 376px)' // has to start with larger version. if smaller, changing containerStyle does not fetch more tiles.
-        // 1920 - 376px left bar = 1544px (if right bar is docked)
-        // if right bar is expanded, 1920 - 376px - 344px = 1200px
+        height: 'calc(100vh - 52px - 51px)',
+        width: 'calc(100vw - 376px)' // has to start with larger version. if smaller, changing containerStyle does not fetch more tiles
       }
     }
     this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
@@ -63,43 +61,43 @@ class MapboxMap extends Component {
       })
   }
 
-  queryHEREPlacesAutosuggest (queryStr) {
-    console.log('debounced', queryStr)
-    if (!queryStr) return
-    let endpoint = `https://places.cit.api.here.com/places/v1/autosuggest?app_id=${hereAppId}&app_code=${hereAppCode}&q=${queryStr}&at=${this.state.center[1]},${this.state.center[0]}`
-    fetch(endpoint)
-      .then(response => {
-        return response.json()
-      })
-      .then(json => {
-        console.log('json', json)
-        this.setState({
-          geocodingResults: json.results
-        })
-      })
-      .catch(err => {
-        console.log('err', err)
-      })
-  }
-
-  queryHEREPlacesSearch (queryStr) {
-    console.log('debounced', queryStr)
-    if (!queryStr) return
-    let endpoint = `https://places.cit.api.here.com/places/v1/discover/search?app_id=${hereAppId}&app_code=${hereAppCode}&q=${queryStr}&at=${this.state.center[1]},${this.state.center[0]}`
-    fetch(endpoint)
-      .then(response => {
-        return response.json()
-      })
-      .then(json => {
-        console.log('json', json)
-        this.setState({
-          geocodingResults: json.results.items
-        })
-      })
-      .catch(err => {
-        console.log('err', err)
-      })
-  }
+  // queryHEREPlacesAutosuggest (queryStr) {
+  //   console.log('debounced', queryStr)
+  //   if (!queryStr) return
+  //   let endpoint = `https://places.cit.api.here.com/places/v1/autosuggest?app_id=${hereAppId}&app_code=${hereAppCode}&q=${queryStr}&at=${this.state.center[1]},${this.state.center[0]}`
+  //   fetch(endpoint)
+  //     .then(response => {
+  //       return response.json()
+  //     })
+  //     .then(json => {
+  //       console.log('json', json)
+  //       this.setState({
+  //         geocodingResults: json.results
+  //       })
+  //     })
+  //     .catch(err => {
+  //       console.log('err', err)
+  //     })
+  // }
+  //
+  // queryHEREPlacesSearch (queryStr) {
+  //   console.log('debounced', queryStr)
+  //   if (!queryStr) return
+  //   let endpoint = `https://places.cit.api.here.com/places/v1/discover/search?app_id=${hereAppId}&app_code=${hereAppCode}&q=${queryStr}&at=${this.state.center[1]},${this.state.center[0]}`
+  //   fetch(endpoint)
+  //     .then(response => {
+  //       return response.json()
+  //     })
+  //     .then(json => {
+  //       console.log('json', json)
+  //       this.setState({
+  //         geocodingResults: json.results.items
+  //       })
+  //     })
+  //     .catch(err => {
+  //       console.log('err', err)
+  //     })
+  // }
 
   // synx state with map's final zoom and center
   onMapMoveEnd (map, evt) {

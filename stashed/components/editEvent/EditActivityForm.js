@@ -14,26 +14,28 @@ import Notes from '../eventFormComponents/Notes'
 import AttachmentsRework from '../eventFormComponents/AttachmentsRework'
 import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 
-// import { updateFood, deleteFood } from '../../apollo/food'
+// import { updateActivity, deleteActivity } from '../../apollo/activity'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
-import { removeAllAttachments } from '../../helpers/cloudStorage'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
-import moment from 'moment'
-import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
-import { validateOpeningHours } from '../../helpers/openingHoursValidation'
-import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
-import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
+// import { removeAllAttachments } from '../../helpers/cloudStorage'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
+// import moment from 'moment'
+// import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
+// import { validateOpeningHours } from '../../helpers/openingHoursValidation'
+// import newEventTimelineValidation from '../../helpers/newEventTimelineValidation'
+// import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
+// import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
-const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}foodDefaultBackground.jpg`
+const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}activityDefaultBackground.jpg`
 
-class EditFoodForm extends Component {
+
+class EditActivityForm extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      id: this.props.event.id, // food id
+      id: this.props.event.id, // activity id
       startDay: 1,
       endDay: 1,
       startTime: null, // if setstate, will change to unix
@@ -46,7 +48,7 @@ class EditFoodForm extends Component {
       currencyList: [],
       bookedThrough: '',
       bookingConfirmation: '',
-      attachments: [], // entire arr user sees. not sent to backend.
+      attachments: [],
       holderNewAttachments: [],
       holderDeleteAttachments: [],
       backgroundImage: defaultBackground,
@@ -60,6 +62,7 @@ class EditFoodForm extends Component {
       allDayEvent: null
     }
   }
+
   updateDayTime (field, value) {
     this.setState({
       [field]: value
@@ -79,6 +82,7 @@ class EditFoodForm extends Component {
   }
 
   handleSubmit () {
+    // always construct for day, time so load seq is always assigned.
     var updatesObj = {
       id: this.state.id,
       startDay: this.state.startDay,
@@ -94,30 +98,32 @@ class EditFoodForm extends Component {
       backgroundImage: this.state.backgroundImage,
       openingHoursValidation: this.state.openingHoursValidation
     }
-    // if location changed, it doesnt contain the id field
+    // if location changed, it doesnt contain the id field, updatesObj will hv googlePlaceData and the utc offset
     if (!this.state.googlePlaceData.id) {
       updatesObj.googlePlaceData = this.state.googlePlaceData
+      updatesObj.utcOffset = this.state.googlePlaceData.utcOffset
     }
+
     if (this.state.holderNewAttachments.length) {
       updatesObj.addAttachments = this.state.holderNewAttachments
     }
     // removeAttachments obj only takes id
     if (this.state.holderDeleteAttachments.length) {
-      // removing holderDeleteAttachments from cloud
       // removeAllAttachments(this.state.holderDeleteAttachments, this.apiToken)
       removeAllAttachments(this.state.holderDeleteAttachments, this.props.googleCloudToken.token)
-      // set up removeAttachments[ID] arr for backend
       updatesObj.removeAttachments = this.state.holderDeleteAttachments.map(e => {
         return e.id
       })
     }
 
+    // how to check if start/end time is all day event or not? if all day event -> componentdidmount set state to null, even if db has value.
     if (this.props.event.startTime !== this.state.startTime) {
       updatesObj.startTime = this.state.startTime
     }
     if (this.props.event.endTime !== this.state.endTime) {
       updatesObj.endTime = this.state.endTime
     }
+
     // if allDayEvent, and time happens to change to exactly identical unix as what was saved, fieldsToCheck doesnt detect change. hence check if state is not null (since onComponentMount will set state to null if allDayEvent)
     // IF ALLDAYEVENT GETS ASSIGNED TIME, CHANGE ALLDAYEVENT BOOLEAN
     if (this.props.event.allDayEvent) {
@@ -132,7 +138,7 @@ class EditFoodForm extends Component {
     }
     // IF NON-ALLDAYEVENT HAS MISSING TIME FIELDS, ASSIGN VALUES / ALLDAY BOOLEAN. IF ALLDAYEVENT TIMING NOT CHANGED, ALSO ASSIGN TIMINGS (SINCE INITIALIZED TO NULL). EVENTSARR NEED TO REMOVE THE EVENT FIRST.
     var eventsArr = this.props.events.filter(e => {
-      var isUpdatingEvent = (e.type === 'Food' && e.modelId === this.state.id)
+      var isUpdatingEvent = (e.type === 'Activity' && e.modelId === this.state.id)
       return !isUpdatingEvent
     })
     // use checkStartAndEndTime on eventsArr (doesnt contain currently editing event)
@@ -159,15 +165,17 @@ class EditFoodForm extends Component {
     //   this.resetState()
     //   this.props.toggleEditEventType()
     // }
-    //
-    // // if time or day changes, reassign load seq
+
+    // if time or day changes, reassign load seq. if googlePlaceData changes, run anyway (utcOffset might change)
     // if (updatesObj.startDay || updatesObj.endDay || updatesObj.startTime || updatesObj.endTime || updatesObj.googlePlaceData) {
+    //   // if googlePlaceData was changed, utc comes from there, else stay the same as what was in db
     //   var utcOffset = null
     //   if (updatesObj.googlePlaceData) {
     //     utcOffset = updatesObj.googlePlaceData.utcOffset
     //   } else {
     //     utcOffset = this.props.event.utcOffset
     //   }
+    //
     //   var updateEvent = {
     //     startDay: this.state.startDay,
     //     endDay: this.state.endDay,
@@ -175,8 +183,10 @@ class EditFoodForm extends Component {
     //     endTime: this.state.endTime,
     //     utcOffset: utcOffset
     //   }
-    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Food', this.state.id, updateEvent)
+    //   console.log('updateEvent before helper', updateEvent)
+    //   var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, updateEvent)
     //   console.log('helperOutput', helperOutput)
+    //
     //   updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
     //   var loadSequenceInput = helperOutput.loadSequenceInput
     //   if (loadSequenceInput.length) {
@@ -188,7 +198,7 @@ class EditFoodForm extends Component {
     //   }
     // }
 
-    // always run loadSequence assignment
+    // always run load seq assignment even if day, time, location didnt change
     var loadSequenceHelperParams = {
       startDay: updatesObj.startDay,
       endDay: updatesObj.endDay,
@@ -197,7 +207,7 @@ class EditFoodForm extends Component {
       endTime: updatesObj.endTime,
       utcOffset: this.state.googlePlaceData.utcOffset
     }
-    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Food', this.state.id, loadSequenceHelperParams)
+    var helperOutput = updateEventLoadSeqAssignment(this.props.events, 'Activity', this.state.id, loadSequenceHelperParams)
     updatesObj.loadSequence = helperOutput.updateEvent.loadSequence
     var loadSequenceChanges = helperOutput.loadSequenceInput
     if (loadSequenceChanges.length) {
@@ -208,7 +218,7 @@ class EditFoodForm extends Component {
       })
     }
 
-    this.props.updateFood({
+    this.props.updateActivity({
       variables: updatesObj,
       refetchQueries: [{
         query: queryItinerary,
@@ -217,8 +227,8 @@ class EditFoodForm extends Component {
     }).then(resolved => {
       if (this.props.openedFromMap) {
         var focusEventObj = {
-          modelId: resolved.data.updateFood.id,
-          eventType: 'Food',
+          modelId: resolved.data.updateActivity.id,
+          eventType: 'Activity',
           flightInstanceId: null,
           day: updatesObj.startDay,
           start: null,
@@ -235,6 +245,7 @@ class EditFoodForm extends Component {
     })
   }
 
+  // changes are not saved. remove all holderNewAttachments. ignore holderDeleteAttachments
   closeForm () {
     // removeAllAttachments(this.state.holderNewAttachments, this.apiToken)
     removeAllAttachments(this.state.holderNewAttachments, this.props.googleCloudToken.token)
@@ -246,14 +257,16 @@ class EditFoodForm extends Component {
     }
   }
 
+  // IF DELETE EVENT FROM MAP ROUTE, NEED TO CLEAR PLANNER FOCUS, CLEAR OPENEDITFORMPARAMS.
   deleteEvent () {
-    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, 'Food', this.state.id)
+    var loadSequenceInputArr = deleteEventReassignSequence(this.props.events, 'Activity', this.state.id)
+
     this.props.changingLoadSequence({
       variables: {
         input: loadSequenceInputArr
       }
     })
-    this.props.deleteFood({
+    this.props.deleteActivity({
       variables: {
         id: this.state.id
       },
@@ -262,6 +275,7 @@ class EditFoodForm extends Component {
         variables: { id: this.props.ItineraryId }
       }]
     }).then(resolved => {
+      // if delete from map, this.closeForm() will trigger clearOpenEditFormParams. additionally need to clear focusedEvent from map.
       if (this.props.openedFromMap) {
         this.props.clearCurrentlyFocusedEvent()
       }
@@ -313,7 +327,6 @@ class EditFoodForm extends Component {
 
   handleFileUpload (attachmentInfo) {
     this.setState({attachments: this.state.attachments.concat([attachmentInfo])})
-    // new attachment that are not in db go into holding area
     this.setState({holderNewAttachments: this.state.holderNewAttachments.concat([attachmentInfo])})
   }
 
@@ -397,7 +410,6 @@ class EditFoodForm extends Component {
 
     var startTime = this.props.event.startTime
     var endTime = this.props.event.endTime
-
     // if all day event, datetimepicker displays null instead of midnight. start/end time unix is also null
     if (this.props.event.allDayEvent) {
       console.log('all day event')
@@ -412,6 +424,7 @@ class EditFoodForm extends Component {
       endDay: this.props.event.endDay,
       startTime: startTime, // unix or null for all day
       endTime: endTime,
+      utcOffset: this.props.event.utcOffset,
       description: this.props.event.description,
       locationAlias: this.props.event.locationAlias || '',
       currency: this.props.event.currency,
@@ -425,7 +438,7 @@ class EditFoodForm extends Component {
       allDayEvent: this.props.event.allDayEvent
     }, () => console.log('edit form did mount', this.state))
 
-    // OVERRIDE WITH MAP POPUP VALUES (IF EXIST)
+    // FURTHER INSTANTIATE STATE IF FORM WAS OPENED FROM MAP. OVERIRDE VALUES WITH WHATEVER EDITS WERE MADE.
     if (this.props.defaultStartDay) {
       this.setState({startDay: this.props.defaultStartDay})
     }
@@ -476,7 +489,6 @@ class EditFoodForm extends Component {
               <h4 style={{fontSize: '24px'}}>Booking Details</h4>
 
               <BookingDetails handleChange={(e, field) => this.handleChange(e, field)} currency={this.state.currency} currencyList={this.state.currencyList} cost={this.state.cost} bookedThrough={this.state.bookedThrough} bookingConfirmation={this.state.bookingConfirmation} />
-
               {this.state.googlePlaceData.name &&
                 <LocationAlias locationAlias={this.state.locationAlias} handleChange={(e) => this.handleChange(e, 'locationAlias')} placeholder={`Detailed Location (${this.state.googlePlaceData.name})`} />
               }
@@ -513,7 +525,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  // graphql(updateFood, {name: 'updateFood'}),
+  // graphql(updateActivity, {name: 'updateActivity'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
-  // graphql(deleteFood, {name: 'deleteFood'})
-)(Radium(EditFoodForm)))
+  // graphql(deleteActivity, {name: 'deleteActivity'})
+)(Radium(EditActivityForm)))

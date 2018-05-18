@@ -4,7 +4,8 @@ import { coreColors, coreFonts } from './cores'
 const tablePlannerContainer = {
   ...coreFonts.robotoLight,
   color: coreColors.blackSolid,
-  width: '1232px',
+  // width: '1232px',
+  width: '1274px',
   margin: '50px auto'
 }
 
