@@ -10,7 +10,8 @@ const plannerBottomBarContainer = {
   background: 'rgb(245, 245, 245)',
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  backfaceVisibility: 'hidden'
 }
 
 const tabContainer = {

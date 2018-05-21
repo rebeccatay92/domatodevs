@@ -11,7 +11,8 @@ const sidebarContainer = {
   position: 'fixed',
   top: '52px',
   right: 0,
-  display: 'flex'
+  display: 'flex',
+  backfaceVisibility: 'hidden'
 }
 
 /* ----------------------------- */

@@ -19,12 +19,12 @@ class ColumnHeader extends Component {
   }
 
   render () {
-    const { name, colSpan } = this.props
+    const { name, colSpan, startingColumn, endingColumn } = this.props
     return (
       <td className='planner-column-header' colSpan={colSpan} style={{width: `calc(232px * ${colSpan})`, padding: '0 8px', height: '40px', position: 'relative', cursor: 'default'}}>
         {name}
-        <i onClick={() => this.setState({showDropdown: !this.state.showDropdown})} className='material-icons planner-column-header-arrow' style={{verticalAlign: 'top', fontSize: '20px'}}>keyboard_arrow_down</i>
-        {this.state.showDropdown && <ColumnHeaderDropdown disableDropdown={() => this.disableDropdown()} name={name} />}
+        <i onClick={() => this.setState({showDropdown: !this.state.showDropdown})} className={`material-icons planner-column-header-arrow ${name}`} style={{verticalAlign: 'top', fontSize: '20px'}}>keyboard_arrow_down</i>
+        {this.state.showDropdown && <ColumnHeaderDropdown disableDropdown={() => this.disableDropdown()} name={name} startingColumn={startingColumn} endingColumn={endingColumn} />}
       </td>
     )
   }

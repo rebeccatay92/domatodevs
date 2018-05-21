@@ -78,6 +78,7 @@ class DateBox extends Component {
         columnState[columnState.length - 1].width++
       }
     })
+    let startingColumn = 0
     return (
       <div ref={elem => { this.elem = elem }}>
         <table style={dateTableStyle}>
@@ -115,7 +116,6 @@ class DateBox extends Component {
             </tr>
             <tr>
               <td style={timelineColumnStyle()}>
-                {!this.props.firstDay && this.props.timeline.events && timeline}
               </td>
               <td colSpan='6'>
                 <hr style={dateTableHorizontalLineStyle(this.props.firstDay)} />
@@ -127,7 +127,9 @@ class DateBox extends Component {
               <td style={{width: '0px'}}></td>
               <td style={{textAlign: 'center', width: '114px'}}>Time</td>
               {columnState.map((column, i) => {
-                return <ColumnHeader key={i} name={column.name} colSpan={column.width} />
+                const columnHeader = <ColumnHeader key={i} name={column.name} colSpan={column.width} startingColumn={startingColumn} endingColumn={startingColumn + column.width - 1} />
+                startingColumn += column.width
+                return columnHeader
               })}
             </tr>}
             {this.props.events.map((event, i) => {
