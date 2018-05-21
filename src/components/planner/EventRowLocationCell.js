@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Editor, EditorState } from 'draft-js'
+import { Editor, EditorState, ContentState } from 'draft-js'
+
+import LocationCellDropdown from './LocationCellDropdown'
 
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
@@ -8,7 +10,6 @@ import { changeActiveField } from '../../actions/planner/activeFieldActions'
 
 import _ from 'lodash'
 
-import { ClipLoader } from 'react-spinners'
 
 class EventRowLocationCell extends Component {
   constructor (props) {
@@ -31,19 +32,27 @@ class EventRowLocationCell extends Component {
 
     // FOR NOW, PREVENT QUERYING ON EACH CLICK/FOCUS/UNFOCUS BY COMPARING OLD PLAIN TEXT WITH INCOMING PLAIN TEXT.
     // THIS MEANS THE FIRST CLICK/TAB TO FOCUS WILL NOT CAUSE A DROPDOWN
+
+    // ASYNC RACE. SELECT LOCATION SETSTATE TRIGGERS ONCHANGE, WHICH ALSO SETSTATE.
     this.onChange = (editorState) => {
+      console.log('EDITORSTATE ONCHANGE TRIGGERED')
       let oldContentState = this.state.editorState.getCurrentContent()
       let newContentState = editorState.getCurrentContent()
 
       let oldText = oldContentState.getPlainText()
       let newText = newContentState.getPlainText()
 
-      this.setState({editorState: editorState})
-      // id, property, value, fromSidebar
-      this.props.updateEvent(this.props.id, 'location', newContentState, false)
+      console.log('oldText', oldText, 'newText', newText)
+
+      this.setState({
+        editorState: editorState
+      }, () => {
+        // id, property, value, fromSidebar
+        console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX')
+        this.props.updateEvent(this.props.id, 'location', newContentState, false)
+      })
 
       // ONLY UPDATE QUERY STR IF STR IS DIFFERENT
-      // IF BACKSPACE TO EMPTY STRING, SPINNER IS TRUE, BUT QUERY DOES NOT RUN. HENCE SPINNER WILL NOT SET BACK TO FALSE
       if (newText !== oldText) {
         // dont query useless fragments
         if (newText.length > 2) {
@@ -102,6 +111,52 @@ class EventRowLocationCell extends Component {
       })
   }
 
+  selectLocation (prediction) {
+    // console.log('this.state', this.state)
+    console.log('CLICKED LOCATION', prediction)
+    // close dropdown, change text, query place details
+    let placeName = prediction.structured_formatting.main_text
+    let placeId = prediction.place_id
+
+    // find new editor state, content state, updateEvent using redux
+    let updatedContentState = ContentState.createFromText(placeName)
+    let updatedEditorState = EditorState.createWithContent(updatedContentState)
+
+    // console.log('updated content state', updatedContentState.getPlainText())
+
+    // SET STATE HERE IS ASYNC. THE ONCHANGE IS TRIGGERED WITH AN OLD EDITOR STATE BEFORE SETSTATE HERE FINISHES.
+    console.log('SELECTLOCATION SETSTATE')
+    this.setState({
+      queryStr: placeName,
+      showDropdown: false,
+      showSpinner: false,
+      predictions: [],
+      editorState: updatedEditorState // editor state with new location name
+    }, () => {
+      console.log('SELECTLOCATION SETSTATE FINISHED', this.state.editorState.getCurrentContent().getPlainText())
+      this.props.updateEvent(this.props.id, 'location', updatedContentState, false) // update content state in redux
+    })
+    // fetch place details (name, address, latlng)
+  }
+
+  handleClickOutside () {
+    this.setState({
+      showDropdown: false,
+      showSpinner: false,
+      predictions: []
+    })
+  }
+
+  handleKeyDown (e) {
+    // console.log(e.key)
+    if (e.key === 'Tab' || e.key === 'Escape') {
+      this.handleClickOutside()
+    }
+    if (e.key === 'Enter') {
+      console.log('enter was hit')
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.events.updatedFromSidebar) {
       const thisEvent = nextProps.events.filter(e => {
@@ -110,40 +165,52 @@ class EventRowLocationCell extends Component {
       const locationContentState = thisEvent.location
       this.setState({editorState: EditorState.createWithContent(locationContentState)})
     }
+
+    // events is inside the events obj...
+    // if (nextProps.events.events !== this.props.events.events) {
+    //   // console.log('EVENTS ARR HAS CHANGED')
+    //   // compare this event only
+    //   let oldPropsThisEvent = this.props.events.events.find(e => {
+    //     return e.id === this.props.id
+    //   })
+    //   let nextPropsThisEvent = nextProps.events.events.find(e => {
+    //     return e.id === nextProps.id
+    //   })
+    //   console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
+    //   if (nextPropsThisEvent.location !== oldPropsThisEvent.location) {
+    //     console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
+    //     const locationContentState = nextPropsThisEvent.location
+    //     console.log('nextprops location text is', locationContentState.getPlainText())
+    //     this.setState({editorState: EditorState.createWithContent(locationContentState)})
+    //   }
+    // }
   }
 
   // IS THIS CORRECT?
-  shouldComponentUpdate (nextProps) {
-    const { refetch, updatedId, updatedProperty } = this.props.events
-    if (refetch) {
-      return true
-    } else if (updatedId === this.props.id && updatedProperty === 'location') {
-      return true
-    } else if ((nextProps.activeEventId === this.props.id && nextProps.activeField === 'location') || (this.props.activeEventId === this.props.id && this.props.activeField === 'location')) {
-      return true
-    } else {
-      return false
-    }
-  }
+  // shouldComponentUpdate (nextProps) {
+  //   const { refetch, updatedId, updatedProperty } = this.props.events
+  //   if (refetch) {
+  //     return true
+  //   } else if (updatedId === this.props.id && updatedProperty === 'location') {
+  //     return true
+  //   } else if ((nextProps.activeEventId === this.props.id && nextProps.activeField === 'location') || (this.props.activeEventId === this.props.id && this.props.activeField === 'location')) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
   render () {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
-      <div className='planner-table-cell' onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+      <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
         <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => {
           this.props.changeActiveField('location')
           this.props.updateActiveEvent(this.props.id)
-        }} onBlur={() => this.setState({focusClicked: false, showDropdown: false})} />
+        }} onBlur={() => this.setState({focusClicked: false})} />
         {this.state.showDropdown &&
-          <div style={{position: 'absolute', top: '83px', left: 0, background: 'white', width: '100%', border: '1px solid red', zIndex: '2', minHeight: '35px'}}>
-            <ClipLoader color={'#000000'} size={35} loading={this.state.showSpinner} />
-            {!this.state.showSpinner && this.state.predictions.length === 0 &&
-              <h6 style={{background: 'white', margin: 0, cursor: 'pointer', minHeight: '35px', fontFamily: 'Roboto, san-serif', fontWeight: '300', fontSize: '16px', lineHeight: '24px', padding: '8px'}}>No results found</h6>
-            }
-            {!this.state.showSpinner && this.state.predictions.map((prediction, i) => {
-              return <h6 key={i} style={{background: 'white', margin: 0, cursor: 'pointer', minHeight: '35px', fontFamily: 'Roboto, san-serif', fontWeight: '300', fontSize: '16px', lineHeight: '24px', padding: '8px'}}>{prediction.structured_formatting.main_text}</h6>
-            })}
-          </div>
+          <LocationCellDropdown showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
+          // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'
         }
       </div>
     )
