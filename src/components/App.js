@@ -25,8 +25,6 @@ import Lock from './Auth0/lock'
 
 import GoogleCloudStorage from './Google/GoogleCloudStorage'
 
-import MapboxPage from './mapbox/MapboxPage'
-
 const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 

@@ -12,9 +12,9 @@ class EventRowLocationCell extends Component {
   constructor (props) {
     super(props)
     const { events } = this.props.events
-    const thisEvent = events.filter(e => {
+    const thisEvent = events.find(e => {
       return e.id === this.props.id
-    })[0]
+    })
     const locationContentState = thisEvent.location
 
     this.queryGooglePlaces = _.debounce(this.queryGooglePlaces, 500)
