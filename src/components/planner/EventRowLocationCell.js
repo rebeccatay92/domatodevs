@@ -134,9 +134,31 @@ class EventRowLocationCell extends Component {
       editorState: updatedEditorState // editor state with new location name
     }, () => {
       console.log('SELECTLOCATION SETSTATE FINISHED', this.state.editorState.getCurrentContent().getPlainText())
-      this.props.updateEvent(this.props.id, 'location', updatedContentState, false) // update content state in redux
+      // this.props.updateEvent(this.props.id, 'location', updatedContentState, false) // update content state in redux
     })
-    // fetch place details (name, address, latlng)
+
+    // fetch place details (name, address, latlng).
+    // set locationData object to send to backend
+
+    // let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
+    // let placeDetailsEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&&placeid=${placeId}`
+    //
+    // fetch(placeDetailsEndpoint)
+    //   .then(response => {
+    //     return response.json()
+    //   })
+    //   .then(json => {
+    //     // console.log('result', json.result)
+    //     let result = json.result
+    //     let latitude = result.geometry.location.lat
+    //     let longitude = result.geometry.location.lng
+    //     let address = result.formatted_address
+    //     let name = result.name
+    //     console.log('name', name, 'address', address, 'latlng', latitude, longitude)
+    //   })
+    //   .catch(err => {
+    //     console.log('err', err)
+    //   })
   }
 
   handleClickOutside () {
