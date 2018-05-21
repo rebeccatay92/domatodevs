@@ -7,9 +7,9 @@ import Radium from 'radium'
 import LocationSearch from '../location/LocationSearch'
 
 import DateTimePicker from '../eventFormComponents/DateTimePicker'
-import { constructGooglePlaceDataObj } from '../../helpers/location'
+// import { constructGooglePlaceDataObj } from '../../helpers/location'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
+// import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle, primaryColor } from '../../Styles/styles'
 
 // import { createLodging } from '../../apollo/lodging'

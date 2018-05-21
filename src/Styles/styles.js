@@ -97,8 +97,10 @@ export const dayTimelineWordStyle = isDateOnScreen => {
 export const addDayButtonStyle = {display: 'inline-block', cursor: 'pointer'}
 export const addDayWordStyle = {fontSize: '24px', color: primaryColor, display: 'inline-block', opacity: '0.3'}
 export const dateTableFirstHeaderStyle = {tableLayout: 'fixed', width: '366px', height: '43px', position: 'relative'}
+
 export const headerDayStyle = {display: 'inline-block', margin: '0 0 0 16px', fontSize: '24px', fontWeight: '300'}
 export const headerDateStyle = {fontSize: '16px', display: 'inline-block', position: 'relative', top: '-2px', marginLeft: '8px', fontWeight: '300'}
+
 export const dateTableOtherHeaderStyle = {width: '214px'}
 export const dateTableHorizontalLineStyle = isFirstDay => {
   return {marginBottom: '0', marginTop: isFirstDay ? '0' : '1vh', width: '100%', borderTop: '1px solid rgba(60, 58, 68, 0.2)'}

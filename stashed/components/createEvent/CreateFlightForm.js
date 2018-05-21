@@ -20,11 +20,11 @@ import SaveCancelDelete from '../eventFormComponents/SaveCancelDelete'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
-import { removeAllAttachments } from '../../helpers/cloudStorage'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import newEventLoadSeqAssignment from
- '../../helpers/newEventLoadSeqAssignment'
-import { validateIntervals } from '../../helpers/intervalValidationTesting'
+// import { removeAllAttachments } from '../../helpers/cloudStorage'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import newEventLoadSeqAssignment from
+//  '../../helpers/newEventLoadSeqAssignment'
+// import { validateIntervals } from '../../helpers/intervalValidationTesting'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 

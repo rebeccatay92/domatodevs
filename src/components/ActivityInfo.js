@@ -3,9 +3,9 @@ import onClickOutside from 'react-onclickoutside'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 
-import checkStartAndEndTime from '../helpers/checkStartAndEndTime'
-import { constructGooglePlaceDataObj } from '../helpers/location'
-import updateEventLoadSeqAssignment from '../helpers/updateEventLoadSeqAssignment'
+// import checkStartAndEndTime from '../helpers/checkStartAndEndTime'
+// import { constructGooglePlaceDataObj } from '../helpers/location'
+// import updateEventLoadSeqAssignment from '../helpers/updateEventLoadSeqAssignment'
 import LocationSearch from './location/LocationSearch'
 
 // import { updateActivity } from '../apollo/activity'
@@ -57,7 +57,7 @@ class ActivityInfo extends Component {
   }
 
   selectLocation (location) {
-    this.setState({googlePlaceData: constructGooglePlaceDataObj(location)})
+    // this.setState({googlePlaceData: constructGooglePlaceDataObj(location)})
     // , () => {
     //   this.handleEdit()
     // })

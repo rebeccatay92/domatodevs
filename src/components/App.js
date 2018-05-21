@@ -15,7 +15,7 @@ import PlannerPage from './PlannerPage'
 import ReadPage from './read/ReadPage'
 import BlogEditorPage from './read/editor/BlogEditorPage'
 import NavBar from './NavBar'
-// import MapPlannerPage from './mapPlanner/MapPlannerPage'
+
 import UserDashboardPage from './dashboard/UserDashboardPage'
 import ConfirmWindow from './misc/ConfirmWindow'
 
@@ -24,8 +24,6 @@ import history from './Auth0/history'
 import Lock from './Auth0/lock'
 
 import GoogleCloudStorage from './Google/GoogleCloudStorage'
-
-import MapboxPage from './mapbox/MapboxPage'
 
 const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
@@ -61,9 +59,8 @@ class App extends Component {
               <ItineraryPage lock={lock} {...props} />
             )} />
 
-            {/* SIDEBAR SHOULD RENDER INSIDE THESE 2 ROUTES INSTEAD OF GLOBALLY  */}
+            {/* PLANNER WILL CONDITIONALLY RENDER COMPONENTS.  */}
             <Route path='/planner/:itineraryId' component={PlannerPage} />
-            <Route path='/map/:ItineraryId' component={MapboxPage} />
 
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />

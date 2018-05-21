@@ -10,14 +10,12 @@ import { changeActiveField } from '../../actions/planner/activeFieldActions'
 const eventPropertyNames = {
   Event: 'eventType',
   Price: 'cost',
-  Notes: 'notes',
-  Location: 'location'
+  Notes: 'notes'
 }
 
 const getEventProp = (columnInput, eventInput) => {
   const eventProperties = {
     Event: eventInput.eventType,
-    Location: eventInput.location,
     Price: eventInput.cost,
     Notes: eventInput.notes
   }

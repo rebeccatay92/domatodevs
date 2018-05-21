@@ -22,10 +22,10 @@ import EditingFlightDetails from '../eventFormComponents/EditingFlightDetails'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
-import { removeAllAttachments } from '../../helpers/cloudStorage'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
-import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
+// import { removeAllAttachments } from '../../helpers/cloudStorage'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
+// import { deleteEventReassignSequence } from '../../helpers/deleteEventReassignSequence'
 
 const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}flightDefaultBackground.jpg`
 

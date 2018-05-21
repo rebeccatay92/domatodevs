@@ -11,7 +11,7 @@ const navBarContainer = {
   height: '52px',
   boxSizing: 'border-box',
   borderBottom: `1px solid ${coreColors.black03}`,
-  boxShadow: '0px -2px 5px 2px rgba(0, 0, 0, .2)',
+  // boxShadow: '0px -2px 5px 2px rgba(0, 0, 0, .2)',
   background: 'white',
   zIndex: '200',
   backfaceVisibility: 'hidden'

@@ -7,7 +7,7 @@ import Radium from 'radium'
 import DatePicker from 'react-datepicker'
 
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
+// import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle } from '../../Styles/styles'
 // import { createFlightBooking } from '../../apollo/flight'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'

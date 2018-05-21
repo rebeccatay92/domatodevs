@@ -3,7 +3,7 @@ import Radium from 'radium'
 import onClickOutside from 'react-onclickoutside'
 import { DropTarget, DragSource } from 'react-dnd'
 import { hoverOverActivity, dropActivity, plannerActivityHoverOverActivity, initializePlanner } from '../actions/plannerActions'
-import { deleteActivityFromBucket, addActivityToBucket } from '../actions/bucketActions'
+// import { deleteActivityFromBucket, addActivityToBucket } from '../actions/bucketActions'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 

@@ -19,15 +19,15 @@ import ScheduleOfEvents from '../eventFormComponents/ScheduleOfEvents'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
-import { removeAllAttachments } from '../../helpers/cloudStorage'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
-import latestTime from '../../helpers/latestTime'
-// import moment from 'moment'
-import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
-import { validateIntervals } from '../../helpers/intervalValidationTesting'
-
-const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}landTransportDefaultBackground.jpg`
+// import { removeAllAttachments } from '../../helpers/cloudStorage'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
+// import latestTime from '../../helpers/latestTime'
+// // import moment from 'moment'
+// import { constructGooglePlaceDataObj, constructLocationDetails } from '../../helpers/location'
+// import { validateIntervals } from '../../helpers/intervalValidationTesting'
+//
+// const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}landTransportDefaultBackground.jpg`
 
 class CreateLandTransportForm extends Component {
   constructor (props) {

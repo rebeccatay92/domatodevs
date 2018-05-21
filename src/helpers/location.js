@@ -77,34 +77,34 @@ export function constructGooglePlaceDataObj (place) {
 }
 
 // CONSTRUCT LOCATION DETAILS OBJ FROM GOOGLE PLACE DATA OBJ, DATES ARR, AND CHOSEN DAY
-export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
-  var locationDetails = {
-    address: googlePlaceData.address,
-    telephone: googlePlaceData.telephone
-  }
-  // datesArr here needs to be unix in millisecs
-  if (datesArr) {
-    var dateUnix = datesArr[dayInt - 1]
-    // console.log('dateUnix', dateUnix)
-    var momentTime = moment.utc(dateUnix)
-    // console.log('momentTime', momentTime)
-    var momentDayStr = momentTime.format('dddd')
-    // console.log('momentDayStr', momentDayStr)
-    if (googlePlaceData.openingHoursText) {
-      var textArr = googlePlaceData.openingHoursText.filter(e => {
-        return e.indexOf(momentDayStr) > -1
-      })
-      locationDetails.openingHours = textArr[0]
-    }
-  } else if (!datesArr) {
-    // default to mon if datesArr does not exist
-    if (googlePlaceData.openingHoursText) {
-      textArr = googlePlaceData.openingHoursText.filter(e => {
-        return e.indexOf('Monday') > -1
-      })
-      locationDetails.openingHours = textArr[0]
-    }
-  }
-  console.log('in helper', locationDetails)
-  return locationDetails
-}
+// export function constructLocationDetails (googlePlaceData, datesArr, dayInt) {
+//   var locationDetails = {
+//     address: googlePlaceData.address,
+//     telephone: googlePlaceData.telephone
+//   }
+//   // datesArr here needs to be unix in millisecs
+//   if (datesArr) {
+//     var dateUnix = datesArr[dayInt - 1]
+//     // console.log('dateUnix', dateUnix)
+//     var momentTime = moment.utc(dateUnix)
+//     // console.log('momentTime', momentTime)
+//     var momentDayStr = momentTime.format('dddd')
+//     // console.log('momentDayStr', momentDayStr)
+//     if (googlePlaceData.openingHoursText) {
+//       var textArr = googlePlaceData.openingHoursText.filter(e => {
+//         return e.indexOf(momentDayStr) > -1
+//       })
+//       locationDetails.openingHours = textArr[0]
+//     }
+//   } else if (!datesArr) {
+//     // default to mon if datesArr does not exist
+//     if (googlePlaceData.openingHoursText) {
+//       textArr = googlePlaceData.openingHoursText.filter(e => {
+//         return e.indexOf('Monday') > -1
+//       })
+//       locationDetails.openingHours = textArr[0]
+//     }
+//   }
+//   console.log('in helper', locationDetails)
+//   return locationDetails
+// }

@@ -8,9 +8,9 @@ import MapDateTimePicker from './MapDateTimePicker'
 import MapLocationSearchDropdown from './MapLocationSearchDropdown'
 import MapPopupOpeningHours from './MapPopupOpeningHours'
 
-import { constructGooglePlaceDataObj } from '../../helpers/location'
+// import { constructGooglePlaceDataObj } from '../../helpers/location'
 // import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
-import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
+// import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
 
 import { graphql, compose } from 'react-apollo'
 import { queryItinerary } from '../../apollo/itinerary'

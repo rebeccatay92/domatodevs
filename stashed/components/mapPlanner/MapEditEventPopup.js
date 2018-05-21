@@ -7,8 +7,8 @@ import MapLocationSearchDropdown from './MapLocationSearchDropdown'
 import MapEventToggles from './MapEventToggles'
 import MapPopupOpeningHours from './MapPopupOpeningHours'
 
-import { constructGooglePlaceDataObj } from '../../helpers/location'
-import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
+// import { constructGooglePlaceDataObj } from '../../helpers/location'
+// import updateEventLoadSeqAssignment from '../../helpers/updateEventLoadSeqAssignment'
 
 import { Button } from 'react-bootstrap'
 

@@ -181,10 +181,10 @@ class DateBox extends Component {
             day: day,
             start: event.start
           },
-            ...diff && {diff: diff}
+          ...diff && {diff: diff}
           }
         })
-      // console.log(loadSequenceArr)
+        // console.log(loadSequenceArr)
         this.props.changingLoadSequence({
           variables: {
             input: loadSequenceArr
@@ -199,7 +199,7 @@ class DateBox extends Component {
         if (event.keyCode === 27) {
           // console.log(this.props.data);
           this.props.data.refetch()
-          .then(response => this.props.initializePlanner(response.data.findItinerary.events))
+            .then(response => this.props.initializePlanner(response.data.findItinerary.events))
         }
         // if (event.keyCode === 13) changeLoadSeq()
       }

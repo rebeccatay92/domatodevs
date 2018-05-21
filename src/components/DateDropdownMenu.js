@@ -8,8 +8,8 @@ import { deleteMultipleEvents } from '../apollo/deleteMultipleEvents'
 import { changingLoadSequence } from '../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../apollo/itinerary'
 
-import findEventsFromDayToDelete from '../helpers/findEventsFromDayToDelete'
-import { deleteDayAndAssignLoadSequence } from '../helpers/deleteDayAndAssignLoadSequence'
+// import findEventsFromDayToDelete from '../helpers/findEventsFromDayToDelete'
+// import { deleteDayAndAssignLoadSequence } from '../helpers/deleteDayAndAssignLoadSequence'
 
 import { initializePlanner } from '../actions/plannerActions'
 import { toggleSpinner } from '../actions/spinnerActions'
@@ -20,56 +20,57 @@ class DateDropdownMenu extends Component {
   }
 
   deleteDay () {
+    console.log('need to switch to V2 helper')
     this.props.toggleDateDropdown()
-    const eventsToDelete = findEventsFromDayToDelete(this.props.events, this.props.day)
-    const newEventsArr = deleteDayAndAssignLoadSequence(this.props.events, this.props.day)
-    this.props.toggleSpinner(true)
-
-    this.props.changingLoadSequence({
-      variables: {
-        input: newEventsArr
-      }
-    })
-    .then(response => {
-      this.props.deleteMultipleEvents({
-        variables: {
-          input: eventsToDelete
-        }
-      })
-    })
-    .then(response => {
-      this.props.updateItineraryDetails({
-        variables: {
-          id: this.props.itineraryId,
-          days: this.props.days - 1
-        }
-      })
-    })
-    .then(response => {
-      setTimeout(() => {
-        this.props.data.refetch()
-      }, 1000)
-    })
+    // const eventsToDelete = findEventsFromDayToDelete(this.props.events, this.props.day)
+    // const newEventsArr = deleteDayAndAssignLoadSequence(this.props.events, this.props.day)
+    // this.props.toggleSpinner(true)
+    //
+    // this.props.changingLoadSequence({
+    //   variables: {
+    //     input: newEventsArr
+    //   }
+    // })
+    // .then(response => {
+    //   this.props.deleteMultipleEvents({
+    //     variables: {
+    //       input: eventsToDelete
+    //     }
+    //   })
+    // })
+    // .then(response => {
+    //   this.props.updateItineraryDetails({
+    //     variables: {
+    //       id: this.props.itineraryId,
+    //       days: this.props.days - 1
+    //     }
+    //   })
+    // })
+    // .then(response => {
+    //   setTimeout(() => {
+    //     this.props.data.refetch()
+    //   }, 1000)
+    // })
   }
 
   clearDay () {
+    console.log('need to switch to V2 helper')
     this.props.toggleDateDropdown()
-
-    const events = findEventsFromDayToDelete(this.props.events, this.props.day)
-
-    if (events.length === 0) return
-
-    this.props.toggleSpinner(true)
-    this.props.deleteMultipleEvents({
-      variables: {
-        input: events
-      }
-    })
-    .then(response => {
-      setTimeout(() => {
-        this.props.data.refetch()
-      }, 500)
-    })
+    // const events = findEventsFromDayToDelete(this.props.events, this.props.day)
+    //
+    // if (events.length === 0) return
+    //
+    // this.props.toggleSpinner(true)
+    // this.props.deleteMultipleEvents({
+    //   variables: {
+    //     input: events
+    //   }
+    // })
+    // .then(response => {
+    //   setTimeout(() => {
+    //     this.props.data.refetch()
+    //   }, 500)
+    // })
   }
 
   render () {

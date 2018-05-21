@@ -5,38 +5,52 @@ import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import Radium from 'radium'
 import LocationSearch from '../location/LocationSearch'
+// 
+// import { constructGooglePlaceDataObj } from '../../helpers/location'
+// import checkStartAndEndTime from '../../helpers/checkStartAndEndTime'
+// import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+// import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
+import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle } from '../../Styles/styles'
 
-import { constructGooglePlaceDataObj } from '../../helpers/location'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
-import newEventLoadSeqAssignment from '../../helpers/newEventLoadSeqAssignment'
-import { activityIconStyle, createEventBoxStyle, intuitiveDropdownStyle, primaryColor } from '../../Styles/styles'
-
-// import { createLandTransport } from '../../apollo/landtransport'
-// import { createTrain } from '../../apollo/train'
-// import { createSeaTransport } from '../../apollo/seatransport'
+// import { createFood } from '../../apollo/food'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary, updateItineraryDetails } from '../../apollo/itinerary'
 
-const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}landTransportDefaultBackground.jpg`
+const defaultBackground = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}foodDefaultBackground.jpg`
 
-class IntuitiveTransportInput extends Component {
+class IntuitiveFoodInput extends Component {
   constructor (props) {
     super(props)
 
     this.state = {
+      location: '',
       search: '',
       searching: false,
-      departureGooglePlaceData: {name: ''},
-      arrivalGooglePlaceData: {name: ''}
+      googlePlaceData: {
+        name: ''
+      }
     }
   }
 
-  selectLocation (location, type) {
+  handleKeydown (e) {
+    if (e.keyCode === 13) {
+      this.handleSubmit()
+    }
+  }
+
+  resetState () {
+    this.setState({
+      googlePlaceData: {name: ''},
+      search: ''
+    })
+  }
+
+  selectLocation (location) {
     var googlePlaceData = constructGooglePlaceDataObj(location)
     googlePlaceData
     .then(resolved => {
       console.log('resolved', resolved)
-      this.setState({[`${type}GooglePlaceData`]: resolved})
+      this.setState({googlePlaceData: resolved})
     })
   }
 
@@ -46,56 +60,49 @@ class IntuitiveTransportInput extends Component {
     })
   }
 
-  handleKeydown (e) {
-    if (e.keyCode === 13) {
-      this.handleSubmit()
-    }
-  }
-
   handleSubmit () {
     const validations = [
       {
-        type: 'departureGooglePlaceData',
-        notification: 'departRequired'
+        type: 'googlePlaceData',
+        notification: 'locRequired'
       },
       {
-        type: 'arrivalGooglePlaceData',
-        notification: 'arriveRequired'
-      },
-      {
-        type: 'startTime',
-        notification: 'startTimeRequired'
-      },
-      {
-        type: 'endTime',
-        notification: 'endTimeRequired'
+        type: 'description',
+        notification: 'descRequired'
       }
     ]
-    let validated = true
+    let validated = false
     validations.forEach((validation) => {
       if (this.state[validation.type]) {
         this.setState({
           [validation.notification]: false
         })
+        validated = true // Because only one of the two is required
       }
       if (!this.state[validation.type]) {
         this.setState({
           [validation.notification]: true
         })
-        validated = false
       }
     })
     if (!validated) return
 
-    var startHours = this.state.startTime.split(':')[0]
-    var startMins = this.state.startTime.split(':')[1]
-    var startUnix = (startHours * 60 * 60) + (startMins * 60)
-    var endHours = this.state.endTime.split(':')[0]
-    var endMins = this.state.endTime.split(':')[1]
-    var endUnix = (endHours * 60 * 60) + (endMins * 60)
+    // Assign Start/End Time based on previous/next event within that day.
+    var startUnix, endUnix
+    if (this.state.startTime) {
+      var startHours = this.state.startTime.split(':')[0]
+      var startMins = this.state.startTime.split(':')[1]
+      startUnix = (startHours * 60 * 60) + (startMins * 60)
+    }
+    if (this.state.endTime) {
+      var endHours = this.state.endTime.split(':')[0]
+      var endMins = this.state.endTime.split(':')[1]
+      endUnix = (endHours * 60 * 60) + (endMins * 60)
+    }
 
     const startDay = this.props.day
-    const newTransport = {
+
+    const newFood = {
       ItineraryId: parseInt(this.props.itineraryId, 10),
       startDay: startDay,
       endDay: endUnix < startUnix ? startDay + 1 : startDay,
@@ -107,15 +114,46 @@ class IntuitiveTransportInput extends Component {
       backgroundImage: defaultBackground
     }
 
-    if (this.state.departureGooglePlaceData.placeId && this.state.arrivalGooglePlaceData.placeId) {
-      newTransport.departureGooglePlaceData = this.state.departureGooglePlaceData
-      newTransport.arrivalGooglePlaceData = this.state.arrivalGooglePlaceData
-    } else {
-      return
+    if (this.state.googlePlaceData.placeId) {
+      newFood.googlePlaceData = this.state.googlePlaceData
+      newFood.utcOffset = this.state.googlePlaceData.utcOffset
+    }
+    // IF LOCATION MISSING, CHECK DAY'S EVENTS AND ASSIGN A UTC OFFSET.
+    if (!this.state.googlePlaceData.placeId) {
+      var daysEvents = this.props.events.filter(e => {
+        return e.day === newFood.startDay
+      })
+      console.log('daysEvents', daysEvents)
+      if (!daysEvents.length) {
+        newFood.utcOffset = 0
+      } else {
+        var utcOffsetHolder = daysEvents[0].utcOffset
+        var isDifferent = false
+        daysEvents.forEach(event => {
+          if (event.utcOffset !== utcOffsetHolder) {
+            isDifferent = true
+          }
+        })
+        if (isDifferent) {
+          newFood.utcOffset = 0
+        } else {
+          newFood.utcOffset = utcOffsetHolder
+        }
+      }
+    }
+
+    let startEndTimeOutput = newFood
+    if (!this.state.startTime && !this.state.endTime) {
+      // add default time as all-day event here
+      startEndTimeOutput = checkStartAndEndTime(this.props.events, newFood, 'allDayEvent')
+    } else if (!this.state.startTime) {
+      startEndTimeOutput = checkStartAndEndTime(this.props.events, newFood, 'startTimeMissing')
+    } else if (!this.state.endTime) {
+      startEndTimeOutput = checkStartAndEndTime(this.props.events, newFood, 'endTimeMissing')
     }
 
     // TESTING LOAD SEQUENCE ASSIGNMENT (ASSUMING ALL START/END TIMES ARE PRESENT)
-    var helperOutput = newEventLoadSeqAssignment(this.props.events, this.props.type, newTransport)
+    var helperOutput = newEventLoadSeqAssignment(this.props.events, 'Food', startEndTimeOutput)
     // console.log('helper output', helperOutput)
 
     this.props.changingLoadSequence({
@@ -124,18 +162,7 @@ class IntuitiveTransportInput extends Component {
       }
     })
 
-    if (newTransport.endDay > this.props.daysArr.length) {
-      this.props.updateItineraryDetails({
-        variables: {
-          id: this.props.itineraryId,
-          days: this.props.daysArr.length + 1
-        }
-      })
-    }
-
-    const mutation = `create${this.props.type}`
-
-    this.props[mutation]({
+    this.props.createFood({
       variables: helperOutput.newEvent,
       refetchQueries: [{
         query: queryItinerary,
@@ -147,36 +174,24 @@ class IntuitiveTransportInput extends Component {
     this.props.toggleIntuitiveInput()
   }
 
-  resetState () {
-    this.setState({
-      departureGooglePlaceData: {name: ''},
-      arrivalGooglePlaceData: {name: ''},
-      search: ''
-    })
-  }
-
   componentDidMount () {
     var currencyList = allCurrenciesList()
     this.setState({currency: currencyList[0]})
   }
 
   render () {
-    const endStyle = {
-      WebkitTextStroke: '1px ' + primaryColor,
-      WebkitTextFillColor: primaryColor
-    }
     return (
       <div onKeyDown={(e) => this.handleKeydown(e)} tabIndex='0' style={{...createEventBoxStyle, ...{width: '100%', padding: '10px 0'}}}>
         <div style={{display: 'inline-block'}}>
-          {this.state.departRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <LocationSearch intuitiveInput transport selectLocation={location => this.selectLocation(location, 'departure')} placeholder={'Departure Location'} currentLocation={this.state.departureGooglePlaceData} />
-        </div>
-        <div style={{display: 'inline-block', marginLeft: '8px'}}>
-          {this.state.arriveRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Required)</span>}
-          <LocationSearch intuitiveInput transport selectLocation={location => this.selectLocation(location, 'arrival')} placeholder={'Arrival Location'} currentLocation={this.state.arrivalGooglePlaceData} />
+          {this.state.descRequired && this.state.locRequired && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Description or Location Required)</span>}
+          <LocationSearch intuitiveInput selectLocation={location => this.selectLocation(location)} placeholder={'Eatery'} currentLocation={this.state.googlePlaceData} inputFocus={(e) => this.props.inputFocus(e)} inputBlur={(e) => this.props.inputBlur(e)} />
         </div>
         <div style={{display: 'inline-block'}}>
-          {(this.state.startTimeRequired || this.state.endTimeRequired) && <span style={{fontWeight: 'bold', position: 'absolute', top: '-20px'}}>(Both Fields Required)</span>}
+          <div>
+            <input type='text' placeholder='Description' style={{width: '499px', height: '31px', fontSize: '13px', padding: '8px', marginLeft: '8px'}} onChange={(e) => this.handleChange(e, 'description')} onFocus={(e) => this.props.inputFocus(e)} onBlur={(e) => this.props.inputBlur(e)} />
+          </div>
+        </div>
+        <div style={{display: 'inline-block'}}>
           <div style={{position: 'relative'}}>
             {!this.state.startTime && !this.state.editingStartTime && <input type='text' placeholder='Start Time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onFocus={(e) => this.setState({editingStartTime: true})} />}
             {(this.state.startTime || this.state.editingStartTime) && <input autoFocus type='time' style={{width: '86px', fontSize: '13px', height: '31px', padding: '8px', marginLeft: '8px', textAlign: 'center'}} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={(e) => this.setState({editingStartTime: false})} />}
@@ -197,7 +212,7 @@ class IntuitiveTransportInput extends Component {
         </div>
         <div style={{marginTop: '6px', display: 'inline-block', textAlign: 'right', width: '100%'}}>
           <button onClick={() => this.handleSubmit()} style={{marginRight: '8px', backgroundColor: '#ed685a', border: 'none', color: 'white', height: '31px', fontSize: '13px', padding: '8px'}}>Submit</button>
-          <button onClick={() => this.props.handleCreateEventClick('LandTransport')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>More</button>
+          <button onClick={() => this.props.handleCreateEventClick('Food')} style={{backgroundColor: 'white', outline: '1px solid rgba(60, 58, 68, 0.2)', border: 'none', color: 'rgba(60, 58, 68, 0.7)', height: '31px', fontSize: '13px', padding: '8px'}}>More</button>
         </div>
       </div>
     )
@@ -210,10 +225,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-{/* graphql(createLandTransport, {name: 'createLandTransport'}),
-graphql(createSeaTransport, {name: 'createSeaTransport'}),
-graphql(createTrain, {name: 'createTrain'}), */}
+{/* graphql(createFood, {name: 'createFood'}), */}
 export default connect(mapStateToProps)(compose(
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
-)(Radium(IntuitiveTransportInput)))
+)(Radium(IntuitiveFoodInput)))
