@@ -117,35 +117,8 @@ class EventRowLocationCell extends Component {
   }
 
   selectLocation (prediction) {
-    // console.log('this.state', this.state)
-    console.log('CLICKED LOCATION', prediction)
-    // close dropdown, change text, query place details
-    let placeName = prediction.structured_formatting.main_text
-    let placeId = prediction.place_id
-
-    // find new Content state based on place name, updateEvent using redux
-    let updatedContentState = ContentState.createFromText(placeName)
-    // let updatedEditorState = EditorState.createWithContent(updatedContentState)
-
-    // console.log('updated content state', updatedContentState.getPlainText())
-
-    // SET STATE HERE IS ASYNC. THE ONCHANGE IS TRIGGERED WITH AN OLD EDITOR STATE BEFORE SETSTATE HERE FINISHES.
-    console.log('SELECTLOCATION SETSTATE')
-    this.setState({
-      queryStr: placeName,
-      showDropdown: false,
-      showSpinner: false,
-      predictions: []
-      // editorState: updatedEditorState // editor state with new location name
-      // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
-    }, () => {
-      // console.log('SELECTLOCATION SETSTATE FINISHED', this.state.editorState.getCurrentContent().getPlainText())
-      this.props.updateEvent(this.props.id, 'locationName', updatedContentState, false) // update content state in redux
-    })
-
     // fetch place details (name, address, latlng).
-    //  update redux locationObj, locationName, locationAddress. if location name contentstate !== obj name, set locationObj.verified to false.
-
+    let placeId = prediction.place_id
     let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
     let placeDetailsEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&&placeid=${placeId}`
 
@@ -160,16 +133,29 @@ class EventRowLocationCell extends Component {
         let longitude = result.geometry.location.lng
         let address = result.formatted_address
         let name = result.name
-        console.log('name', name, 'address', address, 'latlng', latitude, longitude)
-        // WHEN TO SET LOCATION OBJ?
-        // A) TYPED IN LOCATION NAME BUT DID NOT SELECT AN OPTION (NAME ONLY)
-        // B) TYPED IN LOCATION NAME AND SELECTED A LOCATION (NAME + GEOMETRY)
-        // C) INITIAL LOCATION. NAME DELETED.
-              // IF ENTER OR TAB. CLEAR LOCATIONNAME, LOCATIONADDRESS, LOCATIONOBJ
-              // IF ESC DONT CLEAR LOCATION, DONT CLEAR NAME.
-        // D) INITIAL LOCATION. NAME CHANGED (NO OPTION SELECTED). CUSTOM NAME. LEAVE GEOMETRY AS IT IS.
-        // on select location -> set location obj (verified)
-        // on blur, change focus to other field. -> compare locationName against locationobj to check verified. set location obj again.
+        // console.log('name', name, 'address', address, 'latlng', latitude, longitude)
+
+        let nameContentState = ContentState.createFromText(name)
+        let addressContentState = ContentState.createFromText(address)
+        let locationObj = {
+          verified: true,
+          name: name,
+          address: address,
+          latitude: latitude,
+          longitude: longitude
+        }
+        this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+        this.props.updateEvent(this.props.id, 'locationAddress', addressContentState, false)
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+
+        // console.log('SELECTLOCATION SETSTATE')
+        this.setState({
+          queryStr: name,
+          showDropdown: false,
+          showSpinner: false,
+          predictions: []
+          // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
+        })
       })
       .catch(err => {
         console.log('err', err)
@@ -204,20 +190,22 @@ class EventRowLocationCell extends Component {
       let nextPropsThisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
       })
-      // console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
       if (nextPropsThisEvent.locationName !== oldPropsThisEvent.locationName) {
-        // console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
         const locationContentState = nextPropsThisEvent.locationName
-        // console.log('nextprops location text is', locationContentState.getPlainText())
         this.setState({editorState: EditorState.createWithContent(locationContentState)})
       }
     }
 
-    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND WITH UPDATED LOCATION
+    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
     let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
     let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
     if (isPreviouslyActiveCell && isNotNextActiveCell) {
       console.log('ACTIVE LOCATION CELL LOST FOCUS')
+      // click somewhere else, tab
+      let thisEvent = nextProps.events.events.find(e => {
+        return e.id === nextProps.id
+      })
+      console.log('locationObj to send backend', thisEvent.locationObj)
     }
   }
 
@@ -251,28 +239,68 @@ class EventRowLocationCell extends Component {
   // for component
   handleKeyDown (e) {
     // console.log(e.key)
+    // esc will close dropdown, undo changes
     if (e.key === 'Escape') {
       console.log('esc')
-      // esc will close dropdown, undo changes
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
+      })
+      let locationObj = thisEvent.locationObj
+      let locationName = locationObj ? locationObj.name : ''
+      let nameContentState = ContentState.createFromText(locationName)
+      this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
       this.handleClickOutside()
     }
+    // enter/tab confirms changes, constructs location obj
     if (e.key === 'Enter' || e.key === 'Tab') {
-      // enter/tab confirms changes, constructs location obj
       console.log('enter/tab')
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
+      })
+      let locationObj = thisEvent.locationObj
+      // console.log('thisEvent', thisEvent)
+      let locationNameInEditor = thisEvent.locationName.getPlainText()
+      // what about many spaces?
+      // if no location, hv str -> create location with name only
+      // if hv location, hv str -> change to unverified. check str is equal. verified, unverified
+      // if hv location, no str -> clear the location
+      // if no location, no str -> do nothing
+      if (!locationObj && !locationNameInEditor) {
+        // do nothing
+      } else if (!locationObj && locationNameInEditor) {
+        let locationObj = {
+          verified: false,
+          name: locationNameInEditor,
+          address: null,
+          latitude: null,
+          longitude: null
+        }
+        this.props.updateEvent(this.props.id, 'locationAddress', null, false)
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+      } else if (locationObj && !locationNameInEditor) {
+        this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), false)
+        this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), false)
+        this.props.updateEvent(this.props.id, 'locationObj', null, false)
+      } else if (locationObj && locationNameInEditor) {
+        // check if name matches
+        if (locationObj.name !== locationNameInEditor) {
+          let newLocationObj = {
+            verified: false,
+            name: locationNameInEditor,
+            address: locationObj.address,
+            latitude: locationObj.latitude,
+            longitude: locationObj.longitude
+          }
+          this.props.updateEvent(this.props.id, 'locationObj', newLocationObj, false)
+        }
+      }
+
+      this.handleClickOutside()
     }
   }
 
-  // SELECT LOCATION CLICK WILL TRIGGER ONBLUR EVEN BEFORE NEW LOCATION NAME IS SET. ONBLUR TRIGGERS TOO OFTEN (EVEN CLICKING WITHIN CELL)
-
+  // is this still needed?
   handleOnBlur (event) {
-    // console.log('ON BLUR')
-    // let thisEvent = this.props.events.events.find(e => {
-    //   return e.id === this.props.id
-    // })
-    // console.log('locationObj', thisEvent.location)
-    // console.log('locationName', thisEvent.locationName.getPlainText())
-    // console.log('locationAddress', thisEvent.locationAddress.getPlainText())
-
     this.setState({focusClicked: false})
   }
 

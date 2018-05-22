@@ -28,6 +28,17 @@ class PlannerRightBar extends Component {
   }
 
   render () {
+    let thisEvent = this.props.events.events.find(e => {
+      return e.id === this.props.activeEventId
+    })
+    if (!thisEvent) return null
+    let locationObj = thisEvent.locationObj
+    let isVerified
+    if (locationObj) {
+      isVerified = locationObj.verified ? 'TRUE' : 'FALSE'
+    } else {
+      isVerified = 'NO LOCATION'
+    }
     return (
       <div style={styles.sidebarContainer}>
         {/* TABS */}
@@ -95,6 +106,8 @@ class PlannerRightBar extends Component {
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Address</span>
                   <span style={styles.addressText}>Lorong 12 Geylang Singapore 123456</span>
+                  <span style={styles.labelText}>Verified</span>
+                  <span>{isVerified}</span>
                 </label>
                 {/* <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Opening Hours</span>
