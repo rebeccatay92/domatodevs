@@ -22,7 +22,7 @@ export const plannerViewReducer = (state = {
     case 'SET_RIGHT_BAR_FOCUSED_TAB':
       return {
         ...state,
-        rightBar: state.rightBar === action.tabName ? '' : action.tabName
+        rightBar: action.tabName
       }
     default:
       return state

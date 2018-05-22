@@ -34,6 +34,7 @@ class PlannerPage extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    // GRAPHQL DATA FROM BACKEND.
     if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
       console.log('nextProps allevents', nextProps.data.findItinerary.events)
       const allEvents = nextProps.data.findItinerary.events.map(event => {
@@ -42,7 +43,11 @@ class PlannerPage extends Component {
           ...{
             startTime: new Date(event.startTime * 1000).toGMTString().substring(17, 22),
             eventType: event.eventType ? ContentState.createFromText(event.eventType) : ContentState.createFromText(''),
-            location: event.location ? ContentState.createFromText(event.location.name) : ContentState.createFromText(''),
+            // content state for place name
+            locationName: event.location ? ContentState.createFromText(event.location.name) : ContentState.createFromText(''),
+            // content state for address
+            locationAddress: event.location ? ContentState.createFromText(event.location.address) : ContentState.createFromText(''),
+            // regular json object holding verified, name, address, latlng.
             locationObj: event.location,
             currency: event.currency ? ContentState.createFromText(event.currency) : ContentState.createFromText(''),
             cost: event.cost ? ContentState.createFromText(event.cost) : ContentState.createFromText(''),

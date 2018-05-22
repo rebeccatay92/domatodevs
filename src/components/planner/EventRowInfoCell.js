@@ -6,6 +6,7 @@ import { Editor, EditorState, ContentState } from 'draft-js'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 const eventPropertyNames = {
   Event: 'eventType',
@@ -78,6 +79,15 @@ class EventRowInfoCell extends Component {
     }
   }
 
+  handleOnFocus () {
+    const property = eventPropertyNames[this.props.column]
+    this.props.changeActiveField(property)
+    if (this.props.activeEventId !== this.props.id) {
+      this.props.setRightBarFocusedTab('event')
+      this.props.updateActiveEvent(this.props.id)
+    }
+  }
+
   render () {
     const { column, id } = this.props
     const property = eventPropertyNames[column]
@@ -88,15 +98,12 @@ class EventRowInfoCell extends Component {
 
     return (
       <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => {
-          this.props.changeActiveField(property)
-          this.props.updateActiveEvent(id)
-        }} onBlur={() => this.setState({focusClicked: false})} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} />
       </div>
     )
   }
 }
-// onBlur={() => this.props.updateActiveEvent('')}
+
 const mapStateToProps = (state) => {
   return {
     events: state.events,
@@ -115,6 +122,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     changeActiveField: (field) => {
       return dispatch(changeActiveField(field))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      return dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }

@@ -7,6 +7,7 @@ import { updateEvent } from '../../actions/planner/eventsActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import PlannerSideBarInfoField from './PlannerSideBarInfoField'
+import PlannerSideBarLocationNameField from './PlannerSideBarLocationNameField'
 
 import { PlannerRightBarStyles as styles } from '../../Styles/PlannerRightBarStyles'
 
@@ -14,17 +15,28 @@ class PlannerRightBar extends Component {
   constructor (props) {
     super(props)
   }
+  toggleRightBar (tabName) {
+    // compare against plannerView.rightBar
+    // if same, hide it.
+    // else switch to that tab
+    let rightBar = this.props.plannerView.rightBar
+    if (tabName === rightBar) {
+      this.props.setRightBarFocusedTab('')
+    } else {
+      this.props.setRightBarFocusedTab(tabName)
+    }
+  }
 
   render () {
     return (
       <div style={styles.sidebarContainer}>
         {/* TABS */}
         <div style={styles.tabsContainer}>
-          <div style={this.props.plannerView.rightBar === 'bucket' ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.props.setRightBarFocusedTab('bucket')}>
+          <div style={this.props.plannerView.rightBar === 'bucket' ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.toggleRightBar('bucket')}>
             <span style={styles.tabText}>Bucket</span>
           </div>
           {this.props.activeEventId &&
-            <div style={this.props.plannerView.rightBar === 'event' ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.props.setRightBarFocusedTab('event')}>
+            <div style={this.props.plannerView.rightBar === 'event' ? styles.tabClicked : styles.tabUnclicked} onClick={() => this.toggleRightBar('event')}>
               <span style={styles.tabText}>Event</span>
             </div>
           }
@@ -77,16 +89,17 @@ class PlannerRightBar extends Component {
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Location name</span>
-                  <input type='text' placeholder='-' style={styles.inputField} />
+                  {/* <input type='text' placeholder='-' style={styles.inputField} /> */}
+                  <PlannerSideBarLocationNameField id={this.props.activeEventId} />
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Address</span>
-                  <span style={styles.addressText}>Lorong 12 Geylang Singapore 123456 </span>
+                  <span style={styles.addressText}>Lorong 12 Geylang Singapore 123456</span>
                 </label>
-                <label style={styles.labelContainer}>
+                {/* <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Opening Hours</span>
                   <input type='text' placeholder='-' style={styles.inputField} />
-                </label>
+                </label> */}
               </div>
             </div>
             <hr style={styles.sectionDivider} />

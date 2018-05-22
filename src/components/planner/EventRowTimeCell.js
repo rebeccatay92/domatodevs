@@ -5,6 +5,7 @@ import { graphql, compose } from 'react-apollo'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 class EventRowTimeCell extends Component {
   constructor (props) {
@@ -20,6 +21,15 @@ class EventRowTimeCell extends Component {
     this.props.updateEvent(id, 'startTime', e.target.value)
   }
 
+  handleOnFocus () {
+    this.props.changeActiveField('startTime')
+    // if activeEventId is different, setActiveEventId, also open events right bar
+    if (this.props.activeEventId !== this.props.id) {
+      this.props.setRightBarFocusedTab('event')
+      this.props.updateActiveEvent(this.props.id)
+    }
+  }
+
   render () {
     const { id } = this.props
     const { events } = this.props.events
@@ -27,10 +37,7 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     return (
       <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none'}} onFocus={() => {
-          this.props.changeActiveField('startTime')
-          this.props.updateActiveEvent(id)
-        }} onChange={(e) => this.handleChange(e)} />
+        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e)} />
       </div>
     )
   }
@@ -54,6 +61,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     changeActiveField: (field) => {
       return dispatch(changeActiveField(field))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      return dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }
