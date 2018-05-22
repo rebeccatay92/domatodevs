@@ -13,10 +13,12 @@ class EventRow extends Component {
   render () {
     const { columns, index, id } = this.props
     let columnState = []
-    columns.forEach(column => {
-      if (columnState.filter(e => e.name === column).length === 0) {
+    let activeColumn = ''
+    columns.forEach((column, i) => {
+      if (i > 0) activeColumn = columns[i - 1]
+      if (activeColumn !== column) {
         columnState.push({name: column, width: 1})
-      } else if (columnState.filter(e => e.name === column).length > 0) {
+      } else if (activeColumn === column) {
         columnState[columnState.length - 1].width++
       }
     })

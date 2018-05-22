@@ -27,7 +27,7 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     return (
       <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none'}} onFocus={() => {
+        <input autoFocus={isActive} type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => {
           this.props.changeActiveField('startTime')
           this.props.updateActiveEvent(id)
         }} onChange={(e) => this.handleChange(e)} />

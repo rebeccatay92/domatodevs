@@ -8,12 +8,18 @@ import DateDropdownMenu from '../DateDropdownMenu'
 import { graphql, compose } from 'react-apollo'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
+import { createEvent } from '../../apollo/event'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
 import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../../actions/plannerActions'
 import { addActivityToBucket, deleteActivityFromBucket } from '../../actions/bucketActions'
 import { toggleTimeline } from '../../actions/plannerTimelineActions'
 import { timelineStyle, dateTableStyle, timelineColumnStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableHorizontalLineStyle } from '../../Styles/styles'
+
+// new actions
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import moment from 'moment'
 
@@ -54,6 +60,27 @@ class DateBox extends Component {
     })
   }
 
+  handleCreateEvent () {
+    const { itineraryId, day, events } = this.props
+    const newLoadSeq = events.length + 1
+    this.props.createEvent({
+      variables: {
+        ItineraryId: itineraryId,
+        loadSequence: newLoadSeq,
+        startDay: day
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: { id: this.props.itineraryId }
+      }]
+    })
+    .then(response => {
+      // this.props.setRightBarFocusedTab('event')
+      this.props.updateActiveEvent(response.data.createEvent.id)
+      this.props.changeActiveField('startTime')
+    })
+  }
+
   render () {
     // console.log('PROPS DATE UNIX', this.props.date)
     let dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
@@ -71,10 +98,12 @@ class DateBox extends Component {
       expandButton = <i id={'day' + this.props.day} onClick={() => this.setState({showDateMenu: false})} className='material-icons dateMenu' style={{cursor: 'pointer', position: 'absolute', top: '-5px', marginLeft: '8px', fontSize: '20px', color: '#ed685a'}} >more_horiz</i>
     }
     let columnState = []
-    this.props.columns.forEach(column => {
-      if (columnState.filter(e => e.name === column).length === 0) {
+    let activeColumn = ''
+    this.props.columns.forEach((column, i) => {
+      if (i > 0) activeColumn = this.props.columns[i - 1]
+      if (activeColumn !== column) {
         columnState.push({name: column, width: 1})
-      } else if (columnState.filter(e => e.name === column).length > 0) {
+      } else if (activeColumn === column) {
         columnState[columnState.length - 1].width++
       }
     })
@@ -135,6 +164,12 @@ class DateBox extends Component {
             {this.props.events.map((event, i) => {
               return <EventRow key={i} event={event} index={i + firstIndex} day={day} id={event.id} />
             })}
+            <tr>
+              <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
+              <td>
+                <span onClick={() => this.handleCreateEvent()} style={{paddingLeft: '24px', cursor: 'pointer'}} className='add-event-link'>+ Add Event</span>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -236,6 +271,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     initializePlanner: (activities) => {
       dispatch(initializePlanner(activities))
+    },
+    updateActiveEvent: (id) => {
+      return dispatch(updateActiveEvent(id))
+    },
+    changeActiveField: (field) => {
+      return dispatch(changeActiveField(field))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      return dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }
@@ -259,5 +303,6 @@ const options = {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options),
   graphql(changingLoadSequence, { name: 'changingLoadSequence' }),
-  graphql(updateItineraryDetails, { name: 'updateItineraryDetails' })
+  graphql(updateItineraryDetails, { name: 'updateItineraryDetails' }),
+  graphql(createEvent, { name: 'createEvent' })
 )(DropTarget(['activity', 'plannerActivity'], dateTarget, collect)(Radium(DateBox))))

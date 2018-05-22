@@ -38,12 +38,12 @@ export const createEvent = gql`
   mutation createEvent(
     $ItineraryId: ID!,
     $eventType: String,
-    $startDay: Int,
+    $startDay: Int!,
     $startTime: Int,
     $endTime: Int,
     $loadSequence: Int!,
     $notes: String,
-    $cost: Int,
+    $cost: String,
     $currency: String,
     $bookingService: String,
     $bookingConfirmation: String,
@@ -64,7 +64,9 @@ export const createEvent = gql`
       bookingConfirmation: $bookingConfirmation,
       locationData: $locationData,
       LocationId: $LocationId
-    )
+    ) {
+      id
+    }
   }
 `
 

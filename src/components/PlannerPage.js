@@ -40,7 +40,7 @@ class PlannerPage extends Component {
         return {
           ...event,
           ...{
-            startTime: new Date(event.startTime * 1000).toGMTString().substring(17, 22),
+            startTime: event.startTime ? new Date(event.startTime * 1000).toGMTString().substring(17, 22) : '',
             eventType: event.eventType ? ContentState.createFromText(event.eventType) : ContentState.createFromText(''),
             location: event.location ? ContentState.createFromText(event.location.name) : ContentState.createFromText(''),
             locationObj: event.location,

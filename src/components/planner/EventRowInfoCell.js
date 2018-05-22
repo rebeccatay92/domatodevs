@@ -17,7 +17,9 @@ const getEventProp = (columnInput, eventInput) => {
   const eventProperties = {
     Event: eventInput.eventType,
     Price: eventInput.cost,
-    Notes: eventInput.notes
+    Notes: eventInput.notes,
+    'Booking Service': eventInput.bookingService,
+    'Confirmation Number': eventInput.bookingConfirmation
   }
 
   return eventProperties[columnInput]

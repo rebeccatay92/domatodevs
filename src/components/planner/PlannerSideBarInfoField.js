@@ -13,6 +13,9 @@ class PlannerSideBarInfoField extends Component {
     const { property, id } = props
     const { events } = props.events
 
+    console.log(events);
+    console.log(id);
+
     const contentState = events.filter(event => event.id === id)[0][property]
 
     this.state = {

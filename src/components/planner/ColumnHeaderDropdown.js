@@ -5,7 +5,7 @@ import onClickOutside from 'react-onclickoutside'
 
 import { changeColumns } from '../../actions/planner/columnsActions'
 
-const optionsArr = ['Event', 'Location', 'Opening Hours', 'Price', 'Booking Service', 'Confirmation Number', 'Notes'].sort()
+const optionsArr = ['Event', 'Location', 'Price', 'Booking Service', 'Confirmation Number', 'Notes'].sort()
 
 const originalColumnsState = ['Event', 'Location', 'Price', 'Notes']
 
@@ -58,6 +58,16 @@ class ColumnHeaderDropdown extends Component {
     this.props.changeColumns(newColumnsArr)
   }
 
+  handleOptionClick (option) {
+    const { startingColumn, endingColumn, columns } = this.props
+    const newColumnsArr = columns.map((column, i) => {
+      if (i >= startingColumn && i <= endingColumn) return option
+      else return column
+    })
+    this.props.changeColumns(newColumnsArr)
+    this.props.disableDropdown()
+  }
+
   render () {
     const { startingColumn, endingColumn } = this.props
     return (
@@ -65,7 +75,7 @@ class ColumnHeaderDropdown extends Component {
         <ul style={{listStyleType: 'none', padding: '0', backgroundColor: '#F5F5F5', border: '1px solid rgba(60, 58, 68, 1)'}}>
           {optionsArr.map((option, i) => {
             return (
-              <li key={i} style={{padding: '8px'}}>
+              <li key={i} style={{padding: '8px'}} className='column-header-dropdown-option' onClick={() => this.handleOptionClick(option)}>
                 <span>{option}</span>
               </li>
             )
