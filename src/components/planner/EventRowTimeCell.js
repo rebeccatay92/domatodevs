@@ -35,6 +35,8 @@ class EventRowTimeCell extends Component {
     const { id } = nextProps
     if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
       this.editor.focus()
+    }
+  }
 
   handleOnFocus () {
     this.props.updateEvent(null, null, null, false)
