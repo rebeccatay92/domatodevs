@@ -35,7 +35,7 @@ class EventRowLocationCell extends Component {
 
     // ASYNC RACE. SELECT LOCATION SETSTATE TRIGGERS ONCHANGE, WHICH ALSO SETSTATE. HENCE, IN SELECT LOCATION -> DO NOT SET EDITOR STATE.
     this.onChange = (editorState) => {
-      console.log('EDITORSTATE ONCHANGE TRIGGERED')
+      // console.log('EDITORSTATE ONCHANGE TRIGGERED')
       let oldContentState = this.state.editorState.getCurrentContent()
       let newContentState = editorState.getCurrentContent()
 
@@ -50,7 +50,7 @@ class EventRowLocationCell extends Component {
         editorState: editorState
       }, () => {
         if (newText !== oldText) {
-          console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX IF TEXT CHANGED')
+          // console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX IF TEXT CHANGED')
           // ONLY UPDATE REDUX IF THERE ARE DIFFERENCES IN CONTENT STATE
           // id, property, value, fromSidebar
           this.props.updateEvent(this.props.id, 'location', newContentState, false)
@@ -187,7 +187,7 @@ class EventRowLocationCell extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.events.updatedFromSidebar) {
-      const thisEvent = nextProps.events.filter(e => {
+      const thisEvent = nextProps.events.events.filter(e => {
         return e.id === nextProps.id
       })[0]
       const locationContentState = thisEvent.location
@@ -205,11 +205,11 @@ class EventRowLocationCell extends Component {
       let nextPropsThisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
       })
-      console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
+      // console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
       if (nextPropsThisEvent.location !== oldPropsThisEvent.location) {
-        console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
+        // console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
         const locationContentState = nextPropsThisEvent.location
-        console.log('nextprops location text is', locationContentState.getPlainText())
+        // console.log('nextprops location text is', locationContentState.getPlainText())
         this.setState({editorState: EditorState.createWithContent(locationContentState)})
       }
     }
