@@ -15,6 +15,9 @@ export const eventsReducer = (state = {
         }
       }
     case 'UPDATE_EVENT':
+      if (!action.property) {
+        return {...state, ...{updatedFromSidebar: action.fromSidebar}}
+      }
       console.log('property in redux', action.property, 'value', action.value)
       const modifiedEvent = {
         ...state.events.filter(event => event.id === action.id)[0], ...{[action.property]: action.value}

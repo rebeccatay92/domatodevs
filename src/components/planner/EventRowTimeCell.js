@@ -5,6 +5,7 @@ import { graphql, compose } from 'react-apollo'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 class EventRowTimeCell extends Component {
   constructor (props) {
@@ -20,6 +21,23 @@ class EventRowTimeCell extends Component {
     this.props.updateEvent(id, 'startTime', e.target.value)
   }
 
+  shouldComponentUpdate (nextProps) {
+    const { id } = this.props
+    const { refetch } = this.props.events
+    if ((nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) || (this.props.activeEventId === id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime'))) {
+      return true
+    } else if (refetch) {
+      return true
+    } else return false
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { id } = nextProps
+    if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
+      this.editor.focus()
+    }
+  }
+
   render () {
     const { id } = this.props
     const { events } = this.props.events
@@ -27,9 +45,11 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     return (
       <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input autoFocus={isActive} type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => {
+        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => {
           this.props.changeActiveField('startTime')
           this.props.updateActiveEvent(id)
+          this.props.updateEvent(null, null, null, false)
+          // if (this.props.plannerView.rightBar !== 'event') this.props.setRightBarFocusedTab('event')
         }} onChange={(e) => this.handleChange(e)} />
       </div>
     )
@@ -40,7 +60,8 @@ const mapStateToProps = (state) => {
   return {
     events: state.events,
     activeField: state.activeField,
-    activeEventId: state.activeEventId
+    activeEventId: state.activeEventId,
+    plannerView: state.plannerView
   }
 }
 
@@ -54,6 +75,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     changeActiveField: (field) => {
       return dispatch(changeActiveField(field))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      return dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }

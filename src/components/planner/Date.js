@@ -14,12 +14,16 @@ import { connect } from 'react-redux'
 import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../../actions/plannerActions'
 import { addActivityToBucket, deleteActivityFromBucket } from '../../actions/bucketActions'
 import { toggleTimeline } from '../../actions/plannerTimelineActions'
+import { toggleSpinner } from '../../actions/spinnerActions'
 import { timelineStyle, dateTableStyle, timelineColumnStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableHorizontalLineStyle } from '../../Styles/styles'
+
+import { ContentState } from 'draft-js'
 
 // new actions
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
+import { updateEvent, initializeEvents } from '../../actions/planner/eventsActions'
 
 import moment from 'moment'
 
@@ -63,20 +67,20 @@ class DateBox extends Component {
   handleCreateEvent () {
     const { itineraryId, day, events } = this.props
     const newLoadSeq = events.length + 1
+    this.props.updateEvent(null, null, null, false)
+    this.props.toggleSpinner(true)
     this.props.createEvent({
       variables: {
         ItineraryId: itineraryId,
         loadSequence: newLoadSeq,
         startDay: day
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: { id: this.props.itineraryId }
-      }]
+      }
+    })
+    .then((response) => {
+      return Promise.all([this.props.data.refetch(), response.data.createEvent.id])
     })
     .then(response => {
-      // this.props.setRightBarFocusedTab('event')
-      this.props.updateActiveEvent(response.data.createEvent.id)
+      this.props.updateActiveEvent(response[1])
       this.props.changeActiveField('startTime')
     })
   }
@@ -278,8 +282,14 @@ const mapDispatchToProps = (dispatch) => {
     changeActiveField: (field) => {
       return dispatch(changeActiveField(field))
     },
-    setRightBarFocusedTab: (tabName) => {
-      return dispatch(setRightBarFocusedTab(tabName))
+    updateEvent: (id, property, value, fromSidebar) => {
+      return dispatch(updateEvent(id, property, value, fromSidebar))
+    },
+    initializeEvents: (events) => {
+      dispatch(initializeEvents(events))
+    },
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
     }
   }
 }
@@ -288,7 +298,8 @@ const mapStateToProps = (state) => {
   return {
     columns: state.columns,
     timeline: state.plannerTimeline,
-    timelineDay: state.plannerTimelineDay
+    timelineDay: state.plannerTimelineDay,
+    plannerView: state.plannerView
   }
 }
 

@@ -30,6 +30,7 @@ class PlannerSideBarInfoField extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    console.log(nextProps.events);
     if (!nextProps.events.updatedFromSidebar) {
       const { property, id } = nextProps
       const { events } = nextProps.events
