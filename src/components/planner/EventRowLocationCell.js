@@ -165,13 +165,11 @@ class EventRowLocationCell extends Component {
         // A) TYPED IN LOCATION NAME BUT DID NOT SELECT AN OPTION (NAME ONLY)
         // B) TYPED IN LOCATION NAME AND SELECTED A LOCATION (NAME + GEOMETRY)
         // C) INITIAL LOCATION. NAME DELETED.
-              // IF ENTER. CLEAR LOCATION
+              // IF ENTER OR TAB. CLEAR LOCATIONNAME, LOCATIONADDRESS, LOCATIONOBJ
               // IF ESC DONT CLEAR LOCATION, DONT CLEAR NAME.
         // D) INITIAL LOCATION. NAME CHANGED (NO OPTION SELECTED). CUSTOM NAME. LEAVE GEOMETRY AS IT IS.
         // on select location -> set location obj (verified)
         // on blur, change focus to other field. -> compare locationName against locationobj to check verified. set location obj again.
-        // RIGHT BAR. CHANGE LOCATION NAME. GEOMETRY DOESNT CHANGE.
-        // CANNOT CHANGE ADDRESS UNLESS THEY CLICK CUSTOM LOCATION
       })
       .catch(err => {
         console.log('err', err)
@@ -196,7 +194,7 @@ class EventRowLocationCell extends Component {
     }
 
     // events is inside the events obj...
-    // THIS UDPATES THE EDITOR STATE IF EVENT.LOCATION IN REDUX HAS CHANGED
+    // THIS UPDATES THE EDITOR STATE IF EVENT.LOCATIONNAME IN REDUX HAS CHANGED
     if (nextProps.events.events !== this.props.events.events) {
       // console.log('EVENTS ARR HAS CHANGED')
       // compare this event only
@@ -213,6 +211,13 @@ class EventRowLocationCell extends Component {
         // console.log('nextprops location text is', locationContentState.getPlainText())
         this.setState({editorState: EditorState.createWithContent(locationContentState)})
       }
+    }
+
+    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND WITH UPDATED LOCATION
+    let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
+    let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
+    if (isPreviouslyActiveCell && isNotNextActiveCell) {
+      console.log('ACTIVE LOCATION CELL LOST FOCUS')
     }
   }
 
@@ -238,28 +243,44 @@ class EventRowLocationCell extends Component {
     }
   }
 
-  // for editor only
+  // for editor only. prevents new lines
   handleReturn (event, editorState) {
-    // this prevents new lines
     return 'handled'
   }
 
   // for component
   handleKeyDown (e) {
     // console.log(e.key)
-    if (e.key === 'Tab' || e.key === 'Escape') {
+    if (e.key === 'Escape') {
+      console.log('esc')
+      // esc will close dropdown, undo changes
       this.handleClickOutside()
     }
-    if (e.key === 'Enter') {
-      console.log('enter was hit')
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      // enter/tab confirms changes, constructs location obj
+      console.log('enter/tab')
     }
+  }
+
+  // SELECT LOCATION CLICK WILL TRIGGER ONBLUR EVEN BEFORE NEW LOCATION NAME IS SET. ONBLUR TRIGGERS TOO OFTEN (EVEN CLICKING WITHIN CELL)
+
+  handleOnBlur (event) {
+    // console.log('ON BLUR')
+    // let thisEvent = this.props.events.events.find(e => {
+    //   return e.id === this.props.id
+    // })
+    // console.log('locationObj', thisEvent.location)
+    // console.log('locationName', thisEvent.locationName.getPlainText())
+    // console.log('locationAddress', thisEvent.locationAddress.getPlainText())
+
+    this.setState({focusClicked: false})
   }
 
   render () {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} handleReturn={(event, editorState) => this.handleReturn()} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={event => this.handleOnBlur(event)} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
           // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'
