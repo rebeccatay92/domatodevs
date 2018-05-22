@@ -186,16 +186,6 @@ class EventRowLocationCell extends Component {
     })
   }
 
-  handleKeyDown (e) {
-    // console.log(e.key)
-    if (e.key === 'Tab' || e.key === 'Escape') {
-      this.handleClickOutside()
-    }
-    if (e.key === 'Enter') {
-      console.log('enter was hit')
-    }
-  }
-
   componentWillReceiveProps (nextProps) {
     if (nextProps.events.updatedFromSidebar) {
       const thisEvent = nextProps.events.events.filter(e => {
@@ -248,11 +238,28 @@ class EventRowLocationCell extends Component {
     }
   }
 
+  // for editor only
+  handleReturn (event, editorState) {
+    // this prevents new lines
+    return 'handled'
+  }
+
+  // for component
+  handleKeyDown (e) {
+    // console.log(e.key)
+    if (e.key === 'Tab' || e.key === 'Escape') {
+      this.handleClickOutside()
+    }
+    if (e.key === 'Enter') {
+      console.log('enter was hit')
+    }
+  }
+
   render () {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
           // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'
