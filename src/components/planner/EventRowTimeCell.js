@@ -32,8 +32,8 @@ class EventRowTimeCell extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { id } = nextProps
-    if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
+    const { id, plannerView } = nextProps
+    if (this.props.plannerView.rightBar === plannerView.rightBar && nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
       this.editor.focus()
     }
   }
@@ -54,7 +54,7 @@ class EventRowTimeCell extends Component {
     const isActive = this.props.activeEventId === id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')
     const startTime = events.filter(event => event.id === id)[0].startTime
     return (
-      <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+      <div className='planner-table-cell' autoFocus={isActive} onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
         <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e)} />
       </div>
     )
