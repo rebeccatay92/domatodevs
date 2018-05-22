@@ -35,6 +35,14 @@ class EventRowTimeCell extends Component {
     const { id } = nextProps
     if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
       this.editor.focus()
+
+  handleOnFocus () {
+    this.props.updateEvent(null, null, null, false)
+    this.props.changeActiveField('startTime')
+    // if activeEventId is different, setActiveEventId, also open events right bar
+    if (this.props.activeEventId !== this.props.id) {
+      this.props.setRightBarFocusedTab('event')
+      this.props.updateActiveEvent(this.props.id)
     }
   }
 
@@ -45,12 +53,7 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     return (
       <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => {
-          this.props.changeActiveField('startTime')
-          this.props.updateActiveEvent(id)
-          this.props.updateEvent(null, null, null, false)
-          // if (this.props.plannerView.rightBar !== 'event') this.props.setRightBarFocusedTab('event')
-        }} onChange={(e) => this.handleChange(e)} />
+        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e)} />
       </div>
     )
   }

@@ -7,9 +7,9 @@ import LocationCellDropdown from './LocationCellDropdown'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import _ from 'lodash'
-
 
 class EventRowLocationCell extends Component {
   constructor (props) {
@@ -18,7 +18,7 @@ class EventRowLocationCell extends Component {
     const thisEvent = events.find(e => {
       return e.id === this.props.id
     })
-    const locationContentState = thisEvent.location
+    const locationContentState = thisEvent.locationName
 
     this.queryGooglePlaces = _.debounce(this.queryGooglePlaces, 500)
 
@@ -53,7 +53,7 @@ class EventRowLocationCell extends Component {
           // console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX IF TEXT CHANGED')
           // ONLY UPDATE REDUX IF THERE ARE DIFFERENCES IN CONTENT STATE
           // id, property, value, fromSidebar
-          this.props.updateEvent(this.props.id, 'location', newContentState, false)
+          this.props.updateEvent(this.props.id, 'locationName', newContentState, false)
         }
       })
 
@@ -140,31 +140,42 @@ class EventRowLocationCell extends Component {
       // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
     }, () => {
       // console.log('SELECTLOCATION SETSTATE FINISHED', this.state.editorState.getCurrentContent().getPlainText())
-      this.props.updateEvent(this.props.id, 'location', updatedContentState, false) // update content state in redux
+      this.props.updateEvent(this.props.id, 'locationName', updatedContentState, false) // update content state in redux
     })
 
     // fetch place details (name, address, latlng).
-    // set locationData object to send to backend
+    //  update redux locationObj, locationName, locationAddress. if location name contentstate !== obj name, set locationObj.verified to false.
 
-    // let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
-    // let placeDetailsEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&&placeid=${placeId}`
-    //
-    // fetch(placeDetailsEndpoint)
-    //   .then(response => {
-    //     return response.json()
-    //   })
-    //   .then(json => {
-    //     // console.log('result', json.result)
-    //     let result = json.result
-    //     let latitude = result.geometry.location.lat
-    //     let longitude = result.geometry.location.lng
-    //     let address = result.formatted_address
-    //     let name = result.name
-    //     console.log('name', name, 'address', address, 'latlng', latitude, longitude)
-    //   })
-    //   .catch(err => {
-    //     console.log('err', err)
-    //   })
+    let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
+    let placeDetailsEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&&placeid=${placeId}`
+
+    fetch(placeDetailsEndpoint)
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        // console.log('result', json.result)
+        let result = json.result
+        let latitude = result.geometry.location.lat
+        let longitude = result.geometry.location.lng
+        let address = result.formatted_address
+        let name = result.name
+        console.log('name', name, 'address', address, 'latlng', latitude, longitude)
+        // WHEN TO SET LOCATION OBJ?
+        // A) TYPED IN LOCATION NAME BUT DID NOT SELECT AN OPTION (NAME ONLY)
+        // B) TYPED IN LOCATION NAME AND SELECTED A LOCATION (NAME + GEOMETRY)
+        // C) INITIAL LOCATION. NAME DELETED.
+              // IF ENTER. CLEAR LOCATION
+              // IF ESC DONT CLEAR LOCATION, DONT CLEAR NAME.
+        // D) INITIAL LOCATION. NAME CHANGED (NO OPTION SELECTED). CUSTOM NAME. LEAVE GEOMETRY AS IT IS.
+        // on select location -> set location obj (verified)
+        // on blur, change focus to other field. -> compare locationName against locationobj to check verified. set location obj again.
+        // RIGHT BAR. CHANGE LOCATION NAME. GEOMETRY DOESNT CHANGE.
+        // CANNOT CHANGE ADDRESS UNLESS THEY CLICK CUSTOM LOCATION
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   handleClickOutside () {
@@ -175,22 +186,12 @@ class EventRowLocationCell extends Component {
     })
   }
 
-  handleKeyDown (e) {
-    // console.log(e.key)
-    if (e.key === 'Tab' || e.key === 'Escape') {
-      this.handleClickOutside()
-    }
-    if (e.key === 'Enter') {
-      console.log('enter was hit')
-    }
-  }
-
   componentWillReceiveProps (nextProps) {
     if (nextProps.events.updatedFromSidebar) {
       const thisEvent = nextProps.events.events.filter(e => {
         return e.id === nextProps.id
       })[0]
-      const locationContentState = thisEvent.location
+      const locationContentState = thisEvent.locationName
       this.setState({editorState: EditorState.createWithContent(locationContentState)})
     }
 
@@ -206,9 +207,9 @@ class EventRowLocationCell extends Component {
         return e.id === nextProps.id
       })
       // console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
-      if (nextPropsThisEvent.location !== oldPropsThisEvent.location) {
+      if (nextPropsThisEvent.locationName !== oldPropsThisEvent.locationName) {
         // console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
-        const locationContentState = nextPropsThisEvent.location
+        const locationContentState = nextPropsThisEvent.locationName
         // console.log('nextprops location text is', locationContentState.getPlainText())
         this.setState({editorState: EditorState.createWithContent(locationContentState)})
       }
@@ -229,14 +230,36 @@ class EventRowLocationCell extends Component {
   //   }
   // }
 
+  handleOnFocus () {
+    this.props.changeActiveField('location')
+    if (this.props.activeEventId !== this.props.id) {
+      this.props.setRightBarFocusedTab('event')
+      this.props.updateActiveEvent(this.props.id)
+    }
+  }
+
+  // for editor only
+  handleReturn (event, editorState) {
+    // this prevents new lines
+    return 'handled'
+  }
+
+  // for component
+  handleKeyDown (e) {
+    // console.log(e.key)
+    if (e.key === 'Tab' || e.key === 'Escape') {
+      this.handleClickOutside()
+    }
+    if (e.key === 'Enter') {
+      console.log('enter was hit')
+    }
+  }
+
   render () {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => {
-          this.props.changeActiveField('location')
-          this.props.updateActiveEvent(this.props.id)
-        }} onBlur={() => this.setState({focusClicked: false})} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
           // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'
@@ -264,6 +287,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     changeActiveField: (field) => {
       return dispatch(changeActiveField(field))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      return dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }
