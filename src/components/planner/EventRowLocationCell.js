@@ -33,7 +33,7 @@ class EventRowLocationCell extends Component {
     // FOR NOW, PREVENT QUERYING ON EACH CLICK/FOCUS/UNFOCUS BY COMPARING OLD PLAIN TEXT WITH INCOMING PLAIN TEXT.
     // THIS MEANS THE FIRST CLICK/TAB TO FOCUS WILL NOT CAUSE A DROPDOWN
 
-    // ASYNC RACE. SELECT LOCATION SETSTATE TRIGGERS ONCHANGE, WHICH ALSO SETSTATE.
+    // ASYNC RACE. SELECT LOCATION SETSTATE TRIGGERS ONCHANGE, WHICH ALSO SETSTATE. HENCE, IN SELECT LOCATION -> DO NOT SET EDITOR STATE.
     this.onChange = (editorState) => {
       console.log('EDITORSTATE ONCHANGE TRIGGERED')
       let oldContentState = this.state.editorState.getCurrentContent()
@@ -42,14 +42,19 @@ class EventRowLocationCell extends Component {
       let oldText = oldContentState.getPlainText()
       let newText = newContentState.getPlainText()
 
-      console.log('oldText', oldText, 'newText', newText)
+      if (newText !== oldText) {
+        console.log('oldText', oldText, 'newText', newText)
+      }
 
       this.setState({
         editorState: editorState
       }, () => {
-        // id, property, value, fromSidebar
-        console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX')
-        this.props.updateEvent(this.props.id, 'location', newContentState, false)
+        if (newText !== oldText) {
+          console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX IF TEXT CHANGED')
+          // ONLY UPDATE REDUX IF THERE ARE DIFFERENCES IN CONTENT STATE
+          // id, property, value, fromSidebar
+          this.props.updateEvent(this.props.id, 'location', newContentState, false)
+        }
       })
 
       // ONLY UPDATE QUERY STR IF STR IS DIFFERENT
@@ -118,9 +123,9 @@ class EventRowLocationCell extends Component {
     let placeName = prediction.structured_formatting.main_text
     let placeId = prediction.place_id
 
-    // find new editor state, content state, updateEvent using redux
+    // find new Content state based on place name, updateEvent using redux
     let updatedContentState = ContentState.createFromText(placeName)
-    let updatedEditorState = EditorState.createWithContent(updatedContentState)
+    // let updatedEditorState = EditorState.createWithContent(updatedContentState)
 
     // console.log('updated content state', updatedContentState.getPlainText())
 
@@ -130,11 +135,12 @@ class EventRowLocationCell extends Component {
       queryStr: placeName,
       showDropdown: false,
       showSpinner: false,
-      predictions: [],
-      editorState: updatedEditorState // editor state with new location name
+      predictions: []
+      // editorState: updatedEditorState // editor state with new location name
+      // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
     }, () => {
-      console.log('SELECTLOCATION SETSTATE FINISHED', this.state.editorState.getCurrentContent().getPlainText())
-      // this.props.updateEvent(this.props.id, 'location', updatedContentState, false) // update content state in redux
+      // console.log('SELECTLOCATION SETSTATE FINISHED', this.state.editorState.getCurrentContent().getPlainText())
+      this.props.updateEvent(this.props.id, 'location', updatedContentState, false) // update content state in redux
     })
 
     // fetch place details (name, address, latlng).
@@ -189,23 +195,24 @@ class EventRowLocationCell extends Component {
     }
 
     // events is inside the events obj...
-    // if (nextProps.events.events !== this.props.events.events) {
-    //   // console.log('EVENTS ARR HAS CHANGED')
-    //   // compare this event only
-    //   let oldPropsThisEvent = this.props.events.events.find(e => {
-    //     return e.id === this.props.id
-    //   })
-    //   let nextPropsThisEvent = nextProps.events.events.find(e => {
-    //     return e.id === nextProps.id
-    //   })
-    //   console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
-    //   if (nextPropsThisEvent.location !== oldPropsThisEvent.location) {
-    //     console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
-    //     const locationContentState = nextPropsThisEvent.location
-    //     console.log('nextprops location text is', locationContentState.getPlainText())
-    //     this.setState({editorState: EditorState.createWithContent(locationContentState)})
-    //   }
-    // }
+    // THIS UDPATES THE EDITOR STATE IF EVENT.LOCATION IN REDUX HAS CHANGED
+    if (nextProps.events.events !== this.props.events.events) {
+      // console.log('EVENTS ARR HAS CHANGED')
+      // compare this event only
+      let oldPropsThisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
+      })
+      let nextPropsThisEvent = nextProps.events.events.find(e => {
+        return e.id === nextProps.id
+      })
+      console.log('nextProps location text', nextPropsThisEvent.location.getPlainText())
+      if (nextPropsThisEvent.location !== oldPropsThisEvent.location) {
+        console.log('THIS EVENT HAS CHANGED. ID IS', nextProps.id, nextPropsThisEvent)
+        const locationContentState = nextPropsThisEvent.location
+        console.log('nextprops location text is', locationContentState.getPlainText())
+        this.setState({editorState: EditorState.createWithContent(locationContentState)})
+      }
+    }
   }
 
   // IS THIS CORRECT?

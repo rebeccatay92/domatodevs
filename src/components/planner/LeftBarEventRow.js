@@ -7,6 +7,10 @@ class LeftBarEventRow extends Component {
   }
   render () {
     // console.log('this.props.event', this.props.event)
+    let startTime = this.props.event.startTime
+    let eventType = this.props.event.eventType
+    let locationObj = this.props.event.locationObj
+    console.log('startTime', startTime, 'type', eventType, 'location', locationObj)
     return (
       <tr style={{width: '100%', height: '83px'}}>
         <td>
@@ -14,8 +18,12 @@ class LeftBarEventRow extends Component {
             <i className='material-icons'>brightness_1</i>
           </div>
         </td>
-        <td style={{width: '113px', textAlign: 'center'}}>time</td>
-        <td>EventType + Location inputs</td>
+        <td style={{width: '113px', textAlign: 'center'}}>
+          {startTime}
+        </td>
+        <td>
+          EventType + Location inputs
+        </td>
       </tr>
     )
   }
