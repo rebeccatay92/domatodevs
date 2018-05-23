@@ -17,7 +17,7 @@ class LeftBarDateBox extends Component {
       <div>
         <table style={{width: '100%'}}>
           <thead>
-            <tr style={{width: '100%', height: '40px'}}>
+            <tr style={{width: '100%', height: '40px', border: '1px solid red'}}>
               {/* APPROX 35PX SPACER FOR ICON */}
               <th style={{width: '35px'}} />
               <th colSpan={2}>

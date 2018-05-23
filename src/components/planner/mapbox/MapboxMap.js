@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
-import Geocoder from './Geocoder'
+// import Geocoder from './Geocoder'
 
 import { connect } from 'react-redux'
 
@@ -163,7 +163,7 @@ class MapboxMap extends Component {
           }
         </div>
 
-        <Geocoder />
+        {/* <Geocoder /> */}
       </Map>
     )
   }

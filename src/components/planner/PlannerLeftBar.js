@@ -19,14 +19,12 @@ class PlannerLeftBar extends Component {
     if (!this.props.events) return (<h1>Loading</h1>)
     // 8px * 47 = 376px
     return (
-      <div style={{width: '376px', height: 'calc(100vh - 52px - 51px)', borderRight: '1px solid black', padding: '12px 24px', overflow: 'scroll'}}>
+      <div style={{width: '376px', height: 'calc(100vh - 52px - 51px)', borderRight: '1px solid black', overflow: 'scroll'}}>
         {this.props.daysArr.map((day, i) => {
           let date = null
           if (this.props.datesArr) {
             date = this.props.datesArr[i]
           }
-          // LEFT BAR DATE BOX IS SIMILAR TO PLANNER DATEBOX. BUT REDUCED COLUMNS
-          // NEED TO MAKE DRAGGABLE, EDITABLE
           return (
             <LeftBarDateBox days={this.props.days} daysArr={this.props.daysArr} itineraryId={this.props.itineraryId} day={day} date={date} datesArr={this.props.datesArr} events={this.props.events.events.filter(
               event => {

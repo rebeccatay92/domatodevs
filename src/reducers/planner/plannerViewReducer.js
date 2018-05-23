@@ -1,7 +1,7 @@
 export const plannerViewReducer = (state = {
-  tablePlanner: true,
-  leftBar: false,
-  mapbox: false,
+  tablePlanner: false,
+  leftBar: true,
+  mapbox: true,
   rightBar: ''
 }, action) => {
   switch (action.type) {
@@ -10,14 +10,14 @@ export const plannerViewReducer = (state = {
         tablePlanner: false,
         leftBar: true,
         mapbox: true,
-        ...state.rightBar
+        rightBar: ''
       }
     case 'SWITCH_TO_TABLE_VIEW':
       return {
         tablePlanner: true,
         leftBar: false,
         mapbox: false,
-        ...state.rightBar
+        rightBar: ''
       }
     case 'SET_RIGHT_BAR_FOCUSED_TAB':
       return {
