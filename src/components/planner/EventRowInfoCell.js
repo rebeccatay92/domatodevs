@@ -11,7 +11,9 @@ import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 const eventPropertyNames = {
   Event: 'eventType',
   Price: 'cost',
-  Notes: 'notes'
+  Notes: 'notes',
+  'Booking Service': 'bookingService',
+  'Confirmation Number': 'bookingConfirmation'
 }
 
 const getEventProp = (columnInput, eventInput) => {

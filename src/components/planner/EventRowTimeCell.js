@@ -50,9 +50,12 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     const endTime = events.filter(event => event.id === id)[0].endTime
     return (
-      <div className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center', display: 'block'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e, 'startTime')} />
-        <input type='time' value={endTime} style={{outline: 'none', textAlign: 'center', display: 'block'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e, 'endTime')} />
+      <div className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e, 'startTime')} />
+        {endTime && <React.Fragment>
+          <div style={{height: '10px', borderRight: '1px solid rgba(60, 58, 68, 1)'}} />
+          <input type='time' value={endTime} style={{outline: 'none', textAlign: 'center'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e, 'endTime')} />
+        </React.Fragment>}
       </div>
     )
   }

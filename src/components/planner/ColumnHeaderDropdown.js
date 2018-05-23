@@ -11,7 +11,7 @@ const originalColumnsState = ['Event', 'Location', 'Price', 'Notes']
 
 class ColumnHeaderDropdown extends Component {
   handleClickOutside (e) {
-    if (e.target.className === `material-icons planner-column-header-arrow ${this.props.name}`) return
+    if (e.target.className === `planner-column-header planner-column-header ${this.props.name}` || e.target.className === `material-icons planner-column-header ${this.props.name}`) return
     this.props.disableDropdown()
   }
 

@@ -160,7 +160,7 @@ class DateBox extends Component {
           <tbody>
             {this.props.firstDay && <tr>
               <td style={{width: '0px'}}></td>
-              <td style={{textAlign: 'center', width: '114px'}}>Time</td>
+              <td style={{textAlign: 'center', width: '114px'}}>Time<i className='material-icons' style={{verticalAlign: 'top', fontSize: '20px'}}>unfold_more</i></td>
               {columnState.map((column, i) => {
                 const columnHeader = <ColumnHeader key={i} name={column.name} colSpan={column.width} startingColumn={startingColumn} endingColumn={startingColumn + column.width - 1} />
                 startingColumn += column.width

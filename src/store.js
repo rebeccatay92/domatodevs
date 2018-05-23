@@ -28,6 +28,7 @@ import { activeEventReducer } from './reducers/planner/activeEventReducer'
 import { activeFieldReducer } from './reducers/planner/activeFieldReducer'
 import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
 import { timeCellFocusReducer } from './reducers/planner/timeCellFocusReducer'
+import { sortReducer } from './reducers/planner/sortReducer'
 
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
@@ -77,6 +78,7 @@ const store = createStore(combineReducers({
   activeField: activeFieldReducer,
   plannerView: plannerViewReducer,
   timeCellFocus: timeCellFocusReducer,
+  sortOptions: sortReducer,
   apollo: client.reducer()
 }),
 {},
