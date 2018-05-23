@@ -66,7 +66,7 @@ class DateBox extends Component {
 
   handleCreateEvent () {
     const { itineraryId, day, events } = this.props
-    const newLoadSeq = events[events.length - 1].loadSequence + 1
+    const newLoadSeq = events.length > 0 ? events[events.length - 1].loadSequence + 1 : 1
     this.props.updateEvent(null, null, null, false)
     this.props.toggleSpinner(true)
     this.props.createEvent({
