@@ -30,10 +30,6 @@ class EventRowLocationCell extends Component {
       predictions: []
     }
 
-    // FOR NOW, PREVENT QUERYING ON EACH CLICK/FOCUS/UNFOCUS BY COMPARING OLD PLAIN TEXT WITH INCOMING PLAIN TEXT.
-    // THIS MEANS THE FIRST CLICK/TAB TO FOCUS WILL NOT CAUSE A DROPDOWN
-
-    // ASYNC RACE. SELECT LOCATION SETSTATE TRIGGERS ONCHANGE, WHICH ALSO SETSTATE. HENCE, IN SELECT LOCATION -> DO NOT SET EDITOR STATE.
     this.onChange = (editorState) => {
       // console.log('EDITORSTATE ONCHANGE TRIGGERED')
       let oldContentState = this.state.editorState.getCurrentContent()
@@ -42,16 +38,10 @@ class EventRowLocationCell extends Component {
       let oldText = oldContentState.getPlainText()
       let newText = newContentState.getPlainText()
 
-      if (newText !== oldText) {
-        console.log('oldText', oldText, 'newText', newText)
-      }
-
       this.setState({
         editorState: editorState
       }, () => {
         if (newText !== oldText) {
-          // console.log('ONCHANGE SETSTATE FINISHED. DISPATCH REDUX IF TEXT CHANGED')
-          // ONLY UPDATE REDUX IF THERE ARE DIFFERENCES IN CONTENT STATE
           // id, property, value, fromSidebar
           this.props.updateEvent(this.props.id, 'locationName', newContentState, false)
         }
@@ -95,10 +85,6 @@ class EventRowLocationCell extends Component {
 
     let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
     let googlePlacesEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&input=${queryStr}`
-
-    // var corsHeader = new Headers({
-    //   'Allow-Access-Control-Origin': '*'
-    // })
 
     fetch(googlePlacesEndpoint)
       .then(response => {
@@ -300,15 +286,15 @@ class EventRowLocationCell extends Component {
   }
 
   // is this still needed?
-  handleOnBlur (event) {
-    this.setState({focusClicked: false})
-  }
+  // handleOnBlur (event) {
+  //   this.setState({focusClicked: false})
+  // }
 
   render () {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={event => this.handleOnBlur(event)} handleReturn={(event, editorState) => this.handleReturn()} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
           // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'

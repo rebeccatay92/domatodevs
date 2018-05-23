@@ -15,10 +15,8 @@ class PlannerRightBar extends Component {
   constructor (props) {
     super(props)
   }
+
   toggleRightBar (tabName) {
-    // compare against plannerView.rightBar
-    // if same, hide it.
-    // else switch to that tab
     let rightBar = this.props.plannerView.rightBar
     if (tabName === rightBar) {
       this.props.setRightBarFocusedTab('')
@@ -31,14 +29,16 @@ class PlannerRightBar extends Component {
     let thisEvent = this.props.events.events.find(e => {
       return e.id === this.props.activeEventId
     })
-    if (!thisEvent) return null
-    let locationObj = thisEvent.locationObj
     let isVerified
-    if (locationObj) {
-      isVerified = locationObj.verified ? 'TRUE' : 'FALSE'
-    } else {
-      isVerified = 'NO LOCATION'
+    if (thisEvent) {
+      var locationObj = thisEvent.locationObj
+      if (locationObj) {
+        isVerified = locationObj.verified ? 'TRUE' : 'FALSE'
+      } else {
+        isVerified = 'NO LOCATION'
+      }
     }
+
     return (
       <div style={styles.sidebarContainer}>
         {/* TABS */}
@@ -105,7 +105,7 @@ class PlannerRightBar extends Component {
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Address</span>
-                  <span style={styles.addressText}>{locationObj.address}</span>
+                  <span style={styles.addressText}>{locationObj ? locationObj.address : ''}</span>
                   <span style={styles.labelText}>Verified</span>
                   <span>{isVerified}</span>
                 </label>
