@@ -24,6 +24,7 @@ import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 import { updateEvent, initializeEvents } from '../../actions/planner/eventsActions'
+import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 
 import moment from 'moment'
 
@@ -82,6 +83,7 @@ class DateBox extends Component {
     .then(response => {
       this.props.updateActiveEvent(response[1])
       this.props.changeActiveField('startTime')
+      this.props.setTimeCellFocus(true)
     })
   }
 
@@ -290,6 +292,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    setTimeCellFocus: (focus) => {
+      dispatch(setTimeCellFocus(focus))
     }
   }
 }
