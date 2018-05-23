@@ -23,7 +23,7 @@ export const eventsReducer = (state = {
         ...state.events.filter(event => event.id === action.id)[0], ...{[action.property]: action.value}
       }
       // console.log('modifiedEvent', modifiedEvent)
-      console.log('in redux locationName plain text', modifiedEvent.locationName.getPlainText())
+      // console.log('in redux locationName plain text', modifiedEvent.locationName.getPlainText())
       return {
         events: [...state.events.filter((event) => event.id !== action.id), ...[modifiedEvent]].sort((a, b) => a.startDay - b.startDay || a.loadSequence - b.loadSequence),
         refetch: false,

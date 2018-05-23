@@ -56,7 +56,8 @@ class EventRowInfoCell extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.events.updatedFromSidebar || nextProps.column !== this.props.column) {
+    if (nextProps.events.updatedFromSidebar || nextProps.column !== this.props.column || nextProps.events.refetch) {
+      console.log('triggered');
       const { column, id } = nextProps
       const { events } = nextProps.events
       const value = getEventProp(column, events.filter(event => event.id === id)[0])

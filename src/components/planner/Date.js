@@ -66,7 +66,7 @@ class DateBox extends Component {
 
   handleCreateEvent () {
     const { itineraryId, day, events } = this.props
-    const newLoadSeq = events.length + 1
+    const newLoadSeq = events.length > 0 ? events[events.length - 1].loadSequence + 1 : 1
     this.props.updateEvent(null, null, null, false)
     this.props.toggleSpinner(true)
     this.props.createEvent({
@@ -91,7 +91,7 @@ class DateBox extends Component {
     let dateStringUpcase = dateString.toUpperCase()
 
     // console.log(this.props.events);
-    const { connectDropTarget, day, firstIndex } = this.props
+    const { connectDropTarget, day, firstIndex, itineraryId } = this.props
     const timeline = (
       <div style={timelineStyle} />
     )
@@ -166,7 +166,7 @@ class DateBox extends Component {
               })}
             </tr>}
             {this.props.events.map((event, i) => {
-              return <EventRow key={i} event={event} index={i + firstIndex} day={day} id={event.id} />
+              return <EventRow key={i} event={event} index={i + firstIndex} day={day} id={event.id} itineraryId={itineraryId} />
             })}
             <tr>
               <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
@@ -192,62 +192,62 @@ class DateBox extends Component {
   //   console.log(div)
   // }
 
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.isOver === !this.props.isOver) {
-      if (!nextProps.isOver) this.props.hoverOutsidePlanner()
-    }
-
-    const checkIfNoBlankBoxes = array => {
-      let result = true
-      array.forEach(event => {
-        if (!event.id) result = false
-      })
-      return result
-    }
-
-    if (!checkIfNoBlankBoxes(this.props.events) && checkIfNoBlankBoxes(nextProps.events) && nextProps.isOver) {
-      // console.log(nextProps.activities)
-      // let loadSequenceArr = []
-      // console.log(this.elem);
-      const changeLoadSeq = () => {
-        const loadSequenceArr = nextProps.events.map((event, i) => {
-          const day = event.day
-          const diff = event.type === 'Food' || event.type === 'Activity' ? event[event.type].endDay - event[event.type].startDay : 0
-          // console.log(diff, activity[activity.type].location.name)
-          return {...{
-            id: event.id,
-            loadSequence: i + 1,
-            day: day,
-            start: event.start
-          },
-          ...diff && {diff: diff}
-          }
-        })
-        // console.log(loadSequenceArr)
-        this.props.changingLoadSequence({
-          variables: {
-            input: loadSequenceArr
-          },
-          refetchQueries: [{
-            query: queryItinerary,
-            variables: { id: this.props.itineraryId }
-          }]
-        })
-      }
-      const handleKeydown = (event) => {
-        if (event.keyCode === 27) {
-          // console.log(this.props.data);
-          this.props.data.refetch()
-            .then(response => this.props.initializePlanner(response.data.findItinerary.events))
-        }
-        // if (event.keyCode === 13) changeLoadSeq()
-      }
-      if (nextProps.activities.length !== 1) document.addEventListener('keydown', event => handleKeydown(event))
-      if (nextProps.activities.length === 1) {
-        changeLoadSeq()
-      }
-    }
-  }
+  // componentWillReceiveProps (nextProps) {
+  //   if (nextProps.isOver === !this.props.isOver) {
+  //     if (!nextProps.isOver) this.props.hoverOutsidePlanner()
+  //   }
+  //
+  //   const checkIfNoBlankBoxes = array => {
+  //     let result = true
+  //     array.forEach(event => {
+  //       if (!event.id) result = false
+  //     })
+  //     return result
+  //   }
+  //
+  //   if (!checkIfNoBlankBoxes(this.props.events) && checkIfNoBlankBoxes(nextProps.events) && nextProps.isOver) {
+  //     // console.log(nextProps.activities)
+  //     // let loadSequenceArr = []
+  //     // console.log(this.elem);
+  //     const changeLoadSeq = () => {
+  //       const loadSequenceArr = nextProps.events.map((event, i) => {
+  //         const day = event.day
+  //         const diff = event.type === 'Food' || event.type === 'Activity' ? event[event.type].endDay - event[event.type].startDay : 0
+  //         // console.log(diff, activity[activity.type].location.name)
+  //         return {...{
+  //           id: event.id,
+  //           loadSequence: i + 1,
+  //           day: day,
+  //           start: event.start
+  //         },
+  //         ...diff && {diff: diff}
+  //         }
+  //       })
+  //       // console.log(loadSequenceArr)
+  //       this.props.changingLoadSequence({
+  //         variables: {
+  //           input: loadSequenceArr
+  //         },
+  //         refetchQueries: [{
+  //           query: queryItinerary,
+  //           variables: { id: this.props.itineraryId }
+  //         }]
+  //       })
+  //     }
+  //     const handleKeydown = (event) => {
+  //       if (event.keyCode === 27) {
+  //         // console.log(this.props.data);
+  //         this.props.data.refetch()
+  //           .then(response => this.props.initializePlanner(response.data.findItinerary.events))
+  //       }
+  //       // if (event.keyCode === 13) changeLoadSeq()
+  //     }
+  //     if (nextProps.activities.length !== 1) document.addEventListener('keydown', event => handleKeydown(event))
+  //     if (nextProps.activities.length === 1) {
+  //       changeLoadSeq()
+  //     }
+  //   }
+  // }
 }
 
 const mapDispatchToProps = (dispatch) => {

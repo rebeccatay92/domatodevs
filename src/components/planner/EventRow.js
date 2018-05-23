@@ -5,11 +5,39 @@ import { DropTarget, DragSource } from 'react-dnd'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 
+import { queryItinerary } from '../../apollo/itinerary'
+import { deleteEvent } from '../../apollo/event'
+
 import EventRowInfoCell from './EventRowInfoCell'
 import EventRowTimeCell from './EventRowTimeCell'
 import EventRowLocationCell from './EventRowLocationCell'
 
+import { toggleSpinner } from '../../actions/spinnerActions'
+
 class EventRow extends Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      hover: false
+    }
+  }
+
+  handleDelete () {
+    this.props.toggleSpinner(true)
+    this.props.deleteEvent({
+      variables: {
+        id: this.props.id
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: {
+          id: this.props.itineraryId
+        }
+      }]
+    })
+  }
+
   render () {
     const { columns, index, id } = this.props
     let columnState = []
@@ -26,7 +54,7 @@ class EventRow extends Component {
 
     // const startTime = new Date(event.startTime * 1000).toGMTString().substring(17, 22)
     return (
-      <tr>
+      <tr style={{position: 'relative'}} onMouseOver={() => this.setState({hover: true})} onMouseOut={() => this.setState({hover: false})}>
         <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
         <td style={{width: '114px', textAlign: 'center'}}>
           <EventRowTimeCell index={index} id={id} />
@@ -41,6 +69,9 @@ class EventRow extends Component {
             }
           </td>
         })}
+        <td style={{position: 'absolute'}}>
+          <i className='material-icons delete-event-button' style={{fontSize: '16px', opacity: '0.2', cursor: 'pointer', position: 'relative', top: '16px'}} onClick={() => this.handleDelete()}>close</i>
+        </td>
       </tr>
     )
   }
@@ -52,4 +83,14 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(EventRow)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleSpinner: (spinner) => {
+      dispatch(toggleSpinner(spinner))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(deleteEvent, { name: 'deleteEvent' })
+)(EventRow))
