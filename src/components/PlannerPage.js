@@ -58,7 +58,7 @@ class PlannerPage extends Component {
         }
       })
       this.props.initializeEvents(allEvents)
-      setTimeout(() => this.props.toggleSpinner(false), 750)
+      setTimeout(() => this.props.toggleSpinner(false), 250)
     }
   }
 
