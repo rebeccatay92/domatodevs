@@ -3,6 +3,9 @@ import { ClipLoader } from 'react-spinners'
 import onClickOutside from 'react-onclickoutside'
 import Radium from 'radium'
 
+const inTableStyle = {position: 'absolute', top: '83px', left: '-1px', background: 'white', width: '100%', border: '1px solid #ed685a', zIndex: '2', minHeight: '35px', boxSizing: 'content-box'}
+const inRightBarStyle = {position: 'absolute', top: '20px', left: '0', background: 'white', width: '100%', border: '1px solid black', zIndex: '2', minHeight: '35px'}
+
 class LocationCellDropdown extends Component {
   constructor (props) {
     super(props)
@@ -15,7 +18,7 @@ class LocationCellDropdown extends Component {
 
   render () {
     return (
-      <div style={{position: 'absolute', top: '83px', left: '-1px', background: 'white', width: '100%', border: '1px solid #ed685a', zIndex: '2', minHeight: '35px', boxSizing: 'content-box'}}>
+      <div style={this.props.openedIn === 'table' ? inTableStyle : inRightBarStyle}>
         <ClipLoader color={'#000000'} size={28} loading={this.props.showSpinner} />
         {!this.props.showSpinner && this.props.predictions.length === 0 &&
           <h6 style={{background: 'white', margin: 0, cursor: 'pointer', minHeight: '35px', fontFamily: 'Roboto, san-serif', fontWeight: '300', fontSize: '16px', lineHeight: '24px', paddingLeft: '8px'}}>No results found</h6>

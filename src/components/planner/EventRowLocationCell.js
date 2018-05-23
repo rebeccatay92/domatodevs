@@ -122,7 +122,6 @@ class EventRowLocationCell extends Component {
         // console.log('name', name, 'address', address, 'latlng', latitude, longitude)
 
         let nameContentState = ContentState.createFromText(name)
-        let addressContentState = ContentState.createFromText(address)
         let locationObj = {
           verified: true,
           name: name,
@@ -296,7 +295,7 @@ class EventRowLocationCell extends Component {
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
         <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
-          <LocationCellDropdown showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
+          <LocationCellDropdown openedIn={'table'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
           // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'
         }
       </div>

@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 // import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState, ContentState } from 'draft-js'
 
+import LocationCellDropdown from './LocationCellDropdown'
+
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 
@@ -65,6 +67,14 @@ class PlannerSideBarInfoField extends Component {
     }
   }
 
+  handleClickOutside () {
+    this.setState({
+      showDropdown: false,
+      showSpinner: false,
+      predictions: []
+    })
+  }
+
   queryGooglePlaces (queryStr) {
     if (queryStr.length <= 2) return // dont query for useless fragments. 'eg Si'
     console.log('query google with', queryStr)
@@ -81,6 +91,50 @@ class PlannerSideBarInfoField extends Component {
         this.setState({
           predictions: json.predictions,
           showSpinner: false
+        })
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
+  }
+
+  selectLocation (prediction) {
+    // fetch place details (name, address, latlng).
+    let placeId = prediction.place_id
+    let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
+    let placeDetailsEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&&placeid=${placeId}`
+
+    fetch(placeDetailsEndpoint)
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        // console.log('result', json.result)
+        let result = json.result
+        let latitude = result.geometry.location.lat
+        let longitude = result.geometry.location.lng
+        let address = result.formatted_address
+        let name = result.name
+        // console.log('name', name, 'address', address, 'latlng', latitude, longitude)
+
+        let nameContentState = ContentState.createFromText(name)
+        let locationObj = {
+          verified: true,
+          name: name,
+          address: address,
+          latitude: latitude,
+          longitude: longitude
+        }
+        this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+
+        // console.log('SELECTLOCATION SETSTATE')
+        this.setState({
+          queryStr: name,
+          showDropdown: false,
+          showSpinner: false,
+          predictions: []
+          // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
         })
       })
       .catch(err => {
@@ -109,7 +163,17 @@ class PlannerSideBarInfoField extends Component {
         this.setState({editorState: EditorState.createWithContent(locationContentState)})
       }
     }
-    // check cell focus
+    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
+    let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
+    let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
+    if (isPreviouslyActiveCell && isNotNextActiveCell) {
+      console.log('ACTIVE LOCATION CELL LOST FOCUS')
+      // click somewhere else, tab
+      let thisEvent = nextProps.events.events.find(e => {
+        return e.id === nextProps.id
+      })
+      console.log('locationObj to send backend', thisEvent.locationObj)
+    }
   }
 
   // for editor only. prevents new lines
@@ -117,10 +181,75 @@ class PlannerSideBarInfoField extends Component {
     return 'handled'
   }
 
+  handleKeyDown (e) {
+    // console.log(e.key)
+    // esc will close dropdown, undo changes
+    if (e.key === 'Escape') {
+      console.log('esc')
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
+      })
+      let locationObj = thisEvent.locationObj
+      let locationName = locationObj ? locationObj.name : ''
+      let nameContentState = ContentState.createFromText(locationName)
+      this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+      this.handleClickOutside()
+    }
+    // enter/tab confirms changes, constructs location obj
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      console.log('enter/tab')
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
+      })
+      let locationObj = thisEvent.locationObj
+      // console.log('thisEvent', thisEvent)
+      let locationNameInEditor = thisEvent.locationName.getPlainText()
+      // what about many spaces?
+      // if no location, hv str -> create location with name only
+      // if hv location, hv str -> change to unverified. check str is equal. verified, unverified
+      // if hv location, no str -> clear the location
+      // if no location, no str -> do nothing
+      if (!locationObj && !locationNameInEditor) {
+        // do nothing
+      } else if (!locationObj && locationNameInEditor) {
+        let locationObj = {
+          verified: false,
+          name: locationNameInEditor,
+          address: null,
+          latitude: null,
+          longitude: null
+        }
+        // this.props.updateEvent(this.props.id, 'locationAddress', null, false)
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+      } else if (locationObj && !locationNameInEditor) {
+        this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), false)
+        // this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), false)
+        this.props.updateEvent(this.props.id, 'locationObj', null, false)
+      } else if (locationObj && locationNameInEditor) {
+        // check if name matches
+        if (locationObj.name !== locationNameInEditor) {
+          let newLocationObj = {
+            verified: false,
+            name: locationNameInEditor,
+            address: locationObj.address,
+            latitude: locationObj.latitude,
+            longitude: locationObj.longitude
+          }
+          this.props.updateEvent(this.props.id, 'locationObj', newLocationObj, false)
+        }
+      }
+
+      this.handleClickOutside()
+    }
+  }
+
   render () {
     return (
-      <div style={{cursor: 'text'}}>
+      <div className={`ignoreRightBarLocation`} style={{cursor: 'text', position: 'relative'}} onKeyDown={e => this.handleKeyDown(e)}>
         <Editor editorState={this.state.editorState} onChange={this.onChange} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} />
+        {this.state.showDropdown &&
+          <LocationCellDropdown openedIn={'rightbar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
+        }
       </div>
     )
   }
