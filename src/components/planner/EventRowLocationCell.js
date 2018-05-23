@@ -145,7 +145,7 @@ class EventRowLocationCell extends Component {
           longitude: longitude
         }
         this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-        this.props.updateEvent(this.props.id, 'locationAddress', addressContentState, false)
+        // this.props.updateEvent(this.props.id, 'locationAddress', addressContentState, false)
         this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
 
         // console.log('SELECTLOCATION SETSTATE')
@@ -275,11 +275,11 @@ class EventRowLocationCell extends Component {
           latitude: null,
           longitude: null
         }
-        this.props.updateEvent(this.props.id, 'locationAddress', null, false)
+        // this.props.updateEvent(this.props.id, 'locationAddress', null, false)
         this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
       } else if (locationObj && !locationNameInEditor) {
         this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), false)
-        this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), false)
+        // this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), false)
         this.props.updateEvent(this.props.id, 'locationObj', null, false)
       } else if (locationObj && locationNameInEditor) {
         // check if name matches

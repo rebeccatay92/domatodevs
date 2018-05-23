@@ -105,7 +105,7 @@ class PlannerRightBar extends Component {
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Address</span>
-                  <span style={styles.addressText}>Lorong 12 Geylang Singapore 123456</span>
+                  <span style={styles.addressText}>{locationObj.address}</span>
                   <span style={styles.labelText}>Verified</span>
                   <span>{isVerified}</span>
                 </label>

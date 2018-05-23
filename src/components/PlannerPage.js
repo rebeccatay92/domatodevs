@@ -46,7 +46,7 @@ class PlannerPage extends Component {
             // content state for place name
             locationName: event.location ? ContentState.createFromText(event.location.name) : ContentState.createFromText(''),
             // content state for address
-            locationAddress: event.location ? ContentState.createFromText(event.location.address) : ContentState.createFromText(''),
+            // locationAddress: event.location ? ContentState.createFromText(event.location.address) : ContentState.createFromText(''),
             // regular json object holding verified, name, address, latlng.
             locationObj: event.location,
             currency: event.currency ? ContentState.createFromText(event.currency) : ContentState.createFromText(''),
