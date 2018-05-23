@@ -19,7 +19,7 @@ class PlannerLeftBar extends Component {
     if (!this.props.events) return (<h1>Loading</h1>)
     // 8px * 47 = 376px
     return (
-      <div style={{width: '376px', height: 'calc(100vh - 52px - 51px)', borderRight: '1px solid black', overflow: 'scroll'}}>
+      <div style={{width: '376px', height: 'calc(100vh - 52px - 51px)', borderRight: '1px solid rgba(60, 58, 68, 0.7)', overflow: 'scroll'}}>
         {this.props.daysArr.map((day, i) => {
           let date = null
           if (this.props.datesArr) {

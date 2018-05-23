@@ -13,19 +13,23 @@ class LeftBarEventRow extends Component {
     let locationObj = this.props.event.locationObj
     // console.log('startTime', startTime, 'type', eventType, 'location', locationObj)
     return (
-      <tr style={{width: '100%', height: '83px', ':hover': {background: 'rgb(245, 245, 245)'}}}>
-        <td>
-          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <i className='material-icons'>brightness_1</i>
-          </div>
-        </td>
-        <td style={{width: '113px', textAlign: 'center'}}>
-          {startTime || '---'}
-        </td>
-        <td>
-          {eventType} + {locationObj ? locationObj.name : '---'}
-        </td>
-      </tr>
+      <div style={{display: 'flex', width: '100%', height: '83px', ':hover': {background: 'rgb(245, 245, 245)'}}}>
+        <div style={{width: '50px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          {locationObj && locationObj.address &&
+            <i className='material-icons'>place</i>
+          }
+          {(!locationObj || !locationObj.address) &&
+            <i className='material-icons'>not_listed_location</i>
+          }
+        </div>
+        <div style={{width: '113px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <input type='time' value={startTime} style={{fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '16px', color: 'rgba(60, 58, 68, 1)', outline: 'none', background: 'inherit'}} disabled />
+        </div>
+        <div style={{width: '226px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+          <span>{eventType}</span>
+          <span>{locationObj ? locationObj.name : '---'}</span>
+        </div>
+      </div>
     )
   }
 }

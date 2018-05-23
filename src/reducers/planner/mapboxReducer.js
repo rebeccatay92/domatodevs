@@ -1,7 +1,22 @@
 export const mapboxReducer = (state = {
-  daysToShow: []
+  daysToShow: [1]
 }, action) => {
   switch (action.type) {
+    case 'CLICK_DAY_CHECKBOX':
+      // add or remove day from daysToShow []
+      if (state.daysToShow.includes(action.day)) {
+        return {
+          ...state,
+          daysToShow: state.daysToShow.filter(e => {
+            return e !== action.day
+          })
+        }
+      } else {
+        return {
+          ...state,
+          daysToShow: [...state.daysToShow, action.day]
+        }
+      }
     default:
       return state
   }

@@ -27,6 +27,7 @@ import { eventsReducer } from './reducers/planner/eventsReducer'
 import { activeEventReducer } from './reducers/planner/activeEventReducer'
 import { activeFieldReducer } from './reducers/planner/activeFieldReducer'
 import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
+import { mapboxReducer } from './reducers/planner/mapboxReducer'
 
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
@@ -75,6 +76,7 @@ const store = createStore(combineReducers({
   activeEventId: activeEventReducer,
   activeField: activeFieldReducer,
   plannerView: plannerViewReducer,
+  mapbox: mapboxReducer,
   apollo: client.reducer()
 }),
 {},

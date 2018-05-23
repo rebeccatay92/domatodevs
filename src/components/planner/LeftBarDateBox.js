@@ -1,42 +1,65 @@
 import React, { Component } from 'react'
-
 import LeftBarEventRow from './LeftBarEventRow'
+
+import { connect } from 'react-redux'
+import { clickDayCheckbox } from '../../actions/planner/mapboxActions'
 
 import moment from 'moment'
 
 class LeftBarDateBox extends Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      hoveringOverDate: false
+    }
   }
   render () {
-    let dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
-    let dateStringUpcase = dateString.toUpperCase()
+    if (this.props.date) {
+      var dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
+      var dateStringUpcase = dateString.toUpperCase()
+    }
 
+    let daysToShow = this.props.mapbox.daysToShow
+    let isDayChecked = daysToShow.includes(this.props.day)
     return (
       <div>
-        <table style={{width: '100%'}}>
-          <thead>
-            <tr style={{width: '100%', height: '40px', border: '1px solid red'}}>
-              {/* APPROX 35PX SPACER FOR ICON */}
-              <th style={{width: '35px'}} />
-              <th colSpan={2}>
-                <div style={{borderBottom: '1px solid rgba(60, 58, 68, 0.3)'}}>
-                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, color: 'rgba(60, 58, 68, 1)', fontSize: '24px', margin: '0 8px'}}>Day {this.props.day}</span>
-                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, color: 'rgba(60, 58, 68, 1)', fontSize: '16px'}}>{dateStringUpcase}</span>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.events.map((event, i) => {
-              return <LeftBarEventRow key={i} event={event} />
-            })}
-          </tbody>
-        </table>
+        <div style={{display: 'flex', alignItems: 'center', alignContent: 'center', height: '42px', paddingLeft: '50px', cursor: 'pointer'}} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})} onClick={() => this.props.clickDayCheckbox(this.props.day)}>
+          <h6 style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, color: 'rgba(60, 58, 68, 1)', fontSize: '24px', margin: '0 10px 0 0', padding: 0}}>Day {this.props.day}</h6>
+          {this.props.date &&
+            <h6 style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, color: 'rgba(60, 58, 68, 1)', fontSize: '16px', margin: '5px 0 0 0', padding: 0}}>{dateStringUpcase}</h6>
+          }
+          {this.state.hoveringOverDate && isDayChecked &&
+            <span>Collapse</span>
+          }
+          {this.state.hoveringOverDate && !isDayChecked &&
+            <span>Expand</span>
+          }
+        </div>
+        {isDayChecked && this.props.events.map((event, i) => {
+          return (
+            <div key={i}>
+              <hr style={{margin: 0}} />
+              <LeftBarEventRow event={event} />
+            </div>
+          )
+        })}
       </div>
     )
   }
 }
 
-export default LeftBarDateBox
+const mapStateToProps = (state) => {
+  return {
+    mapbox: state.mapbox
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    clickDayCheckbox: (day) => {
+      dispatch(clickDayCheckbox(day))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LeftBarDateBox)

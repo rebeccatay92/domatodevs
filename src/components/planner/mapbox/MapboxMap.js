@@ -3,6 +3,7 @@ import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
 // import Geocoder from './Geocoder'
 
 import { connect } from 'react-redux'
+import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
 
 import _ from 'lodash'
 
@@ -163,6 +164,17 @@ class MapboxMap extends Component {
           }
         </div>
 
+        <div style={{position: 'absolute', bottom: '20px', left: '15px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)'}}>
+          {this.props.daysArr.map((day, i) => {
+            let isChecked = this.props.mapbox.daysToShow.includes(day)
+            return (
+              <label key={`day${day}`} style={{display: 'block'}}>
+                <input type='checkbox' checked={isChecked} onChange={() => this.props.clickDayCheckbox(day)} />
+                <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px'}}>Day {day}</span>
+              </label>
+            )
+          })}
+        </div>
         {/* <Geocoder /> */}
       </Map>
     )
@@ -173,13 +185,16 @@ const mapStateToProps = (state) => {
   return {
     events: state.events,
     activeEventId: state.activeEventId,
-    plannerView: state.plannerView
+    plannerView: state.plannerView,
+    mapbox: state.mapbox
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    //
+    clickDayCheckbox: (day) => {
+      dispatch(clickDayCheckbox(day))
+    }
   }
 }
 
