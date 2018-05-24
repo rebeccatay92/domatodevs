@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import Radium from 'radium'
 
@@ -13,8 +14,10 @@ class LeftBarEventRow extends Component {
   toggleActiveEvent (id) {
     if (this.props.activeEventId === id) {
       this.props.updateActiveEvent('')
+      this.props.setRightBarFocusedTab('')
     } else {
       this.props.updateActiveEvent(id)
+      this.props.setRightBarFocusedTab('event')
     }
   }
 
@@ -57,6 +60,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }

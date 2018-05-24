@@ -11,9 +11,9 @@ class PlannerLeftBar extends Component {
     }
   }
 
-  shouldComponentUpdate (nextProps) {
-    return nextProps.events.refetch
-  }
+  // shouldComponentUpdate (nextProps) {
+  //   return nextProps.events.refetch
+  // }
 
   render () {
     if (!this.props.events) return (<h1>Loading</h1>)

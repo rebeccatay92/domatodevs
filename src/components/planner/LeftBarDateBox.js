@@ -4,6 +4,7 @@ import LeftBarEventRow from './LeftBarEventRow'
 import { connect } from 'react-redux'
 import { clickDayCheckbox } from '../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import moment from 'moment'
 
@@ -28,6 +29,7 @@ class LeftBarDateBox extends Component {
     // console.log('isDayChecked', isDayChecked, 'isActiveEventInThisDay', isActiveEventInThisDay
     if (isDayChecked && isActiveEventInThisDay) {
       this.props.updateActiveEvent('')
+      this.props.setRightBarFocusedTab('')
     }
     // dispatch clickDayCheckbox redux
     this.props.clickDayCheckbox(day)
@@ -82,6 +84,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }

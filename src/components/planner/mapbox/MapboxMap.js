@@ -4,7 +4,8 @@ import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
 
 import { connect } from 'react-redux'
 import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
-import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
+import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
 
 import _ from 'lodash'
 
@@ -152,6 +153,7 @@ class MapboxMap extends Component {
     // console.log('aboutToCollapse', aboutToCollapse, 'isActiveEventInThisDay', isActiveEventInThisDay)
     if (aboutToCollapse && isActiveEventInThisDay) {
       this.props.updateActiveEvent('')
+      this.props.setRightBarFocusedTab('')
     }
     this.props.clickDayCheckbox(day)
   }
@@ -168,7 +170,7 @@ class MapboxMap extends Component {
               {this.state.geocodingResults.map((result, i) => {
                 return <h6 key={i} style={{cursor: 'pointer', margin: 0, padding: '8px', minHeight: '35px'}}>
                   {/* MAPBOX GEOCODER */}
-                  {/* {result.place_name} latlng={result.center[0]}, {result.center[1]} */}
+                  address={result.place_name} latlng={result.center[0]}, {result.center[1]}
                   {/* HERE AUTOSUGGEST */}
                   {/* Title: {result.title} Vicinity: {result.vicinity} */}
                   {/* HERE PLACES */}
@@ -212,6 +214,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }
