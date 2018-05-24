@@ -39,7 +39,7 @@ class EventRow extends Component {
   }
 
   render () {
-    const { columns, index, id } = this.props
+    const { columns, id } = this.props
     let columnState = []
     let activeColumn = ''
     columns.forEach((column, i) => {
@@ -57,7 +57,7 @@ class EventRow extends Component {
       <tr style={{position: 'relative'}} onMouseOver={() => this.setState({hover: true})} onMouseOut={() => this.setState({hover: false})}>
         <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
         <td style={{width: '114px', textAlign: 'center'}}>
-          <EventRowTimeCell index={index} id={id} />
+          <EventRowTimeCell id={id} />
         </td>
         {columnState.map((column, i) => {
           return <td key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
@@ -65,7 +65,7 @@ class EventRow extends Component {
               <EventRowLocationCell id={id} />
             }
             {column.name !== 'Location' &&
-              <EventRowInfoCell column={column.name} index={index} id={id} />
+              <EventRowInfoCell column={column.name} id={id} />
             }
           </td>
         })}

@@ -88,12 +88,13 @@ class DateBox extends Component {
   }
 
   render () {
+    console.log(this.props.events);
     // console.log('PROPS DATE UNIX', this.props.date)
     let dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
     let dateStringUpcase = dateString.toUpperCase()
 
     // console.log(this.props.events);
-    const { connectDropTarget, day, firstIndex, itineraryId } = this.props
+    const { connectDropTarget, day, itineraryId } = this.props
     const timeline = (
       <div style={timelineStyle} />
     )
@@ -168,7 +169,7 @@ class DateBox extends Component {
               })}
             </tr>}
             {this.props.events.map((event, i) => {
-              return <EventRow key={i} event={event} index={i + firstIndex} day={day} id={event.id} itineraryId={itineraryId} />
+              return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} />
             })}
             <tr>
               <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>

@@ -41,6 +41,8 @@ class EventRowInfoCell extends Component {
     }
 
     this.onChange = (editorState) => {
+      const { column, id } = this.props
+      const property = eventPropertyNames[column]
       this.setState({editorState: editorState})
       const contentState = editorState.getCurrentContent()
       this.props.updateEvent(id, property, contentState, false)
@@ -59,7 +61,6 @@ class EventRowInfoCell extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.events.updatedFromSidebar || nextProps.column !== this.props.column || nextProps.events.refetch) {
-      console.log('triggered');
       const { column, id } = nextProps
       const { events } = nextProps.events
       const value = getEventProp(column, events.filter(event => event.id === id)[0])
@@ -67,22 +68,22 @@ class EventRowInfoCell extends Component {
     }
   }
 
-  shouldComponentUpdate (nextProps) {
-    const { column, id } = this.props
-    const { refetch, updatedId, updatedProperty } = this.props.events
-    const property = eventPropertyNames[column]
-    if (column !== nextProps.column) {
-      return true
-    } else if (refetch) {
-      return true
-    } else if (updatedId === id && updatedProperty === property) {
-      return true
-    } else if ((nextProps.activeEventId === id && nextProps.activeField === property) || (this.props.activeEventId === id && this.props.activeField === property)) {
-      return true
-    } else {
-      return false
-    }
-  }
+  // shouldComponentUpdate (nextProps) {
+  //   const { column, id } = nextProps
+  //   const { refetch, updatedId, updatedProperty } = nextProps.events
+  //   const property = eventPropertyNames[column]
+  //   if (column !== nextProps.column) {
+  //     return true
+  //   } else if (refetch) {
+  //     return true
+  //   } else if (updatedId === id && updatedProperty === property) {
+  //     return true
+  //   } else if ((nextProps.activeEventId === id && nextProps.activeField === property) || (this.props.activeEventId === id && this.props.activeField === property)) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
   handleOnFocus () {
     const property = eventPropertyNames[this.props.column]

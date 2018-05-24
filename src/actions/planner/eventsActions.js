@@ -14,3 +14,11 @@ export const updateEvent = (id, property, value, fromSidebar) => {
     fromSidebar
   }
 }
+
+export const sortEvents = (column, sortType) => {
+  return {
+    type: 'SORT_EVENTS',
+    column,
+    sortType
+  }
+}

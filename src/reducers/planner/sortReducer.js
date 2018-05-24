@@ -1,7 +1,7 @@
-export const sortReducer = (state = {sortBy: '', type: ''}, action) => {
+export const sortReducer = (state = {column: '', type: 'unsorted'}, action) => {
   switch (action.type) {
     case 'CHANGE_COLUMN_SORT':
-      return {sortBy: action.column, type: action.type}
+      return {column: action.column, type: action.sortType}
     default:
       return state
   }

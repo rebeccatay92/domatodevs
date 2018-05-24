@@ -16,8 +16,8 @@ class EventRowTimeCell extends Component {
   }
 
   shouldComponentUpdate (nextProps) {
-    const { id } = this.props
-    const { refetch } = this.props.events
+    const { id } = nextProps
+    const { refetch } = nextProps.events
     if ((nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) || (this.props.activeEventId === id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime'))) {
       return true
     } else if (refetch) {
