@@ -4,6 +4,7 @@ import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
 
 import { connect } from 'react-redux'
 import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 
 import _ from 'lodash'
 
@@ -141,6 +142,20 @@ class MapboxMap extends Component {
       }
     }
   }
+
+  clickDayCheckbox (day) {
+    // check if active event is inside day to be collapsed
+    let aboutToCollapse = this.props.mapbox.daysToShow.includes(day)
+    let isActiveEventInThisDay = this.props.events.events.find(e => {
+      return (e.startDay === day && e.id === this.props.activeEventId)
+    })
+    // console.log('aboutToCollapse', aboutToCollapse, 'isActiveEventInThisDay', isActiveEventInThisDay)
+    if (aboutToCollapse && isActiveEventInThisDay) {
+      this.props.updateActiveEvent('')
+    }
+    this.props.clickDayCheckbox(day)
+  }
+
   render () {
     return (
       <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
@@ -169,7 +184,7 @@ class MapboxMap extends Component {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
               <label key={`day${day}`} style={{display: 'block'}}>
-                <input type='checkbox' checked={isChecked} onChange={() => this.props.clickDayCheckbox(day)} />
+                <input type='checkbox' checked={isChecked} onChange={() => this.clickDayCheckbox(day)} />
                 <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px'}}>Day {day}</span>
               </label>
             )
@@ -194,6 +209,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     clickDayCheckbox: (day) => {
       dispatch(clickDayCheckbox(day))
+    },
+    updateActiveEvent: (id) => {
+      dispatch(updateActiveEvent(id))
     }
   }
 }
