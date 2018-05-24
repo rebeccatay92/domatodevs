@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import ReactMapboxGL, { ZoomControl } from 'react-mapbox-gl'
+import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
 // import Geocoder from './Geocoder'
 
 import { connect } from 'react-redux'
@@ -159,6 +159,18 @@ class MapboxMap extends Component {
   }
 
   render () {
+    let daysToShow = this.props.mapbox.daysToShow
+    let eventsInVisibleDays = this.props.events.events.filter(e => {
+      return daysToShow.includes(e.startDay)
+    })
+    let eventsToShow = eventsInVisibleDays.filter(e => {
+      if (e.locationObj) {
+        return e.locationObj.latitude
+      } else {
+        return false
+      }
+    })
+
     return (
       <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
         <ZoomControl position='top-left' />
@@ -180,7 +192,9 @@ class MapboxMap extends Component {
             </div>
           }
         </div>
+        {/* <Geocoder /> */}
 
+        {/* DAYS FILTER */}
         <div style={{position: 'absolute', bottom: '20px', left: '15px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)'}}>
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
@@ -192,7 +206,24 @@ class MapboxMap extends Component {
             )
           })}
         </div>
-        {/* <Geocoder /> */}
+
+        {/* <Marker coordinates={[103.8320, 1.3040]} anchor='bottom' style={{border: '1px solid red', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer'}} onClick={() => console.log('clicked')}>
+          <i className='material-icons' style={{color: 'black', fontSize: '35px'}}>place</i>
+        </Marker> */}
+
+        {eventsToShow.map((event, i) => {
+          let isActiveEvent = this.props.activeEventId === event.id
+          return (
+            <Marker key={i} coordinates={[event.locationObj.longitude, event.locationObj.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer'}} onClick={() => console.log('clicked')}>
+              <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'black', fontSize: '35px'}}>place</i>
+            </Marker>
+          )
+        })}
+
+        {/* HOW TO STYLE THIS!!! */}
+        <Popup anchor='bottom' coordinates={[0, 0]} offset={{'bottom-left': [12, -38], 'bottom': [0, -38], 'bottom-right': [-12, -38]}} style={{background: 'red'}}>
+          <div style={{width: '200px', height: '200px', border: '1px solid red'}}>DETAILS</div>
+        </Popup>
       </Map>
     )
   }

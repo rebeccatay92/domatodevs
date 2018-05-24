@@ -9,7 +9,8 @@ class Geocoder extends Component {
     map.addControl(
       new MapboxGeocoder({
         accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-      })
+      }),
+      'top-left'
     )
   }
 
