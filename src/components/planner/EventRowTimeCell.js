@@ -6,7 +6,7 @@ import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
-import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
+// import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 
 class EventRowTimeCell extends Component {
 
@@ -28,7 +28,7 @@ class EventRowTimeCell extends Component {
   componentWillReceiveProps (nextProps) {
     const { timeCellFocus, id } = nextProps
     if (timeCellFocus && nextProps.activeEventId === id) {
-      this.props.setTimeCellFocus(false)
+      // this.props.setTimeCellFocus(false)
       this.editor.focus()
     }
   }
@@ -84,10 +84,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     setRightBarFocusedTab: (tabName) => {
       return dispatch(setRightBarFocusedTab(tabName))
-    },
-    setTimeCellFocus: (focus) => {
-      dispatch(setTimeCellFocus(focus))
     }
+    // setTimeCellFocus: (focus) => {
+    //   dispatch(setTimeCellFocus(focus))
+    // }
   }
 }
 

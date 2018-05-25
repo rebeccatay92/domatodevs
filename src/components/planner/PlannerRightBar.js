@@ -173,6 +173,7 @@ class PlannerRightBar extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    events: state.events,
     activeEventId: state.activeEventId,
     plannerView: state.plannerView
   }
