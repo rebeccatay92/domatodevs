@@ -24,13 +24,13 @@ import { updateActivePage, initializeActivePage } from '../../../actions/blogEdi
 import { changeActivePost } from '../../../actions/readActions'
 import { toggleSpinner } from '../../../actions/spinnerActions'
 
-import { constructGooglePlaceDataObj } from '../../../helpers/location'
+// import { constructGooglePlaceDataObj } from '../../../helpers/location'
 
 import { queryBlog, updateBlog } from '../../../apollo/blog'
 import { updatePost, updateMultiplePosts } from '../../../apollo/post'
 import { getAllHashtags } from '../../../apollo/hashtag'
 
-import LocationSearch from '../../location/LocationSearch'
+// import LocationSearch from '../../location/LocationSearch'
 
 // const inlineToolbarPlugin = createInlineToolbarPlugin({
 //   structure: [
@@ -222,11 +222,12 @@ class EditorTextContent extends Component {
   }
 
   selectLocation (location) {
-    var googlePlaceData = constructGooglePlaceDataObj(location)
-    googlePlaceData
-    .then(resolved => {
-      this.props.updateActivePage('googlePlaceData', resolved)
-    })
+    // NEED TO REPLACE WITH NEW LOCATION STRUCTURE
+    // var googlePlaceData = constructGooglePlaceDataObj(location)
+    // googlePlaceData
+    // .then(resolved => {
+    //   this.props.updateActivePage('googlePlaceData', resolved)
+    // })
   }
 
   handleHashtagAddition (tag) {
@@ -337,7 +338,7 @@ class EditorTextContent extends Component {
           <div style={{position: 'relative'}}>
             {/* <input type='text' style={{width: eventType ? '80%' : '100%', padding: '8px'}} />
             {eventType && <input type='text' style={{width: '20%', padding: '8px'}} />} */}
-            <LocationSearch blogEditor selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={googlePlaceData} eventType={eventType} />
+            {/* <LocationSearch blogEditor selectLocation={location => this.selectLocation(location)} placeholder={'Location'} currentLocation={googlePlaceData} eventType={eventType} /> */}
             {eventType && <React.Fragment>
               <Select
                 placeholder='Start Day'
