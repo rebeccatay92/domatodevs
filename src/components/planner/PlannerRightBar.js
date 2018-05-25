@@ -12,10 +12,6 @@ import PlannerSideBarLocationNameField from './PlannerSideBarLocationNameField'
 import { PlannerRightBarStyles as styles } from '../../Styles/PlannerRightBarStyles'
 
 class PlannerRightBar extends Component {
-  constructor (props) {
-    super(props)
-  }
-
   toggleRightBar (tabName) {
     let rightBar = this.props.plannerView.rightBar
     if (tabName === rightBar) {
@@ -177,7 +173,6 @@ class PlannerRightBar extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    events: state.events,
     activeEventId: state.activeEventId,
     plannerView: state.plannerView
   }

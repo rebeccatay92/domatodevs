@@ -13,9 +13,6 @@ class PlannerSideBarInfoField extends Component {
     const { property, id } = props
     const { events } = props.events
 
-    // console.log(events)
-    // console.log(id)
-
     const contentState = events.filter(event => event.id === id)[0][property]
 
     this.state = {
@@ -29,8 +26,21 @@ class PlannerSideBarInfoField extends Component {
     }
   }
 
+  // shouldComponentUpdate (nextProps) {
+  //   const { id, property } = this.props
+  //   const { refetch, updatedId, updatedProperty } = this.props.events
+  //   if (refetch) {
+  //     return true
+  //   } else if (updatedId === id && updatedProperty === property) {
+  //     return true
+  //   } else if ((nextProps.activeEventId === id && nextProps.activeField === property) || (this.props.activeEventId === id && this.props.activeField === property)) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
+
   componentWillReceiveProps (nextProps) {
-    // console.log(nextProps.events)
     if (!nextProps.events.updatedFromSidebar) {
       const { property, id } = nextProps
       const { events } = nextProps.events

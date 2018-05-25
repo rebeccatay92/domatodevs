@@ -24,6 +24,7 @@ import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 import { updateEvent, initializeEvents } from '../../actions/planner/eventsActions'
+import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 
 import moment from 'moment'
 
@@ -82,16 +83,18 @@ class DateBox extends Component {
     .then(response => {
       this.props.updateActiveEvent(response[1])
       this.props.changeActiveField('startTime')
+      this.props.setTimeCellFocus(true)
     })
   }
 
   render () {
+    console.log(this.props.events);
     // console.log('PROPS DATE UNIX', this.props.date)
     let dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
     let dateStringUpcase = dateString.toUpperCase()
 
     // console.log(this.props.events);
-    const { connectDropTarget, day, firstIndex, itineraryId } = this.props
+    const { connectDropTarget, day, itineraryId } = this.props
     const timeline = (
       <div style={timelineStyle} />
     )
@@ -158,7 +161,7 @@ class DateBox extends Component {
           <tbody>
             {this.props.firstDay && <tr>
               <td style={{width: '0px'}}></td>
-              <td style={{textAlign: 'center', width: '114px'}}>Time</td>
+              <td style={{textAlign: 'center', width: '114px'}}>Time<i className='material-icons' style={{verticalAlign: 'top', fontSize: '20px'}}>unfold_more</i></td>
               {columnState.map((column, i) => {
                 const columnHeader = <ColumnHeader key={i} name={column.name} colSpan={column.width} startingColumn={startingColumn} endingColumn={startingColumn + column.width - 1} />
                 startingColumn += column.width
@@ -166,7 +169,7 @@ class DateBox extends Component {
               })}
             </tr>}
             {this.props.events.map((event, i) => {
-              return <EventRow key={i} event={event} index={i + firstIndex} day={day} id={event.id} itineraryId={itineraryId} />
+              return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} />
             })}
             <tr>
               <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
@@ -290,6 +293,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    setTimeCellFocus: (focus) => {
+      dispatch(setTimeCellFocus(focus))
     }
   }
 }
