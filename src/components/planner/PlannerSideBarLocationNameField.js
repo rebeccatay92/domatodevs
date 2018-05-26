@@ -191,6 +191,41 @@ class PlannerSideBarInfoField extends Component {
         return e.id === nextProps.id
       })
       console.log('locationObj to send backend', thisEvent.locationObj)
+
+      // handle click outside
+      let locationNameStr = thisEvent.locationName.getPlainText()
+
+      if (!thisEvent.locationObj && !locationNameStr) {
+        // do nothing
+      } else if (!thisEvent.locationObj && locationNameStr) {
+        let locationObj = {
+          verified: false,
+          name: locationNameStr,
+          address: null,
+          latitude: null,
+          longitude: null
+        }
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+      } else if (thisEvent.locationObj && !locationNameStr) {
+        // clear location
+        this.props.updateEvent(this.props.id, 'locationObj', null, true)
+      } else if (thisEvent.locationObj && locationNameStr) {
+        // console.log('has obj, has current str')
+        if (thisEvent.locationObj.name !== locationNameStr) {
+          // modify location obj. always verified false
+          let locationObj = {
+            verified: false,
+            name: locationNameStr,
+            address: thisEvent.locationObj.address,
+            latitude: thisEvent.locationObj.latitude,
+            longitude: thisEvent.locationObj.longitude
+          }
+          this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+          // console.log('modified obj', locationObj)
+        }
+      }
+
+      // get the most updated locationObj and send backend.
     }
   }
 

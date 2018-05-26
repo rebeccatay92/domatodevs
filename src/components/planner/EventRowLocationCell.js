@@ -193,12 +193,42 @@ class EventRowLocationCell extends Component {
       let thisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
       })
-      console.log('check click outside locationName', thisEvent.locationName.getPlainText())
-      console.log('locationObj to send backend', thisEvent.locationObj)
+      // console.log('check click outside locationName', thisEvent.locationName.getPlainText())
+      // console.log('locationObj to send backend', thisEvent.locationObj)
 
       let locationNameStr = thisEvent.locationName.getPlainText()
-      // if (thisEvent.locationObj)
-      // if click outside after deleting string, vs click outside with a different string?
+
+      if (!thisEvent.locationObj && !locationNameStr) {
+        // do nothing
+      } else if (!thisEvent.locationObj && locationNameStr) {
+        let locationObj = {
+          verified: false,
+          name: locationNameStr,
+          address: null,
+          latitude: null,
+          longitude: null
+        }
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+      } else if (thisEvent.locationObj && !locationNameStr) {
+        // clear location
+        this.props.updateEvent(this.props.id, 'locationObj', null, false)
+      } else if (thisEvent.locationObj && locationNameStr) {
+        // console.log('has obj, has current str')
+        if (thisEvent.locationObj.name !== locationNameStr) {
+          // modify location obj. always verified false
+          let locationObj = {
+            verified: false,
+            name: locationNameStr,
+            address: thisEvent.locationObj.address,
+            latitude: thisEvent.locationObj.latitude,
+            longitude: thisEvent.locationObj.longitude
+          }
+          this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+          // console.log('modified obj', locationObj)
+        }
+      }
+
+      // need to send backend the most updated locationObj
     }
   }
 
