@@ -27,11 +27,11 @@ class EventRowLocationCell extends Component {
       queryStr: '',
       showDropdown: false,
       showSpinner: false,
-      predictions: []
+      predictions: [],
+      overwriteContentState: false
     }
 
     this.onChange = (editorState) => {
-      // console.log('EDITORSTATE ONCHANGE TRIGGERED')
       let oldContentState = this.state.editorState.getCurrentContent()
       let newContentState = editorState.getCurrentContent()
 
@@ -70,10 +70,12 @@ class EventRowLocationCell extends Component {
     }
 
     this.focus = (e) => {
-      if (e.target.className === 'planner-table-cell') {
+      if (e.target.className === `planner-table-cell ignoreLocationCell${this.props.id}`) {
+        console.log('move focus to end')
         this.editor.focus()
         this.setState({editorState: EditorState.moveFocusToEnd(this.state.editorState)})
       } else {
+        console.log('focus')
         this.editor.focus()
       }
     }
@@ -119,7 +121,6 @@ class EventRowLocationCell extends Component {
         let longitude = result.geometry.location.lng
         let address = result.formatted_address
         let name = result.name
-        // console.log('name', name, 'address', address, 'latlng', latitude, longitude)
 
         let nameContentState = ContentState.createFromText(name)
         let locationObj = {
@@ -129,17 +130,16 @@ class EventRowLocationCell extends Component {
           latitude: latitude,
           longitude: longitude
         }
-        this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-        // this.props.updateEvent(this.props.id, 'locationAddress', addressContentState, false)
-        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
 
-        // console.log('SELECTLOCATION SETSTATE')
         this.setState({
           queryStr: name,
           showDropdown: false,
           showSpinner: false,
-          predictions: []
-          // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
+          predictions: [],
+          overwriteContentState: true
+        }, () => {
+          this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+          this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
         })
       })
       .catch(err => {
@@ -156,28 +156,30 @@ class EventRowLocationCell extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    // KEEPS LOCATION CELL IN SYNC WITH RIGHTBAR
     if (nextProps.events.updatedFromSidebar) {
-      const thisEvent = nextProps.events.events.filter(e => {
+      const thisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
-      })[0]
+      })
       const locationContentState = thisEvent.locationName
       this.setState({editorState: EditorState.createWithContent(locationContentState)})
     }
 
-    // events is inside the events obj...
-    // THIS UPDATES THE EDITOR STATE IF EVENT.LOCATIONNAME IN REDUX HAS CHANGED
-    if (nextProps.events.events !== this.props.events.events) {
-      // console.log('EVENTS ARR HAS CHANGED')
-      // compare this event only
-      let oldPropsThisEvent = this.props.events.events.find(e => {
-        return e.id === this.props.id
-      })
-      let nextPropsThisEvent = nextProps.events.events.find(e => {
-        return e.id === nextProps.id
-      })
-      if (nextPropsThisEvent.locationName !== oldPropsThisEvent.locationName) {
-        const locationContentState = nextPropsThisEvent.locationName
-        this.setState({editorState: EditorState.createWithContent(locationContentState)})
+    // compare old event with new event. if local state overwriteContentState (for esc or dropdown select), set new editor state
+    let oldPropsThisEvent = this.props.events.events.find(e => {
+      return e.id === this.props.id
+    })
+    let nextPropsThisEvent = nextProps.events.events.find(e => {
+      return e.id === nextProps.id
+    })
+    if (oldPropsThisEvent.locationName !== nextPropsThisEvent.locationName) {
+      if (this.state.overwriteContentState) {
+        let nameContentState = nextPropsThisEvent.locationName
+        console.log('overwrite location name')
+        this.setState({
+          editorState: EditorState.createWithContent(nameContentState),
+          overwriteContentState: false
+        })
       }
     }
 
@@ -190,7 +192,12 @@ class EventRowLocationCell extends Component {
       let thisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
       })
+      console.log('check click outside locationName', thisEvent.locationName.getPlainText())
       console.log('locationObj to send backend', thisEvent.locationObj)
+
+      let locationNameStr = thisEvent.locationName.getPlainText()
+      // if (thisEvent.locationObj)
+      // if click outside after deleting string, vs click outside with a different string?
     }
   }
 
@@ -223,22 +230,23 @@ class EventRowLocationCell extends Component {
 
   // for component
   handleKeyDown (e) {
-    // console.log(e.key)
     // esc will close dropdown, undo changes
     if (e.key === 'Escape') {
-      console.log('esc')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
       })
       let locationObj = thisEvent.locationObj
       let locationName = locationObj ? locationObj.name : ''
       let nameContentState = ContentState.createFromText(locationName)
-      this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-      this.handleClickOutside()
+      this.setState({
+        overwriteContentState: true
+      }, () => {
+        this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+        this.handleClickOutside()
+      })
     }
     // enter/tab confirms changes, constructs location obj
     if (e.key === 'Enter' || e.key === 'Tab') {
-      console.log('enter/tab')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
       })
@@ -260,11 +268,9 @@ class EventRowLocationCell extends Component {
           latitude: null,
           longitude: null
         }
-        // this.props.updateEvent(this.props.id, 'locationAddress', null, false)
         this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
       } else if (locationObj && !locationNameInEditor) {
         this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), false)
-        // this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), false)
         this.props.updateEvent(this.props.id, 'locationObj', null, false)
       } else if (locationObj && locationNameInEditor) {
         // check if name matches

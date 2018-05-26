@@ -26,7 +26,19 @@ class PlannerSideBarInfoField extends Component {
       queryStr: '',
       showDropdown: false,
       showSpinner: false,
-      predictions: []
+      predictions: [],
+      overwriteContentState: false
+    }
+
+    this.focus = (e) => {
+      if (e.target.className === `ignoreRightBarLocation`) {
+        console.log('move focus to end')
+        this.editor.focus()
+        this.setState({editorState: EditorState.moveFocusToEnd(this.state.editorState)})
+      } else {
+        console.log('focus')
+        this.editor.focus()
+      }
     }
 
     this.onChange = (editorState) => {
@@ -40,7 +52,7 @@ class PlannerSideBarInfoField extends Component {
         editorState: editorState
       }, () => {
         if (newText !== oldText) {
-          this.props.updateEvent(this.props.id, 'locationName', newContentState, false)
+          this.props.updateEvent(this.props.id, 'locationName', newContentState, true)
         }
       })
 
@@ -125,16 +137,17 @@ class PlannerSideBarInfoField extends Component {
           latitude: latitude,
           longitude: longitude
         }
-        this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
 
         // console.log('SELECTLOCATION SETSTATE')
         this.setState({
           queryStr: name,
           showDropdown: false,
           showSpinner: false,
-          predictions: []
-          // DO NOT SET EDITOR STATE HERE. IT WILL TRIGGER ONCHANGE HANDLER. LEAVE IT TO COMPONENTWILLRECEIVEPROPS
+          predictions: [],
+          overwriteContentState: true
+        }, () => {
+          this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
+          this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
         })
       })
       .catch(err => {
@@ -150,19 +163,24 @@ class PlannerSideBarInfoField extends Component {
       let locationContentState = thisEvent.locationName
       this.setState({editorState: EditorState.createWithContent(locationContentState)})
     }
-    if (nextProps.events.events !== this.props.events.events) {
-      // compare this event only
-      let oldPropsThisEvent = this.props.events.events.find(e => {
-        return e.id === this.props.id
-      })
-      let nextPropsThisEvent = nextProps.events.events.find(e => {
-        return e.id === nextProps.id
-      })
-      if (nextPropsThisEvent.locationName !== oldPropsThisEvent.locationName) {
-        const locationContentState = nextPropsThisEvent.locationName
-        this.setState({editorState: EditorState.createWithContent(locationContentState)})
+
+    let oldPropsThisEvent = this.props.events.events.find(e => {
+      return e.id === this.props.id
+    })
+    let nextPropsThisEvent = nextProps.events.events.find(e => {
+      return e.id === nextProps.id
+    })
+    if (oldPropsThisEvent.locationName !== nextPropsThisEvent.locationName) {
+      if (this.state.overwriteContentState) {
+        let nameContentState = nextPropsThisEvent.locationName
+        console.log('overwrite location name')
+        this.setState({
+          editorState: EditorState.createWithContent(nameContentState),
+          overwriteContentState: false
+        })
       }
     }
+
     // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
     let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
     let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
@@ -185,19 +203,21 @@ class PlannerSideBarInfoField extends Component {
     // console.log(e.key)
     // esc will close dropdown, undo changes
     if (e.key === 'Escape') {
-      console.log('esc')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
       })
       let locationObj = thisEvent.locationObj
       let locationName = locationObj ? locationObj.name : ''
       let nameContentState = ContentState.createFromText(locationName)
-      this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-      this.handleClickOutside()
+      this.setState({
+        overwriteContentState: true
+      }, () => {
+        this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
+        this.handleClickOutside()
+      })
     }
     // enter/tab confirms changes, constructs location obj
     if (e.key === 'Enter' || e.key === 'Tab') {
-      console.log('enter/tab')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
       })
@@ -220,11 +240,11 @@ class PlannerSideBarInfoField extends Component {
           longitude: null
         }
         // this.props.updateEvent(this.props.id, 'locationAddress', null, false)
-        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+        this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
       } else if (locationObj && !locationNameInEditor) {
-        this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), false)
-        // this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), false)
-        this.props.updateEvent(this.props.id, 'locationObj', null, false)
+        this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), true)
+        // this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), true)
+        this.props.updateEvent(this.props.id, 'locationObj', null, true)
       } else if (locationObj && locationNameInEditor) {
         // check if name matches
         if (locationObj.name !== locationNameInEditor) {
@@ -235,7 +255,7 @@ class PlannerSideBarInfoField extends Component {
             latitude: locationObj.latitude,
             longitude: locationObj.longitude
           }
-          this.props.updateEvent(this.props.id, 'locationObj', newLocationObj, false)
+          this.props.updateEvent(this.props.id, 'locationObj', newLocationObj, true)
         }
       }
 
@@ -245,8 +265,8 @@ class PlannerSideBarInfoField extends Component {
 
   render () {
     return (
-      <div className={`ignoreRightBarLocation`} style={{cursor: 'text', position: 'relative'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} />
+      <div className={`ignoreRightBarLocation`} onClick={this.focus} style={{cursor: 'text', position: 'relative'}} onKeyDown={e => this.handleKeyDown(e)}>
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'rightbar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
         }
