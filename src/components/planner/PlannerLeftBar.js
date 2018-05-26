@@ -25,12 +25,14 @@ class PlannerLeftBar extends Component {
           if (this.props.datesArr) {
             date = this.props.datesArr[i]
           }
+          let dayEvents = this.props.events.events.filter(e => {
+            return e.startDay === day
+          })
+          let sortedDayEvents = dayEvents.sort((a, b) => {
+            return a.loadSequence - b.loadSequence
+          })
           return (
-            <LeftBarDateBox days={this.props.days} daysArr={this.props.daysArr} itineraryId={this.props.itineraryId} day={day} date={date} datesArr={this.props.datesArr} events={this.props.events.events.filter(
-              event => {
-                return event.startDay === day
-              }
-            )} key={i} />
+            <LeftBarDateBox days={this.props.days} daysArr={this.props.daysArr} itineraryId={this.props.itineraryId} day={day} date={date} datesArr={this.props.datesArr} events={sortedDayEvents} key={i} />
           )
         })}
       </div>
