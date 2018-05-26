@@ -181,6 +181,18 @@ class PlannerSideBarInfoField extends Component {
       }
     }
 
+    // need to update location name if activeEventId changes
+    if (nextProps.activeEventId !== this.props.activeEventId) {
+      console.log('active event id changed')
+      let activeEvent = nextProps.events.events.find(e => {
+        return e.id === nextProps.activeEventId
+      })
+      let nameContentState = activeEvent.locationName
+      this.setState({
+        editorState: EditorState.createWithContent(nameContentState)
+      })
+    }
+
     // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
     let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
     let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
@@ -312,7 +324,8 @@ class PlannerSideBarInfoField extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    events: state.events
+    events: state.events,
+    activeEventId: state.activeEventId
   }
 }
 
