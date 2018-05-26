@@ -218,7 +218,7 @@ class EventRowLocationCell extends Component {
   handleOnFocus () {
     this.props.changeActiveField('location')
     if (this.props.activeEventId !== this.props.id) {
-      this.props.setRightBarFocusedTab('event')
+      // this.props.setRightBarFocusedTab('event')
       this.props.updateActiveEvent(this.props.id)
     }
   }
