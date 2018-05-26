@@ -223,7 +223,15 @@ class EventRowLocationCell extends Component {
     }
   }
 
-  // for editor only. prevents new lines
+  handleCellClick (e) {
+    if (this.props.activeEventId !== this.props.id || this.props.activeField !== 'location') {
+      this.handleOnFocus()
+    } else {
+      this.focus(e)
+    }
+  }
+
+  // for editor only
   handleReturn (event, editorState) {
     return 'handled'
   }
@@ -290,19 +298,13 @@ class EventRowLocationCell extends Component {
     }
   }
 
-  // is this still needed?
-  // handleOnBlur (event) {
-  //   this.setState({focusClicked: false})
-  // }
-
   render () {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
-      <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={this.focus} style={{position: 'relative', cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} handleReturn={(event, editorState) => this.handleReturn()} />
+      <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={(e) => this.handleCellClick(e)} style={{position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'table'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
-          // ignore outside click classname depends on id. else clicking other editors wont be detected as 'outside'
         }
       </div>
     )

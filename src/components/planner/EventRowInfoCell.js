@@ -89,8 +89,17 @@ class EventRowInfoCell extends Component {
     const property = eventPropertyNames[this.props.column]
     this.props.changeActiveField(property)
     if (this.props.activeEventId !== this.props.id) {
-      this.props.setRightBarFocusedTab('event')
+      // this.props.setRightBarFocusedTab('event')
       this.props.updateActiveEvent(this.props.id)
+    }
+  }
+
+  handleCellClick (e) {
+    const property = eventPropertyNames[this.props.column]
+    if (this.props.activeEventId !== this.props.id || this.props.activeField !== property) {
+      this.handleOnFocus()
+    } else {
+      this.focus(e)
     }
   }
 
@@ -103,7 +112,7 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div className='planner-table-cell' onClick={this.focus} style={{cursor: 'text', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+      <div className='planner-table-cell' onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
         <Editor editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} />
       </div>
     )
