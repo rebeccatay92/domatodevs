@@ -147,6 +147,7 @@ class EventRowLocationCell extends Component {
       })
   }
 
+  // click outside of dropdown only
   handleClickOutside () {
     this.setState({
       showDropdown: false,
