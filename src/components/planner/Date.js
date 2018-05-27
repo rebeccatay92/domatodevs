@@ -24,7 +24,7 @@ import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 import { updateEvent, initializeEvents } from '../../actions/planner/eventsActions'
-// import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
+import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 
 import moment from 'moment'
 
@@ -293,10 +293,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    setTimeCellFocus: (focus) => {
+      dispatch(setTimeCellFocus(focus))
     }
-    // setTimeCellFocus: (focus) => {
-    //   dispatch(setTimeCellFocus(focus))
-    // }
   }
 }
 

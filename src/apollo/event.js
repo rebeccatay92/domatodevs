@@ -76,16 +76,16 @@ export const createEvent = gql`
   }
 `
 
-export const updateEvent = gql`
-  mutation updateEvent(
+export const updateEventBackend = gql`
+  mutation updateEventBackend(
     $id: ID!,
     $eventType: String,
     $startDay: Int,
     $startTime: Int,
     $endTime: Int,
-    $loadSequence: Int!,
+    $loadSequence: Int,
     $notes: String,
-    $cost: Int,
+    $cost: String,
     $currency: String,
     $bookingService: String,
     $bookingConfirmation: String,
@@ -106,7 +106,9 @@ export const updateEvent = gql`
       bookingConfirmation: $bookingConfirmation,
       locationData: $locationData,
       LocationId: $LocationId
-    )
+    ) {
+      id
+    }
   }
 `
 

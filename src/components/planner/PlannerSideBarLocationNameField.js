@@ -8,6 +8,10 @@ import LocationCellDropdown from './LocationCellDropdown'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 
+import { graphql, compose } from 'react-apollo'
+import { updateEventBackend } from '../../apollo/event'
+import { queryItinerary } from '../../apollo/itinerary'
+
 import _ from 'lodash'
 
 class PlannerSideBarInfoField extends Component {
@@ -210,7 +214,7 @@ class PlannerSideBarInfoField extends Component {
       let thisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
       })
-      console.log('locationObj to send backend', thisEvent.locationObj)
+      var locationDataForBackend = thisEvent.locationObj
 
       // handle click outside
       let locationNameStr = thisEvent.locationName.getPlainText()
@@ -226,9 +230,11 @@ class PlannerSideBarInfoField extends Component {
           longitude: null
         }
         this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+        locationDataForBackend = locationObj
       } else if (thisEvent.locationObj && !locationNameStr) {
         // clear location
         this.props.updateEvent(this.props.id, 'locationObj', null, true)
+        locationDataForBackend = null
       } else if (thisEvent.locationObj && locationNameStr) {
         // console.log('has obj, has current str')
         if (thisEvent.locationObj.name !== locationNameStr) {
@@ -238,14 +244,31 @@ class PlannerSideBarInfoField extends Component {
             name: locationNameStr,
             address: thisEvent.locationObj.address,
             latitude: thisEvent.locationObj.latitude,
-            longitude: thisEvent.locationObj.longitude
+            longitude: thisEvent.locationObj.longitude,
+            countryCode: thisEvent.locationObj.countryCode
           }
           this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+          locationDataForBackend = locationObj
           // console.log('modified obj', locationObj)
         }
       }
 
       // get the most updated locationObj and send backend.
+      console.log('locationDataForBackend', locationDataForBackend)
+      this.props.updateEventBackend({
+        variables: {
+          id: this.props.id,
+          locationData: locationDataForBackend
+        },
+        refetchQueries: [{
+          query: queryItinerary,
+          variables: {
+            id: this.props.events.events.find(e => {
+              return this.props.id
+            }).ItineraryId
+          }
+        }]
+      })
     }
   }
 
@@ -348,4 +371,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PlannerSideBarInfoField)
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateEventBackend, {name: 'updateEventBackend'})
+)(PlannerSideBarInfoField))

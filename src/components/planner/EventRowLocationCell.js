@@ -9,6 +9,10 @@ import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
+import { graphql, compose } from 'react-apollo'
+import { updateEventBackend } from '../../apollo/event'
+import { queryItinerary } from '../../apollo/itinerary'
+
 import _ from 'lodash'
 
 class EventRowLocationCell extends Component {
@@ -242,7 +246,22 @@ class EventRowLocationCell extends Component {
       }
 
       // need to send backend the most updated locationObj
+      // do i still need the redux updateEvent?
       console.log('locationDataForBackend', locationDataForBackend)
+      this.props.updateEventBackend({
+        variables: {
+          id: this.props.id,
+          locationData: locationDataForBackend
+        },
+        refetchQueries: [{
+          query: queryItinerary,
+          variables: {
+            id: this.props.events.events.find(e => {
+              return this.props.id
+            }).ItineraryId
+          }
+        }]
+      })
     }
   }
 
@@ -381,4 +400,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EventRowLocationCell)
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateEventBackend, {name: 'updateEventBackend'})
+)(EventRowLocationCell))
