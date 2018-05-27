@@ -22,6 +22,12 @@ export const findEvent = gql`
         address
         latitude
         longitude
+        CountryId
+        country {
+          id
+          name
+          code
+        }
       }
       attachments {
         id

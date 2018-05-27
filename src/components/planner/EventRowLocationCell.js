@@ -115,12 +115,19 @@ class EventRowLocationCell extends Component {
         return response.json()
       })
       .then(json => {
-        // console.log('result', json.result)
+        // console.log('place result', json.result)
         let result = json.result
         let latitude = result.geometry.location.lat
         let longitude = result.geometry.location.lng
         let address = result.formatted_address
         let name = result.name
+        let countryCode
+        let addressComponent = json.result.address_components.find(e => {
+          return e.types.includes('country')
+        })
+        if (addressComponent) {
+          countryCode = addressComponent.short_name
+        }
 
         let nameContentState = ContentState.createFromText(name)
         let locationObj = {
@@ -128,7 +135,8 @@ class EventRowLocationCell extends Component {
           name: name,
           address: address,
           latitude: latitude,
-          longitude: longitude
+          longitude: longitude,
+          countryCode: countryCode
         }
 
         this.setState({
@@ -196,8 +204,9 @@ class EventRowLocationCell extends Component {
       // console.log('check click outside locationName', thisEvent.locationName.getPlainText())
       // console.log('locationObj to send backend', thisEvent.locationObj)
 
-      let locationNameStr = thisEvent.locationName.getPlainText()
+      var locationDataForBackend = thisEvent.locationObj
 
+      let locationNameStr = thisEvent.locationName.getPlainText()
       if (!thisEvent.locationObj && !locationNameStr) {
         // do nothing
       } else if (!thisEvent.locationObj && locationNameStr) {
@@ -209,9 +218,11 @@ class EventRowLocationCell extends Component {
           longitude: null
         }
         this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+        locationDataForBackend = locationObj
       } else if (thisEvent.locationObj && !locationNameStr) {
         // clear location
         this.props.updateEvent(this.props.id, 'locationObj', null, false)
+        locationDataForBackend = null
       } else if (thisEvent.locationObj && locationNameStr) {
         // console.log('has obj, has current str')
         if (thisEvent.locationObj.name !== locationNameStr) {
@@ -221,14 +232,17 @@ class EventRowLocationCell extends Component {
             name: locationNameStr,
             address: thisEvent.locationObj.address,
             latitude: thisEvent.locationObj.latitude,
-            longitude: thisEvent.locationObj.longitude
+            longitude: thisEvent.locationObj.longitude,
+            countryCode: thisEvent.locationObj.countryCode
           }
           this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+          locationDataForBackend = locationObj
           // console.log('modified obj', locationObj)
         }
       }
 
       // need to send backend the most updated locationObj
+      console.log('locationDataForBackend', locationDataForBackend)
     }
   }
 

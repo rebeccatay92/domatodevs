@@ -33,6 +33,12 @@ export const queryItinerary = gql`
           address
           latitude
           longitude
+          CountryId
+          country {
+            id
+            name
+            code
+          }
         }
         attachments {
           id

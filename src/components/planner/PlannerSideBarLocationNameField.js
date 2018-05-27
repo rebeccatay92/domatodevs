@@ -128,6 +128,13 @@ class PlannerSideBarInfoField extends Component {
         let address = result.formatted_address
         let name = result.name
         // console.log('name', name, 'address', address, 'latlng', latitude, longitude)
+        let countryCode
+        let addressComponent = json.result.address_components.find(e => {
+          return e.types.includes('country')
+        })
+        if (addressComponent) {
+          countryCode = addressComponent.short_name
+        }
 
         let nameContentState = ContentState.createFromText(name)
         let locationObj = {
@@ -135,7 +142,8 @@ class PlannerSideBarInfoField extends Component {
           name: name,
           address: address,
           latitude: latitude,
-          longitude: longitude
+          longitude: longitude,
+          countryCode: countryCode
         }
 
         // console.log('SELECTLOCATION SETSTATE')
