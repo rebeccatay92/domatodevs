@@ -10,7 +10,10 @@ import _ from 'lodash'
 
 // react wrapper factory
 const Map = ReactMapboxGL({
-  accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+  accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
+  minZoom: 1,
+  attributionControl: false,
+  logoPosition: 'bottom-right'
 })
 
 const mapStyle = 'mapbox://styles/mapbox/streets-v10'
@@ -31,8 +34,6 @@ class MapboxMap extends Component {
       eventMarkersToDisplay: []
     }
     this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
-    // this.queryHEREPlacesAutosuggest = _.debounce(this.queryHEREPlacesAutosuggest, 500)
-    // this.queryHEREPlacesSearch = _.debounce(this.queryHEREPlacesSearch, 500)
   }
 
   onGeocodeInputChange (e) {
@@ -63,44 +64,6 @@ class MapboxMap extends Component {
         console.log('err', err)
       })
   }
-
-  // queryHEREPlacesAutosuggest (queryStr) {
-  //   console.log('debounced', queryStr)
-  //   if (!queryStr) return
-  //   let endpoint = `https://places.cit.api.here.com/places/v1/autosuggest?app_id=${hereAppId}&app_code=${hereAppCode}&q=${queryStr}&at=${this.state.center[1]},${this.state.center[0]}`
-  //   fetch(endpoint)
-  //     .then(response => {
-  //       return response.json()
-  //     })
-  //     .then(json => {
-  //       console.log('json', json)
-  //       this.setState({
-  //         geocodingResults: json.results
-  //       })
-  //     })
-  //     .catch(err => {
-  //       console.log('err', err)
-  //     })
-  // }
-  //
-  // queryHEREPlacesSearch (queryStr) {
-  //   console.log('debounced', queryStr)
-  //   if (!queryStr) return
-  //   let endpoint = `https://places.cit.api.here.com/places/v1/discover/search?app_id=${hereAppId}&app_code=${hereAppCode}&q=${queryStr}&at=${this.state.center[1]},${this.state.center[0]}`
-  //   fetch(endpoint)
-  //     .then(response => {
-  //       return response.json()
-  //     })
-  //     .then(json => {
-  //       console.log('json', json)
-  //       this.setState({
-  //         geocodingResults: json.results.items
-  //       })
-  //     })
-  //     .catch(err => {
-  //       console.log('err', err)
-  //     })
-  // }
 
   // synx state with map's final zoom and center
   onMapMoveEnd (map, evt) {
@@ -241,60 +204,38 @@ class MapboxMap extends Component {
     this.props.clickDayCheckbox(day)
   }
 
+  onEventMarkerClick (id) {
+    // toggle activeEventId
+    if (this.props.activeEventId === id) {
+      this.props.updateActiveEvent('')
+      this.props.setRightBarFocusedTab('')
+    } else {
+      this.props.updateActiveEvent(id)
+      this.props.setRightBarFocusedTab('event')
+    }
+  }
+
   render () {
-    // let daysToShow = this.props.mapbox.daysToShow
-    // let eventsInVisibleDays = this.props.events.events.filter(e => {
-    //   return daysToShow.includes(e.startDay)
-    // })
-    // let eventsToShow = eventsInVisibleDays.filter(e => {
-    //   if (e.locationObj) {
-    //     return e.locationObj.latitude
-    //   } else {
-    //     return false
-    //   }
-    // })
-    // let comparisonArr = []
-    // let eventsWithOffsetGeometry = eventsToShow.map(event => {
-    //   let position = {
-    //     latitude: event.locationObj.latitude,
-    //     longitude: event.locationObj.longitude
-    //   }
-    //   let positionMatched = _.find(comparisonArr, e => {
-    //     return (e.latitude === position.latitude && e.longitude === position.longitude)
-    //   })
-    //   if (!positionMatched) {
-    //     comparisonArr.push(position)
-    //     event.latitudeDisplay = position.latitude
-    //     event.longitudeDisplay = position.longitude
-    //   } else {
-    //     let offsetPosition = {
-    //       latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
-    //       longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
-    //     }
-    //     comparisonArr.push(offsetPosition)
-    //     event.latitudeDisplay = offsetPosition.latitude
-    //     event.longitudeDisplay = offsetPosition.longitude
-    //   }
-    //   return event
-    // })
+    let activeEvent = this.state.eventMarkersToDisplay.find(e => {
+      return e.id === this.props.activeEventId
+    })
 
     return (
       <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
         {/* ALL CONTROLS SHOULD BE ZINDEX 10 */}
         <ZoomControl position='top-left' />
 
-        <div style={{position: 'absolute', top: '15px', left: '50px', width: '400px', height: '35px', zIndex: 10}}>
-          <input type='text' style={{width: '400px', height: '35px', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', lineHeight: '19px', padding: '8px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onGeocodeInputChange(e)} value={this.state.geocodeInputField} />
+        <div style={{display: 'flex', alignItems: 'center', position: 'absolute', top: '10px', left: '50px', width: '300px', height: '32px', zIndex: 10, boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)', background: 'white'}}>
+          <i className='material-icons' style={{marginLeft: '5px', color: 'rgba(60, 58, 68, 1)'}}>search</i>
+          <input type='text' style={{width: '100%', height: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onGeocodeInputChange(e)} value={this.state.geocodeInputField} />
+          <i className='material-icons' style={{cursor: 'pointer', color: 'rgba(60, 58, 68, 0.7)'}}>clear</i>
+
           {true &&
-            <div style={{width: '400px', background: 'white'}}>
+            <div style={{position: 'absolute', top: '32px', left: 0, width: '300px', background: 'white'}}>
               {this.state.geocodingResults.map((result, i) => {
                 return <h6 key={i} style={{cursor: 'pointer', margin: 0, padding: '8px', minHeight: '35px'}}>
                   {/* MAPBOX GEOCODER */}
                   address={result.place_name} latlng={result.center[0]}, {result.center[1]}
-                  {/* HERE AUTOSUGGEST */}
-                  {/* Title: {result.title} Vicinity: {result.vicinity} */}
-                  {/* HERE PLACES */}
-                  {/* Title: {result.title} Address: {result.vicinity} */}
                 </h6>
               })}
             </div>
@@ -303,7 +244,7 @@ class MapboxMap extends Component {
         {/* <Geocoder /> */}
 
         {/* DAYS FILTER */}
-        <div style={{position: 'absolute', bottom: '20px', left: '15px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)', zIndex: 10}}>
+        <div style={{position: 'absolute', bottom: '10px', left: '10px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)', zIndex: 10, padding: '10px', boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)'}}>
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
@@ -318,16 +259,18 @@ class MapboxMap extends Component {
         {this.state.eventMarkersToDisplay.map((event, i) => {
           let isActiveEvent = this.props.activeEventId === event.id
           return (
-            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: isActiveEvent ? 4 : 3}} onClick={() => console.log('clicked')}>
-              <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)', fontSize: isActiveEvent ? '45px' : '35px'}}>place</i>
+            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: isActiveEvent ? 4 : 3}} onClick={() => this.onEventMarkerClick(event.id)}>
+              <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)', fontSize: '35px'}}>place</i>
             </Marker>
           )
         })}
 
         {/* HOW TO STYLE THIS!!! */}
-        {/* <Popup anchor='bottom' coordinates={[0, 0]} offset={{'bottom-left': [12, -38], 'bottom': [0, -38], 'bottom-right': [-12, -38]}} style={{background: 'red'}}>
-          <div style={{width: '200px', height: '200px', border: '1px solid red'}}>DETAILS</div>
-        </Popup> */}
+        {activeEvent &&
+          <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -38]}} style={{background: 'red', padding: 0, margin: 0}}>
+            <div style={{width: '200px', height: '200px', border: '1px solid red'}}>DETAILS</div>
+          </Popup>
+        }
       </Map>
     )
   }
