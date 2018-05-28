@@ -32,10 +32,10 @@ class LeftBarEventRow extends Component {
       <div style={{display: 'flex', width: '100%', height: '83px', background: isActiveEvent ? 'rgb(245, 245, 245)' : 'white', cursor: 'pointer', ':hover': {background: 'rgb(245, 245, 245)'}}} onClick={() => this.toggleActiveEvent(this.props.event.id)}>
         <div style={{width: '50px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           {locationObj && locationObj.address &&
-            <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'black'}}>place</i>
+            <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)'}}>place</i>
           }
           {(!locationObj || !locationObj.address) &&
-            <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'black'}}>not_listed_location</i>
+            <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)'}}>not_listed_location</i>
           }
         </div>
         <div style={{width: '113px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>

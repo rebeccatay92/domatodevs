@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
-// import Geocoder from './Geocoder'
 
 import { connect } from 'react-redux'
 import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
@@ -28,7 +27,8 @@ class MapboxMap extends Component {
       containerStyle: {
         height: 'calc(100vh - 52px - 51px)',
         width: 'calc(100vw - 376px)' // has to start with larger version. if smaller, changing containerStyle does not fetch more tiles
-      }
+      },
+      eventMarkersToDisplay: []
     }
     this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
     // this.queryHEREPlacesAutosuggest = _.debounce(this.queryHEREPlacesAutosuggest, 500)
@@ -56,7 +56,7 @@ class MapboxMap extends Component {
         return response.json()
       })
       .then(json => {
-        console.log('json', json)
+        console.log('json.features', json.features)
         this.setState({geocodingResults: json.features})
       })
       .catch(err => {
@@ -107,13 +107,15 @@ class MapboxMap extends Component {
     this.setState({
       zoom: [map.getZoom()],
       center: [map.getCenter().lng, map.getCenter().lat]
-    }, () => console.log('updated state after move-end', this.state))
+    }, () => {
+      // console.log('updated state after move-end', this.state)
+    })
   }
 
   componentDidMount () {
     // check if rightBar is displayed
     if (this.props.plannerView.rightBar) {
-      console.log('active event. right bar is open, map needs to shrink')
+      // console.log('active event. right bar is open, map needs to shrink')
       this.setState({
         containerStyle: {
           ...this.state.containerStyle,
@@ -121,6 +123,46 @@ class MapboxMap extends Component {
         }
       })
     }
+
+    // extract markers in days filter, and hv location. offset markers with identical latlong. put latitudeDisplay and longitudeDisplay inside event obj. (but outside of locationObj)
+    let daysToShow = this.props.mapbox.daysToShow
+    let eventsInVisibleDays = this.props.events.events.filter(e => {
+      return daysToShow.includes(e.startDay)
+    })
+    let eventsToShow = eventsInVisibleDays.filter(e => {
+      if (e.locationObj) {
+        return e.locationObj.latitude
+      } else {
+        return false
+      }
+    })
+    let comparisonArr = []
+    let eventsWithOffsetGeometry = eventsToShow.map(event => {
+      let position = {
+        latitude: event.locationObj.latitude,
+        longitude: event.locationObj.longitude
+      }
+      let positionMatched = _.find(comparisonArr, e => {
+        return (e.latitude === position.latitude && e.longitude === position.longitude)
+      })
+      if (!positionMatched) {
+        comparisonArr.push(position)
+        event.latitudeDisplay = position.latitude
+        event.longitudeDisplay = position.longitude
+      } else {
+        let offsetPosition = {
+          latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (3 - (-3)) + (-3)),
+          longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (3 - (-3)) + (-3))
+        }
+        comparisonArr.push(offsetPosition)
+        event.latitudeDisplay = offsetPosition.latitude
+        event.longitudeDisplay = offsetPosition.longitude
+      }
+      return event
+    })
+    this.setState({
+      eventMarkersToDisplay: eventsWithOffsetGeometry
+    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -142,6 +184,47 @@ class MapboxMap extends Component {
         })
       }
     }
+    // extract visble markers and offset lat lng
+    if (nextProps.events.events !== this.props.events.events) {
+      let daysToShow = nextProps.mapbox.daysToShow
+      let eventsInVisibleDays = nextProps.events.events.filter(e => {
+        return daysToShow.includes(e.startDay)
+      })
+      let eventsToShow = eventsInVisibleDays.filter(e => {
+        if (e.locationObj) {
+          return e.locationObj.latitude
+        } else {
+          return false
+        }
+      })
+      let comparisonArr = []
+      let eventsWithOffsetGeometry = eventsToShow.map(event => {
+        let position = {
+          latitude: event.locationObj.latitude,
+          longitude: event.locationObj.longitude
+        }
+        let positionMatched = _.find(comparisonArr, e => {
+          return (e.latitude === position.latitude && e.longitude === position.longitude)
+        })
+        if (!positionMatched) {
+          comparisonArr.push(position)
+          event.latitudeDisplay = position.latitude
+          event.longitudeDisplay = position.longitude
+        } else {
+          let offsetPosition = {
+            latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (3 - (-3)) + (-3)),
+            longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (3 - (-3)) + (-3))
+          }
+          comparisonArr.push(offsetPosition)
+          event.latitudeDisplay = offsetPosition.latitude
+          event.longitudeDisplay = offsetPosition.longitude
+        }
+        return event
+      })
+      this.setState({
+        eventMarkersToDisplay: eventsWithOffsetGeometry
+      })
+    }
   }
 
   clickDayCheckbox (day) {
@@ -159,23 +242,48 @@ class MapboxMap extends Component {
   }
 
   render () {
-    let daysToShow = this.props.mapbox.daysToShow
-    let eventsInVisibleDays = this.props.events.events.filter(e => {
-      return daysToShow.includes(e.startDay)
-    })
-    let eventsToShow = eventsInVisibleDays.filter(e => {
-      if (e.locationObj) {
-        return e.locationObj.latitude
-      } else {
-        return false
-      }
-    })
+    // let daysToShow = this.props.mapbox.daysToShow
+    // let eventsInVisibleDays = this.props.events.events.filter(e => {
+    //   return daysToShow.includes(e.startDay)
+    // })
+    // let eventsToShow = eventsInVisibleDays.filter(e => {
+    //   if (e.locationObj) {
+    //     return e.locationObj.latitude
+    //   } else {
+    //     return false
+    //   }
+    // })
+    // let comparisonArr = []
+    // let eventsWithOffsetGeometry = eventsToShow.map(event => {
+    //   let position = {
+    //     latitude: event.locationObj.latitude,
+    //     longitude: event.locationObj.longitude
+    //   }
+    //   let positionMatched = _.find(comparisonArr, e => {
+    //     return (e.latitude === position.latitude && e.longitude === position.longitude)
+    //   })
+    //   if (!positionMatched) {
+    //     comparisonArr.push(position)
+    //     event.latitudeDisplay = position.latitude
+    //     event.longitudeDisplay = position.longitude
+    //   } else {
+    //     let offsetPosition = {
+    //       latitude: position.latitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5)),
+    //       longitude: position.longitude + 0.0001 * Math.floor(Math.random() * (5 - (-5)) + (-5))
+    //     }
+    //     comparisonArr.push(offsetPosition)
+    //     event.latitudeDisplay = offsetPosition.latitude
+    //     event.longitudeDisplay = offsetPosition.longitude
+    //   }
+    //   return event
+    // })
 
     return (
       <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
+        {/* ALL CONTROLS SHOULD BE ZINDEX 10 */}
         <ZoomControl position='top-left' />
 
-        <div style={{position: 'absolute', top: '15px', left: '50px', width: '400px', height: '35px'}}>
+        <div style={{position: 'absolute', top: '15px', left: '50px', width: '400px', height: '35px', zIndex: 10}}>
           <input type='text' style={{width: '400px', height: '35px', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', lineHeight: '19px', padding: '8px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onGeocodeInputChange(e)} value={this.state.geocodeInputField} />
           {true &&
             <div style={{width: '400px', background: 'white'}}>
@@ -195,7 +303,7 @@ class MapboxMap extends Component {
         {/* <Geocoder /> */}
 
         {/* DAYS FILTER */}
-        <div style={{position: 'absolute', bottom: '20px', left: '15px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)'}}>
+        <div style={{position: 'absolute', bottom: '20px', left: '15px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)', zIndex: 10}}>
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
@@ -207,23 +315,19 @@ class MapboxMap extends Component {
           })}
         </div>
 
-        {/* <Marker coordinates={[103.8320, 1.3040]} anchor='bottom' style={{border: '1px solid red', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer'}} onClick={() => console.log('clicked')}>
-          <i className='material-icons' style={{color: 'black', fontSize: '35px'}}>place</i>
-        </Marker> */}
-
-        {eventsToShow.map((event, i) => {
+        {this.state.eventMarkersToDisplay.map((event, i) => {
           let isActiveEvent = this.props.activeEventId === event.id
           return (
-            <Marker key={i} coordinates={[event.locationObj.longitude, event.locationObj.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer'}} onClick={() => console.log('clicked')}>
-              <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'black', fontSize: '35px'}}>place</i>
+            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: isActiveEvent ? 4 : 3}} onClick={() => console.log('clicked')}>
+              <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)', fontSize: isActiveEvent ? '45px' : '35px'}}>place</i>
             </Marker>
           )
         })}
 
         {/* HOW TO STYLE THIS!!! */}
-        <Popup anchor='bottom' coordinates={[0, 0]} offset={{'bottom-left': [12, -38], 'bottom': [0, -38], 'bottom-right': [-12, -38]}} style={{background: 'red'}}>
+        {/* <Popup anchor='bottom' coordinates={[0, 0]} offset={{'bottom-left': [12, -38], 'bottom': [0, -38], 'bottom-right': [-12, -38]}} style={{background: 'red'}}>
           <div style={{width: '200px', height: '200px', border: '1px solid red'}}>DETAILS</div>
-        </Popup>
+        </Popup> */}
       </Map>
     )
   }

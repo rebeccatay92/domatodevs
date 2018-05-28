@@ -2,7 +2,7 @@ import { coreColors, coreFonts } from './cores'
 
 // sidebar container = tabs container (both bucket and event tab) + actual mainAreaContainer
 const sidebarContainer = {
-  zIndex: 2,
+  zIndex: 11,
   // height depends on view height (mac is higher)
   height: 'calc(100vh - 52px - 51px)',
   // dont specify width. depends on whether sidebar is rendered or tabs only
@@ -16,7 +16,7 @@ const sidebarContainer = {
 /* ----------------------------- */
 
 const tabsContainer = {
-  zIndex: 2,
+  zIndex: 11,
   width: '35px',
   height: '128px' // 2 tabs so 64x2
 }
@@ -25,7 +25,7 @@ const tabsContainer = {
 // events tab only appears when event is clicked (always together with rest of sidebar) check redux.
 
 const tabUnclicked = {
-  zIndex: 1,
+  zIndex: 10,
   width: '35px',
   height: '64px',
   display: 'flex',
@@ -38,7 +38,7 @@ const tabUnclicked = {
 
 const tabClicked = {
   ...tabUnclicked,
-  zIndex: 3,
+  zIndex: 12,
   border: '1px solid black',
   borderRight: '1px rgb(245, 245, 245)',
   position: 'relative',
