@@ -270,12 +270,15 @@ class MapboxMap extends Component {
         {/* HOW TO STYLE THIS!!! */}
         {activeEvent &&
           <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}}>
-            <div style={{width: '400px', height: '200px'}}>
-              <div style={{width: '400px', height: '150px', border: '1px solid rgba(223, 56, 107, 1)'}}>
-                details
+            <div style={{width: '300px'}}>
+              <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.name}</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.address}</h6>
               </div>
-              <div style={{display: 'inline-block', width: '200px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
-              <div style={{display: 'inline-block', width: '200px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
+              {/* <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
+              <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div> */}
             </div>
           </Popup>
         }
