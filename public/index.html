@@ -8,7 +8,6 @@
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-    <!-- <script src="http://localhost:8097"></script> -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
@@ -37,14 +36,6 @@
       }
       :focus::placeholder {
         color: transparent;
-      }
-      .planner-date-picker div:first-of-type {
-        display: inline-block;
-      }
-      .planner-date-picker select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
       }
       input[type="time"]::-webkit-clear-button,
       input[type=time]::-webkit-inner-spin-button,
@@ -76,12 +67,6 @@
       }
       .react-datepicker__input-container input {
         width: 90% !important;
-      }
-      .quickInputCalender .react-datepicker__input-container input {
-        width: 100% !important;
-        font-size: 13px;
-        padding: 8px;
-        height: 31px;
       }
       li.react-datepicker__time-list-item {
         margin-left: -40px;
@@ -120,47 +105,6 @@
       }
       .plannerDropdownOption:hover {
         background-color: rgba(60, 58, 68, 0.3);
-      }
-      .placeSearchResults::-webkit-scrollbar {
-        width: 8px;
-      }
-      .placeSearchResults::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .placeSearchResults::-webkit-scrollbar-thumb {
-        background: rgba(60, 58, 68, 0.7);
-      }
-      .scheduleOfEvents::-webkit-scrollbar {
-        width: 3px;
-      }
-      .scheduleOfEvents::-webkit-scrollbar-track {
-        background: transparent;
-        border-left: 3px solid rgba(255, 255, 255, 0.3);
-      }
-      .scheduleOfEvents::-webkit-scrollbar-thumb {
-        background: white;
-      }
-      .flightSearchResults::-webkit-scrollbar {
-        width: 4px;
-      }
-      .flightSearchResults::-webkit-scrollbar-track {
-        background: #f5f5f5;
-      }
-      .flightSearchResults::-webkit-scrollbar-thumb {
-        background: rgba(60, 58, 68, 0.5);
-      }
-      .flightSearchParams select::-ms-expand {
-        display: none;
-      }
-      .flightSearchParams select, .editorDayDropdown {
-        /*for firefox*/
-        -moz-appearance: none;
-        /*for chrome*/
-        -webkit-appearance:none;
-        text-align-last: center;
-      }
-      .flightSearchParams select option {
-        padding-left: 8px;
       }
       .read-navigation:hover {
         opacity: 1 !important;
@@ -234,16 +178,15 @@
           width: 101%;
         }
       }
-      @media (max-height: 858px) {
-        .eventFormContainer {
-          margin: 0 auto !important;
-        }
+      .mapboxgl-popup-content {
+        padding: 0 !important;
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3) !important;
       }
-      @media (max-height: 869px) {
-        .flightFormContainer {
-          margin: 0 auto !important;
-        }
+
+      .mapboxgl-popup-tip {
+        display: none !important
       }
+
     </style>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.

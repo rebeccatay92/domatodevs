@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
+// import CustomPopup from './CustomPopup'
 
 import { connect } from 'react-redux'
 import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
@@ -216,6 +217,7 @@ class MapboxMap extends Component {
   }
 
   render () {
+    // console.log('map', this.map)
     let activeEvent = this.state.eventMarkersToDisplay.find(e => {
       return e.id === this.props.activeEventId
     })
@@ -267,10 +269,17 @@ class MapboxMap extends Component {
 
         {/* HOW TO STYLE THIS!!! */}
         {activeEvent &&
-          <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -38]}} style={{background: 'red', padding: 0, margin: 0}}>
-            <div style={{width: '200px', height: '200px', border: '1px solid red'}}>DETAILS</div>
+          <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}}>
+            <div style={{width: '400px', height: '200px'}}>
+              <div style={{width: '400px', height: '150px', border: '1px solid rgba(223, 56, 107, 1)'}}>
+                details
+              </div>
+              <div style={{display: 'inline-block', width: '200px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
+              <div style={{display: 'inline-block', width: '200px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
+            </div>
           </Popup>
         }
+        {/* <CustomPopup /> */}
       </Map>
     )
   }
