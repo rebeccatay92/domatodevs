@@ -357,7 +357,7 @@ class EventRowLocationCell extends Component {
           this.props.updateEvent(this.props.id, 'locationObj', newLocationObj, false)
         }
       }
-
+      this.editor.blur()
       this.handleClickOutside()
     }
   }
