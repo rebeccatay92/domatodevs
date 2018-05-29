@@ -13,6 +13,8 @@ import EventRowTimeCell from './EventRowTimeCell'
 import EventRowLocationCell from './EventRowLocationCell'
 
 import { toggleSpinner } from '../../actions/spinnerActions'
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 class EventRow extends Component {
   constructor (props) {
@@ -25,6 +27,11 @@ class EventRow extends Component {
 
   handleDelete () {
     this.props.toggleSpinner(true)
+
+    // clear active event, close right bar first (else break)
+    this.props.setRightBarFocusedTab('')
+    this.props.updateActiveEvent('')
+
     this.props.deleteEvent({
       variables: {
         id: this.props.id
@@ -87,6 +94,12 @@ const mapDispatchToProps = (dispatch) => {
   return {
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    updateActiveEvent: (id) => {
+      dispatch(updateActiveEvent(id))
+    },
+    setRightBarFocusedTab: (tabName) => {
+      dispatch(setRightBarFocusedTab(tabName))
     }
   }
 }
