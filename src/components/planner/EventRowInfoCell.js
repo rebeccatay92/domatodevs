@@ -8,6 +8,8 @@ import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
+import { updateEventBackend } from '../../apollo/event'
+
 const eventPropertyNames = {
   Event: 'eventType',
   Price: 'cost',
@@ -33,19 +35,27 @@ class EventRowInfoCell extends Component {
     super(props)
     const { column, id } = props
     const { events } = this.props.events
-    const property = eventPropertyNames[column]
     const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     this.state = {
-      editorState: EditorState.createWithContent(value)
+      editorState: EditorState.createWithContent(value),
+      initialValue: value
     }
 
     this.onChange = (editorState) => {
       const { column, id } = this.props
+      const oldContentState = this.state.editorState.getCurrentContent()
+      const newContentState = editorState.getCurrentContent()
+
+      const oldText = oldContentState.getPlainText()
+      const newText = newContentState.getPlainText()
       const property = eventPropertyNames[column]
-      this.setState({editorState: editorState})
-      const contentState = editorState.getCurrentContent()
-      this.props.updateEvent(id, property, contentState, false)
+      this.setState({editorState: editorState}, () => {
+        if (newText !== oldText) {
+          // id, property, value, fromSidebar
+          this.props.updateEvent(id, property, newContentState, false)
+        }
+      })
     }
 
     this.focus = (e) => {
@@ -103,6 +113,34 @@ class EventRowInfoCell extends Component {
     }
   }
 
+  handleKeyDown (e) {
+    const { column, id } = this.props
+    const property = eventPropertyNames[column]
+
+    if (e.key === 'Escape') {
+      const editorState = EditorState.createWithContent(this.state.initialValue)
+      this.setState({
+        editorState
+      })
+      this.props.updateEvent(id, property, this.state.initialValue, false)
+    }
+  }
+
+  handleOnBlur () {
+    const { id, column } = this.props
+    const property = eventPropertyNames[column]
+    this.setState({
+      initialValue: this.state.editorState.getCurrentContent()
+    }, () => {
+      this.props.updateEventBackend({
+        variables: {
+          id,
+          [property]: this.state.editorState.getCurrentContent().getPlainText()
+        }
+      })
+    })
+  }
+
   render () {
     const { column, id } = this.props
     const property = eventPropertyNames[column]
@@ -112,8 +150,8 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div className='planner-table-cell' onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} />
+      <div className='planner-table-cell' onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={(e) => this.handleKeyDown(e)}>
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.handleOnBlur()} />
       </div>
     )
   }
@@ -144,4 +182,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EventRowInfoCell)
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateEventBackend, {name: 'updateEventBackend'})
+)(EventRowInfoCell))
