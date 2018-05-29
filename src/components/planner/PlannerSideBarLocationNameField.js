@@ -14,7 +14,7 @@ import { queryItinerary } from '../../apollo/itinerary'
 
 import _ from 'lodash'
 
-class PlannerSideBarInfoField extends Component {
+class PlannerSideBarLocationNameField extends Component {
   constructor (props) {
     super(props)
     const { events } = this.props.events
@@ -158,8 +158,22 @@ class PlannerSideBarInfoField extends Component {
           predictions: [],
           overwriteContentState: true
         }, () => {
-          this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
-          this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+          // this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
+          // this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+        })
+        this.props.updateEventBackend({
+          variables: {
+            id: this.props.id,
+            locationData: locationObj
+          },
+          refetchQueries: [{
+            query: queryItinerary,
+            variables: {
+              id: this.props.events.events.find(e => {
+                return this.props.id
+              }).ItineraryId
+            }
+          }]
         })
       })
       .catch(err => {
@@ -205,20 +219,82 @@ class PlannerSideBarInfoField extends Component {
       })
     }
 
-    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
-    let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
-    let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
-    if (isPreviouslyActiveCell && isNotNextActiveCell) {
-      console.log('ACTIVE LOCATION CELL LOST FOCUS')
-      // click somewhere else, tab
-      let thisEvent = nextProps.events.events.find(e => {
-        return e.id === nextProps.id
+    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ. THIS IS NOT TRIGGERING IN RIGHT BAR.
+    // let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
+    // let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
+    // if (isPreviouslyActiveCell && isNotNextActiveCell) {
+    //   console.log('ACTIVE LOCATION CELL LOST FOCUS')
+    //   // click somewhere else, tab
+    //   let thisEvent = nextProps.events.events.find(e => {
+    //     return e.id === nextProps.id
+    //   })
+    //   var locationDataForBackend = thisEvent.locationObj
+    //
+    //   // handle click outside
+    //   let locationNameStr = thisEvent.locationName.getPlainText()
+    //
+    //   if (!thisEvent.locationObj && !locationNameStr) {
+    //     // do nothing
+    //   } else if (!thisEvent.locationObj && locationNameStr) {
+    //     let locationObj = {
+    //       verified: false,
+    //       name: locationNameStr,
+    //       address: null,
+    //       latitude: null,
+    //       longitude: null
+    //     }
+    //     this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+    //     locationDataForBackend = locationObj
+    //   } else if (thisEvent.locationObj && !locationNameStr) {
+    //     // clear location
+    //     this.props.updateEvent(this.props.id, 'locationObj', null, true)
+    //     locationDataForBackend = null
+    //   } else if (thisEvent.locationObj && locationNameStr) {
+    //     // console.log('has obj, has current str')
+    //     if (thisEvent.locationObj.name !== locationNameStr) {
+    //       // modify location obj. always verified false
+    //       let locationObj = {
+    //         verified: false,
+    //         name: locationNameStr,
+    //         address: thisEvent.locationObj.address,
+    //         latitude: thisEvent.locationObj.latitude,
+    //         longitude: thisEvent.locationObj.longitude,
+    //         countryCode: thisEvent.locationObj.countryCode
+    //       }
+    //       this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+    //       locationDataForBackend = locationObj
+    //       // console.log('modified obj', locationObj)
+    //     }
+    //   }
+    //
+    //   // get the most updated locationObj and send backend.
+    //   console.log('locationDataForBackend', locationDataForBackend)
+    //   this.props.updateEventBackend({
+    //     variables: {
+    //       id: this.props.id,
+    //       locationData: locationDataForBackend
+    //     },
+    //     refetchQueries: [{
+    //       query: queryItinerary,
+    //       variables: {
+    //         id: this.props.events.events.find(e => {
+    //           return this.props.id
+    //         }).ItineraryId
+    //       }
+    //     }]
+    //   })
+    // }
+  }
+
+  handleOnBlur () {
+    if (!this.state.showDropdown) {
+      console.log('blur')
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
       })
+
       var locationDataForBackend = thisEvent.locationObj
-
-      // handle click outside
       let locationNameStr = thisEvent.locationName.getPlainText()
-
       if (!thisEvent.locationObj && !locationNameStr) {
         // do nothing
       } else if (!thisEvent.locationObj && locationNameStr) {
@@ -229,14 +305,10 @@ class PlannerSideBarInfoField extends Component {
           latitude: null,
           longitude: null
         }
-        this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
         locationDataForBackend = locationObj
       } else if (thisEvent.locationObj && !locationNameStr) {
-        // clear location
-        this.props.updateEvent(this.props.id, 'locationObj', null, true)
         locationDataForBackend = null
       } else if (thisEvent.locationObj && locationNameStr) {
-        // console.log('has obj, has current str')
         if (thisEvent.locationObj.name !== locationNameStr) {
           // modify location obj. always verified false
           let locationObj = {
@@ -247,13 +319,11 @@ class PlannerSideBarInfoField extends Component {
             longitude: thisEvent.locationObj.longitude,
             countryCode: thisEvent.locationObj.countryCode
           }
-          this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
           locationDataForBackend = locationObj
-          // console.log('modified obj', locationObj)
         }
       }
 
-      // get the most updated locationObj and send backend.
+      // need to send backend the most updated locationObj
       console.log('locationDataForBackend', locationDataForBackend)
       this.props.updateEventBackend({
         variables: {
@@ -269,7 +339,7 @@ class PlannerSideBarInfoField extends Component {
           }
         }]
       })
-    }
+    } // close if
   }
 
   // for editor only. prevents new lines
@@ -344,7 +414,7 @@ class PlannerSideBarInfoField extends Component {
   render () {
     return (
       <div className={`ignoreRightBarLocation`} onClick={this.focus} style={{cursor: 'text', position: 'relative'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} onBlur={() => this.handleOnBlur()} />
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'rightbar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
         }
@@ -373,4 +443,4 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(updateEventBackend, {name: 'updateEventBackend'})
-)(PlannerSideBarInfoField))
+)(PlannerSideBarLocationNameField))

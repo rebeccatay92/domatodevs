@@ -150,8 +150,22 @@ class EventRowLocationCell extends Component {
           predictions: [],
           overwriteContentState: true
         }, () => {
-          this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-          this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+          // this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+          // this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+        })
+        this.props.updateEventBackend({
+          variables: {
+            id: this.props.id,
+            locationData: locationObj
+          },
+          refetchQueries: [{
+            query: queryItinerary,
+            variables: {
+              id: this.props.events.events.find(e => {
+                return this.props.id
+              }).ItineraryId
+            }
+          }]
         })
       })
       .catch(err => {
@@ -161,6 +175,7 @@ class EventRowLocationCell extends Component {
 
   // click outside of dropdown only
   handleClickOutside () {
+    console.log('click outside')
     this.setState({
       showDropdown: false,
       showSpinner: false,
@@ -197,72 +212,70 @@ class EventRowLocationCell extends Component {
     }
 
     // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
-    let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
-    let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
-    if (isPreviouslyActiveCell && isNotNextActiveCell) {
-      console.log('ACTIVE LOCATION CELL LOST FOCUS')
-      // click somewhere else, tab
-      let thisEvent = nextProps.events.events.find(e => {
-        return e.id === nextProps.id
-      })
-      // console.log('check click outside locationName', thisEvent.locationName.getPlainText())
-      // console.log('locationObj to send backend', thisEvent.locationObj)
-
-      var locationDataForBackend = thisEvent.locationObj
-
-      let locationNameStr = thisEvent.locationName.getPlainText()
-      if (!thisEvent.locationObj && !locationNameStr) {
-        // do nothing
-      } else if (!thisEvent.locationObj && locationNameStr) {
-        let locationObj = {
-          verified: false,
-          name: locationNameStr,
-          address: null,
-          latitude: null,
-          longitude: null
-        }
-        this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
-        locationDataForBackend = locationObj
-      } else if (thisEvent.locationObj && !locationNameStr) {
-        // clear location
-        this.props.updateEvent(this.props.id, 'locationObj', null, false)
-        locationDataForBackend = null
-      } else if (thisEvent.locationObj && locationNameStr) {
-        // console.log('has obj, has current str')
-        if (thisEvent.locationObj.name !== locationNameStr) {
-          // modify location obj. always verified false
-          let locationObj = {
-            verified: false,
-            name: locationNameStr,
-            address: thisEvent.locationObj.address,
-            latitude: thisEvent.locationObj.latitude,
-            longitude: thisEvent.locationObj.longitude,
-            countryCode: thisEvent.locationObj.countryCode
-          }
-          this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
-          locationDataForBackend = locationObj
-          // console.log('modified obj', locationObj)
-        }
-      }
-
-      // need to send backend the most updated locationObj
-      // do i still need the redux updateEvent?
-      console.log('locationDataForBackend', locationDataForBackend)
-      this.props.updateEventBackend({
-        variables: {
-          id: this.props.id,
-          locationData: locationDataForBackend
-        },
-        refetchQueries: [{
-          query: queryItinerary,
-          variables: {
-            id: this.props.events.events.find(e => {
-              return this.props.id
-            }).ItineraryId
-          }
-        }]
-      })
-    }
+    // let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
+    // let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
+    // if (isPreviouslyActiveCell && isNotNextActiveCell) {
+    //   console.log('ACTIVE LOCATION CELL LOST FOCUS')
+    //   // click somewhere else, tab
+    //   let thisEvent = nextProps.events.events.find(e => {
+    //     return e.id === nextProps.id
+    //   })
+    //
+    //   var locationDataForBackend = thisEvent.locationObj
+    //
+    //   let locationNameStr = thisEvent.locationName.getPlainText()
+    //   if (!thisEvent.locationObj && !locationNameStr) {
+    //     // do nothing
+    //   } else if (!thisEvent.locationObj && locationNameStr) {
+    //     let locationObj = {
+    //       verified: false,
+    //       name: locationNameStr,
+    //       address: null,
+    //       latitude: null,
+    //       longitude: null
+    //     }
+    //     this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+    //     locationDataForBackend = locationObj
+    //   } else if (thisEvent.locationObj && !locationNameStr) {
+    //     // clear location
+    //     this.props.updateEvent(this.props.id, 'locationObj', null, false)
+    //     locationDataForBackend = null
+    //   } else if (thisEvent.locationObj && locationNameStr) {
+    //     // console.log('has obj, has current str')
+    //     if (thisEvent.locationObj.name !== locationNameStr) {
+    //       // modify location obj. always verified false
+    //       let locationObj = {
+    //         verified: false,
+    //         name: locationNameStr,
+    //         address: thisEvent.locationObj.address,
+    //         latitude: thisEvent.locationObj.latitude,
+    //         longitude: thisEvent.locationObj.longitude,
+    //         countryCode: thisEvent.locationObj.countryCode
+    //       }
+    //       this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+    //       locationDataForBackend = locationObj
+    //       // console.log('modified obj', locationObj)
+    //     }
+    //   }
+    //
+    //   // need to send backend the most updated locationObj
+    //   // do i still need the redux updateEvent?
+    //   console.log('locationDataForBackend', locationDataForBackend)
+    //   this.props.updateEventBackend({
+    //     variables: {
+    //       id: this.props.id,
+    //       locationData: locationDataForBackend
+    //     },
+    //     refetchQueries: [{
+    //       query: queryItinerary,
+    //       variables: {
+    //         id: this.props.events.events.find(e => {
+    //           return this.props.id
+    //         }).ItineraryId
+    //       }
+    //     }]
+    //   })
+    // }
   }
 
   // IS THIS CORRECT?
@@ -278,6 +291,64 @@ class EventRowLocationCell extends Component {
   //     return false
   //   }
   // }
+
+  handleOnBlur () {
+    // if dropdown is open, blur needs to be overriden
+    // selectLocation -> send backend manually.
+    if (!this.state.showDropdown) {
+      console.log('blur')
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === this.props.id
+      })
+
+      var locationDataForBackend = thisEvent.locationObj
+      let locationNameStr = thisEvent.locationName.getPlainText()
+      if (!thisEvent.locationObj && !locationNameStr) {
+        // do nothing
+      } else if (!thisEvent.locationObj && locationNameStr) {
+        let locationObj = {
+          verified: false,
+          name: locationNameStr,
+          address: null,
+          latitude: null,
+          longitude: null
+        }
+        locationDataForBackend = locationObj
+      } else if (thisEvent.locationObj && !locationNameStr) {
+        locationDataForBackend = null
+      } else if (thisEvent.locationObj && locationNameStr) {
+        if (thisEvent.locationObj.name !== locationNameStr) {
+          // modify location obj. always verified false
+          let locationObj = {
+            verified: false,
+            name: locationNameStr,
+            address: thisEvent.locationObj.address,
+            latitude: thisEvent.locationObj.latitude,
+            longitude: thisEvent.locationObj.longitude,
+            countryCode: thisEvent.locationObj.countryCode
+          }
+          locationDataForBackend = locationObj
+        }
+      }
+
+      // need to send backend the most updated locationObj
+      console.log('locationDataForBackend', locationDataForBackend)
+      this.props.updateEventBackend({
+        variables: {
+          id: this.props.id,
+          locationData: locationDataForBackend
+        },
+        refetchQueries: [{
+          query: queryItinerary,
+          variables: {
+            id: this.props.events.events.find(e => {
+              return this.props.id
+            }).ItineraryId
+          }
+        }]
+      })
+    } // close if
+  }
 
   handleOnFocus () {
     this.props.changeActiveField('location')
@@ -366,7 +437,7 @@ class EventRowLocationCell extends Component {
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={(e) => this.handleCellClick(e)} style={{position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.setState({focusClicked: false})} handleReturn={(event, editorState) => this.handleReturn()} />
+        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.handleOnBlur()} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'table'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
         }

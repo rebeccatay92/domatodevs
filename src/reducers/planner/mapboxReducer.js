@@ -1,5 +1,6 @@
 export const mapboxReducer = (state = {
-  daysToShow: [1]
+  daysToShow: [1],
+  popupToShow: '' // '' or 'event' or 'search'
 }, action) => {
   switch (action.type) {
     case 'CLICK_DAY_CHECKBOX':
@@ -17,6 +18,11 @@ export const mapboxReducer = (state = {
           daysToShow: [...state.daysToShow, action.day]
         }
       }
+    case 'SET_POPUP_TO_SHOW':
+      return {
+        ...state,
+        popupToShow: action.name
+      }
     default:
       return state
   }
@@ -25,4 +31,6 @@ export const mapboxReducer = (state = {
 /*
 daysToShow: [1, 3, 5] controls which days left bar shows, markers to plot. (note: active event must be in a visible day)
 theres activeEventId in activeEventReducer -> controls which marker is focused.
+
+popupToShow: '' or 'event' or 'search'. only 1 popup is visible at any time (to prevent overlap)
 */

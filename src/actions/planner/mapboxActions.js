@@ -4,3 +4,10 @@ export const clickDayCheckbox = (day) => {
     day
   }
 }
+
+export const setPopupToShow = (name) => {
+  return {
+    type: 'SET_POPUP_TO_SHOW',
+    name
+  }
+}

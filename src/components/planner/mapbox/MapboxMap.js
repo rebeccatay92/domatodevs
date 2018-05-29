@@ -3,7 +3,7 @@ import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
 import LocationCellDropdown from '../LocationCellDropdown'
 
 import { connect } from 'react-redux'
-import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
+import { clickDayCheckbox, setPopupToShow } from '../../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
 
@@ -36,7 +36,6 @@ class MapboxMap extends Component {
       eventMarkersToDisplay: [],
       searchMarker: null
     }
-    // this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
     this.queryGooglePlacesAutoSuggest = _.debounce(this.queryGooglePlacesAutoSuggest, 500)
   }
 
@@ -61,24 +60,6 @@ class MapboxMap extends Component {
       searchMarker: null
     })
   }
-
-  // queryMapboxGeocodingService (queryStr) {
-  //   console.log('debounced', queryStr)
-  //   if (!queryStr) return
-  //   let geocodingEndpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${queryStr}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
-  //
-  //   fetch(geocodingEndpoint)
-  //     .then(response => {
-  //       return response.json()
-  //     })
-  //     .then(json => {
-  //       console.log('json.features', json.features)
-  //       this.setState({predictions: json.features})
-  //     })
-  //     .catch(err => {
-  //       console.log('err', err)
-  //     })
-  // }
 
   queryGooglePlacesAutoSuggest (queryStr) {
     if (queryStr.length <= 2) {
@@ -159,10 +140,12 @@ class MapboxMap extends Component {
           showDropdown: false,
           showSpinner: false,
           predictions: [],
-          searchMarker: locationObj
+          searchMarker: locationObj,
+          center: [locationObj.longitude, locationObj.latitude]
         }, () => {
           // this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
           // this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+          this.props.setPopupToShow('search')
         })
       })
       .catch(err => {
@@ -314,20 +297,33 @@ class MapboxMap extends Component {
     if (this.props.activeEventId === id) {
       this.props.updateActiveEvent('')
       this.props.setRightBarFocusedTab('')
+      this.props.setPopupToShow('')
     } else {
       this.props.updateActiveEvent(id)
       this.props.setRightBarFocusedTab('event')
+      this.props.setPopupToShow('event')
     }
   }
 
+  onSearchMarkerClick () {
+    if (this.props.mapbox.popupToShow !== 'search') {
+      this.props.setPopupToShow('search')
+    } else if (this.props.mapbox.popupToShow === 'search') {
+      this.props.setPopupToShow('')
+    }
+  }
+
+  closePopup () {
+    this.props.setPopupToShow('')
+  }
+
   render () {
-    // console.log('map', this.map)
     let activeEvent = this.state.eventMarkersToDisplay.find(e => {
       return e.id === this.props.activeEventId
     })
 
     return (
-      <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
+      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
         <ZoomControl position='top-left' />
 
         {/* PLACE SEARCH BAR */}
@@ -342,13 +338,14 @@ class MapboxMap extends Component {
         </div>
 
         {this.state.searchMarker &&
-          <Marker coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}}>
+          <Marker coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}} onClick={() => this.onSearchMarkerClick()}>
             <i className='material-icons' style={{color: 'black', fontSize: '35px'}}>place</i>
           </Marker>
         }
-        {this.state.searchMarker &&
+        {this.state.searchMarker && this.props.mapbox.popupToShow === 'search' &&
           <Popup anchor='bottom' coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
+              <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
               <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.name}</h6>
@@ -356,10 +353,14 @@ class MapboxMap extends Component {
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.address}</h6>
               </div>
               {this.props.activeEventId &&
-                <React.Fragment>
-                  <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
-                  <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
-                </React.Fragment>
+                <div style={{display: 'inline-flex'}}>
+                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                    <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                  </div>
+                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                    <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
+                  </div>
+                </div>
               }
             </div>
           </Popup>
@@ -387,9 +388,10 @@ class MapboxMap extends Component {
           )
         })}
 
-        {activeEvent &&
+        {activeEvent && this.props.mapbox.popupToShow === 'event' &&
           <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
+              <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
               <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.name}</h6>
@@ -401,7 +403,6 @@ class MapboxMap extends Component {
             </div>
           </Popup>
         }
-        {/* <CustomPopup /> */}
       </Map>
     )
   }
@@ -420,6 +421,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     clickDayCheckbox: (day) => {
       dispatch(clickDayCheckbox(day))
+    },
+    setPopupToShow: (name) => {
+      dispatch(setPopupToShow(name))
     },
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))
