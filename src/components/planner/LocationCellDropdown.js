@@ -5,6 +5,7 @@ import Radium from 'radium'
 
 const inTableStyle = {position: 'absolute', top: '83px', left: '-1px', background: 'white', width: '100%', border: '1px solid #ed685a', zIndex: '2', minHeight: '35px', boxSizing: 'content-box'}
 const inRightBarStyle = {position: 'absolute', top: '20px', left: '0', background: 'white', width: '100%', border: '1px solid black', zIndex: '2', minHeight: '35px'}
+const inMapStyle = {position: 'absolute', top: '32px', left: 0, width: '300px', background: 'white'}
 
 class LocationCellDropdown extends Component {
   constructor (props) {
@@ -17,14 +18,26 @@ class LocationCellDropdown extends Component {
   }
 
   render () {
+    let containerStyle
+    if (this.props.openedIn === 'table') {
+      containerStyle = inTableStyle
+    } else if (this.props.openedIn === 'rightBar') {
+      containerStyle = inRightBarStyle
+    } else if (this.props.openedIn === 'map') {
+      containerStyle = inMapStyle
+    }
     return (
-      <div style={this.props.openedIn === 'table' ? inTableStyle : inRightBarStyle}>
+      <div style={containerStyle}>
         <ClipLoader color={'#000000'} size={28} loading={this.props.showSpinner} />
         {!this.props.showSpinner && this.props.predictions.length === 0 &&
           <h6 style={{background: 'white', margin: 0, cursor: 'pointer', minHeight: '35px', fontFamily: 'Roboto, san-serif', fontWeight: '300', fontSize: '16px', lineHeight: '24px', paddingLeft: '8px'}}>No results found</h6>
         }
         {!this.props.showSpinner && this.props.predictions.map((prediction, i) => {
-          return <h6 key={i} style={{background: 'white', margin: 0, cursor: 'pointer', minHeight: '35px', fontFamily: 'Roboto, san-serif', fontWeight: '300', fontSize: '16px', lineHeight: '25px', padding: '5px 0 5px 8px', ':hover': {background: 'rgb(245, 245, 245)'}}} onClick={() => this.props.selectLocation(prediction)}>{prediction.structured_formatting.main_text}{prediction.structured_formatting.secondary_text}</h6>
+          return (
+            <h6 key={i} style={{background: 'white', margin: 0, cursor: 'pointer', minHeight: '35px', fontFamily: 'Roboto, san-serif', fontWeight: '300', fontSize: '16px', lineHeight: '25px', padding: '5px 0 5px 8px', ':hover': {background: 'rgb(245, 245, 245)'}}} onClick={() => this.props.selectLocation(prediction)}>
+              {prediction.structured_formatting.main_text} {prediction.structured_formatting.secondary_text}
+            </h6>
+          )
         })}
         {!this.props.showSpinner &&
           <div style={{width: '50%', height: '30px', padding: '8px'}}>

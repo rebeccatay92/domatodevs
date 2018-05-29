@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
-// import CustomPopup from './CustomPopup'
+import LocationCellDropdown from '../LocationCellDropdown'
 
 import { connect } from 'react-redux'
 import { clickDayCheckbox } from '../../../actions/planner/mapboxActions'
@@ -23,43 +23,147 @@ class MapboxMap extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      geocodeInputField: '',
+      searchInputField: '',
       showDropdown: false,
-      geocodingResults: [],
+      showSpinner: false,
+      predictions: [],
       center: [0, 0], // lng/lat in that order to match GeoJSON
-      zoom: [1], // needs to be wrapped in array
+      zoom: [1],
       containerStyle: {
         height: 'calc(100vh - 52px - 51px)',
         width: 'calc(100vw - 376px)' // has to start with larger version. if smaller, changing containerStyle does not fetch more tiles
       },
-      eventMarkersToDisplay: []
+      eventMarkersToDisplay: [],
+      searchMarker: null
     }
-    this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
+    // this.queryMapboxGeocodingService = _.debounce(this.queryMapboxGeocodingService, 500)
+    this.queryGooglePlacesAutoSuggest = _.debounce(this.queryGooglePlacesAutoSuggest, 500)
   }
 
-  onGeocodeInputChange (e) {
+  onSearchInputChange (e) {
     let queryStr = e.target.value
     this.setState({
-      geocodeInputField: queryStr,
-      showDropdown: true
+      searchInputField: queryStr,
+      showDropdown: true,
+      showSpinner: true,
+      predictions: []
     })
-    this.queryMapboxGeocodingService(queryStr)
-    // this.queryHEREPlacesAutosuggest(queryStr)
-    // this.queryHEREPlacesSearch(queryStr)
+    this.queryGooglePlacesAutoSuggest(queryStr)
+    // this.queryMapboxGeocodingService(queryStr)
   }
 
-  queryMapboxGeocodingService (queryStr) {
-    console.log('debounced', queryStr)
-    if (!queryStr) return
-    let geocodingEndpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${queryStr}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
+  clearSearch () {
+    this.setState({
+      searchInputField: '',
+      showDropdown: false,
+      showSpinner: false,
+      predictions: [],
+      searchMarker: null
+    })
+  }
 
-    fetch(geocodingEndpoint)
+  // queryMapboxGeocodingService (queryStr) {
+  //   console.log('debounced', queryStr)
+  //   if (!queryStr) return
+  //   let geocodingEndpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${queryStr}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
+  //
+  //   fetch(geocodingEndpoint)
+  //     .then(response => {
+  //       return response.json()
+  //     })
+  //     .then(json => {
+  //       console.log('json.features', json.features)
+  //       this.setState({predictions: json.features})
+  //     })
+  //     .catch(err => {
+  //       console.log('err', err)
+  //     })
+  // }
+
+  queryGooglePlacesAutoSuggest (queryStr) {
+    if (queryStr.length <= 2) {
+      this.setState({
+        showDropdown: false,
+        showSpinner: false,
+        predictions: []
+      })
+      return
+    }
+    console.log('query google with', queryStr)
+
+    let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
+    let googlePlacesEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&input=${queryStr}`
+
+    fetch(googlePlacesEndpoint)
       .then(response => {
         return response.json()
       })
       .then(json => {
-        console.log('json.features', json.features)
-        this.setState({geocodingResults: json.features})
+        console.log('places response', json.predictions)
+        this.setState({
+          predictions: json.predictions,
+          showSpinner: false
+        })
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
+  }
+
+  // handles search dropdown click outside
+  handleClickOutside () {
+    this.setState({
+      showDropdown: false,
+      showSpinner: false,
+      predictions: []
+    })
+  }
+
+  selectLocation (prediction) {
+    // fetch place details (name, address, latlng).
+    let placeId = prediction.place_id
+    let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
+    let placeDetailsEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/details/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&&placeid=${placeId}`
+
+    fetch(placeDetailsEndpoint)
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        // console.log('place result', json.result)
+        let result = json.result
+        let latitude = result.geometry.location.lat
+        let longitude = result.geometry.location.lng
+        let address = result.formatted_address
+        let name = result.name
+        let countryCode
+        let addressComponent = json.result.address_components.find(e => {
+          return e.types.includes('country')
+        })
+        if (addressComponent) {
+          countryCode = addressComponent.short_name
+        }
+
+        // let nameContentState = ContentState.createFromText(name)
+        let locationObj = {
+          verified: true,
+          name: name,
+          address: address,
+          latitude: latitude,
+          longitude: longitude,
+          countryCode: countryCode
+        }
+
+        this.setState({
+          searchInputField: name,
+          showDropdown: false,
+          showSpinner: false,
+          predictions: [],
+          searchMarker: locationObj
+        }, () => {
+          // this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+          // this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+        })
       })
       .catch(err => {
         console.log('err', err)
@@ -224,26 +328,42 @@ class MapboxMap extends Component {
 
     return (
       <Map style={mapStyle} zoom={this.state.zoom} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
-        {/* ALL CONTROLS SHOULD BE ZINDEX 10 */}
         <ZoomControl position='top-left' />
 
-        <div style={{display: 'flex', alignItems: 'center', position: 'absolute', top: '10px', left: '50px', width: '300px', height: '32px', zIndex: 10, boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)', background: 'white'}}>
+        {/* PLACE SEARCH BAR */}
+        <div style={{display: 'flex', alignItems: 'center', position: 'absolute', top: '10px', left: '50px', width: '300px', height: '32px', zIndex: 10, boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)', background: 'white'}} className={'ignoreMapSearchInputField'}>
           <i className='material-icons' style={{marginLeft: '5px', color: 'rgba(60, 58, 68, 1)'}}>search</i>
-          <input type='text' style={{width: '100%', height: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onGeocodeInputChange(e)} value={this.state.geocodeInputField} />
-          <i className='material-icons' style={{cursor: 'pointer', color: 'rgba(60, 58, 68, 0.7)'}}>clear</i>
+          <input type='text' style={{width: '100%', height: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onSearchInputChange(e)} value={this.state.searchInputField} />
+          <i className='material-icons' style={{cursor: 'pointer', color: 'rgba(60, 58, 68, 0.7)'}} onClick={() => this.clearSearch()}>clear</i>
 
-          {true &&
-            <div style={{position: 'absolute', top: '32px', left: 0, width: '300px', background: 'white'}}>
-              {this.state.geocodingResults.map((result, i) => {
-                return <h6 key={i} style={{cursor: 'pointer', margin: 0, padding: '8px', minHeight: '35px'}}>
-                  {/* MAPBOX GEOCODER */}
-                  address={result.place_name} latlng={result.center[0]}, {result.center[1]}
-                </h6>
-              })}
-            </div>
+          {this.state.showDropdown &&
+            <LocationCellDropdown openedIn={'map'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreMapSearchInputField`} />
           }
         </div>
-        {/* <Geocoder /> */}
+
+        {this.state.searchMarker &&
+          <Marker coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}}>
+            <i className='material-icons' style={{color: 'black', fontSize: '35px'}}>place</i>
+          </Marker>
+        }
+        {this.state.searchMarker &&
+          <Popup anchor='bottom' coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
+            <div style={{width: '300px'}}>
+              <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.name}</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.address}</h6>
+              </div>
+              {this.props.activeEventId &&
+                <React.Fragment>
+                  <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
+                  <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
+                </React.Fragment>
+              }
+            </div>
+          </Popup>
+        }
 
         {/* DAYS FILTER */}
         <div style={{position: 'absolute', bottom: '10px', left: '10px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)', zIndex: 10, padding: '10px', boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)'}}>
@@ -267,9 +387,8 @@ class MapboxMap extends Component {
           )
         })}
 
-        {/* HOW TO STYLE THIS!!! */}
         {activeEvent &&
-          <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}}>
+          <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
               <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
