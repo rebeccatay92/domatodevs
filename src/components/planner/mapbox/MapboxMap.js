@@ -7,6 +7,10 @@ import { clickDayCheckbox, setPopupToShow } from '../../../actions/planner/mapbo
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
 
+import { graphql, compose } from 'react-apollo'
+import { updateEventBackend } from '../../../apollo/event'
+import { queryItinerary } from '../../../apollo/itinerary'
+
 import _ from 'lodash'
 
 import { MapboxMapStyles as styles } from '../../../Styles/MapboxMapStyles'
@@ -112,7 +116,7 @@ class MapboxMap extends Component {
         return response.json()
       })
       .then(json => {
-        // console.log('place result', json.result)
+        console.log('place result', json.result)
         let result = json.result
         let latitude = result.geometry.location.lat
         let longitude = result.geometry.location.lng
@@ -318,6 +322,61 @@ class MapboxMap extends Component {
     this.props.setPopupToShow('')
   }
 
+  saveLocation () {
+    // console.log('save location', this.state.searchMarker)
+    let EventId = this.props.activeEventId
+    this.props.updateEventBackend({
+      variables: {
+        id: EventId,
+        locationData: this.state.searchMarker
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: {
+          id: this.props.events.events.find(e => {
+            return e.id === EventId
+          }).ItineraryId
+        }
+      }]
+    })
+
+    this.clearSearch()
+    this.props.setPopupToShow('event')
+  }
+
+  saveAddress () {
+    console.log('save address', this.state.searchMarker)
+    let EventId = this.props.activeEventId
+
+    let currentEvent = this.props.events.events.find(e => {
+      return e.id === EventId
+    })
+    let currentLocationName = currentEvent.locationObj.name
+    // console.log('current event', currentEvent)
+
+    this.props.updateEventBackend({
+      variables: {
+        id: EventId,
+        locationData: {
+          ...this.state.searchMarker,
+          verified: false,
+          name: currentLocationName
+        }
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: {
+          id: this.props.events.events.find(e => {
+            return e.id === EventId
+          }).ItineraryId
+        }
+      }]
+    })
+
+    this.clearSearch()
+    this.props.setPopupToShow('event')
+  }
+
   render () {
     // activeEvent is the event that was clicked (might not hv marker)
     let activeEvent = this.props.events.events.find(e => {
@@ -349,24 +408,26 @@ class MapboxMap extends Component {
             <i className='material-icons' style={{color: 'black', fontSize: '35px'}}>place</i>
           </Marker>
         }
+
+        {/* SEARCH MARKER POPUP */}
         {this.state.searchMarker && this.props.mapbox.popupToShow === 'search' &&
           <Popup anchor='bottom' coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
               <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
               <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.name}</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
+                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
+                <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.name}</h6>
+                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.address}</h6>
               </div>
               {this.props.activeEventId &&
                 <div style={{display: 'inline-flex'}}>
                   {activeEventLocationObj &&
                     <React.Fragment>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveLocation()}>
                         <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
                       </div>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveAddress()}>
                         <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
                       </div>
                     </React.Fragment>
@@ -409,9 +470,9 @@ class MapboxMap extends Component {
             <div style={{width: '300px'}}>
               <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
               <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.name}</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
+                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
+                <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.name}</h6>
+                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.address}</h6>
               </div>
               {/* <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>
@@ -451,4 +512,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapboxMap)
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateEventBackend, {name: 'updateEventBackend'})
+)(MapboxMap))

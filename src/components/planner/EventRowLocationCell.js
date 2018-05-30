@@ -162,7 +162,7 @@ class EventRowLocationCell extends Component {
             query: queryItinerary,
             variables: {
               id: this.props.events.events.find(e => {
-                return this.props.id
+                return e.id === this.props.id
               }).ItineraryId
             }
           }]
@@ -342,7 +342,7 @@ class EventRowLocationCell extends Component {
           query: queryItinerary,
           variables: {
             id: this.props.events.events.find(e => {
-              return this.props.id
+              return e.id === this.props.id
             }).ItineraryId
           }
         }]
