@@ -9,6 +9,8 @@ import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActio
 
 import _ from 'lodash'
 
+import { MapboxMapStyles as styles } from '../../../Styles/MapboxMapStyles'
+
 // react wrapper factory
 const Map = ReactMapboxGL({
   accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
@@ -48,7 +50,6 @@ class MapboxMap extends Component {
       predictions: []
     })
     this.queryGooglePlacesAutoSuggest(queryStr)
-    // this.queryMapboxGeocodingService(queryStr)
   }
 
   clearSearch () {
@@ -318,19 +319,25 @@ class MapboxMap extends Component {
   }
 
   render () {
-    let activeEvent = this.state.eventMarkersToDisplay.find(e => {
+    // activeEvent is the event that was clicked (might not hv marker)
+    let activeEvent = this.props.events.events.find(e => {
       return e.id === this.props.activeEventId
     })
-
+    let activeEventLocationObj
+    if (activeEvent) {
+      activeEventLocationObj = activeEvent.locationObj
+    }
+    // console.log('activeEvent', activeEvent)
+    // console.log('activeEventLocationObj', activeEventLocationObj)
     return (
       <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
         <ZoomControl position='top-left' />
 
         {/* PLACE SEARCH BAR */}
-        <div style={{display: 'flex', alignItems: 'center', position: 'absolute', top: '10px', left: '50px', width: '300px', height: '32px', zIndex: 10, boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)', background: 'white'}} className={'ignoreMapSearchInputField'}>
-          <i className='material-icons' style={{marginLeft: '5px', color: 'rgba(60, 58, 68, 1)'}}>search</i>
-          <input type='text' style={{width: '100%', height: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: '300', color: 'rgba(60, 58, 68, 1)', fontSize: '16px', outline: 'none'}} placeholder='Search for a location' onChange={e => this.onSearchInputChange(e)} value={this.state.searchInputField} />
-          <i className='material-icons' style={{cursor: 'pointer', color: 'rgba(60, 58, 68, 0.7)'}} onClick={() => this.clearSearch()}>clear</i>
+        <div style={styles.searchBarContainer} className={'ignoreMapSearchInputField'}>
+          <i className='material-icons' style={styles.searchBarSearchIcon}>search</i>
+          <input type='text' style={styles.searchBarInputField} placeholder='Search for a location' onChange={e => this.onSearchInputChange(e)} value={this.state.searchInputField} />
+          <i className='material-icons' style={styles.searchBarClearIcon} onClick={() => this.clearSearch()}>clear</i>
 
           {this.state.showDropdown &&
             <LocationCellDropdown openedIn={'map'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreMapSearchInputField`} />
@@ -354,12 +361,21 @@ class MapboxMap extends Component {
               </div>
               {this.props.activeEventId &&
                 <div style={{display: 'inline-flex'}}>
-                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
-                    <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
-                  </div>
-                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
-                    <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
-                  </div>
+                  {activeEventLocationObj &&
+                    <React.Fragment>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                      </div>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
+                      </div>
+                    </React.Fragment>
+                  }
+                  {!activeEventLocationObj &&
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                    </div>
+                  }
                 </div>
               }
             </div>
@@ -367,7 +383,7 @@ class MapboxMap extends Component {
         }
 
         {/* DAYS FILTER */}
-        <div style={{position: 'absolute', bottom: '10px', left: '10px', height: '200px', width: '150px', background: 'rgb(245, 245, 245)', zIndex: 10, padding: '10px', boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)', border: '1px solid rgba(0, 0, 0, 0.1)'}}>
+        <div style={styles.daysFilterContainer}>
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
@@ -388,7 +404,7 @@ class MapboxMap extends Component {
           )
         })}
 
-        {activeEvent && this.props.mapbox.popupToShow === 'event' &&
+        {activeEvent && activeEvent.longitudeDisplay && this.props.mapbox.popupToShow === 'event' &&
           <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
               <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
@@ -398,8 +414,9 @@ class MapboxMap extends Component {
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.address}</h6>
               </div>
-              {/* <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div>
-              <div style={{display: 'inline-block', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>button</div> */}
+              {/* <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>
+                <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Delete Location</span>
+              </div> */}
             </div>
           </Popup>
         }
