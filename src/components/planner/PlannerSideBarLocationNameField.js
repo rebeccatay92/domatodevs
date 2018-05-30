@@ -207,6 +207,14 @@ class PlannerSideBarLocationNameField extends Component {
       }
     }
 
+    // IF LOCATION OBJ CHANGED, UPDATE EDITORSTATE WITH NEW NAME.
+    if (oldPropsThisEvent.locationObj !== nextPropsThisEvent.locationObj) {
+      let nameContentState = ContentState.createFromText(nextPropsThisEvent.locationObj.name)
+      this.setState({
+        editorState: EditorState.createWithContent(nameContentState)
+      })
+    }
+
     // need to update location name if activeEventId changes
     if (nextProps.activeEventId !== this.props.activeEventId) {
       console.log('active event id changed')

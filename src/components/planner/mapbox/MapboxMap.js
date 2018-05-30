@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { clickDayCheckbox, setPopupToShow } from '../../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
+// import { updateEvent } from '../../../actions/planner/eventsActions'
 
 import { graphql, compose } from 'react-apollo'
 import { updateEventBackend } from '../../../apollo/event'
@@ -342,6 +343,7 @@ class MapboxMap extends Component {
 
     this.clearSearch()
     this.props.setPopupToShow('event')
+    // this.props.updateEvent(EventId, 'locationName'
   }
 
   saveAddress () {
