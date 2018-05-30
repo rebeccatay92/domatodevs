@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-// import { graphql, compose } from 'react-apollo'
+
 import { Editor, EditorState, ContentState } from 'draft-js'
 
 import LocationCellDropdown from './LocationCellDropdown'
@@ -158,22 +158,22 @@ class PlannerSideBarLocationNameField extends Component {
           predictions: [],
           overwriteContentState: true
         }, () => {
-          // this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
-          // this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
+          this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
+          this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
         })
         this.props.updateEventBackend({
           variables: {
             id: this.props.id,
             locationData: locationObj
-          },
-          refetchQueries: [{
-            query: queryItinerary,
-            variables: {
-              id: this.props.events.events.find(e => {
-                return e.id === this.props.id
-              }).ItineraryId
-            }
-          }]
+          }
+          // refetchQueries: [{
+          //   query: queryItinerary,
+          //   variables: {
+          //     id: this.props.events.events.find(e => {
+          //       return e.id === this.props.id
+          //     }).ItineraryId
+          //   }
+          // }]
         })
       })
       .catch(err => {
@@ -209,7 +209,8 @@ class PlannerSideBarLocationNameField extends Component {
 
     // IF LOCATION OBJ CHANGED, UPDATE EDITORSTATE WITH NEW NAME.
     if (oldPropsThisEvent.locationObj !== nextPropsThisEvent.locationObj) {
-      let nameContentState = ContentState.createFromText(nextPropsThisEvent.locationObj.name)
+      let nameContentState = nextPropsThisEvent.locationObj ? ContentState.createFromText(nextPropsThisEvent.locationObj.name) : ContentState.createFromText('')
+
       this.setState({
         editorState: EditorState.createWithContent(nameContentState)
       })
@@ -226,72 +227,6 @@ class PlannerSideBarLocationNameField extends Component {
         editorState: EditorState.createWithContent(nameContentState)
       })
     }
-
-    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ. THIS IS NOT TRIGGERING IN RIGHT BAR.
-    // let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
-    // let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
-    // if (isPreviouslyActiveCell && isNotNextActiveCell) {
-    //   console.log('ACTIVE LOCATION CELL LOST FOCUS')
-    //   // click somewhere else, tab
-    //   let thisEvent = nextProps.events.events.find(e => {
-    //     return e.id === nextProps.id
-    //   })
-    //   var locationDataForBackend = thisEvent.locationObj
-    //
-    //   // handle click outside
-    //   let locationNameStr = thisEvent.locationName.getPlainText()
-    //
-    //   if (!thisEvent.locationObj && !locationNameStr) {
-    //     // do nothing
-    //   } else if (!thisEvent.locationObj && locationNameStr) {
-    //     let locationObj = {
-    //       verified: false,
-    //       name: locationNameStr,
-    //       address: null,
-    //       latitude: null,
-    //       longitude: null
-    //     }
-    //     this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
-    //     locationDataForBackend = locationObj
-    //   } else if (thisEvent.locationObj && !locationNameStr) {
-    //     // clear location
-    //     this.props.updateEvent(this.props.id, 'locationObj', null, true)
-    //     locationDataForBackend = null
-    //   } else if (thisEvent.locationObj && locationNameStr) {
-    //     // console.log('has obj, has current str')
-    //     if (thisEvent.locationObj.name !== locationNameStr) {
-    //       // modify location obj. always verified false
-    //       let locationObj = {
-    //         verified: false,
-    //         name: locationNameStr,
-    //         address: thisEvent.locationObj.address,
-    //         latitude: thisEvent.locationObj.latitude,
-    //         longitude: thisEvent.locationObj.longitude,
-    //         countryCode: thisEvent.locationObj.countryCode
-    //       }
-    //       this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
-    //       locationDataForBackend = locationObj
-    //       // console.log('modified obj', locationObj)
-    //     }
-    //   }
-    //
-    //   // get the most updated locationObj and send backend.
-    //   console.log('locationDataForBackend', locationDataForBackend)
-    //   this.props.updateEventBackend({
-    //     variables: {
-    //       id: this.props.id,
-    //       locationData: locationDataForBackend
-    //     },
-    //     refetchQueries: [{
-    //       query: queryItinerary,
-    //       variables: {
-    //         id: this.props.events.events.find(e => {
-    //           return this.props.id
-    //         }).ItineraryId
-    //       }
-    //     }]
-    //   })
-    // }
   }
 
   handleOnBlur () {
@@ -333,19 +268,24 @@ class PlannerSideBarLocationNameField extends Component {
 
       // need to send backend the most updated locationObj
       console.log('locationDataForBackend', locationDataForBackend)
+      let nameContentState = locationDataForBackend ? ContentState.createFromText(locationDataForBackend.name) : ContentState.createFromText('')
+
+      this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)
+      this.props.updateEvent(this.props.id, 'locationObj', locationDataForBackend, true)
+
       this.props.updateEventBackend({
         variables: {
           id: this.props.id,
           locationData: locationDataForBackend
-        },
-        refetchQueries: [{
-          query: queryItinerary,
-          variables: {
-            id: this.props.events.events.find(e => {
-              return e.id === this.props.id
-            }).ItineraryId
-          }
-        }]
+        }
+        // refetchQueries: [{
+        //   query: queryItinerary,
+        //   variables: {
+        //     id: this.props.events.events.find(e => {
+        //       return e.id === this.props.id
+        //     }).ItineraryId
+        //   }
+        // }]
       })
     } // close if
   }
@@ -395,11 +335,9 @@ class PlannerSideBarLocationNameField extends Component {
           latitude: null,
           longitude: null
         }
-        // this.props.updateEvent(this.props.id, 'locationAddress', null, false)
         this.props.updateEvent(this.props.id, 'locationObj', locationObj, true)
       } else if (locationObj && !locationNameInEditor) {
         this.props.updateEvent(this.props.id, 'locationName', ContentState.createFromText(''), true)
-        // this.props.updateEvent(this.props.id, 'locationAddress', ContentState.createFromText(''), true)
         this.props.updateEvent(this.props.id, 'locationObj', null, true)
       } else if (locationObj && locationNameInEditor) {
         // check if name matches

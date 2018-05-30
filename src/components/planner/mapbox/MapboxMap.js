@@ -6,13 +6,14 @@ import { connect } from 'react-redux'
 import { clickDayCheckbox, setPopupToShow } from '../../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
-// import { updateEvent } from '../../../actions/planner/eventsActions'
+import { updateEvent } from '../../../actions/planner/eventsActions'
 
 import { graphql, compose } from 'react-apollo'
 import { updateEventBackend } from '../../../apollo/event'
 import { queryItinerary } from '../../../apollo/itinerary'
 
 import _ from 'lodash'
+import { Editor, EditorState, ContentState } from 'draft-js'
 
 import { MapboxMapStyles as styles } from '../../../Styles/MapboxMapStyles'
 
@@ -330,24 +331,27 @@ class MapboxMap extends Component {
       variables: {
         id: EventId,
         locationData: this.state.searchMarker
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: {
-          id: this.props.events.events.find(e => {
-            return e.id === EventId
-          }).ItineraryId
-        }
-      }]
+      }
+      // refetchQueries: [{
+      //   query: queryItinerary,
+      //   variables: {
+      //     id: this.props.events.events.find(e => {
+      //       return e.id === EventId
+      //     }).ItineraryId
+      //   }
+      // }]
     })
 
     this.clearSearch()
     this.props.setPopupToShow('event')
-    // this.props.updateEvent(EventId, 'locationName'
+
+    let nameContentState = ContentState.createFromText(this.state.searchMarker.name)
+    this.props.updateEvent(EventId, 'locationName', nameContentState, false)
+    this.props.updateEvent(EventId, 'locationObj', this.state.searchMarker, false)
   }
 
   saveAddress () {
-    console.log('save address', this.state.searchMarker)
+    // console.log('save address', this.state.searchMarker)
     let EventId = this.props.activeEventId
 
     let currentEvent = this.props.events.events.find(e => {
@@ -364,19 +368,23 @@ class MapboxMap extends Component {
           verified: false,
           name: currentLocationName
         }
-      },
-      refetchQueries: [{
-        query: queryItinerary,
-        variables: {
-          id: this.props.events.events.find(e => {
-            return e.id === EventId
-          }).ItineraryId
-        }
-      }]
+      }
+      // refetchQueries: [{
+      //   query: queryItinerary,
+      //   variables: {
+      //     id: this.props.events.events.find(e => {
+      //       return e.id === EventId
+      //     }).ItineraryId
+      //   }
+      // }]
     })
 
     this.clearSearch()
     this.props.setPopupToShow('event')
+
+    let nameContentState = ContentState.createFromText(currentLocationName)
+    this.props.updateEvent(EventId, 'locationName', nameContentState, false)
+    this.props.updateEvent(EventId, 'locationObj', this.state.searchMarker, false)
   }
 
   render () {
@@ -467,7 +475,7 @@ class MapboxMap extends Component {
           )
         })}
 
-        {activeEvent && activeEvent.longitudeDisplay && this.props.mapbox.popupToShow === 'event' &&
+        {activeEvent && activeEvent.longitudeDisplay && activeEvent.locationObj && this.props.mapbox.popupToShow === 'event' &&
           <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
               <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
@@ -510,6 +518,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setRightBarFocusedTab: (tabName) => {
       dispatch(setRightBarFocusedTab(tabName))
+    },
+    updateEvent: (id, property, value, fromSidebar) => {
+      dispatch(updateEvent(id, property, value, fromSidebar))
     }
   }
 }

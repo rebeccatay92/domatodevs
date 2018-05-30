@@ -150,23 +150,29 @@ class EventRowLocationCell extends Component {
           predictions: [],
           overwriteContentState: true
         }, () => {
-          // this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-          // this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
+          this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+          this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
         })
         this.props.updateEventBackend({
           variables: {
             id: this.props.id,
             locationData: locationObj
-          },
-          refetchQueries: [{
-            query: queryItinerary,
-            variables: {
-              id: this.props.events.events.find(e => {
-                return e.id === this.props.id
-              }).ItineraryId
-            }
-          }]
+          }
         })
+        // this.props.updateEventBackend({
+        //   variables: {
+        //     id: this.props.id,
+        //     locationData: locationObj
+        //   },
+        //   refetchQueries: [{
+        //     query: queryItinerary,
+        //     variables: {
+        //       id: this.props.events.events.find(e => {
+        //         return e.id === this.props.id
+        //       }).ItineraryId
+        //     }
+        //   }]
+        // })
       })
       .catch(err => {
         console.log('err', err)
@@ -210,87 +216,7 @@ class EventRowLocationCell extends Component {
         })
       }
     }
-
-    // CHECK IF CELL FOCUS IS LOST. THEN SEND BACKEND THE LOCATIONOBJ
-    // let isPreviouslyActiveCell = (this.props.activeEventId === this.props.id && this.props.activeField === 'location')
-    // let isNotNextActiveCell = (nextProps.activeEventId !== nextProps.id || nextProps.activeField !== 'location')
-    // if (isPreviouslyActiveCell && isNotNextActiveCell) {
-    //   console.log('ACTIVE LOCATION CELL LOST FOCUS')
-    //   // click somewhere else, tab
-    //   let thisEvent = nextProps.events.events.find(e => {
-    //     return e.id === nextProps.id
-    //   })
-    //
-    //   var locationDataForBackend = thisEvent.locationObj
-    //
-    //   let locationNameStr = thisEvent.locationName.getPlainText()
-    //   if (!thisEvent.locationObj && !locationNameStr) {
-    //     // do nothing
-    //   } else if (!thisEvent.locationObj && locationNameStr) {
-    //     let locationObj = {
-    //       verified: false,
-    //       name: locationNameStr,
-    //       address: null,
-    //       latitude: null,
-    //       longitude: null
-    //     }
-    //     this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
-    //     locationDataForBackend = locationObj
-    //   } else if (thisEvent.locationObj && !locationNameStr) {
-    //     // clear location
-    //     this.props.updateEvent(this.props.id, 'locationObj', null, false)
-    //     locationDataForBackend = null
-    //   } else if (thisEvent.locationObj && locationNameStr) {
-    //     // console.log('has obj, has current str')
-    //     if (thisEvent.locationObj.name !== locationNameStr) {
-    //       // modify location obj. always verified false
-    //       let locationObj = {
-    //         verified: false,
-    //         name: locationNameStr,
-    //         address: thisEvent.locationObj.address,
-    //         latitude: thisEvent.locationObj.latitude,
-    //         longitude: thisEvent.locationObj.longitude,
-    //         countryCode: thisEvent.locationObj.countryCode
-    //       }
-    //       this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
-    //       locationDataForBackend = locationObj
-    //       // console.log('modified obj', locationObj)
-    //     }
-    //   }
-    //
-    //   // need to send backend the most updated locationObj
-    //   // do i still need the redux updateEvent?
-    //   console.log('locationDataForBackend', locationDataForBackend)
-    //   this.props.updateEventBackend({
-    //     variables: {
-    //       id: this.props.id,
-    //       locationData: locationDataForBackend
-    //     },
-    //     refetchQueries: [{
-    //       query: queryItinerary,
-    //       variables: {
-    //         id: this.props.events.events.find(e => {
-    //           return this.props.id
-    //         }).ItineraryId
-    //       }
-    //     }]
-    //   })
-    // }
   }
-
-  // IS THIS CORRECT?
-  // shouldComponentUpdate (nextProps) {
-  //   const { refetch, updatedId, updatedProperty } = this.props.events
-  //   if (refetch) {
-  //     return true
-  //   } else if (updatedId === this.props.id && updatedProperty === 'location') {
-  //     return true
-  //   } else if ((nextProps.activeEventId === this.props.id && nextProps.activeField === 'location') || (this.props.activeEventId === this.props.id && this.props.activeField === 'location')) {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }
 
   handleOnBlur () {
     // if dropdown is open, blur needs to be overriden
@@ -333,19 +259,24 @@ class EventRowLocationCell extends Component {
 
       // need to send backend the most updated locationObj
       console.log('locationDataForBackend', locationDataForBackend)
+      let nameContentState = locationDataForBackend ? ContentState.createFromText(locationDataForBackend.name) : ContentState.createFromText('')
+
+      this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
+      this.props.updateEvent(this.props.id, 'locationObj', locationDataForBackend, false)
+
       this.props.updateEventBackend({
         variables: {
           id: this.props.id,
           locationData: locationDataForBackend
-        },
-        refetchQueries: [{
-          query: queryItinerary,
-          variables: {
-            id: this.props.events.events.find(e => {
-              return e.id === this.props.id
-            }).ItineraryId
-          }
-        }]
+        }
+        // refetchQueries: [{
+        //   query: queryItinerary,
+        //   variables: {
+        //     id: this.props.events.events.find(e => {
+        //       return e.id === this.props.id
+        //     }).ItineraryId
+        //   }
+        // }]
       })
     } // close if
   }
