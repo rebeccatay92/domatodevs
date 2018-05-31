@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState, ContentState } from 'draft-js'
+import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
@@ -20,6 +21,7 @@ const eventPropertyNames = {
 
 const getEventProp = (columnInput, eventInput) => {
   const eventProperties = {
+    Currency: eventInput.currency,
     Event: eventInput.eventType,
     Price: eventInput.cost,
     Notes: eventInput.notes,
@@ -141,16 +143,32 @@ class EventRowInfoCell extends Component {
     })
   }
 
+  handleCurrencySelect (e) {
+    const { id } = this.props
+    this.props.updateEventBackend({
+      variables: {
+        id,
+        currency: e.target.value
+      }
+    })
+  }
+
   render () {
     const { column, id } = this.props
+    const { events } = this.props.events
     const property = eventPropertyNames[column]
     const isActive = this.props.activeEventId === id && this.props.activeField === property
-    // const { events } = this.props.events
+    const eventCurrency = getEventProp('Currency', events.filter(event => event.id === id)[0])
 
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div className='planner-table-cell' onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}} onKeyDown={(e) => this.handleKeyDown(e)}>
+      <div onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e)}>
+        {column === 'Price' && <select onChange={(e) => this.handleCurrencySelect(e)} defaultValue={eventCurrency} onFocus={() => this.handleOnFocus()} style={{backgroundColor: 'transparent', border: 'none'}}>
+          {allCurrenciesList().map((currency, i) => {
+            return <option key={i} value={currency}>{currency}</option>
+          })}
+        </select>}
         <Editor editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.handleOnBlur()} />
       </div>
     )
