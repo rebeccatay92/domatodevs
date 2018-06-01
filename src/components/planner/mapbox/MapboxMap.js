@@ -42,7 +42,9 @@ class MapboxMap extends Component {
         width: 'calc(100vw - 376px)' // has to start with larger version. if smaller, changing containerStyle does not fetch more tiles
       },
       eventMarkersToDisplay: [],
-      searchMarker: null
+      searchMarker: null, // obj holding locationData
+      plottingCustomMarker: false,
+      customMarker: null
     }
     this.queryGooglePlacesAutoSuggest = _.debounce(this.queryGooglePlacesAutoSuggest, 500)
   }
@@ -324,7 +326,7 @@ class MapboxMap extends Component {
     this.props.setPopupToShow('')
   }
 
-  saveLocation () {
+  saveSearchLocation () {
     // console.log('save location', this.state.searchMarker)
     let EventId = this.props.activeEventId
     this.props.updateEventBackend({
@@ -350,7 +352,7 @@ class MapboxMap extends Component {
     this.props.updateEvent(EventId, 'locationObj', this.state.searchMarker, false)
   }
 
-  saveAddress () {
+  saveSearchAddress () {
     // console.log('save address', this.state.searchMarker)
     let EventId = this.props.activeEventId
 
@@ -387,6 +389,35 @@ class MapboxMap extends Component {
     this.props.updateEvent(EventId, 'locationObj', this.state.searchMarker, false)
   }
 
+  togglePlotCustom () {
+    let mapCanvasContainer = this.map.getCanvasContainer()
+    // console.log('canvascontainer', mapCanvasContainer)
+
+    if (!this.state.plottingCustomMarker) {
+      this.setState({
+        plottingCustomMarker: true
+      })
+      mapCanvasContainer.style.cursor = 'crosshair'
+    } else {
+      this.setState({
+        plottingCustomMarker: false
+      })
+      mapCanvasContainer.style.cursor = ''
+    }
+  }
+
+  onMapClick (map, evt) {
+    if (this.state.plottingCustomMarker) {
+      console.log('coordinates', evt.lngLat.lat, evt.lngLat.lng)
+      this.setState({
+        customMarker: {
+          latitude: evt.lngLat.lat,
+          longitude: evt.lngLat.lng
+        }
+      })
+    }
+  }
+
   render () {
     // activeEvent is the event that was clicked (might not hv marker)
     let activeEvent = this.props.events.events.find(e => {
@@ -399,8 +430,27 @@ class MapboxMap extends Component {
     // console.log('activeEvent', activeEvent)
     // console.log('activeEventLocationObj', activeEventLocationObj)
     return (
-      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)}>
+      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
         <ZoomControl position='top-left' />
+
+        {/* CUSTOM MARKER */}
+        <div style={styles.customMarkerButtonContainer} onClick={() => this.togglePlotCustom()}>
+          {!this.state.plottingCustomMarker &&
+            <React.Fragment>
+              <i className='material-icons'>place</i>
+              <span>Custom Marker</span>
+            </React.Fragment>
+          }
+          {this.state.plottingCustomMarker &&
+            <span>Cancel</span>
+          }
+        </div>
+
+        {this.state.customMarker &&
+          <Marker coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}}>
+            <i className='material-icons' style={{color: 'green', fontSize: '35px'}}>place</i>
+          </Marker>
+        }
 
         {/* PLACE SEARCH BAR */}
         <div style={styles.searchBarContainer} className={'ignoreMapSearchInputField'}>
@@ -434,10 +484,10 @@ class MapboxMap extends Component {
                 <div style={{display: 'inline-flex'}}>
                   {activeEventLocationObj &&
                     <React.Fragment>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveLocation()}>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchLocation()}>
                         <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
                       </div>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveAddress()}>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchAddress()}>
                         <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
                       </div>
                     </React.Fragment>

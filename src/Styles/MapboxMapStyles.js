@@ -33,7 +33,22 @@ const searchBarInputField = {
   outline: 'none'
 }
 /* ----------------------------- */
+const customMarkerButtonContainer = {
+  position: 'absolute',
+  zIndex: 10,
+  left: '360px',
+  top: '10px',
+  background: 'white',
+  height: '32px',
+  boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)',
+  border: '1px solid rgba(0, 0, 0, 0.1)',
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+  padding: '0 8px'
+}
 
+/* ----------------------------- */
 const daysFilterContainer = {
   position: 'absolute',
   bottom: '10px',
@@ -56,5 +71,6 @@ export const MapboxMapStyles = {
   searchBarSearchIcon,
   searchBarClearIcon,
   searchBarInputField,
+  customMarkerButtonContainer,
   daysFilterContainer
 }
