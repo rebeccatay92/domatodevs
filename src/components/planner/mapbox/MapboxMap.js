@@ -513,8 +513,12 @@ class MapboxMap extends Component {
       return e.id === this.props.activeEventId
     })
     let activeEventLocationObj
+    let activeEventHasCoordinates
     if (activeEvent) {
       activeEventLocationObj = activeEvent.locationObj
+      if (activeEventLocationObj) {
+        activeEventHasCoordinates = activeEventLocationObj.longitude && activeEventLocationObj.latitude
+      }
     }
     console.log('activeEvent', activeEvent)
     console.log('activeEventLocationObj', activeEventLocationObj)
@@ -662,7 +666,7 @@ class MapboxMap extends Component {
           )
         })}
 
-        {activeEvent && activeEvent.longitudeDisplay && activeEvent.locationObj && this.props.mapbox.popupToShow === 'event' &&
+        {activeEvent && activeEventHasCoordinates && this.props.mapbox.popupToShow === 'event' &&
           <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
             <div style={{width: '300px'}}>
               <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
