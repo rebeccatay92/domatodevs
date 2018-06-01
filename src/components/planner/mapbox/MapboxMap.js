@@ -243,7 +243,7 @@ class MapboxMap extends Component {
       }
     }
     // extract visble markers and offset lat lng
-    if (nextProps.events.events !== this.props.events.events) {
+    if (nextProps.events.events !== this.props.events.events || nextProps.mapbox.daysToShow !== this.props.mapbox.daysToShow) {
       let daysToShow = nextProps.mapbox.daysToShow
       let eventsInVisibleDays = nextProps.events.events.filter(e => {
         return daysToShow.includes(e.startDay)
@@ -458,10 +458,15 @@ class MapboxMap extends Component {
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
-              <label key={`day${day}`} style={{display: 'block'}}>
-                <input type='checkbox' checked={isChecked} onChange={() => this.clickDayCheckbox(day)} />
-                <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px'}}>Day {day}</span>
-              </label>
+              <div key={`day${day}`} style={{display: 'flex', alignItems: 'center', margin: '8px 0'}}>
+                {isChecked &&
+                  <i className='material-icons' onClick={() => this.clickDayCheckbox(day)} style={{color: 'rgb(67, 132, 150)', cursor: 'pointer'}}>check_box</i>
+                }
+                {!isChecked &&
+                  <i className='material-icons' onClick={() => this.clickDayCheckbox(day)} style={{color: 'rgb(67, 132, 150)', cursor: 'pointer'}}>check_box_outline_blank</i>
+                }
+                <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(67, 132, 150)', marginLeft: '8px'}}>Day {day}</span>
+              </div>
             )
           })}
         </div>

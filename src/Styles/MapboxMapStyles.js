@@ -38,11 +38,11 @@ const daysFilterContainer = {
   position: 'absolute',
   bottom: '10px',
   left: '10px',
-  height: '200px',
+  // height: '200px',
   width: '150px',
   background: 'rgb(245, 245, 245)',
   zIndex: 10,
-  padding: '10px',
+  padding: '0 8px',
   boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)',
   border: '1px solid rgba(0, 0, 0, 0.1)'
 }
