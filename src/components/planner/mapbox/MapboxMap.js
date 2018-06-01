@@ -21,6 +21,7 @@ import { MapboxMapStyles as styles } from '../../../Styles/MapboxMapStyles'
 const Map = ReactMapboxGL({
   accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
   minZoom: 1,
+  dragRotate: false,
   attributionControl: false,
   logoPosition: 'bottom-right'
 })
@@ -322,6 +323,14 @@ class MapboxMap extends Component {
     }
   }
 
+  onCustomMarkerClick () {
+    if (this.props.mapbox.popupToShow !== 'custom') {
+      this.props.setPopupToShow('custom')
+    } else if (this.props.mapbox.popupToShow === 'custom') {
+      this.props.setPopupToShow('')
+    }
+  }
+
   closePopup () {
     this.props.setPopupToShow('')
   }
@@ -408,14 +417,67 @@ class MapboxMap extends Component {
 
   onMapClick (map, evt) {
     if (this.state.plottingCustomMarker) {
-      console.log('coordinates', evt.lngLat.lat, evt.lngLat.lng)
-      this.setState({
-        customMarker: {
-          latitude: evt.lngLat.lat,
-          longitude: evt.lngLat.lng
+      // console.log('coordinates', evt.lngLat.lat, evt.lngLat.lng)
+      // this.setState({
+      //   customMarker: {
+      //     latitude: evt.lngLat.lat,
+      //     longitude: evt.lngLat.lng
+      //   }
+      // })
+      this.queryMapboxReverseGeocoder(evt.lngLat.lat, evt.lngLat.lng)
+    }
+  }
+
+  queryMapboxReverseGeocoder (lat, lng) {
+    let endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
+    fetch(endpoint)
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        if (!json.features.length) {
+          console.log('no results')
+          this.setState({
+            customMarker: {
+              latitude: lat,
+              longitude: lng,
+              countryCode: '',
+              name: 'No address found',
+              address: 'No address found'
+            }
+          })
+          // what to display in popup
+        } else {
+          let result = json.features[0]
+          console.log('result', result)
+          let name = result.text
+          let address = result.place_name
+          let countryCode
+          // find country code
+          let contextArr = result.context
+          let countryCodeObj = contextArr.find(e => {
+            return e.id.includes('country')
+          })
+          if (countryCodeObj) {
+            countryCode = countryCodeObj.short_code.toUpperCase()
+          }
+          let customMarker = {
+            latitude: lat,
+            longitude: lng,
+            countryCode,
+            name,
+            address
+          }
+          this.setState({
+            customMarker: customMarker
+          }, () => {
+            this.props.setPopupToShow('custom')
+          })
         }
       })
-    }
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   render () {
@@ -442,14 +504,50 @@ class MapboxMap extends Component {
             </React.Fragment>
           }
           {this.state.plottingCustomMarker &&
-            <span>Cancel</span>
+            <React.Fragment>
+              <i className='material-icons'>place</i>
+              <span>Cancel</span>
+            </React.Fragment>
           }
         </div>
 
         {this.state.customMarker &&
-          <Marker coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}}>
+          <Marker coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}} onClick={() => this.onCustomMarkerClick()}>
             <i className='material-icons' style={{color: 'green', fontSize: '35px'}}>place</i>
           </Marker>
+        }
+
+        {this.state.customMarker && this.props.mapbox.popupToShow === 'custom' &&
+          <Popup anchor='bottom' coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
+            <div style={{width: '300px'}}>
+              <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
+              <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
+                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
+                <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.name}</h6>
+                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
+                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.address}</h6>
+              </div>
+              {this.props.activeEventId &&
+                <div style={{display: 'inline-flex'}}>
+                  {activeEventLocationObj &&
+                    <React.Fragment>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchLocation()}>
+                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                      </div>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchAddress()}>
+                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
+                      </div>
+                    </React.Fragment>
+                  }
+                  {!activeEventLocationObj &&
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </Popup>
         }
 
         {/* PLACE SEARCH BAR */}

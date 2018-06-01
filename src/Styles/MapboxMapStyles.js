@@ -45,7 +45,7 @@ const customMarkerButtonContainer = {
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
-  padding: '0 8px'
+  padding: '0 8px 0 0'
 }
 
 /* ----------------------------- */
