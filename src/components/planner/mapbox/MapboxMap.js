@@ -343,14 +343,6 @@ class MapboxMap extends Component {
         id: EventId,
         locationData: this.state.searchMarker
       }
-      // refetchQueries: [{
-      //   query: queryItinerary,
-      //   variables: {
-      //     id: this.props.events.events.find(e => {
-      //       return e.id === EventId
-      //     }).ItineraryId
-      //   }
-      // }]
     })
 
     this.clearSearch()
@@ -380,14 +372,6 @@ class MapboxMap extends Component {
           name: currentLocationName
         }
       }
-      // refetchQueries: [{
-      //   query: queryItinerary,
-      //   variables: {
-      //     id: this.props.events.events.find(e => {
-      //       return e.id === EventId
-      //     }).ItineraryId
-      //   }
-      // }]
     })
 
     this.clearSearch()
@@ -395,7 +379,51 @@ class MapboxMap extends Component {
 
     let nameContentState = ContentState.createFromText(currentLocationName)
     this.props.updateEvent(EventId, 'locationName', nameContentState, false)
-    this.props.updateEvent(EventId, 'locationObj', this.state.searchMarker, false)
+    this.props.updateEvent(EventId, 'locationObj', {...this.state.searchMarker, name: currentLocationName, verified: false}, false)
+  }
+
+  saveCustomLocation () {
+    console.log('custom marker', this.state.customMarker)
+    let EventId = this.props.activeEventId
+    this.props.updateEventBackend({
+      variables: {
+        id: EventId,
+        locationData: this.state.customMarker
+      }
+    })
+
+    this.togglePlotCustom()
+
+    let nameContentState = ContentState.createFromText(this.state.customMarker.name)
+    this.props.updateEvent(EventId, 'locationName', nameContentState, false)
+    this.props.updateEvent(EventId, 'locationObj', this.state.customMarker, false)
+  }
+
+  saveCustomAddress () {
+    console.log('custom marker', this.state.customMarker)
+
+    let EventId = this.props.activeEventId
+    let currentEvent = this.props.events.events.find(e => {
+      return e.id === EventId
+    })
+    let currentLocationName = currentEvent.locationObj.name
+
+    this.props.updateEventBackend({
+      variables: {
+        id: EventId,
+        locationData: {
+          ...this.state.customMarker,
+          verified: false,
+          name: currentLocationName
+        }
+      }
+    })
+
+    this.togglePlotCustom()
+
+    let nameContentState = ContentState.createFromText(currentLocationName)
+    this.props.updateEvent(EventId, 'locationName', nameContentState, false)
+    this.props.updateEvent(EventId, 'locationObj', {...this.state.customMarker, name: currentLocationName, verified: false}, false)
   }
 
   togglePlotCustom () {
@@ -409,44 +437,40 @@ class MapboxMap extends Component {
       mapCanvasContainer.style.cursor = 'crosshair'
     } else {
       this.setState({
-        plottingCustomMarker: false
+        plottingCustomMarker: false,
+        customMarker: null
       })
       mapCanvasContainer.style.cursor = ''
+      this.props.setPopupToShow('')
     }
   }
 
   onMapClick (map, evt) {
     if (this.state.plottingCustomMarker) {
-      // console.log('coordinates', evt.lngLat.lat, evt.lngLat.lng)
-      // this.setState({
-      //   customMarker: {
-      //     latitude: evt.lngLat.lat,
-      //     longitude: evt.lngLat.lng
-      //   }
-      // })
       this.queryMapboxReverseGeocoder(evt.lngLat.lat, evt.lngLat.lng)
     }
   }
 
   queryMapboxReverseGeocoder (lat, lng) {
-    let endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
+    let endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}&language=en`
     fetch(endpoint)
       .then(response => {
         return response.json()
       })
       .then(json => {
         if (!json.features.length) {
-          console.log('no results')
+          // console.log('no results')
           this.setState({
             customMarker: {
               latitude: lat,
               longitude: lng,
               countryCode: '',
-              name: 'No address found',
-              address: 'No address found'
+              name: null,
+              address: null,
+              verified: false
             }
           })
-          // what to display in popup
+          this.props.setPopupToShow('custom')
         } else {
           let result = json.features[0]
           console.log('result', result)
@@ -455,13 +479,16 @@ class MapboxMap extends Component {
           let countryCode
           // find country code
           let contextArr = result.context
-          let countryCodeObj = contextArr.find(e => {
-            return e.id.includes('country')
-          })
-          if (countryCodeObj) {
-            countryCode = countryCodeObj.short_code.toUpperCase()
+          if (contextArr) {
+            let countryCodeObj = contextArr.find(e => {
+              return e.id.includes('country')
+            })
+            if (countryCodeObj) {
+              countryCode = countryCodeObj.short_code.toUpperCase()
+            }
           }
           let customMarker = {
+            verified: true,
             latitude: lat,
             longitude: lng,
             countryCode,
@@ -489,8 +516,8 @@ class MapboxMap extends Component {
     if (activeEvent) {
       activeEventLocationObj = activeEvent.locationObj
     }
-    // console.log('activeEvent', activeEvent)
-    // console.log('activeEventLocationObj', activeEventLocationObj)
+    console.log('activeEvent', activeEvent)
+    console.log('activeEventLocationObj', activeEventLocationObj)
     return (
       <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
         <ZoomControl position='top-left' />
@@ -522,25 +549,32 @@ class MapboxMap extends Component {
             <div style={{width: '300px'}}>
               <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
               <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
-                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
-                <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.name}</h6>
-                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.address}</h6>
+                {this.state.customMarker.address &&
+                  <React.Fragment>
+                    <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
+                    <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.name}</h6>
+                    <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
+                    <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.address}</h6>
+                  </React.Fragment>
+                }
+                {!this.state.customMarker.address &&
+                  <h6>No result found. Please try again.</h6>
+                }
               </div>
-              {this.props.activeEventId &&
+              {this.props.activeEventId && this.state.customMarker.address &&
                 <div style={{display: 'inline-flex'}}>
                   {activeEventLocationObj &&
                     <React.Fragment>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchLocation()}>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveCustomLocation()}>
                         <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
                       </div>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchAddress()}>
+                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveCustomAddress()}>
                         <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
                       </div>
                     </React.Fragment>
                   }
                   {!activeEventLocationObj &&
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveCustomLocation()}>
                       <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
                     </div>
                   }
