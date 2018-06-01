@@ -80,6 +80,37 @@ export const eventsReducer = (state = {
         updatedProperty: action.property,
         updatedFromSidebar: action.fromSidebar
       }
+    case 'PLANNER_EVENT_HOVER_OVER_EVENT':
+      let targetDayEventsArr = state.events.filter(event => event.startDay === action.day && !event.dropzone)
+      let newTargetDayEventsArr = [
+        ...targetDayEventsArr.slice(0, action.index),
+        ...[{startDay: action.day, dropzone: true}],
+        ...targetDayEventsArr.slice(action.index)
+      ].filter(event => event.id !== action.event.id)
+      let eventsArrWithoutTargetDay = state.events.filter(event => event.startDay !== action.day && event.id !== action.event.id && !event.dropzone)
+      console.log([...eventsArrWithoutTargetDay, ...newTargetDayEventsArr])
+      return {
+        ...state,
+        ...{
+          events: [...eventsArrWithoutTargetDay, ...newTargetDayEventsArr],
+          refetch: true
+        }
+      }
+    case 'DROP_PLANNER_EVENT':
+      targetDayEventsArr = state.events.filter(event => event.startDay === action.event.startDay && !event.dropzone)
+      newTargetDayEventsArr = [
+        ...targetDayEventsArr.slice(0, action.index),
+        ...[action.event],
+        ...targetDayEventsArr.slice(action.index)
+      ]
+      eventsArrWithoutTargetDay = state.events.filter(event => event.startDay !== action.event.startDay)
+      return {
+        ...state,
+        ...{
+          events: [...eventsArrWithoutTargetDay, ...newTargetDayEventsArr],
+          refetch: true
+        }
+      }
     default:
       return state
   }
