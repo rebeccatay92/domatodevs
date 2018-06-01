@@ -15,6 +15,61 @@ import EventRowLocationCell from './EventRowLocationCell'
 import { toggleSpinner } from '../../actions/spinnerActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
+import { initializeEvents, plannerEventHoverOverEvent, dropPlannerEvent } from '../../actions/planner/eventsActions'
+
+// helpers
+import { initializeEventsHelper } from '../../helpers/initializeEvents'
+
+const eventRowSource = {
+  beginDrag (props) {
+    return {...props.event, ...{index: props.index}}
+  },
+  endDrag (props, monitor) {
+    if (!monitor.didDrop()) {
+      initializeEventsHelper(props.data.findItinerary.events, props.initializeEvents)
+    }
+  }
+}
+
+const eventRowTarget = {
+  hover (props, monitor) {
+    if (props.event.dropzone) return
+    let day = props.event.startDay
+    if (monitor.getItemType() === 'plannerEvent') {
+      props.plannerEventHoverOverEvent(props.index, monitor.getItem(), day)
+    }
+  },
+  drop (props, monitor) {
+    let day = props.event.startDay
+    if (day === monitor.getItem().day && monitor.getItem().index === props.index) {
+      initializeEventsHelper(props.data.findItinerary.events, props.initializeEvents)
+      return
+    }
+    const newEvent = {
+      ...monitor.getItem(),
+      ...{
+        startDay: day
+      }
+    }
+    props.dropPlannerEvent(newEvent, props.index)
+  }
+}
+
+function collectTarget (connect, monitor) {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  }
+}
+
+function collectSource (connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    getItem: monitor.getItem(),
+    isDragging: monitor.isDragging()
+  }
+}
 
 class EventRow extends Component {
   constructor (props) {
@@ -46,7 +101,7 @@ class EventRow extends Component {
   }
 
   render () {
-    const { columns, id } = this.props
+    const { columns, id, connectDropTarget, connectDragSource, connectDragPreview, event, isDragging } = this.props
     let columnState = []
     let activeColumn = ''
     columns.forEach((column, i) => {
@@ -60,14 +115,29 @@ class EventRow extends Component {
     // console.log('columnState', columnState)
 
     // const startTime = new Date(event.startTime * 1000).toGMTString().substring(17, 22)
-    return (
+
+    if (event.dropzone) {
+      return connectDropTarget(
+        <tr>
+          <td style={{width: '0px'}}>
+            <div style={{minHeight: '83px', position: 'relative', display: 'flex', alignItems: 'center'}} />
+          </td>
+          <td colSpan={5} />
+        </tr>
+      )
+    }
+    return connectDropTarget(connectDragPreview(
       <tr style={{position: 'relative'}} onMouseOver={() => this.setState({hover: true})} onMouseOut={() => this.setState({hover: false})}>
-        <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
-        <td style={{width: '114px', textAlign: 'center'}}>
+        <td style={{width: '0px'}}>
+          <div style={{minHeight: '83px', position: 'relative', display: 'flex', alignItems: 'center'}}>
+            {connectDragSource(<i className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>drag_indicator</i>)}
+          </div>
+        </td>
+        <td className='planner-table-cell' style={{width: '114px', textAlign: 'center'}}>
           <EventRowTimeCell id={id} />
         </td>
         {columnState.map((column, i) => {
-          return <td key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
+          return <td className='planner-table-cell' key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
             {column.name === 'Location' &&
               <EventRowLocationCell id={id} />
             }
@@ -80,7 +150,7 @@ class EventRow extends Component {
           <i className='material-icons delete-event-button' style={{fontSize: '16px', opacity: '0.2', cursor: 'pointer', position: 'relative', top: '16px'}} onClick={() => this.handleDelete()}>close</i>
         </td>
       </tr>
-    )
+    ))
   }
 }
 
@@ -100,10 +170,28 @@ const mapDispatchToProps = (dispatch) => {
     },
     setRightBarFocusedTab: (tabName) => {
       dispatch(setRightBarFocusedTab(tabName))
+    },
+    initializeEvents: (events) => {
+      dispatch(initializeEvents(events))
+    },
+    plannerEventHoverOverEvent: (index, event, day) => {
+      dispatch(plannerEventHoverOverEvent(index, event, day))
+    },
+    dropPlannerEvent: (event, index) => {
+      dispatch(dropPlannerEvent(event, index))
     }
   }
 }
 
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
   graphql(deleteEvent, { name: 'deleteEvent' })
-)(EventRow))
+)(DragSource('plannerEvent', eventRowSource, collectSource)(DropTarget(['plannerEvent', 'bucketItem'], eventRowTarget, collectTarget)(EventRow))))

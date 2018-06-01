@@ -23,7 +23,7 @@ import { ContentState } from 'draft-js'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
-import { updateEvent, initializeEvents } from '../../actions/planner/eventsActions'
+import { updateEvent, initializeEvents, plannerEventHoverOverEvent } from '../../actions/planner/eventsActions'
 import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 
 import moment from 'moment'
@@ -31,9 +31,12 @@ import moment from 'moment'
 const Element = Scroll.Element
 
 const dateTarget = {
-  drop (props, monitor) {
-  },
   hover (props, monitor) {
+    let day = props.day
+    if (props.events.filter(event => event.dropzone && event.startDay === day).length > 0) return
+    if (monitor.getItemType() === 'plannerEvent') {
+      props.plannerEventHoverOverEvent(props.events.length, monitor.getItem(), day)
+    }
   }
 }
 
@@ -169,14 +172,14 @@ class DateBox extends Component {
               })}
             </tr>}
             {this.props.events.map((event, i) => {
-              return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} />
+              return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} index={i} />
             })}
-            <tr>
+            {connectDropTarget(<tr>
               <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
               <td>
                 <span onClick={() => this.handleCreateEvent()} style={{paddingLeft: '24px', cursor: 'pointer'}} className='add-event-link'>+ Add Event</span>
               </td>
-            </tr>
+            </tr>)}
           </tbody>
         </table>
       </div>
@@ -296,6 +299,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setTimeCellFocus: (focus) => {
       dispatch(setTimeCellFocus(focus))
+    },
+    plannerEventHoverOverEvent: (index, event, day) => {
+      dispatch(plannerEventHoverOverEvent(index, event, day))
     }
   }
 }
@@ -322,4 +328,4 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(changingLoadSequence, { name: 'changingLoadSequence' }),
   graphql(updateItineraryDetails, { name: 'updateItineraryDetails' }),
   graphql(createEvent, { name: 'createEvent' })
-)(DropTarget(['activity', 'plannerActivity'], dateTarget, collect)(Radium(DateBox))))
+)(DropTarget(['plannerEvent'], dateTarget, collect)(Radium(DateBox))))
