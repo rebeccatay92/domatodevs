@@ -155,7 +155,7 @@ class PlannerRightBar extends Component {
                 </label>
               </div>
             </div>
-            <hr style={styles.sectionDivider} />
+            {/* <hr style={styles.sectionDivider} />
             <div style={{width: '100%', display: 'flex'}}>
               <div style={styles.iconSection}>
                 <i className='material-icons' style={styles.icon}>attach_file</i>
@@ -163,7 +163,7 @@ class PlannerRightBar extends Component {
               <div style={styles.inputSection}>
                 <span style={styles.attachFileLabelText}>Attach a file</span>
               </div>
-            </div>
+            </div> */}
           </div>
         }
       </div>

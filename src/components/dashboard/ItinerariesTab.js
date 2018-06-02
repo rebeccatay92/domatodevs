@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { graphql } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
+import { withRouter } from 'react-router-dom'
 import Radium from 'radium'
 
-import { itinerariesByUser } from '../../apollo/itinerary'
+import { itinerariesByUser, updateItineraryDetails } from '../../apollo/itinerary'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
 import { ItinerariesTabStyles as styles } from '../../Styles/ItinerariesTabStyles'
@@ -34,6 +35,23 @@ class ItinerariesTab extends Component {
     }
   }
 
+  redirectToPlanner (id) {
+    this.props.history.push(`/planner/${id}`)
+  }
+
+  togglePrivacy (ItineraryId, isPrivate) {
+    // console.log('id', ItineraryId)
+    this.props.updateItineraryDetails({
+      variables: {
+        id: ItineraryId,
+        isPrivate: isPrivate
+      },
+      refetchQueries: [{
+        query: itinerariesByUser
+      }]
+    })
+  }
+
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
     // console.log('itineraries', this.props.data.itinerariesByUser)
@@ -49,10 +67,10 @@ class ItinerariesTab extends Component {
                   <span style={styles.daysCountriesText}>Days</span>
                 </div>
                 {itinerary.countries.map((country, i) => {
-                  return <span style={styles.daysCountriesText}>{country.name}</span>
+                  return <span style={styles.daysCountriesText} key={i}>{country.name}</span>
                 })}
               </div>
-              <div style={styles.itineraryDetailsContainer}>
+              <div style={styles.itineraryDetailsContainer} onClick={() => this.redirectToPlanner(itinerary.id)}>
                 <h1 style={styles.itineraryName}>{itinerary.name}</h1>
                 <h4 style={styles.itineraryDescription}>{itinerary.description}</h4>
                 <div style={styles.itineraryTagsRow}>
@@ -75,8 +93,12 @@ class ItinerariesTab extends Component {
                 <span style={styles.timeSinceCreated}>2 years ago</span>
               </div>
               <div style={styles.privacyToggleContainer}>
-                {/* <i className='material-icons'>visibility</i> */}
-                <i className='material-icons'>lock_outline</i>
+                {itinerary.isPrivate &&
+                  <i className='material-icons' onClick={() => this.togglePrivacy(itinerary.id, false)}>lock_outline</i>
+                }
+                {!itinerary.isPrivate &&
+                  <i className='material-icons' onClick={() => this.togglePrivacy(itinerary.id, true)}>visibility</i>
+                }
               </div>
             </div>
           )
@@ -100,4 +122,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(graphql(itinerariesByUser)(Radium(ItinerariesTab)))
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(itinerariesByUser),
+  graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
+)(withRouter(Radium(ItinerariesTab))))

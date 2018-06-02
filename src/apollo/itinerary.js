@@ -6,6 +6,7 @@ export const queryItinerary = gql`
       id
       name
       description
+      isPrivate
       countries {
         id
         name
@@ -58,6 +59,7 @@ export const allItineraries = gql`
       name
       days
       startDate
+      isPrivate
       countries {
         id
         name
@@ -84,6 +86,7 @@ export const itinerariesByUser = gql`
       description
       days
       startDate
+      isPrivate
       countries {
         id
         name
@@ -138,20 +141,23 @@ export const updateItineraryDetails = gql`
     $name: String,
     $description: String,
     $startDate: Int,
-    $days: Int
+    $days: Int,
+    $isPrivate: Boolean
   ) {
     updateItineraryDetails(
       id: $id,
       name: $name,
       description: $description,
       startDate: $startDate,
-      days: $days
+      days: $days,
+      isPrivate: $isPrivate
     ) {
       id
       name
       description
       days
       startDate
+      isPrivate
     }
   }`
 

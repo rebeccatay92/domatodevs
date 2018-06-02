@@ -18,7 +18,7 @@ const itineraryContainer = {
   padding: '20px 0',
   // margin: '20px 0',
   display: 'flex',
-  cursor: 'pointer',
+  // cursor: 'pointer',
   ':hover': {
     background: 'rgb(245, 245, 245)'
   }
@@ -54,7 +54,7 @@ const daysNumber = {
   ...coreFonts.garamondRegular,
   fontSize: '32px',
   lineHeight: '36px',
-  color: coreColors.blackSolid,
+  color: coreColors.black07,
   padding: 0
 }
 
@@ -71,13 +71,14 @@ const itineraryDetailsContainer = {
   display: 'flex',
   flexFlow: 'column nowrap',
   justfifyContent: 'flex-start',
-  padding: '0 20px'
+  padding: '0 20px',
+  cursor: 'pointer'
 }
 
 const itineraryName = {
   ...coreFonts.garamondRegular,
   fontSize: '24px',
-  color: coreColors.blackSolid,
+  color: coreColors.black07,
   margin: 0,
   lineHeight: '40px'
 }
@@ -126,7 +127,7 @@ const budgetContainer = {
 
 const budgetText = {
   ...coreFonts.garamondRegular,
-  color: coreColors.blackSolid,
+  color: coreColors.black07,
   fontSize: '24px'
 }
 
@@ -135,7 +136,9 @@ const privacyToggleContainer = {
   height: '100%',
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  color: coreColors.black07,
+  cursor: 'pointer'
 }
 
 /* ----------------------------- */
