@@ -79,7 +79,7 @@ class PlannerPage extends Component {
           }
         </div>
 
-        <PlannerRightBar />
+        <PlannerRightBar daysArr={daysIntArr} datesArr={datesUnixArr} />
         <PlannerBottomBar />
       </div>
     )

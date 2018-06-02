@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-
-import { Editor, EditorState } from 'draft-js'
+import { graphql } from 'react-apollo'
 
 import { connect } from 'react-redux'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
+
+import { updateEventBackend } from '../../apollo/event'
 
 import PlannerSideBarInfoField from './PlannerSideBarInfoField'
 import PlannerSideBarLocationNameField from './PlannerSideBarLocationNameField'
@@ -19,6 +20,27 @@ class PlannerRightBar extends Component {
     } else {
       this.props.setRightBarFocusedTab(tabName)
     }
+  }
+
+  updateTime (e, field) {
+    // console.log('event', e.target.value, field)
+    let unixSecsFromMidnight
+    if (e.target.value) {
+      this.props.updateEvent(this.props.activeEventId, field, e.target.value, false)
+      let hours = (e.target.value).substring(0, 2)
+      let mins = (e.target.value).substring(3, 5)
+      // console.log('hours', hours, 'mins', mins)
+      unixSecsFromMidnight = hours * 3600 + mins * 60
+    } else {
+      this.props.updateEvent(this.props.activeEventId, field, '', false)
+      unixSecsFromMidnight = null
+    }
+    this.props.updateEventBackend({
+      variables: {
+        id: this.props.activeEventId,
+        [field]: unixSecsFromMidnight
+      }
+    })
   }
 
   render () {
@@ -63,15 +85,20 @@ class PlannerRightBar extends Component {
               <div style={styles.inputSection}>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Day / Date</span>
-                  <select style={styles.dayDropdown}>
-                    <option style={{margin: 0}}>Day 1</option>
-                  </select>
+                  {!this.props.datesArr &&
+                    <select style={styles.dayDropdown}>
+                      <option style={{margin: 0}}>Day 1</option>
+                    </select>
+                  }
+                  {this.props.datesArr &&
+                    <input type='date'/>
+                  }
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Time</span>
-                  <input type='time' style={styles.timeInput} />
+                  <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} />
                   <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '14px', color: 'rgba(60, 58, 68, 0.7)', margin: '0 5px 0 5px'}}>to</span>
-                  <input type='time' style={styles.timeInput} />
+                  <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} />
                 </label>
               </div>
             </div>
@@ -190,4 +217,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PlannerRightBar)
+export default connect(mapStateToProps, mapDispatchToProps)(graphql(updateEventBackend, {name: 'updateEventBackend'})(PlannerRightBar))
