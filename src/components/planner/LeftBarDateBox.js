@@ -6,6 +6,10 @@ import { clickDayCheckbox } from '../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
+import { graphql, compose } from 'react-apollo'
+import { createEvent } from '../../apollo/event'
+import { queryItinerary } from '../../apollo/itinerary'
+
 import moment from 'moment'
 
 class LeftBarDateBox extends Component {
@@ -33,6 +37,26 @@ class LeftBarDateBox extends Component {
     }
     // dispatch clickDayCheckbox redux
     this.props.clickDayCheckbox(day)
+  }
+
+  createNewEvent () {
+    let day = this.props.day
+    let loadSequence = this.props.events.length + 1
+    this.props.createEvent({
+      variables: {
+        ItineraryId: this.props.itineraryId,
+        startDay: day,
+        loadSequence
+      }
+    })
+      .then(response => {
+        // console.log('response', response)
+        let returningId = response.data.createEvent.id
+        return Promise.all([this.props.data.refetch(), returningId])
+      })
+      .then(promiseArr => {
+        this.props.updateActiveEvent(promiseArr[1])
+      })
   }
 
   render () {
@@ -65,6 +89,11 @@ class LeftBarDateBox extends Component {
             </div>
           )
         })}
+        {isDayChecked &&
+          <div style={{display: 'flex', alignItems: 'center', height: '42px', cursor: 'pointer', paddingLeft: '65px'}} onClick={() => this.createNewEvent(this.props.day)}>
+            <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>+ Add New Event</span>
+          </div>
+        }
       </div>
     )
   }
@@ -91,4 +120,15 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LeftBarDateBox)
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, options),
+  graphql(createEvent, {name: 'createEvent'})
+)(LeftBarDateBox))
