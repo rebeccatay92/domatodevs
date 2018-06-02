@@ -312,12 +312,31 @@ class MapboxMap extends Component {
       this.props.updateActiveEvent(id)
       this.props.setRightBarFocusedTab('event')
       this.props.setPopupToShow('event')
+
+      // let currentBounds = this.map.getBounds()
+      // console.log('currentBounds', currentBounds)
+      // this.map.fitBounds(currentBounds)
+
+      let thisEvent = this.props.events.events.find(e => {
+        return e.id === id
+      })
+      if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
+        let latitude = thisEvent.latitudeDisplay
+        let longitude = thisEvent.longitudeDisplay
+        // console.log('coords', latitude, longitude)
+        this.setState({
+          center: [longitude, latitude]
+        })
+      }
     }
   }
 
   onSearchMarkerClick () {
     if (this.props.mapbox.popupToShow !== 'search') {
       this.props.setPopupToShow('search')
+      this.setState({
+        center: [this.state.searchMarker.longitude, this.state.searchMarker.latitude]
+      })
     } else if (this.props.mapbox.popupToShow === 'search') {
       this.props.setPopupToShow('')
     }
@@ -326,6 +345,9 @@ class MapboxMap extends Component {
   onCustomMarkerClick () {
     if (this.props.mapbox.popupToShow !== 'custom') {
       this.props.setPopupToShow('custom')
+      this.setState({
+        center: [this.state.customMarker.longitude, this.state.customMarker.latitude]
+      })
     } else if (this.props.mapbox.popupToShow === 'custom') {
       this.props.setPopupToShow('')
     }
@@ -448,6 +470,9 @@ class MapboxMap extends Component {
   onMapClick (map, evt) {
     if (this.state.plottingCustomMarker) {
       this.queryMapboxReverseGeocoder(evt.lngLat.lat, evt.lngLat.lng)
+      this.setState({
+        center: [evt.lngLat.lng, evt.lngLat.lat]
+      })
     }
   }
 
@@ -520,8 +545,8 @@ class MapboxMap extends Component {
         activeEventHasCoordinates = activeEventLocationObj.longitude && activeEventLocationObj.latitude
       }
     }
-    console.log('activeEvent', activeEvent)
-    console.log('activeEventLocationObj', activeEventLocationObj)
+    // console.log('activeEvent', activeEvent)
+    // console.log('activeEventLocationObj', activeEventLocationObj)
     return (
       <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
         <ZoomControl position='top-left' />
