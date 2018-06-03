@@ -9,14 +9,16 @@ const sidebarContainer = {
   position: 'fixed',
   top: '52px',
   right: 0,
-  display: 'flex',
-  backfaceVisibility: 'hidden'
+  display: 'flex'
 }
 
 /* ----------------------------- */
 
 const tabsContainer = {
-  zIndex: 11,
+  position: 'fixed',
+  right: 0, // or 344px
+  top: '52px',
+  zIndex: 12,
   width: '35px',
   height: '128px' // 2 tabs so 64x2
 }
@@ -55,7 +57,7 @@ const tabText = {
 /* ----------------------------- */
 
 const mainAreaContainer = {
-  zIndex: 1,
+  zIndex: 11,
   // 1920/12*2 col = 320px
   // width: '320px', // entire content bar width
   width: '344px',

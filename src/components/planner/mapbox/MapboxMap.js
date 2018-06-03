@@ -468,6 +468,7 @@ class MapboxMap extends Component {
   }
 
   onMapClick (map, evt) {
+    console.log('evt', evt)
     if (this.state.plottingCustomMarker) {
       this.queryMapboxReverseGeocoder(evt.lngLat.lat, evt.lngLat.lng)
       this.setState({
