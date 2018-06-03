@@ -309,14 +309,6 @@ class MapboxMap extends Component {
       this.props.setRightBarFocusedTab('')
       this.props.setPopupToShow('')
     } else {
-      this.props.updateActiveEvent(id)
-      this.props.setRightBarFocusedTab('event')
-      this.props.setPopupToShow('event')
-
-      // let currentBounds = this.map.getBounds()
-      // console.log('currentBounds', currentBounds)
-      // this.map.fitBounds(currentBounds)
-
       let thisEvent = this.props.events.events.find(e => {
         return e.id === id
       })
@@ -324,10 +316,92 @@ class MapboxMap extends Component {
         let latitude = thisEvent.latitudeDisplay
         let longitude = thisEvent.longitudeDisplay
         // console.log('coords', latitude, longitude)
-        this.setState({
-          center: [longitude, latitude]
-        })
+        // this.setState({
+        //   center: [longitude, latitude]
+        // })
+
+        let shiftDownwards = 0
+        let shiftLeftwards = 0
+        let shiftRightwards = 0
+        let shiftUpwards = 0
+
+        // project
+        let projectionX = this.map.project([longitude, latitude]).x
+        let projectionY = this.map.project([longitude, latitude]).y
+        console.log('x,y', projectionX, projectionY)
+
+        let exceedTopEdge = 282 - projectionY // if positive (means insufficient space)
+        if (exceedTopEdge > 0) {
+          console.log('exceed by', exceedTopEdge)
+          shiftDownwards = exceedTopEdge
+        }
+        let mapboxDiv = document.querySelector('.mapboxgl-map')
+        let mapboxHeight = mapboxDiv.clientHeight
+        let mapboxWidth = mapboxDiv.clientWidth
+        // check right edge (depends on whether right bar is open)
+        if (!this.props.plannerView.rightBar) {
+          // if right bar is not open. account for right bar width too
+          console.log('mapboxWidth', mapboxWidth) // 1185 if right bar is hidden
+          let exceedRightEdge = projectionX - (mapboxWidth - 530) // if positive means too far right
+          if (exceedRightEdge > 0) {
+            console.log('exceed right by', exceedRightEdge)
+            shiftLeftwards = exceedRightEdge
+          }
+        } else {
+          // if right bar is already open, clientWidth is smaller
+          let exceedRightEdge = projectionX - (mapboxWidth - 185)
+          if (exceedRightEdge > 0) {
+            console.log('exceed right by', exceedRightEdge)
+            shiftLeftwards = exceedRightEdge
+          }
+        }
+        let daysFilterDiv = document.querySelector('.mapboxDaysFilter')
+        let daysFilterHeight = daysFilterDiv.clientHeight
+
+        // check distance from bottom, then check left edge
+
+        if (projectionY <= mapboxHeight - daysFilterHeight - 10) {
+          // if marker is above daysFilter, check left edge only
+          console.log('lies above daysFilter')
+          let exceedLeftEdge = 150 - projectionX
+          if (exceedLeftEdge > 0) {
+            console.log('exceed left edge by', exceedLeftEdge)
+            shiftRightwards = exceedLeftEdge
+          }
+        } else {
+          console.log('lies below daysFilter')
+          // if marker lies lower than daysFilter, check if exceedLeftEdge vs distance to top of daysFilter. shift either up or right (whichever is smaller).
+          let exceedLeftEdge = 160 + 150 - projectionX
+          let distanceFromTopOfDaysFilter = projectionY - (mapboxHeight - daysFilterHeight - 10)
+          if (exceedLeftEdge > 0) {
+            console.log('exceed left by', exceedLeftEdge)
+            console.log('distance from top is', distanceFromTopOfDaysFilter)
+            if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
+              shiftRightwards = exceedLeftEdge
+            } else {
+              shiftUpwards = distanceFromTopOfDaysFilter
+            }
+          }
+        }
+
+        // console.log('shifts', shiftDownwards, shiftRightwards, shiftLeftwards, shiftUpwards)
+
+        // console.log('center', this.map.project(this.state.center))
+        let centerProjectionX = this.map.project(this.state.center).x
+        let centerProjectionY = this.map.project(this.state.center).y
+        // console.log('center points', centerProjectionX, centerProjectionY)
+
+        let finalCenterProjectionY = centerProjectionY - shiftDownwards + shiftUpwards
+        let finalCenterProjectionX = centerProjectionX - shiftRightwards + shiftLeftwards
+
+        // console.log('points', finalCenterProjectionX, finalCenterProjectionY)
+        let newCenterLatLng = this.map.unproject([finalCenterProjectionX , finalCenterProjectionY])
+        this.setState({center: [newCenterLatLng.lng, newCenterLatLng.lat]})
       }
+
+      this.props.updateActiveEvent(id)
+      this.props.setRightBarFocusedTab('event')
+      this.props.setPopupToShow('event')
     }
   }
 
@@ -666,7 +740,7 @@ class MapboxMap extends Component {
         }
 
         {/* DAYS FILTER */}
-        <div style={styles.daysFilterContainer}>
+        <div style={styles.daysFilterContainer} className={'mapboxDaysFilter'}>
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
@@ -686,7 +760,7 @@ class MapboxMap extends Component {
         {this.state.eventMarkersToDisplay.map((event, i) => {
           let isActiveEvent = this.props.activeEventId === event.id
           return (
-            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: isActiveEvent ? 4 : 3}} onClick={() => this.onEventMarkerClick(event.id)}>
+            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: isActiveEvent ? 4 : 3}} onClick={(evt) => this.onEventMarkerClick(event.id, evt)}>
               <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)', fontSize: '35px'}}>place</i>
             </Marker>
           )
