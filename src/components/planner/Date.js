@@ -54,7 +54,8 @@ class DateBox extends Component {
     this.state = {
       creatingActivity: false,
       hoveringOverDate: false,
-      showDateMenu: false
+      showDateMenu: false,
+      expanded: true
     }
   }
 
@@ -139,6 +140,9 @@ class DateBox extends Component {
                       {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} days={this.props.days} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
                     </div>
                   </div>
+                  <div style={{position: 'absolute', right: '0', top: '5px', height: '100%', display: 'flex', alignItems: 'center'}}>
+                    <i onClick={() => this.setState({expanded: !this.state.expanded})} className='material-icons' style={{cursor: 'pointer'}}>{this.state.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
+                  </div>
                 </Element>
               </th>
               {/* {[1, 2, 3].map(i => {
@@ -171,10 +175,10 @@ class DateBox extends Component {
                 return columnHeader
               })}
             </tr>}
-            {this.props.events.map((event, i) => {
+            {this.state.expanded && this.props.events.map((event, i) => {
               return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} index={i} />
             })}
-            {connectDropTarget(<tr>
+            {this.state.expanded && connectDropTarget(<tr>
               <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
               <td>
                 <span onClick={() => this.handleCreateEvent()} style={{paddingLeft: '24px', cursor: 'pointer'}} className='add-event-link'>+ Add Event</span>
