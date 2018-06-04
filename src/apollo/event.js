@@ -117,3 +117,13 @@ export const deleteEvent = gql`
     deleteEvent(id: $id)
   }
 `
+
+export const changingLoadSequence = gql`
+  mutation changingLoadSequence(
+    $input: [changingLoadSequenceInput]
+  ) {
+    changingLoadSequence(
+      input: $input
+    )
+  }
+`

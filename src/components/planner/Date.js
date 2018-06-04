@@ -6,9 +6,9 @@ import EventRow from './EventRow'
 import ColumnHeader from './ColumnHeader'
 import DateDropdownMenu from '../DateDropdownMenu'
 import { graphql, compose } from 'react-apollo'
-import { changingLoadSequence } from '../../apollo/changingLoadSequence'
+// import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
-import { createEvent } from '../../apollo/event'
+import { createEvent, changingLoadSequence } from '../../apollo/event'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
 import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../../actions/plannerActions'
@@ -54,7 +54,8 @@ class DateBox extends Component {
     this.state = {
       creatingActivity: false,
       hoveringOverDate: false,
-      showDateMenu: false
+      showDateMenu: false,
+      expanded: true
     }
   }
 
@@ -139,6 +140,9 @@ class DateBox extends Component {
                       {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} days={this.props.days} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
                     </div>
                   </div>
+                  <div style={{position: 'absolute', right: '0', top: '5px', height: '100%', display: 'flex', alignItems: 'center'}}>
+                    <i onClick={() => this.setState({expanded: !this.state.expanded})} className='material-icons' style={{cursor: 'pointer'}}>{this.state.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
+                  </div>
                 </Element>
               </th>
               {/* {[1, 2, 3].map(i => {
@@ -171,10 +175,10 @@ class DateBox extends Component {
                 return columnHeader
               })}
             </tr>}
-            {this.props.events.map((event, i) => {
+            {this.state.expanded && this.props.events.map((event, i) => {
               return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} index={i} />
             })}
-            {connectDropTarget(<tr>
+            {this.state.expanded && connectDropTarget(<tr>
               <td style={{width: '0px'}}><div style={{minHeight: '83px'}} /></td>
               <td>
                 <span onClick={() => this.handleCreateEvent()} style={{paddingLeft: '24px', cursor: 'pointer'}} className='add-event-link'>+ Add Event</span>
@@ -193,67 +197,24 @@ class DateBox extends Component {
     })
   }
 
-  // scrollToDate (date) {
-  //   const div = document.querySelector(date)
-  //   console.log(div)
-  // }
+  componentWillReceiveProps (nextProps) {
+    // If event is dropped in this date
+    if (this.props.events.filter(event => event.dropzone).length > 0 && nextProps.events.filter(event => event.dropzone).length < 1 && this.props.events.length === nextProps.events.length) {
+      const newEventsArr = nextProps.events.map((event, i) => {
+        return {
+          EventId: event.id,
+          loadSequence: i + 1,
+          startDay: nextProps.day
+        }
+      })
 
-  // componentWillReceiveProps (nextProps) {
-  //   if (nextProps.isOver === !this.props.isOver) {
-  //     if (!nextProps.isOver) this.props.hoverOutsidePlanner()
-  //   }
-  //
-  //   const checkIfNoBlankBoxes = array => {
-  //     let result = true
-  //     array.forEach(event => {
-  //       if (!event.id) result = false
-  //     })
-  //     return result
-  //   }
-  //
-  //   if (!checkIfNoBlankBoxes(this.props.events) && checkIfNoBlankBoxes(nextProps.events) && nextProps.isOver) {
-  //     // console.log(nextProps.activities)
-  //     // let loadSequenceArr = []
-  //     // console.log(this.elem);
-  //     const changeLoadSeq = () => {
-  //       const loadSequenceArr = nextProps.events.map((event, i) => {
-  //         const day = event.day
-  //         const diff = event.type === 'Food' || event.type === 'Activity' ? event[event.type].endDay - event[event.type].startDay : 0
-  //         // console.log(diff, activity[activity.type].location.name)
-  //         return {...{
-  //           id: event.id,
-  //           loadSequence: i + 1,
-  //           day: day,
-  //           start: event.start
-  //         },
-  //         ...diff && {diff: diff}
-  //         }
-  //       })
-  //       // console.log(loadSequenceArr)
-  //       this.props.changingLoadSequence({
-  //         variables: {
-  //           input: loadSequenceArr
-  //         },
-  //         refetchQueries: [{
-  //           query: queryItinerary,
-  //           variables: { id: this.props.itineraryId }
-  //         }]
-  //       })
-  //     }
-  //     const handleKeydown = (event) => {
-  //       if (event.keyCode === 27) {
-  //         // console.log(this.props.data);
-  //         this.props.data.refetch()
-  //           .then(response => this.props.initializePlanner(response.data.findItinerary.events))
-  //       }
-  //       // if (event.keyCode === 13) changeLoadSeq()
-  //     }
-  //     if (nextProps.activities.length !== 1) document.addEventListener('keydown', event => handleKeydown(event))
-  //     if (nextProps.activities.length === 1) {
-  //       changeLoadSeq()
-  //     }
-  //   }
-  // }
+      this.props.changingLoadSequence({
+        variables: {
+          input: newEventsArr
+        }
+      })
+    }
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {

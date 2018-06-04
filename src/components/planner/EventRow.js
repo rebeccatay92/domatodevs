@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 
 import { queryItinerary } from '../../apollo/itinerary'
-import { deleteEvent } from '../../apollo/event'
+import { deleteEvent, changingLoadSequence } from '../../apollo/event'
 
 import EventRowInfoCell from './EventRowInfoCell'
 import EventRowTimeCell from './EventRowTimeCell'
@@ -130,7 +130,7 @@ class EventRow extends Component {
       <tr style={{position: 'relative'}} onMouseOver={() => this.setState({hover: true})} onMouseOut={() => this.setState({hover: false})}>
         <td style={{width: '0px'}}>
           <div style={{minHeight: '83px', position: 'relative', display: 'flex', alignItems: 'center'}}>
-            {connectDragSource(<i className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>drag_indicator</i>)}
+            {connectDragSource(<i className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>unfold_more</i>)}
           </div>
         </td>
         <td className='planner-table-cell' style={{width: '114px', textAlign: 'center'}}>
@@ -193,5 +193,6 @@ const options = {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options),
-  graphql(deleteEvent, { name: 'deleteEvent' })
+  graphql(deleteEvent, { name: 'deleteEvent' }),
+  graphql(changingLoadSequence, { name: 'changingLoadSequence' })
 )(DragSource('plannerEvent', eventRowSource, collectSource)(DropTarget(['plannerEvent', 'bucketItem'], eventRowTarget, collectTarget)(EventRow))))
