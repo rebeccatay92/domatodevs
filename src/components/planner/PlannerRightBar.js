@@ -4,6 +4,7 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
+import { changeActiveField } from '../../actions/planner/activeFieldActions'
 
 import { updateEventBackend } from '../../apollo/event'
 
@@ -96,9 +97,9 @@ class PlannerRightBar extends Component {
                 </label>
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Time</span>
-                  <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} />
+                  <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} onFocus={() => this.props.changeActiveField('startTime')} />
                   <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '14px', color: 'rgba(60, 58, 68, 0.7)', margin: '0 5px 0 5px'}}>to</span>
-                  <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} />
+                  <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} onFocus={() => this.props.changeActiveField('endTime')} />
                 </label>
               </div>
             </div>
@@ -213,6 +214,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setRightBarFocusedTab: (tabName) => {
       return dispatch(setRightBarFocusedTab(tabName))
+    },
+    changeActiveField: (field) => {
+      return dispatch(changeActiveField(field))
     }
   }
 }
