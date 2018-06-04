@@ -101,7 +101,14 @@ export const eventsReducer = (state = {
         ...targetDayEventsArr.slice(0, action.index),
         ...[action.event],
         ...targetDayEventsArr.slice(action.index)
-      ]
+      ].map((event, i) => {
+        return {
+          ...event,
+          ...{
+            loadSequence: i + 1
+          }
+        }
+      })
       eventsArrWithoutTargetDay = state.events.filter(event => event.startDay !== action.event.startDay)
       return {
         ...state,

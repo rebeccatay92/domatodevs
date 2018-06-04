@@ -26,13 +26,13 @@ class PlannerRightBar extends Component {
     // console.log('event', e.target.value, field)
     let unixSecsFromMidnight
     if (e.target.value) {
-      this.props.updateEvent(this.props.activeEventId, field, e.target.value, false)
+      this.props.updateEvent(this.props.activeEventId, field, e.target.value, true)
       let hours = (e.target.value).substring(0, 2)
       let mins = (e.target.value).substring(3, 5)
       // console.log('hours', hours, 'mins', mins)
       unixSecsFromMidnight = hours * 3600 + mins * 60
     } else {
-      this.props.updateEvent(this.props.activeEventId, field, '', false)
+      this.props.updateEvent(this.props.activeEventId, field, '', true)
       unixSecsFromMidnight = null
     }
     this.props.updateEventBackend({

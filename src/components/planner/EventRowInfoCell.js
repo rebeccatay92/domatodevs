@@ -80,22 +80,22 @@ class EventRowInfoCell extends Component {
     }
   }
 
-  // shouldComponentUpdate (nextProps) {
-  //   const { column, id } = nextProps
-  //   const { refetch, updatedId, updatedProperty } = nextProps.events
-  //   const property = eventPropertyNames[column]
-  //   if (column !== nextProps.column) {
-  //     return true
-  //   } else if (refetch) {
-  //     return true
-  //   } else if (updatedId === id && updatedProperty === property) {
-  //     return true
-  //   } else if ((nextProps.activeEventId === id && nextProps.activeField === property) || (this.props.activeEventId === id && this.props.activeField === property)) {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }
+  shouldComponentUpdate (nextProps) {
+    const { column, id } = nextProps
+    const { refetch, updatedId, updatedProperty } = nextProps.events
+    const property = eventPropertyNames[column]
+    if (column !== nextProps.column) {
+      return true
+    } else if (refetch) {
+      return true
+    } else if (updatedId === id && updatedProperty === property) {
+      return true
+    } else if ((nextProps.activeEventId === id && nextProps.activeField === property) || (this.props.activeEventId === id && this.props.activeField === property)) {
+      return true
+    } else {
+      return false
+    }
+  }
 
   handleOnFocus () {
     const property = eventPropertyNames[this.props.column]

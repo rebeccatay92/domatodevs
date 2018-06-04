@@ -71,7 +71,7 @@ class ColumnHeaderDropdown extends Component {
   render () {
     const { startingColumn, endingColumn } = this.props
     return (
-      <div style={{position: 'absolute', width: '232px', left: 0}}>
+      <div style={{position: 'absolute', width: '232px', left: 0, zIndex: 1}}>
         <ul style={{listStyleType: 'none', padding: '0', backgroundColor: '#F5F5F5', border: '1px solid rgba(60, 58, 68, 1)'}}>
           {optionsArr.map((option, i) => {
             return (
