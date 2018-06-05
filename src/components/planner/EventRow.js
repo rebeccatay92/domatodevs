@@ -101,7 +101,7 @@ class EventRow extends Component {
   }
 
   render () {
-    const { columns, id, connectDropTarget, connectDragSource, connectDragPreview, event, isDragging } = this.props
+    const { columns, id, connectDropTarget, connectDragSource, connectDragPreview, event, isDragging, sortOptions } = this.props
     let columnState = []
     let activeColumn = ''
     columns.forEach((column, i) => {
@@ -130,7 +130,7 @@ class EventRow extends Component {
       <tr style={{position: 'relative'}} onMouseOver={() => this.setState({hover: true})} onMouseOut={() => this.setState({hover: false})}>
         <td style={{width: '0px'}}>
           <div style={{minHeight: '83px', position: 'relative', display: 'flex', alignItems: 'center'}}>
-            {connectDragSource(<i className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>unfold_more</i>)}
+            {sortOptions.type === 'unsorted' && connectDragSource(<i className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>unfold_more</i>)}
           </div>
         </td>
         <td className='planner-table-cell' style={{width: '114px', textAlign: 'center'}}>
@@ -156,7 +156,8 @@ class EventRow extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    columns: state.columns
+    columns: state.columns,
+    sortOptions: state.sortOptions
   }
 }
 

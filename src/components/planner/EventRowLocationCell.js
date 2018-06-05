@@ -191,7 +191,7 @@ class EventRowLocationCell extends Component {
 
   componentWillReceiveProps (nextProps) {
     // KEEPS LOCATION CELL IN SYNC WITH RIGHTBAR
-    if (nextProps.events.updatedFromSidebar) {
+    if (nextProps.events.updatedFromSidebar || nextProps.column !== this.props.column || nextProps.events.refetch) {
       const thisEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.id
       })

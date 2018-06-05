@@ -69,14 +69,15 @@ class ColumnHeaderDropdown extends Component {
   }
 
   render () {
-    const { startingColumn, endingColumn } = this.props
+    const { startingColumn, endingColumn, name } = this.props
     return (
       <div style={{position: 'absolute', width: '232px', left: 0, zIndex: 1}}>
         <ul style={{listStyleType: 'none', padding: '0', backgroundColor: '#F5F5F5', border: '1px solid rgba(60, 58, 68, 1)'}}>
           {optionsArr.map((option, i) => {
             return (
               <li key={i} style={{padding: '8px'}} className='column-header-dropdown-option' onClick={() => this.handleOptionClick(option)}>
-                <span>{option}</span>
+                {name === option && <span style={{color: '#ed685a'}}>{option}</span>}
+                {name !== option && <span>{option}</span>}
               </li>
             )
           })}

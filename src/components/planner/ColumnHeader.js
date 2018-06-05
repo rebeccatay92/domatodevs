@@ -13,7 +13,8 @@ const eventPropertyNames = {
   Price: 'cost',
   Notes: 'notes',
   'Booking Service': 'bookingService',
-  'Confirmation Number': 'bookingConfirmation'
+  'Confirmation Number': 'bookingConfirmation',
+  Location: 'location'
 }
 
 class ColumnHeader extends Component {

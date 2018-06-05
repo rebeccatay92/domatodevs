@@ -25,7 +25,7 @@ export const eventsReducer = (state = {
             refetch: true
           }
         }
-      } else if (action.column !== 'startTime' && action.column !== 'cost') {
+      } else if (action.column !== 'startTime' && action.column !== 'cost' && action.column !== 'location') {
         return {
           ...state,
           ...{
@@ -59,6 +59,44 @@ export const eventsReducer = (state = {
             refetch: true
           }
         }
+      } else if (action.column === 'location') {
+        return {
+          ...state,
+          ...{
+            events: [...state.events.sort((a, b) => {
+              const nameA = a.locationName.getPlainText().toUpperCase()
+              const nameB = b.locationName.getPlainText().toUpperCase()
+              if (action.sortType === 'ascending') {
+                if (nameA > nameB) return 1
+                if (nameB > nameA) return -1
+                return 0
+              } else {
+                if (nameA > nameB) return -1
+                if (nameB > nameA) return 1
+                return 0
+              }
+            })],
+            refetch: true
+          }
+        }
+      } else if (action.column === 'startTime') {
+        return {
+          ...state,
+          ...{
+            events: [...state.events.sort((a, b) => {
+              const timeA = a.startTime
+              const unixA = timeA.substring(0, 2) * 3600 + timeA.substring(3, 5) * 60
+              const timeB = b.startTime
+              const unixB = timeB.substring(0, 2) * 3600 + timeB.substring(3, 5) * 60
+              if (action.sortType === 'ascending') {
+                return unixA - unixB
+              } else {
+                return unixB - unixA
+              }
+            })],
+            refetch: true
+          }
+        }
       } else {
         return state
       }
@@ -70,7 +108,6 @@ export const eventsReducer = (state = {
       const modifiedEvent = {
         ...state.events.filter(event => event.id === action.id)[0], ...{[action.property]: action.value}
       }
-      console.log('modifiedEvent', modifiedEvent)
       return {
         events: [...state.events.filter((event) => event.id !== action.id), ...[modifiedEvent]],
         // .sort((a, b) => a.startDay - b.startDay || a.loadSequence - b.loadSequence)

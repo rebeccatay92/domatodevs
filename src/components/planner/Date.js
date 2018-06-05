@@ -23,8 +23,9 @@ import { ContentState } from 'draft-js'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
-import { updateEvent, initializeEvents, plannerEventHoverOverEvent } from '../../actions/planner/eventsActions'
+import { updateEvent, initializeEvents, plannerEventHoverOverEvent, sortEvents } from '../../actions/planner/eventsActions'
 import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
+import { changeColumnSort } from '../../actions/planner/sortActions'
 
 import moment from 'moment'
 
@@ -91,6 +92,11 @@ class DateBox extends Component {
     })
   }
 
+  handleSort (type) {
+    this.props.changeColumnSort('startTime', type)
+    this.props.sortEvents('startTime', type)
+  }
+
   render () {
     // console.log(this.props.events)
     // console.log('PROPS DATE UNIX', this.props.date)
@@ -98,7 +104,7 @@ class DateBox extends Component {
     let dateStringUpcase = dateString.toUpperCase()
 
     // console.log(this.props.events);
-    const { connectDropTarget, day, itineraryId } = this.props
+    const { connectDropTarget, day, itineraryId, sortOptions } = this.props
     const timeline = (
       <div style={timelineStyle} />
     )
@@ -166,15 +172,20 @@ class DateBox extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.firstDay && <tr>
+            <tr>
               <td style={{width: '0px'}}></td>
-              <td style={{textAlign: 'center', width: '114px'}}>Time<i className='material-icons' style={{verticalAlign: 'top', fontSize: '20px'}}>unfold_more</i></td>
+              <td style={{textAlign: 'center', width: '114px'}}>
+                Time
+                {(sortOptions.column !== 'startTime' || sortOptions.type === 'unsorted') && <i className='material-icons' style={{verticalAlign: 'top', fontSize: '20px', cursor: 'pointer'}} onClick={() => this.handleSort('descending')}>unfold_more</i>}
+                {(sortOptions.column === 'startTime' && sortOptions.type === 'descending') && <i className='material-icons' style={{verticalAlign: 'top', fontSize: '20px', cursor: 'pointer'}} onClick={() => this.handleSort('ascending')}>keyboard_arrow_down</i>}
+                {(sortOptions.column === 'startTime' && sortOptions.type === 'ascending') && <i className='material-icons' style={{verticalAlign: 'top', fontSize: '20px', cursor: 'pointer'}} onClick={() => this.handleSort('unsorted')}>keyboard_arrow_up</i>}
+              </td>
               {columnState.map((column, i) => {
                 const columnHeader = <ColumnHeader key={i} name={column.name} colSpan={column.width} startingColumn={startingColumn} endingColumn={startingColumn + column.width - 1} />
                 startingColumn += column.width
                 return columnHeader
               })}
-            </tr>}
+            </tr>
             {this.state.expanded && this.props.events.map((event, i) => {
               return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} index={i} />
             })}
@@ -263,6 +274,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     plannerEventHoverOverEvent: (index, event, day) => {
       dispatch(plannerEventHoverOverEvent(index, event, day))
+    },
+    changeColumnSort: (column, sortType) => {
+      return dispatch(changeColumnSort(column, sortType))
+    },
+    sortEvents: (column, sortType) => {
+      return dispatch(sortEvents(column, sortType))
     }
   }
 }
@@ -272,7 +289,8 @@ const mapStateToProps = (state) => {
     columns: state.columns,
     timeline: state.plannerTimeline,
     timelineDay: state.plannerTimelineDay,
-    plannerView: state.plannerView
+    plannerView: state.plannerView,
+    sortOptions: state.sortOptions
   }
 }
 
