@@ -10,6 +10,12 @@ import { updateEventBackend } from '../../apollo/event'
 import PlannerSideBarInfoField from './PlannerSideBarInfoField'
 import PlannerSideBarLocationNameField from './PlannerSideBarLocationNameField'
 
+import DatePicker from 'react-datepicker'
+// import CustomDatePicker from './CustomDatePicker'
+import 'react-datepicker/dist/react-datepicker.css'
+
+import moment from 'moment'
+
 import { PlannerRightBarStyles as styles } from '../../Styles/PlannerRightBarStyles'
 
 class PlannerRightBar extends Component {
@@ -41,6 +47,14 @@ class PlannerRightBar extends Component {
         [field]: unixSecsFromMidnight
       }
     })
+  }
+
+  selectDate (e) {
+    console.log('e', e)
+  }
+
+  selectDay (e) {
+    let startDay = e.target.value
   }
 
   render () {
@@ -88,12 +102,16 @@ class PlannerRightBar extends Component {
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Day / Date</span>
                     {!this.props.datesArr &&
-                      <select style={styles.dayDropdown}>
-                        <option style={{margin: 0}}>Day 1</option>
+                      <select style={styles.dayDropdown} value={thisEvent.startDay} onChange={e => this.selectDay(e)}>
+                        {this.props.daysArr.map((day, i) => {
+                          return (
+                            <option style={{margin: 0}} value={day} key={i}>Day {day}</option>
+                          )
+                        })}
                       </select>
                     }
                     {this.props.datesArr &&
-                      <input type='date'/>
+                      <DatePicker dateFormat={'ddd, DD MMM YYYY'} selected={moment.unix(this.props.datesArr[thisEvent.startDay - 1])} minDate={moment.unix(this.props.datesArr[0])} maxDate={moment.unix(this.props.datesArr[this.props.datesArr.length - 1])} onChange={e => this.selectDate(e)} />
                     }
                   </label>
                   <label style={styles.labelContainer}>

@@ -153,8 +153,6 @@ class MapboxMap extends Component {
           searchMarker: locationObj,
           center: [locationObj.longitude, locationObj.latitude]
         }, () => {
-          // this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
-          // this.props.updateEvent(this.props.id, 'locationObj', locationObj, false)
           this.props.setPopupToShow('search')
         })
       })
@@ -315,10 +313,6 @@ class MapboxMap extends Component {
       if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
         let latitude = thisEvent.latitudeDisplay
         let longitude = thisEvent.longitudeDisplay
-        // console.log('coords', latitude, longitude)
-        // this.setState({
-        //   center: [longitude, latitude]
-        // })
 
         let shiftDownwards = 0
         let shiftLeftwards = 0
@@ -395,12 +389,12 @@ class MapboxMap extends Component {
         let finalCenterProjectionX = centerProjectionX - shiftRightwards + shiftLeftwards
 
         // console.log('points', finalCenterProjectionX, finalCenterProjectionY)
-        let newCenterLatLng = this.map.unproject([finalCenterProjectionX , finalCenterProjectionY])
+        let newCenterLatLng = this.map.unproject([finalCenterProjectionX, finalCenterProjectionY])
         this.setState({center: [newCenterLatLng.lng, newCenterLatLng.lat]})
       }
 
       this.props.updateActiveEvent(id)
-      this.props.setRightBarFocusedTab('event')
+      // this.props.setRightBarFocusedTab('event')
       this.props.setPopupToShow('event')
     }
   }
