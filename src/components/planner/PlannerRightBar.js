@@ -1,17 +1,19 @@
 import React, { Component } from 'react'
-import { graphql } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 
 import { connect } from 'react-redux'
 import { updateEvent } from '../../actions/planner/eventsActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import { updateEventBackend } from '../../apollo/event'
+import { changingLoadSequence } from '../../apollo/changingLoadSequence'
+import { queryItinerary } from '../../apollo/itinerary'
 
 import PlannerSideBarInfoField from './PlannerSideBarInfoField'
 import PlannerSideBarLocationNameField from './PlannerSideBarLocationNameField'
 
 import DatePicker from 'react-datepicker'
-// import CustomDatePicker from './CustomDatePicker'
+import CustomDateInput from './CustomDateInput'
 import 'react-datepicker/dist/react-datepicker.css'
 
 import moment from 'moment'
@@ -49,12 +51,76 @@ class PlannerRightBar extends Component {
     })
   }
 
-  selectDate (e) {
-    console.log('e', e)
-  }
+  selectDayDate (e, type) {
+    // type is either 'day' or 'date'
+    let newStartDayInt
 
-  selectDay (e) {
-    let startDay = e.target.value
+    if (type === 'day') {
+      // dropdown value is string
+      newStartDayInt = parseInt(e.target.value)
+    } else if (type === 'date') {
+      // selected date prop in datepicker must be .utc(). else clicking on currently selected date returns -8 hrs from utc midnight
+      console.log('e', e)
+      let unix = moment(e._d).unix()
+      newStartDayInt = this.props.datesArr.indexOf(unix) + 1
+    }
+
+    let thisEvent = this.props.events.events.find(e => {
+      return e.id === this.props.activeEventId
+    })
+    let currentStartDayInt = thisEvent.startDay
+
+    if (currentStartDayInt !== newStartDayInt) {
+      console.log('currentStartDayInt', currentStartDayInt, 'new', newStartDayInt)
+
+      let newDayEvents = this.props.events.events.filter(e => {
+        return e.startDay === newStartDayInt
+      })
+      let newLoadSequence = newDayEvents.length + 1
+
+      // reassign load seqs for old day
+      let allEventsInDay = this.props.events.events.filter(e => {
+        return e.startDay === currentStartDayInt
+      })
+      let remainingEventsInDay = allEventsInDay.filter(e => {
+        return e.id !== this.props.activeEventId
+      })
+
+      let loadSequenceChanges = []
+
+      remainingEventsInDay.forEach((event, i) => {
+        let correctSeq = i + 1
+        if (event.loadSequence !== correctSeq) {
+          loadSequenceChanges.push({
+            EventId: event.id,
+            startDay: event.startDay,
+            loadSequence: correctSeq
+          })
+        }
+      })
+
+      console.log('changes', loadSequenceChanges)
+
+      // send both reqs to backend
+      let updateEventBackendPromise = this.props.updateEventBackend({
+        variables: {
+          id: this.props.activeEventId,
+          startDay: newStartDayInt,
+          loadSequence: newLoadSequence
+        }
+      })
+
+      let updateLoadSequencesPromise = this.props.changingLoadSequence({
+        variables: {
+          input: loadSequenceChanges
+        }
+      })
+
+      Promise.all([updateEventBackendPromise, updateLoadSequencesPromise])
+        .then(responseArr => {
+          this.props.data.refetch()
+        })
+    }
   }
 
   render () {
@@ -84,6 +150,7 @@ class PlannerRightBar extends Component {
             </div>
           }
         </div>
+
         <div style={styles.sidebarContainer}>
           {this.props.plannerView.rightBar === 'bucket' &&
             <div style={styles.mainAreaContainer}>
@@ -99,21 +166,19 @@ class PlannerRightBar extends Component {
                   <i className='material-icons' style={styles.icon}>schedule</i>
                 </div>
                 <div style={styles.inputSection}>
-                  <label style={styles.labelContainer}>
-                    <span style={styles.labelText}>Day / Date</span>
-                    {!this.props.datesArr &&
-                      <select style={styles.dayDropdown} value={thisEvent.startDay} onChange={e => this.selectDay(e)}>
-                        {this.props.daysArr.map((day, i) => {
-                          return (
-                            <option style={{margin: 0}} value={day} key={i}>Day {day}</option>
-                          )
-                        })}
-                      </select>
-                    }
-                    {this.props.datesArr &&
-                      <DatePicker dateFormat={'ddd, DD MMM YYYY'} selected={moment.unix(this.props.datesArr[thisEvent.startDay - 1])} minDate={moment.unix(this.props.datesArr[0])} maxDate={moment.unix(this.props.datesArr[this.props.datesArr.length - 1])} onChange={e => this.selectDate(e)} />
-                    }
-                  </label>
+                  <span style={styles.labelText}>Day / Date</span>
+                  {!this.props.datesArr &&
+                    <select style={styles.dayDropdown} value={thisEvent.startDay} onChange={e => this.selectDayDate(e, 'day')}>
+                      {this.props.daysArr.map((day, i) => {
+                        return (
+                          <option style={{margin: 0}} value={day} key={i}>Day {day}</option>
+                        )
+                      })}
+                    </select>
+                  }
+                  {this.props.datesArr &&
+                    <DatePicker customInput={<CustomDateInput />} dateFormat={'ddd, DD MMM YYYY'} selected={moment.unix(this.props.datesArr[thisEvent.startDay - 1]).utc()} minDate={moment.unix(this.props.datesArr[0])} maxDate={moment.unix(this.props.datesArr[this.props.datesArr.length - 1])} onSelect={e => this.selectDayDate(e, 'date')} />
+                  }
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Time</span>
                     <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} />
@@ -130,7 +195,6 @@ class PlannerRightBar extends Component {
                 <div style={styles.inputSection}>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Event Type</span>
-                    {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
                     <PlannerSideBarInfoField property='eventType' id={this.props.activeEventId} />
                   </label>
                 </div>
@@ -143,19 +207,16 @@ class PlannerRightBar extends Component {
                 <div style={styles.inputSection}>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Location name</span>
-                    {/* <input type='text' placeholder='-' style={styles.inputField} /> */}
-                    <PlannerSideBarLocationNameField id={this.props.activeEventId} />
+                    <PlannerSideBarLocationNameField id={this.props.activeEventId} locationObj={locationObj} />
                   </label>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Address</span>
-                    <span style={styles.addressText}>{locationObj ? locationObj.address : ''}</span>
-                    <span style={styles.labelText}>Verified</span>
-                    <span>{isVerified}</span>
+                    <div style={{display: 'flex', alignItems: 'center', minHeight: '35px'}}>
+                      <span style={styles.addressText}>{locationObj ? locationObj.address : ''}</span>
+                    </div>
+                    {/* <span style={styles.labelText}>Verified</span>
+                    <span>{isVerified}</span> */}
                   </label>
-                  {/* <label style={styles.labelContainer}>
-                    <span style={styles.labelText}>Opening Hours</span>
-                    <input type='text' placeholder='-' style={styles.inputField} />
-                  </label> */}
                 </div>
               </div>
               <hr style={styles.sectionDivider} />
@@ -166,7 +227,6 @@ class PlannerRightBar extends Component {
                 <div style={styles.inputSection}>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Cost</span>
-                    {/* <input type='number' placeholder={'-'} style={styles.inputField} /> */}
                     <PlannerSideBarInfoField property='cost' id={this.props.activeEventId} />
                   </label>
                 </div>
@@ -179,12 +239,10 @@ class PlannerRightBar extends Component {
                 <div style={styles.inputSection}>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Booking service</span>
-                    {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
                     <PlannerSideBarInfoField property='bookingService' id={this.props.activeEventId} />
                   </label>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Confirmation number</span>
-                    {/* <input type='text' placeholder={'-'} style={styles.inputField} /> */}
                     <PlannerSideBarInfoField property='bookingConfirmation' id={this.props.activeEventId} />
                   </label>
                 </div>
@@ -238,4 +296,16 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(graphql(updateEventBackend, {name: 'updateEventBackend'})(PlannerRightBar))
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateEventBackend, {name: 'updateEventBackend'}),
+  graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
+  graphql(queryItinerary, options)
+)(PlannerRightBar))

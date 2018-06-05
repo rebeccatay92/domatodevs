@@ -58,8 +58,6 @@ const tabText = {
 
 const mainAreaContainer = {
   zIndex: 11,
-  // 1920/12*2 col = 320px
-  // width: '320px', // entire content bar width
   width: '344px',
   height: '100%',
   background: 'rgb(245, 245, 245)',

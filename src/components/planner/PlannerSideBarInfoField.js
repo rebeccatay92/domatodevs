@@ -52,7 +52,7 @@ class PlannerSideBarInfoField extends Component {
   render () {
     const { property } = this.props
     return (
-      <div style={{cursor: 'text'}}>
+      <div style={{cursor: 'text', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)', minHeight: '35px', display: 'flex', alignItems: 'center'}}>
         <Editor editorState={this.state.editorState} onChange={this.onChange} onFocus={() => this.props.changeActiveField(property)} />
       </div>
     )

@@ -359,8 +359,20 @@ class PlannerSideBarLocationNameField extends Component {
 
   render () {
     return (
-      <div className={`ignoreRightBarLocation`} onClick={this.focus} style={{cursor: 'text', position: 'relative'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} onBlur={() => this.handleOnBlur()} />
+      <div className={`ignoreRightBarLocation`} onClick={this.focus} style={{position: 'relative', cursor: 'text', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)', minHeight: '35px', display: 'flex', flexDirection: 'column', justifyContent: 'center'}} onKeyDown={e => this.handleKeyDown(e)}>
+        <div style={{display: 'flex'}}>
+          <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.props.changeActiveField('location')} handleReturn={(event, editorState) => this.handleReturn()} onBlur={() => this.handleOnBlur()} />
+          {this.props.locationObj &&
+            <React.Fragment>
+              {this.props.locationObj.verified &&
+                <i className='material-icons' style={{color: 'rgb(67, 132, 150)', marginLeft: '10px'}}>check_circle</i>
+              }
+              {!this.props.locationObj.verified &&
+                <i className='material-icons' style={{color: 'orange', marginLeft: '10px'}}>help</i>
+              }
+            </React.Fragment>
+          }
+        </div>
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'rightbar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
         }
