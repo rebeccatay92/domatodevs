@@ -6,6 +6,7 @@ import { updateEvent } from '../../actions/planner/eventsActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab, switchToMapView } from '../../actions/planner/plannerViewActions'
 import { clickDayCheckbox, setPopupToShow } from '../../actions/planner/mapboxActions'
+import { changeActiveField } from '../../actions/planner/activeFieldActions'
 
 import { updateEventBackend, deleteEvent } from '../../apollo/event'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -37,13 +38,13 @@ class PlannerRightBar extends Component {
     // console.log('event', e.target.value, field)
     let unixSecsFromMidnight
     if (e.target.value) {
-      this.props.updateEvent(this.props.activeEventId, field, e.target.value, false)
+      this.props.updateEvent(this.props.activeEventId, field, e.target.value, true)
       let hours = (e.target.value).substring(0, 2)
       let mins = (e.target.value).substring(3, 5)
       // console.log('hours', hours, 'mins', mins)
       unixSecsFromMidnight = hours * 3600 + mins * 60
     } else {
-      this.props.updateEvent(this.props.activeEventId, field, '', false)
+      this.props.updateEvent(this.props.activeEventId, field, '', true)
       unixSecsFromMidnight = null
     }
     this.props.updateEventBackend({
@@ -226,9 +227,9 @@ class PlannerRightBar extends Component {
                   }
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Time</span>
-                    <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} />
+                    <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} onFocus={() => this.props.changeActiveField('startTime')}/>
                     <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '14px', color: 'rgba(60, 58, 68, 0.7)', margin: '0 5px 0 5px'}}>to</span>
-                    <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} />
+                    <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} onFocus={() => this.props.changeActiveField('endTime')}/>
                   </label>
                 </div>
               </div>
@@ -362,6 +363,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))
+    },
+    changeActiveField: (field) => {
+      return dispatch(changeActiveField(field))
     }
   }
 }

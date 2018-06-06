@@ -8,11 +8,28 @@ import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 // import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 
-class EventRowTimeCell extends Component {
+import { updateEventBackend } from '../../apollo/event'
 
+class EventRowTimeCell extends Component {
   handleChange (e, type) {
     const { id } = this.props
-    this.props.updateEvent(id, type, e.target.value)
+    let unixSecsFromMidnight
+    if (e.target.value) {
+      this.props.updateEvent(id, type, e.target.value)
+      let hours = (e.target.value).substring(0, 2)
+      let mins = (e.target.value).substring(3, 5)
+      // console.log('hours', hours, 'mins', mins)
+      unixSecsFromMidnight = hours * 3600 + mins * 60
+    } else {
+      this.props.updateEvent(id, type, '')
+      unixSecsFromMidnight = null
+    }
+    this.props.updateEventBackend({
+      variables: {
+        id: id,
+        [type]: unixSecsFromMidnight
+      }
+    })
   }
 
   shouldComponentUpdate (nextProps) {
@@ -91,4 +108,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EventRowTimeCell)
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateEventBackend, {name: 'updateEventBackend'})
+)(EventRowTimeCell))
