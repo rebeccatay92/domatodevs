@@ -4,7 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { withRouter } from 'react-router-dom'
 import Radium from 'radium'
 
-import { itinerariesByUser, updateItineraryDetails } from '../../apollo/itinerary'
+import { itinerariesByUser, updateItineraryDetails, createItinerary } from '../../apollo/itinerary'
 import { setStickyTabs } from '../../actions/userDashboardActions'
 
 import { ItinerariesTabStyles as styles } from '../../Styles/ItinerariesTabStyles'
@@ -52,12 +52,39 @@ class ItinerariesTab extends Component {
     })
   }
 
+  createNewItinerary () {
+    // console.log('create blank itinerary, redirect')
+    // console.log('user id', this.props.userProfile.id)
+
+    this.props.createItinerary({
+      variables: {
+        UserId: this.props.userProfile.id,
+        name: 'New Itinerary',
+        days: 1
+      }
+    })
+      .then(response => {
+        // console.log('response', response)
+        let ItineraryId = response.data.createItinerary.id
+        console.log('returning id', ItineraryId)
+        this.props.history.push(`/planner/${ItineraryId}`)
+      })
+  }
+
   render () {
     if (this.props.data.loading) return (<h1>Loading</h1>)
     // console.log('itineraries', this.props.data.itinerariesByUser)
     let itineraries = this.props.data.itinerariesByUser
     return (
       <div className='itinerariesTabComponent' style={styles.itinerariesTabContainer}>
+        <div style={styles.addNewItineraryContainer} onClick={() => this.createNewItinerary()}>
+          <div style={{width: '100px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <i className='material-icons' style={{fontSize: '40px', color: 'rgb(67, 132, 150)'}}>add</i>
+          </div>
+          <div style={{height: '100%', padding: '0 20px', display: 'flex', alignItems: 'center'}}>
+            <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '24px', color: 'rgb(67, 132, 150)'}}>Create a new itinerary</span>
+          </div>
+        </div>
         {itineraries.map((itinerary, i) => {
           return (
             <div key={i} style={styles.itineraryContainer}>
@@ -110,7 +137,8 @@ class ItinerariesTab extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    userDashboard: state.userDashboard
+    userDashboard: state.userDashboard,
+    userProfile: state.userProfile
   }
 }
 
@@ -124,5 +152,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(itinerariesByUser),
-  graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
+  graphql(updateItineraryDetails, {name: 'updateItineraryDetails'}),
+  graphql(createItinerary, {name: 'createItinerary'})
 )(withRouter(Radium(ItinerariesTab))))

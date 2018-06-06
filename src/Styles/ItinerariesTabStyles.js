@@ -13,12 +13,21 @@ const itinerariesTabContainer = {
 
 const itineraryContainer = {
   width: '1265px',
-  // height: '90px',
   height: '130px',
   padding: '20px 0',
-  // margin: '20px 0',
   display: 'flex',
-  // cursor: 'pointer',
+  ':hover': {
+    background: 'rgb(245, 245, 245)'
+  }
+}
+
+const addNewItineraryContainer = {
+  width: '1265px',
+  height: '130px',
+  padding: '20px 0',
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
   ':hover': {
     background: 'rgb(245, 245, 245)'
   }
@@ -145,6 +154,7 @@ const privacyToggleContainer = {
 export const ItinerariesTabStyles = {
   itinerariesTabContainer,
   itineraryContainer,
+  addNewItineraryContainer,
   timeSinceCreatedContainer,
   timeSinceCreated,
   daysDatesCountriesContainer,
