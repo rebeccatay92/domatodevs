@@ -150,26 +150,16 @@ const addressText = {
   lineHeight: '24px'
 }
 
-const notesTextArea = {
-  width: '100%',
-  height: '48px',
-  background: 'rgb(245,245,245)',
-  lineHeight: '24px',
-  ...coreFonts.robotoLight,
-  fontSize: '16px',
-  color: coreColors.blackSolid,
-  resize: 'none'
-}
+// const attachFileLabelText = {
+//   display: 'block',
+//   ...coreFonts.robotoLight,
+//   fontSize: '16px',
+//   color: coreColors.blackSolid,
+//   lineHeight: '24px',
+//   height: '24px',
+//   margin: 0
+// }
 
-const attachFileLabelText = {
-  display: 'block',
-  ...coreFonts.robotoLight,
-  fontSize: '16px',
-  color: coreColors.blackSolid,
-  lineHeight: '24px',
-  height: '24px',
-  margin: 0
-}
 /* ----------------------------- */
 export const PlannerRightBarStyles = {
   sidebarContainer,
@@ -188,7 +178,6 @@ export const PlannerRightBarStyles = {
   timeInput,
   inputField,
   labelText,
-  addressText,
-  notesTextArea,
-  attachFileLabelText
+  addressText
+  // attachFileLabelText
 }

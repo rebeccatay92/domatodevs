@@ -3,7 +3,8 @@ import { graphql, compose } from 'react-apollo'
 
 import { connect } from 'react-redux'
 import { updateEvent } from '../../actions/planner/eventsActions'
-import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
+import { setRightBarFocusedTab, switchToMapView } from '../../actions/planner/plannerViewActions'
+import { clickDayCheckbox, setPopupToShow } from '../../actions/planner/mapboxActions'
 
 import { updateEventBackend } from '../../apollo/event'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -123,6 +124,24 @@ class PlannerRightBar extends Component {
     }
   }
 
+  openInMap (activeEventId) {
+    let thisEvent = this.props.events.events.find(e => {
+      return e.id === this.props.activeEventId
+    })
+    let startDay = thisEvent.startDay
+
+    this.props.switchToMapView()
+    this.props.setRightBarFocusedTab('event')
+
+    let daysToShow = this.props.mapbox.daysToShow
+    let isStartDayInDaysArr = daysToShow.includes(startDay)
+    if (!isStartDayInDaysArr) {
+      this.props.clickDayCheckbox(startDay)
+    }
+
+    this.props.setPopupToShow('event')
+  }
+
   render () {
     let thisEvent = this.props.events.events.find(e => {
       return e.id === this.props.activeEventId
@@ -209,14 +228,25 @@ class PlannerRightBar extends Component {
                     <span style={styles.labelText}>Location name</span>
                     <PlannerSideBarLocationNameField id={this.props.activeEventId} locationObj={locationObj} />
                   </label>
-                  <label style={styles.labelContainer}>
-                    <span style={styles.labelText}>Address</span>
-                    <div style={{display: 'flex', alignItems: 'center', minHeight: '35px'}}>
-                      <span style={styles.addressText}>{locationObj ? locationObj.address : ''}</span>
-                    </div>
-                    {/* <span style={styles.labelText}>Verified</span>
-                    <span>{isVerified}</span> */}
-                  </label>
+                  <span style={styles.labelText}>Address</span>
+                  <div style={{display: 'flex', alignItems: 'center', minHeight: '35px'}}>
+                    {locationObj && locationObj.address &&
+                      <span style={styles.addressText}>{locationObj.address}</span>
+                    }
+                    {locationObj && !locationObj.address &&
+                      <span style={styles.addressText}>No address</span>
+                    }
+                    {!locationObj &&
+                      <span style={styles.addressText}>No location</span>
+                    }
+                  </div>
+                  {this.props.plannerView.tablePlanner &&
+                    <button style={{border: '2px solid rgb(67, 132, 150)', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px'}} onClick={() => this.openInMap(this.props.activeEventId)}>Open in Map</button>
+                  }
+                  {/* <label style={styles.labelContainer}>
+                  </label> */}
+                  {/* <span style={styles.labelText}>Verified</span>
+                  <span>{isVerified}</span> */}
                 </div>
               </div>
               <hr style={styles.sectionDivider} />
@@ -255,7 +285,6 @@ class PlannerRightBar extends Component {
                 <div style={styles.inputSection}>
                   <label style={styles.labelContainer}>
                     <span style={styles.labelText}>Notes</span>
-                    {/* <textarea placeholder={'-'} style={styles.notesTextArea} /> */}
                     <PlannerSideBarInfoField property='notes' id={this.props.activeEventId} />
                   </label>
                 </div>
@@ -281,17 +310,27 @@ const mapStateToProps = (state) => {
   return {
     events: state.events,
     activeEventId: state.activeEventId,
-    plannerView: state.plannerView
+    plannerView: state.plannerView,
+    mapbox: state.mapbox
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     updateEvent: (id, property, value) => {
-      return dispatch(updateEvent(id, property, value))
+      dispatch(updateEvent(id, property, value))
     },
     setRightBarFocusedTab: (tabName) => {
-      return dispatch(setRightBarFocusedTab(tabName))
+      dispatch(setRightBarFocusedTab(tabName))
+    },
+    switchToMapView: () => {
+      dispatch(switchToMapView())
+    },
+    clickDayCheckbox: (day) => {
+      dispatch(clickDayCheckbox(day))
+    },
+    setPopupToShow: (name) => {
+      dispatch(setPopupToShow(name))
     }
   }
 }
