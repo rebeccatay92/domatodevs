@@ -13,6 +13,7 @@ class BottomBarItineraryInfoPanel extends Component {
       description: props.itinerary.description || '',
       days: props.itinerary.days,
       startDate: props.itinerary.startDate, // unix secs
+      // countries: props.itinerary.countries
     }
   }
 
@@ -27,7 +28,6 @@ class BottomBarItineraryInfoPanel extends Component {
   }
 
   onDateChange (e) {
-    // console.log('e', e)
     if (e) {
       let unix = moment(e._d).unix()
       // console.log('unix', unix)
@@ -42,16 +42,21 @@ class BottomBarItineraryInfoPanel extends Component {
   }
 
   render () {
-    console.log('itinerary', this.props.itinerary)
+    // console.log('itinerary', this.props.itinerary)
     return (
-      <div style={{width: '334px', height: '330px', position: 'absolute', bottom: '51px', left: 'calc(50vw)', background: 'rgb(245, 245, 245)', padding: '0 8px', border: '1px solid rgba(60, 58, 68, 0.7)'}}>
-        <div style={{display: 'flex', flexDirection: 'column', width: '100%', height: '100%', boxSizing: 'border-box'}}>
+      <div style={{width: '334px', minhHeight: '340px', position: 'absolute', bottom: '51px', left: 'calc(50vw)', background: 'rgb(245, 245, 245)', padding: '0 8px', border: '1px solid rgba(60, 58, 68, 0.7)'}}>
+        <div style={{display: 'flex', flexDirection: 'column', width: '100%', minHeight: '340px', boxSizing: 'border-box'}}>
           <h6 style={labelTextStyle}>Title</h6>
           <div style={{width: '100%', minHeight: '35px'}}>
             <input type='text' value={this.state.name} onChange={e => this.handleChange(e, 'name')} />
           </div>
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
           <h6 style={labelTextStyle}>Countries</h6>
+          <div style={{width: '100%', minHeight: '35px'}}>
+            {this.props.itinerary.countries.map((country, i) => {
+              return <button key={i}>{country.name}</button>
+            })}
+          </div>
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
           <h6 style={labelTextStyle}>Days</h6>
           <div style={{width: '100%', minHeight: '35px'}}>
@@ -62,11 +67,11 @@ class BottomBarItineraryInfoPanel extends Component {
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
           <h6 style={labelTextStyle}>Description</h6>
           <div style={{width: '100%', minHeight: '35px'}}>
-            <input type='text' value={this.state.description} onChange={e => this.handleChange(e, 'description')} />
+            <textarea value={this.state.description} onChange={e => this.handleChange(e, 'description')} style={{width: '100%', height: '70px'}} />
           </div>
         </div>
-        <div style={{width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid rgb(245, 245, 245)', position: 'relative', left: '150px', zIndex: 2}} />
-        <div style={{width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid rgba(60, 58, 68, 0.7)', position: 'relative', left: '150px', bottom: '9px', zIndex: 1}} />
+        <div style={{width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid rgb(245, 245, 245)', position: 'absolute', left: '160px', zIndex: 2}} />
+        <div style={{width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid rgba(60, 58, 68, 0.7)', position: 'absolute', left: '160px', bottom: '-11px', zIndex: 1}} />
       </div>
     )
   }
