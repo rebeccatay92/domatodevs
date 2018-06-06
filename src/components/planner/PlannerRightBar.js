@@ -3,10 +3,11 @@ import { graphql, compose } from 'react-apollo'
 
 import { connect } from 'react-redux'
 import { updateEvent } from '../../actions/planner/eventsActions'
+import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab, switchToMapView } from '../../actions/planner/plannerViewActions'
 import { clickDayCheckbox, setPopupToShow } from '../../actions/planner/mapboxActions'
 
-import { updateEventBackend } from '../../apollo/event'
+import { updateEventBackend, deleteEvent } from '../../apollo/event'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { queryItinerary } from '../../apollo/itinerary'
 
@@ -18,6 +19,7 @@ import CustomDateInput from './CustomDateInput'
 import 'react-datepicker/dist/react-datepicker.css'
 
 import moment from 'moment'
+import { deleteEventResequence } from '../../helpers/plannerLoadSequence'
 
 import { PlannerRightBarStyles as styles } from '../../Styles/PlannerRightBarStyles'
 
@@ -142,18 +144,42 @@ class PlannerRightBar extends Component {
     this.props.setPopupToShow('event')
   }
 
+  deleteEvent (activeEventId) {
+    this.props.setRightBarFocusedTab('')
+    this.props.setPopupToShow('')
+    this.props.updateActiveEvent('')
+
+    let loadSequenceChanges = deleteEventResequence(this.props.events.events, activeEventId)
+
+    // console.log('changes', loadSequenceChanges)
+
+    let deleteEventPromise = this.props.deleteEvent({
+      variables: {id: activeEventId}
+    })
+    let changingLoadSequencePromise = this.props.changingLoadSequence({
+      variables: {
+        input: loadSequenceChanges
+      }
+    })
+
+    Promise.all([deleteEventPromise, changingLoadSequencePromise])
+      .then(response => {
+        this.props.data.refetch()
+      })
+  }
+
   render () {
     let thisEvent = this.props.events.events.find(e => {
       return e.id === this.props.activeEventId
     })
-    let isVerified
+    // let isVerified
     if (thisEvent) {
       var locationObj = thisEvent.locationObj
-      if (locationObj) {
-        isVerified = locationObj.verified ? 'TRUE' : 'FALSE'
-      } else {
-        isVerified = 'NO LOCATION'
-      }
+      // if (locationObj) {
+      //   isVerified = locationObj.verified ? 'TRUE' : 'FALSE'
+      // } else {
+      //   isVerified = 'NO LOCATION'
+      // }
     }
 
     return (
@@ -289,6 +315,8 @@ class PlannerRightBar extends Component {
                   </label>
                 </div>
               </div>
+
+              <button style={{border: '2px solid red', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px', position: 'absolute', bottom: '16px', right: '16px'}} onClick={() => this.deleteEvent(this.props.activeEventId)}>Delete this event</button>
               {/* <hr style={styles.sectionDivider} />
               <div style={{width: '100%', display: 'flex'}}>
                 <div style={styles.iconSection}>
@@ -331,6 +359,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setPopupToShow: (name) => {
       dispatch(setPopupToShow(name))
+    },
+    updateActiveEvent: (id) => {
+      dispatch(updateActiveEvent(id))
     }
   }
 }
@@ -346,5 +377,6 @@ const options = {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(updateEventBackend, {name: 'updateEventBackend'}),
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
+  graphql(deleteEvent, {name: 'deleteEvent'}),
   graphql(queryItinerary, options)
 )(PlannerRightBar))
