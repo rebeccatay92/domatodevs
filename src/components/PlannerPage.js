@@ -80,7 +80,7 @@ class PlannerPage extends Component {
         </div>
 
         <PlannerRightBar daysArr={daysIntArr} datesArr={datesUnixArr} itineraryId={this.props.match.params.itineraryId} />
-        <PlannerBottomBar />
+        <PlannerBottomBar days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} itinerary={this.props.data.findItinerary} />
       </div>
     )
   }

@@ -15,6 +15,7 @@ const plannerBottomBarContainer = {
 }
 
 const tabContainer = {
+  position: 'relative',
   height: '100%',
   display: 'flex',
   justifyContent: 'center',
@@ -25,8 +26,8 @@ const tabContainer = {
   padding: '0 20px',
   cursor: 'pointer',
   ':hover': {
-    fontWeight: 700,
-    background: 'rgb(240, 240, 240)'
+    // fontWeight: 700,
+    background: 'rgb(230, 230, 230)'
   }
 }
 

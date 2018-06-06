@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import BottomBarItineraryInfoPanel from './BottomBarItineraryInfoPanel'
 
 import { connect } from 'react-redux'
 import { switchToTableView, switchToMapView } from '../../actions/planner/plannerViewActions'
@@ -10,7 +11,9 @@ import { PlannerBottomBarStyles as styles } from '../../Styles/PlannerBottomBarS
 class PlannerBottomBar extends Component {
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      showItineraryInfo: false
+    }
   }
 
   switchToMapView () {
@@ -21,6 +24,18 @@ class PlannerBottomBar extends Component {
   switchToTableView () {
     this.props.updateActiveEvent('')
     this.props.switchToTableView()
+  }
+
+  toggleItineraryInfo () {
+    this.setState({
+      showItineraryInfo: !this.state.showItineraryInfo
+    })
+  }
+
+  onClickOutside () {
+    this.setState({
+      showItineraryInfo: false
+    })
   }
 
   render () {
@@ -42,9 +57,12 @@ class PlannerBottomBar extends Component {
         <div key={'plannerBottomBarTab4'} style={styles.tabContainer}>
           <span>Add Event</span>
         </div>
-        <div key={'plannerBottomBarTab5'} style={styles.tabContainer}>
-          <span>Information</span>
+        <div key={'plannerBottomBarTab5'} style={styles.tabContainer} className={'ignore-react-onclickoutside'} onClick={() => this.toggleItineraryInfo()}>
+          <span style={{color: this.state.showItineraryInfo ? 'rgb(67, 132, 150)' : 'rgb(60, 58, 68)', fontWeight: this.state.showItineraryInfo ? 700 : 400}}>Information</span>
         </div>
+        {this.state.showItineraryInfo &&
+          <BottomBarItineraryInfoPanel onClickOutside={() => this.onClickOutside()} itinerary={this.props.itinerary} visible={this.state.showItineraryInfo} />
+        }
       </div>
     )
   }
