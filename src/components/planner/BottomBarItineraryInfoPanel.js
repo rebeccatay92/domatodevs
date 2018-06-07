@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import onClickOutside from 'react-onclickoutside'
+import { WithOutContext as ReactTags } from 'react-tag-input'
 import moment from 'moment'
 
 import DatePicker from 'react-datepicker'
@@ -8,6 +9,8 @@ import 'react-datepicker/dist/react-datepicker.css'
 
 import { connect } from 'react-redux'
 import { updateItinerary } from '../../actions/planner/itineraryActions'
+
+import countries from '../../data/countries.json'
 
 class BottomBarItineraryInfoPanel extends Component {
   // constructor (props) {
@@ -20,6 +23,19 @@ class BottomBarItineraryInfoPanel extends Component {
   //     // countries: props.itinerary.countries
   //   }
   // }
+
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      suggestions: countries.map(country => {
+        return {
+          ...country,
+          ...{id: country.id.toString(), text: country.name}
+        }
+      })
+    }
+  }
 
   handleClickOutside () {
     this.props.closePanel()
@@ -43,6 +59,16 @@ class BottomBarItineraryInfoPanel extends Component {
     }
   }
 
+  handleCountryAddition (tag) {
+    if (this.props.itineraryDetails.countries.map(obj => obj.text).includes(tag.text) || this.state.suggestions.filter(country => country.text === tag.text).length < 1) return
+    this.props.updateItinerary('countries', [...this.props.itineraryDetails.countries, ...[tag]])
+  }
+
+  handleCountryDelete (i, e) {
+    if (e.keyCode === 8) return
+    this.props.updateItinerary('countries', this.props.itineraryDetails.countries.filter((country, index) => index !== i))
+  }
+
   render () {
     // console.log('itinerary details', this.props.itineraryDetails)
     return (
@@ -54,10 +80,8 @@ class BottomBarItineraryInfoPanel extends Component {
           </div>
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
           <h6 style={labelTextStyle}>Countries</h6>
-          <div style={{width: '100%', minHeight: '35px'}}>
-            {this.props.itineraryDetails.countries.map((country, i) => {
-              return <button key={i}>{country.name}</button>
-            })}
+          <div className='itinerary-info-countries' style={{width: '100%', minHeight: '35px'}}>
+            <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[13, 9]} inline placeholder='Add new country' tags={this.props.itineraryDetails.countries} handleDelete={(i, e) => this.handleCountryDelete(i, e)} handleAddition={(tag) => this.handleCountryAddition(tag)} />
           </div>
           {/* CALL CREATECOUNTRIESITINERARIES / DELETECOUNTRIESITINERARIES DIRECTLY? */}
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
