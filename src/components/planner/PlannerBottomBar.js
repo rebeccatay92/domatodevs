@@ -40,7 +40,7 @@ class PlannerBottomBar extends Component {
   }
 
   closePanel () {
-    console.log('close panel. itinerary details obj is', this.props.itineraryDetails)
+    // console.log('close panel. itinerary details obj is', this.props.itineraryDetails)
     this.setState({
       showItineraryInfo: false
     })
@@ -53,7 +53,11 @@ class PlannerBottomBar extends Component {
         description: this.props.itineraryDetails.description,
         days: this.props.itineraryDetails.days,
         startDate: this.props.itineraryDetails.startDate,
-        isPrivate: this.props.itineraryDetails.isPrivate
+        isPrivate: this.props.itineraryDetails.isPrivate,
+        countries: this.props.itineraryDetails.countries.map(e => {
+          return e.id
+        })
+        // countries: ['1', '119', '120'] // send as string ids.
       },
       refetchQueries: [{
         query: queryItinerary,
@@ -116,15 +120,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-// const options = {
-//   options: props => ({
-//     variables: {
-//       id: props.itineraryId
-//     }
-//   })
-// }
-
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
-  // graphql(queryItinerary, options)
 )(Radium(PlannerBottomBar)))

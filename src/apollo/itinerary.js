@@ -142,7 +142,8 @@ export const updateItineraryDetails = gql`
     $description: String,
     $startDate: Int,
     $days: Int,
-    $isPrivate: Boolean
+    $isPrivate: Boolean,
+    $countries: [ID]
   ) {
     updateItineraryDetails(
       id: $id,
@@ -150,7 +151,8 @@ export const updateItineraryDetails = gql`
       description: $description,
       startDate: $startDate,
       days: $days,
-      isPrivate: $isPrivate
+      isPrivate: $isPrivate,
+      countries: $countries
     ) {
       id
       name
@@ -158,6 +160,11 @@ export const updateItineraryDetails = gql`
       days
       startDate
       isPrivate
+      countries {
+        id
+        code
+        name
+      }
     }
   }`
 
