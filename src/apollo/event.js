@@ -118,6 +118,7 @@ export const deleteEvent = gql`
   }
 `
 
+// DUPLICATE OF /CHANGINGLOADSEQUENCE.JS
 export const changingLoadSequence = gql`
   mutation changingLoadSequence(
     $input: [changingLoadSequenceInput]

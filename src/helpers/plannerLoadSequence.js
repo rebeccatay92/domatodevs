@@ -1,7 +1,4 @@
 /* import and use as follows.
-import plannerLoadSequence from plannerLoadSequence
-eg. plannerLoadSequence.createNewEvent(params)
-
 PARAMETERS AND OUTPUT
 createNewEvent
   Input: eventsArr that comes from backend + day:Int for newEvent
@@ -14,7 +11,7 @@ dragDropOneEvent?
   Output: changingLoadSequence arr
 */
 
-function createNewEvent (eventsArr, insertIntoDay) {
+export function createNewEventSequence (eventsArr, insertIntoDay) {
   // filter out events in the affected day
   let eventsInDay = eventsArr.filter(e => {
     return e.startDay === insertIntoDay
@@ -24,20 +21,20 @@ function createNewEvent (eventsArr, insertIntoDay) {
   return loadSequence
 }
 
-function deleteEvent (eventsArr, EventId) {
+export function deleteEventResequence (eventsArr, EventId) {
   let eventToDelete = eventsArr.find(e => {
     return e.id === EventId
   })
   // console.log('eventToDelete', eventToDelete)
   let affectedDay = eventToDelete.startDay
 
-  let eventsInDay = eventsArr.filter(e => {
-    return e.startDay === affectedDay
+  let remainingEventsInDay = eventsArr.filter(e => {
+    return (e.startDay === affectedDay && e.id !== EventId)
   })
 
   let changingLoadSequenceArr = []
 
-  eventsInDay.forEach((event, i) => {
+  remainingEventsInDay.forEach((event, i) => {
     if (event.loadSequence !== i + 1) {
       changingLoadSequenceArr.push({
         EventId: event.id,
@@ -47,9 +44,4 @@ function deleteEvent (eventsArr, EventId) {
     }
   })
   return changingLoadSequenceArr
-}
-
-export const plannerLoadSequence = {
-  createNewEvent,
-  deleteEvent
 }

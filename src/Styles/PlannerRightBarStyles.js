@@ -9,14 +9,16 @@ const sidebarContainer = {
   position: 'fixed',
   top: '52px',
   right: 0,
-  display: 'flex',
-  backfaceVisibility: 'hidden'
+  display: 'flex'
 }
 
 /* ----------------------------- */
 
 const tabsContainer = {
-  zIndex: 11,
+  position: 'fixed',
+  right: 0, // or 344px
+  top: '52px',
+  zIndex: 12,
   width: '35px',
   height: '128px' // 2 tabs so 64x2
 }
@@ -55,9 +57,7 @@ const tabText = {
 /* ----------------------------- */
 
 const mainAreaContainer = {
-  zIndex: 1,
-  // 1920/12*2 col = 320px
-  // width: '320px', // entire content bar width
+  zIndex: 11,
   width: '344px',
   height: '100%',
   background: 'rgb(245, 245, 245)',
@@ -150,26 +150,16 @@ const addressText = {
   lineHeight: '24px'
 }
 
-const notesTextArea = {
-  width: '100%',
-  height: '48px',
-  background: 'rgb(245,245,245)',
-  lineHeight: '24px',
-  ...coreFonts.robotoLight,
-  fontSize: '16px',
-  color: coreColors.blackSolid,
-  resize: 'none'
-}
+// const attachFileLabelText = {
+//   display: 'block',
+//   ...coreFonts.robotoLight,
+//   fontSize: '16px',
+//   color: coreColors.blackSolid,
+//   lineHeight: '24px',
+//   height: '24px',
+//   margin: 0
+// }
 
-const attachFileLabelText = {
-  display: 'block',
-  ...coreFonts.robotoLight,
-  fontSize: '16px',
-  color: coreColors.blackSolid,
-  lineHeight: '24px',
-  height: '24px',
-  margin: 0
-}
 /* ----------------------------- */
 export const PlannerRightBarStyles = {
   sidebarContainer,
@@ -188,7 +178,6 @@ export const PlannerRightBarStyles = {
   timeInput,
   inputField,
   labelText,
-  addressText,
-  notesTextArea,
-  attachFileLabelText
+  addressText
+  // attachFileLabelText
 }

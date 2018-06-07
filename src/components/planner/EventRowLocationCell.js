@@ -11,7 +11,6 @@ import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import { graphql, compose } from 'react-apollo'
 import { updateEventBackend } from '../../apollo/event'
-import { queryItinerary } from '../../apollo/itinerary'
 
 import _ from 'lodash'
 
@@ -216,6 +215,15 @@ class EventRowLocationCell extends Component {
         })
       }
     }
+
+    // if event changed day/date (from right bar). current cell will receive new this.props.id.
+    if (nextProps.id !== this.props.id) {
+      const thisEvent = nextProps.events.events.find(e => {
+        return e.id === nextProps.id
+      })
+      const locationContentState = thisEvent.locationName
+      this.setState({editorState: EditorState.createWithContent(locationContentState)})
+    }
   }
 
   handleOnBlur () {
@@ -365,6 +373,7 @@ class EventRowLocationCell extends Component {
   }
 
   render () {
+    // console.log('props id', this.props.id)
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
       <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={(e) => this.handleCellClick(e)} style={{zIndex: 0, position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={e => this.handleKeyDown(e)}>

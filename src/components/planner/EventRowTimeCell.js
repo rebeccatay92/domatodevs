@@ -55,7 +55,7 @@ class EventRowTimeCell extends Component {
     this.props.changeActiveField('startTime')
     // if activeEventId is different, setActiveEventId, also open events right bar
     if (this.props.activeEventId !== this.props.id) {
-      this.props.setRightBarFocusedTab('event')
+      // this.props.setRightBarFocusedTab('event')
       this.props.updateActiveEvent(this.props.id)
     }
   }

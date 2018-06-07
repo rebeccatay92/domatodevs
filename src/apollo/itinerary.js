@@ -107,7 +107,7 @@ export const itinerariesByUser = gql`
 
 export const createItinerary = gql`
   mutation createItinerary(
-    $UserId: Int!,
+    $UserId: String!,
     $CountryId: Int,
     $name: String!,
     $description: String,
@@ -132,7 +132,7 @@ export const createItinerary = gql`
         name
         code
       }
-      }
+    }
   }`
 
 export const updateItineraryDetails = gql`

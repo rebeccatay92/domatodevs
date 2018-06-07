@@ -100,7 +100,7 @@ class DateBox extends Component {
   render () {
     // console.log(this.props.events)
     // console.log('PROPS DATE UNIX', this.props.date)
-    let dateString = moment.unix(this.props.date).format('ddd DD MMM YYYY')
+    let dateString = moment.unix(this.props.date).utc().format('ddd DD MMM YYYY')
     let dateStringUpcase = dateString.toUpperCase()
 
     // console.log(this.props.events);

@@ -101,7 +101,6 @@ class EventRowInfoCell extends Component {
     const property = eventPropertyNames[this.props.column]
     this.props.changeActiveField(property)
     if (this.props.activeEventId !== this.props.id) {
-      // this.props.setRightBarFocusedTab('event')
       this.props.updateActiveEvent(this.props.id)
     }
   }

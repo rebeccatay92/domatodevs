@@ -7,12 +7,7 @@ import { plannerColumnReducer } from './reducers/plannerColumnReducer'
 import { plannerTimelineReducer } from './reducers/plannerTimelineReducer'
 import { plannerTimelineDayReducer } from './reducers/plannerTimelineDayReducer'
 import { spinnerReducer } from './reducers/spinnerReducer'
-// import { mapPlannerCurrentFocusReducer } from './reducers/mapPlannerCurrentFocusReducer'
-// import { mapPlannerDaysFilterReducer } from './reducers/mapPlannerDaysFilterReducer'
 import { readReducer } from './reducers/readReducer'
-// import { mapPlannerOpenCreateFormReducer } from './reducers/mapPlannerOpenCreateFormReducer'
-// import { mapPlannerOpenEditFormReducer } from './reducers/mapPlannerOpenEditFormReducer'
-// import { mapPlannerSearchReducer } from './reducers/mapPlannerSearchReducer'
 import {mediaConsoleReducer} from './reducers/mediaConsoleReducer'
 import { blogEditorActivePageReducer } from './reducers/blogEditorActivePageReducer'
 import { userDashboardReducer } from './reducers/userDashboardReducer'
@@ -24,11 +19,12 @@ import { navBarReducer } from './reducers/navBarReducer'
 // Reducers for v2
 import { columnsReducer } from './reducers/planner/columnsReducer'
 import { eventsReducer } from './reducers/planner/eventsReducer'
+import { itineraryReducer } from './reducers/planner/itineraryReducer'
 import { activeEventReducer } from './reducers/planner/activeEventReducer'
 import { activeFieldReducer } from './reducers/planner/activeFieldReducer'
 import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
 import { mapboxReducer } from './reducers/planner/mapboxReducer'
-// import { timeCellFocusReducer } from './reducers/planner/timeCellFocusReducer'
+import { timeCellFocusReducer } from './reducers/planner/timeCellFocusReducer'
 import { sortReducer } from './reducers/planner/sortReducer'
 
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
@@ -60,12 +56,7 @@ const store = createStore(combineReducers({
   plannerTimelineDay: plannerTimelineDayReducer,
   userProfile: userReducer,
   showSpinner: spinnerReducer,
-  // currentlyFocusedEvent: mapPlannerCurrentFocusReducer,
-  // mapPlannerDaysFilterArr: mapPlannerDaysFilterReducer,
   blogPosts: readReducer,
-  // openCreateFormParams: mapPlannerOpenCreateFormReducer,
-  // openEditFormParams: mapPlannerOpenEditFormReducer,
-  // mapPlannerSearch: mapPlannerSearchReducer,
   mediaConsole: mediaConsoleReducer,
   blogEditorActivePage: blogEditorActivePageReducer,
   userDashboard: userDashboardReducer,
@@ -75,11 +66,12 @@ const store = createStore(combineReducers({
   navBar: navBarReducer,
   columns: columnsReducer,
   events: eventsReducer,
+  itineraryDetails: itineraryReducer,
   activeEventId: activeEventReducer,
   activeField: activeFieldReducer,
   plannerView: plannerViewReducer,
   mapbox: mapboxReducer,
-  // timeCellFocus: timeCellFocusReducer,
+  timeCellFocus: timeCellFocusReducer,
   sortOptions: sortReducer,
   apollo: client.reducer()
 }),
