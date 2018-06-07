@@ -300,6 +300,75 @@ class MapboxMap extends Component {
     this.props.clickDayCheckbox(day)
   }
 
+  calculateNewCenterToFitPopup (markerLatitude, markerLongitude) {
+    // given the lat/lng of the marker, shift the center of the map such that the popup is fully visible
+    let shiftDownwards = 0 // check if popup will clear the top edge of days filter
+    let shiftLeftwards = 0 // check if clash with days filter.
+    let shiftRightwards = 0 // exceeds right bar. need to shift right
+    let shiftUpwards = 0 // check if too close to top
+
+    // convert marker's latlng into x,y pixels from top-left corner
+    let projectionX = this.map.project([markerLongitude, markerLatitude]).x
+    let projectionY = this.map.project([markerLongitude, markerLatitude]).y
+    // console.log('x,y', projectionX, projectionY)
+
+    // if y value is less than height of popup + marker offset + top custom controls (too near the top). center needs shift upwards (minus by the difference).
+    // 200px popup + 40px offset + 42px top controls = 282
+    if (282 - projectionY > 0) {
+      shiftUpwards = 282 - projectionY
+    }
+
+    let mapboxDiv = document.querySelector('.mapboxgl-map')
+    let mapboxHeight = mapboxDiv.clientHeight
+    let mapboxWidth = mapboxDiv.clientWidth
+
+    // since right bar does not open unless user explicitly clicks, marker just has to clear the tabs width (35px) + half its own width
+    // but if user clicks right bar, map needs to shift accordingly? *ignore first
+    if (projectionX - (mapboxWidth - 150 - 35) > 0) {
+      // means marker x value is beyond right edge of map
+      shiftRightwards = projectionX - (mapboxWidth - 150 - 35)
+    }
+
+    // check y value of marker if under or over top edge of days filter
+    let daysFilterDiv = document.querySelector('.mapboxDaysFilter')
+    let daysFilterHeight = daysFilterDiv.clientHeight
+
+    if (projectionY <= mapboxHeight - daysFilterHeight - 10) {
+      // above filter. check if it clear left edge
+      if (150 - projectionX > 0) {
+        // doesnt clear left edge. shift map leftwards (-ve)
+        shiftLeftwards = 150 - projectionX
+      }
+    } else {
+      // marker falls in the region below the top edge of days filter
+      if ((150 + 160) - projectionX > 0) {
+        //
+      }
+      let exceedLeftEdge = 150 + 160 - projectionX
+      let distanceFromTopOfDaysFilter = projectionY - (mapboxHeight - daysFilterHeight - 10)
+
+      if (exceedLeftEdge > 0) {
+        if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
+          shiftLeftwards = exceedLeftEdge
+        } else {
+          shiftDownwards = distanceFromTopOfDaysFilter
+        }
+      }
+    }
+
+    // convert center of map to x,y projection too
+    let centerProjectionX = this.map.project(this.state.center).x
+    let centerProjectionY = this.map.project(this.state.center).y
+
+    let finalCenterProjectionY = centerProjectionY + shiftDownwards - shiftUpwards
+    let finalCenterProjectionX = centerProjectionX + shiftRightwards - shiftLeftwards
+
+    let newCenterLatLng = this.map.unproject([finalCenterProjectionX, finalCenterProjectionY])
+
+    // return new coordinates for setState(center)
+    return [newCenterLatLng.lng, newCenterLatLng.lat]
+  }
+
   onEventMarkerClick (id) {
     // toggle activeEventId
     if (this.props.activeEventId === id) {
@@ -311,100 +380,108 @@ class MapboxMap extends Component {
         return e.id === id
       })
       if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
-        let latitude = thisEvent.latitudeDisplay
-        let longitude = thisEvent.longitudeDisplay
-
-        let shiftDownwards = 0
-        let shiftLeftwards = 0
-        let shiftRightwards = 0
-        let shiftUpwards = 0
-
-        // project
-        let projectionX = this.map.project([longitude, latitude]).x
-        let projectionY = this.map.project([longitude, latitude]).y
-        console.log('x,y', projectionX, projectionY)
-
-        let exceedTopEdge = 282 - projectionY // if positive (means insufficient space)
-        if (exceedTopEdge > 0) {
-          console.log('exceed by', exceedTopEdge)
-          shiftDownwards = exceedTopEdge
-        }
-        let mapboxDiv = document.querySelector('.mapboxgl-map')
-        let mapboxHeight = mapboxDiv.clientHeight
-        let mapboxWidth = mapboxDiv.clientWidth
-        // check right edge (depends on whether right bar is open)
-        if (!this.props.plannerView.rightBar) {
-          // if right bar is not open. account for right bar width too
-          console.log('mapboxWidth', mapboxWidth) // 1185 if right bar is hidden
-          let exceedRightEdge = projectionX - (mapboxWidth - 530) // if positive means too far right
-          if (exceedRightEdge > 0) {
-            console.log('exceed right by', exceedRightEdge)
-            shiftLeftwards = exceedRightEdge
-          }
-        } else {
-          // if right bar is already open, clientWidth is smaller
-          let exceedRightEdge = projectionX - (mapboxWidth - 185)
-          if (exceedRightEdge > 0) {
-            console.log('exceed right by', exceedRightEdge)
-            shiftLeftwards = exceedRightEdge
-          }
-        }
-        let daysFilterDiv = document.querySelector('.mapboxDaysFilter')
-        let daysFilterHeight = daysFilterDiv.clientHeight
-
-        // check distance from bottom, then check left edge
-
-        if (projectionY <= mapboxHeight - daysFilterHeight - 10) {
-          // if marker is above daysFilter, check left edge only
-          console.log('lies above daysFilter')
-          let exceedLeftEdge = 150 - projectionX
-          if (exceedLeftEdge > 0) {
-            console.log('exceed left edge by', exceedLeftEdge)
-            shiftRightwards = exceedLeftEdge
-          }
-        } else {
-          console.log('lies below daysFilter')
-          // if marker lies lower than daysFilter, check if exceedLeftEdge vs distance to top of daysFilter. shift either up or right (whichever is smaller).
-          let exceedLeftEdge = 160 + 150 - projectionX
-          let distanceFromTopOfDaysFilter = projectionY - (mapboxHeight - daysFilterHeight - 10)
-          if (exceedLeftEdge > 0) {
-            console.log('exceed left by', exceedLeftEdge)
-            console.log('distance from top is', distanceFromTopOfDaysFilter)
-            if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
-              shiftRightwards = exceedLeftEdge
-            } else {
-              shiftUpwards = distanceFromTopOfDaysFilter
-            }
-          }
-        }
-
-        // console.log('shifts', shiftDownwards, shiftRightwards, shiftLeftwards, shiftUpwards)
-
-        // console.log('center', this.map.project(this.state.center))
-        let centerProjectionX = this.map.project(this.state.center).x
-        let centerProjectionY = this.map.project(this.state.center).y
-        // console.log('center points', centerProjectionX, centerProjectionY)
-
-        let finalCenterProjectionY = centerProjectionY - shiftDownwards + shiftUpwards
-        let finalCenterProjectionX = centerProjectionX - shiftRightwards + shiftLeftwards
-
-        // console.log('points', finalCenterProjectionX, finalCenterProjectionY)
-        let newCenterLatLng = this.map.unproject([finalCenterProjectionX, finalCenterProjectionY])
-        this.setState({center: [newCenterLatLng.lng, newCenterLatLng.lat]})
+        let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+        this.setState({center: newCenter})
       }
 
       this.props.updateActiveEvent(id)
-      // this.props.setRightBarFocusedTab('event')
       this.props.setPopupToShow('event')
+      // this.props.setRightBarFocusedTab('event')
+
+      // if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
+      //   let latitude = thisEvent.latitudeDisplay
+      //   let longitude = thisEvent.longitudeDisplay
+      //
+      //   let shiftDownwards = 0
+      //   let shiftLeftwards = 0
+      //   let shiftRightwards = 0
+      //   let shiftUpwards = 0
+      //
+      //   // project
+      //   let projectionX = this.map.project([longitude, latitude]).x
+      //   let projectionY = this.map.project([longitude, latitude]).y
+      //   console.log('x,y', projectionX, projectionY)
+      //
+      //   let exceedTopEdge = 282 - projectionY // if positive (means insufficient space)
+      //   if (exceedTopEdge > 0) {
+      //     console.log('exceed by', exceedTopEdge)
+      //     shiftDownwards = exceedTopEdge
+      //   }
+      //
+      //   let mapboxDiv = document.querySelector('.mapboxgl-map')
+      //   let mapboxHeight = mapboxDiv.clientHeight
+      //   let mapboxWidth = mapboxDiv.clientWidth
+      //   // check right edge (depends on whether right bar is open)
+      //   if (!this.props.plannerView.rightBar) {
+      //     // if right bar is not open. account for right bar width too
+      //     console.log('mapboxWidth', mapboxWidth) // 1185 if right bar is hidden
+      //     let exceedRightEdge = projectionX - (mapboxWidth - 530) // if positive means too far right
+      //     if (exceedRightEdge > 0) {
+      //       console.log('exceed right by', exceedRightEdge)
+      //       shiftLeftwards = exceedRightEdge
+      //     }
+      //   } else {
+      //     // if right bar is already open, clientWidth is smaller
+      //     let exceedRightEdge = projectionX - (mapboxWidth - 185)
+      //     if (exceedRightEdge > 0) {
+      //       console.log('exceed right by', exceedRightEdge)
+      //       shiftLeftwards = exceedRightEdge
+      //     }
+      //   }
+      //   let daysFilterDiv = document.querySelector('.mapboxDaysFilter')
+      //   let daysFilterHeight = daysFilterDiv.clientHeight
+      //
+      //   // check distance from bottom, then check left edge
+      //
+      //   if (projectionY <= mapboxHeight - daysFilterHeight - 10) {
+      //     // if marker is above daysFilter, check left edge only
+      //     console.log('lies above daysFilter')
+      //     let exceedLeftEdge = 150 - projectionX
+      //     if (exceedLeftEdge > 0) {
+      //       console.log('exceed left edge by', exceedLeftEdge)
+      //       shiftRightwards = exceedLeftEdge
+      //     }
+      //   } else {
+      //     console.log('lies below daysFilter')
+      //     // if marker lies lower than daysFilter, check if exceedLeftEdge vs distance to top of daysFilter. shift either up or right (whichever is smaller).
+      //     let exceedLeftEdge = 160 + 150 - projectionX
+      //     let distanceFromTopOfDaysFilter = projectionY - (mapboxHeight - daysFilterHeight - 10)
+      //     if (exceedLeftEdge > 0) {
+      //       console.log('exceed left by', exceedLeftEdge)
+      //       console.log('distance from top is', distanceFromTopOfDaysFilter)
+      //       if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
+      //         shiftRightwards = exceedLeftEdge
+      //       } else {
+      //         shiftUpwards = distanceFromTopOfDaysFilter
+      //       }
+      //     }
+      //   }
+      //
+      //   // console.log('shifts', shiftDownwards, shiftRightwards, shiftLeftwards, shiftUpwards)
+      //
+      //   // console.log('center', this.map.project(this.state.center))
+      //   let centerProjectionX = this.map.project(this.state.center).x
+      //   let centerProjectionY = this.map.project(this.state.center).y
+      //   // console.log('center points', centerProjectionX, centerProjectionY)
+      //
+      //   let finalCenterProjectionY = centerProjectionY - shiftDownwards + shiftUpwards
+      //   let finalCenterProjectionX = centerProjectionX - shiftRightwards + shiftLeftwards
+      //
+      //   // console.log('points', finalCenterProjectionX, finalCenterProjectionY)
+      //   let newCenterLatLng = this.map.unproject([finalCenterProjectionX, finalCenterProjectionY])
+      //   this.setState({center: [newCenterLatLng.lng, newCenterLatLng.lat]})
+      // }
     }
   }
 
   onSearchMarkerClick () {
     if (this.props.mapbox.popupToShow !== 'search') {
       this.props.setPopupToShow('search')
-      this.setState({
-        center: [this.state.searchMarker.longitude, this.state.searchMarker.latitude]
-      })
+      let newCenter = this.calculateNewCenterToFitPopup(this.state.searchMarker.latitude, this.state.searchMarker.longitude)
+      this.setState({center: newCenter})
+      // this.setState({
+      //   center: [this.state.searchMarker.longitude, this.state.searchMarker.latitude]
+      // })
     } else if (this.props.mapbox.popupToShow === 'search') {
       this.props.setPopupToShow('')
     }
@@ -413,9 +490,11 @@ class MapboxMap extends Component {
   onCustomMarkerClick () {
     if (this.props.mapbox.popupToShow !== 'custom') {
       this.props.setPopupToShow('custom')
-      this.setState({
-        center: [this.state.customMarker.longitude, this.state.customMarker.latitude]
-      })
+      // this.setState({
+      //   center: [this.state.customMarker.longitude, this.state.customMarker.latitude]
+      // })
+      let newCenter = this.calculateNewCenterToFitPopup(this.state.customMarker.latitude, this.state.customMarker.longitude)
+      this.setState({center: newCenter})
     } else if (this.props.mapbox.popupToShow === 'custom') {
       this.props.setPopupToShow('')
     }
@@ -539,9 +618,6 @@ class MapboxMap extends Component {
     console.log('evt', evt)
     if (this.state.plottingCustomMarker) {
       this.queryMapboxReverseGeocoder(evt.lngLat.lat, evt.lngLat.lng)
-      this.setState({
-        center: [evt.lngLat.lng, evt.lngLat.lat]
-      })
     }
   }
 
@@ -589,8 +665,10 @@ class MapboxMap extends Component {
             name,
             address
           }
+          let newCenter = this.calculateNewCenterToFitPopup(customMarker.latitude, customMarker.longitude)
           this.setState({
-            customMarker: customMarker
+            customMarker: customMarker,
+            center: newCenter
           }, () => {
             this.props.setPopupToShow('custom')
           })
