@@ -6,7 +6,7 @@ import { queryItinerary } from '../apollo/itinerary'
 import { connect } from 'react-redux'
 import { toggleSpinner } from '../actions/spinnerActions'
 import { initializeEvents } from '../actions/planner/eventsActions'
-
+import { initializeItineraryDetails } from '../actions/planner/itineraryActions'
 import { EditorState, convertFromRaw, ContentState } from 'draft-js'
 
 import Planner from './Planner'
@@ -42,6 +42,19 @@ class PlannerPage extends Component {
       console.log('nextProps allevents', nextProps.data.findItinerary.events)
       initializeEventsHelper(nextProps.data.findItinerary.events, this.props.initializeEvents)
       setTimeout(() => this.props.toggleSpinner(false), 250)
+
+      console.log('itinerary details', nextProps.data.findItinerary)
+      let itinerary = nextProps.data.findItinerary
+      let details = {
+        id: itinerary.id,
+        name: itinerary.name,
+        description: itinerary.description,
+        days: itinerary.days,
+        startDate: itinerary.startDate,
+        isPrivate: itinerary.isPrivate,
+        countries: itinerary.countries
+      }
+      this.props.initializeItineraryDetails(details)
     }
   }
 
@@ -80,7 +93,7 @@ class PlannerPage extends Component {
         </div>
 
         <PlannerRightBar daysArr={daysIntArr} datesArr={datesUnixArr} itineraryId={this.props.match.params.itineraryId} />
-        <PlannerBottomBar days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} itinerary={this.props.data.findItinerary} />
+        <PlannerBottomBar days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} itineraryId={this.props.match.params.itineraryId} />
       </div>
     )
   }
@@ -107,6 +120,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     toggleSpinner: (spinner) => {
       dispatch(toggleSpinner(spinner))
+    },
+    initializeItineraryDetails: (details) => {
+      dispatch(initializeItineraryDetails(details))
     }
   }
 }

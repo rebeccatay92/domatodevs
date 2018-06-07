@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
-import { updateItineraryDetails, itinerariesByUser } from '../../apollo/itinerary'
+// import { updateItineraryDetails, itinerariesByUser } from '../../apollo/itinerary'
 
 class UpdateItineraryDetails extends Component {
   constructor (props) {
@@ -39,19 +39,19 @@ class UpdateItineraryDetails extends Component {
     //   endUnix = this.state.endDate
     // }
 
-    this.props.updateItineraryDetails({
-      variables: {
-        id: this.state.id,
-        name: this.state.name,
-        description: this.state.description,
-        days: this.state.days,
-        startDate: startUnix
-        // endDate: endUnix,
-      },
-      refetchQueries: [{
-        query: itinerariesByUser
-      }]
-    })
+    // this.props.updateItineraryDetails({
+    //   variables: {
+    //     id: this.state.id,
+    //     name: this.state.name,
+    //     description: this.state.description,
+    //     days: this.state.days,
+    //     startDate: startUnix
+    //     // endDate: endUnix,
+    //   },
+    //   refetchQueries: [{
+    //     query: itinerariesByUser
+    //   }]
+    // })
     this.props.toggleUpdateForm()
   }
   render () {
@@ -80,4 +80,4 @@ class UpdateItineraryDetails extends Component {
   }
 }
 
-export default graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})(UpdateItineraryDetails)
+export default (UpdateItineraryDetails)

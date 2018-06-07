@@ -5,6 +5,9 @@ import { connect } from 'react-redux'
 import { switchToTableView, switchToMapView } from '../../actions/planner/plannerViewActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 
+import { graphql, compose } from 'react-apollo'
+import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
+
 import Radium from 'radium'
 import { PlannerBottomBarStyles as styles } from '../../Styles/PlannerBottomBarStyles'
 
@@ -27,18 +30,42 @@ class PlannerBottomBar extends Component {
   }
 
   toggleItineraryInfo () {
-    this.setState({
-      showItineraryInfo: !this.state.showItineraryInfo
-    })
+    if (!this.state.showItineraryInfo) {
+      this.setState({
+        showItineraryInfo: true
+      })
+    } else {
+      this.closePanel()
+    }
   }
 
-  onClickOutside () {
+  closePanel () {
+    console.log('close panel. itinerary details obj is', this.props.itineraryDetails)
     this.setState({
       showItineraryInfo: false
+    })
+
+    // send to backend and refetch
+    this.props.updateItineraryDetails({
+      variables: {
+        id: this.props.itineraryDetails.id,
+        name: this.props.itineraryDetails.name,
+        description: this.props.itineraryDetails.description,
+        days: this.props.itineraryDetails.days,
+        startDate: this.props.itineraryDetails.startDate,
+        isPrivate: this.props.itineraryDetails.isPrivate
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: {
+          id: this.props.itineraryDetails.id
+        }
+      }]
     })
   }
 
   render () {
+    // console.log('itinerary details', this.props.itineraryDetails)
     return (
       <div style={styles.plannerBottomBarContainer}>
         {this.props.plannerView.tablePlanner &&
@@ -61,7 +88,7 @@ class PlannerBottomBar extends Component {
           <span style={{color: this.state.showItineraryInfo ? 'rgb(67, 132, 150)' : 'rgb(60, 58, 68)', fontWeight: this.state.showItineraryInfo ? 700 : 400}}>Information</span>
         </div>
         {this.state.showItineraryInfo &&
-          <BottomBarItineraryInfoPanel onClickOutside={() => this.onClickOutside()} itinerary={this.props.itinerary} visible={this.state.showItineraryInfo} />
+          <BottomBarItineraryInfoPanel closePanel={() => this.closePanel()} />
         }
       </div>
     )
@@ -70,7 +97,8 @@ class PlannerBottomBar extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    plannerView: state.plannerView
+    plannerView: state.plannerView,
+    itineraryDetails: state.itineraryDetails
   }
 }
 
@@ -88,4 +116,15 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Radium(PlannerBottomBar))
+// const options = {
+//   options: props => ({
+//     variables: {
+//       id: props.itineraryId
+//     }
+//   })
+// }
+
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(updateItineraryDetails, {name: 'updateItineraryDetails'})
+  // graphql(queryItinerary, options)
+)(Radium(PlannerBottomBar)))

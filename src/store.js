@@ -19,6 +19,7 @@ import { navBarReducer } from './reducers/navBarReducer'
 // Reducers for v2
 import { columnsReducer } from './reducers/planner/columnsReducer'
 import { eventsReducer } from './reducers/planner/eventsReducer'
+import { itineraryReducer } from './reducers/planner/itineraryReducer'
 import { activeEventReducer } from './reducers/planner/activeEventReducer'
 import { activeFieldReducer } from './reducers/planner/activeFieldReducer'
 import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
@@ -65,6 +66,7 @@ const store = createStore(combineReducers({
   navBar: navBarReducer,
   columns: columnsReducer,
   events: eventsReducer,
+  itineraryDetails: itineraryReducer,
   activeEventId: activeEventReducer,
   activeField: activeFieldReducer,
   plannerView: plannerViewReducer,
