@@ -53,7 +53,8 @@ class PlannerBottomBar extends Component {
         description: this.props.itineraryDetails.description,
         days: this.props.itineraryDetails.days,
         startDate: this.props.itineraryDetails.startDate,
-        isPrivate: this.props.itineraryDetails.isPrivate
+        isPrivate: this.props.itineraryDetails.isPrivate,
+        countries: this.props.itineraryDetails.countries.map(country => country.id)
       },
       refetchQueries: [{
         query: queryItinerary,
