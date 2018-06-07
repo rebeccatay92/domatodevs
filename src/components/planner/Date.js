@@ -172,7 +172,7 @@ class DateBox extends Component {
             </tr>
           </thead>
           <tbody>
-            <tr>
+            {this.state.expanded && <tr>
               <td style={{width: '0px'}}></td>
               <td style={{textAlign: 'center', width: '114px'}}>
                 Time
@@ -185,7 +185,7 @@ class DateBox extends Component {
                 startingColumn += column.width
                 return columnHeader
               })}
-            </tr>
+            </tr>}
             {this.state.expanded && this.props.events.map((event, i) => {
               return <EventRow key={i} event={event} day={day} id={event.id} itineraryId={itineraryId} index={i} />
             })}
