@@ -145,6 +145,7 @@ class EventRowInfoCell extends Component {
 
   handleCurrencySelect (e) {
     const { id } = this.props
+    this.props.updateEvent(id, 'currency', e.target.value, false)
     this.props.updateEventBackend({
       variables: {
         id,
@@ -164,7 +165,7 @@ class EventRowInfoCell extends Component {
 
     return (
       <div onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e)}>
-        {column === 'Price' && <select onChange={(e) => this.handleCurrencySelect(e)} defaultValue={eventCurrency} onFocus={() => this.handleOnFocus()} style={{backgroundColor: 'transparent', border: 'none'}}>
+        {column === 'Price' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} onFocus={() => this.handleOnFocus()} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}

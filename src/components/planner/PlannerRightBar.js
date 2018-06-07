@@ -148,8 +148,8 @@ class PlannerRightBar extends Component {
                 <label style={styles.labelContainer}>
                   <span style={styles.labelText}>Cost</span>
                   {/* <input type='number' placeholder={'-'} style={styles.inputField} /> */}
-                  <PlannerSideBarInfoField property='cost' id={this.props.activeEventId} />
                 </label>
+                <PlannerSideBarInfoField property='cost' id={this.props.activeEventId} />
               </div>
             </div>
             <hr style={styles.sectionDivider} />
