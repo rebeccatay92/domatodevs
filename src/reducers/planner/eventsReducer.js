@@ -113,7 +113,7 @@ export const eventsReducer = (state = {
         // .sort((a, b) => a.startDay - b.startDay || a.loadSequence - b.loadSequence)
         refetch: false,
         updatedId: action.id,
-        updatedProperty: action.property,
+        updatedProperty: action.property === 'currency' ? 'cost' : action.property,
         updatedFromSidebar: action.fromSidebar
       }
     case 'PLANNER_EVENT_HOVER_OVER_EVENT':
