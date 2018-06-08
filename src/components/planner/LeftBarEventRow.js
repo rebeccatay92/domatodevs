@@ -19,7 +19,6 @@ class LeftBarEventRow extends Component {
       this.props.setPopupToShow('')
     } else {
       this.props.updateActiveEvent(id)
-      // this.props.setRightBarFocusedTab('event')
       this.props.setPopupToShow('event')
     }
   }

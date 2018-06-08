@@ -243,6 +243,31 @@ class MapboxMap extends Component {
         })
       }
     }
+
+    // if activeEventId changed (left bar clicked, or event marker clicked)
+    if (nextProps.activeEventId !== this.props.activeEventId) {
+      if (nextProps.activeEventId) {
+        // console.log('next active event', nextProps.activeEventId)
+        let thisEvent = nextProps.events.events.find(e => {
+          return e.id === nextProps.activeEventId
+        })
+        if (thisEvent.longitudeDisplay && thisEvent.latitudeDisplay) {
+          console.log('longitude', thisEvent.longitudeDisplay)
+          // check if marker is already within the bounds
+          let currentBounds = this.map.getBounds()
+          console.log('currentBounds', currentBounds)
+
+          if ((thisEvent.longitudeDisplay >= currentBounds._sw.lng && thisEvent.longitudeDisplay <= currentBounds._ne.lng) && (thisEvent.latitudeDisplay >= currentBounds._sw.lat && thisEvent.latitudeDisplay <= currentBounds._ne.lat)) {
+            console.log('within bounds')
+            let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+            this.setState({center: newCenter})
+          } else {
+            this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
+          }
+        }
+      }
+    }
+
     // extract visble markers and offset lat lng
     if (nextProps.events.events !== this.props.events.events || nextProps.mapbox.daysToShow !== this.props.mapbox.daysToShow) {
       let daysToShow = nextProps.mapbox.daysToShow
@@ -341,18 +366,22 @@ class MapboxMap extends Component {
       }
     } else {
       // marker falls in the region below the top edge of days filter
-      if ((150 + 160) - projectionX > 0) {
-        //
-      }
+      // if ((150 + 160) - projectionX > 0) {
+      //   //
+      // }
       let exceedLeftEdge = 150 + 160 - projectionX
       let distanceFromTopOfDaysFilter = projectionY - (mapboxHeight - daysFilterHeight - 10)
 
       if (exceedLeftEdge > 0) {
-        if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
-          shiftLeftwards = exceedLeftEdge
-        } else {
-          shiftDownwards = distanceFromTopOfDaysFilter
-        }
+        // if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
+        //   shiftLeftwards = exceedLeftEdge
+        // } else {
+        //   shiftDownwards = distanceFromTopOfDaysFilter
+        // }
+
+        // if clicking in left bar, marker might be under days filter itself. shift 2 directions.
+        shiftLeftwards = exceedLeftEdge
+        shiftDownwards = distanceFromTopOfDaysFilter
       }
     }
 
@@ -376,13 +405,13 @@ class MapboxMap extends Component {
       this.props.setRightBarFocusedTab('')
       this.props.setPopupToShow('')
     } else {
-      let thisEvent = this.props.events.events.find(e => {
-        return e.id === id
-      })
-      if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
-        let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-        this.setState({center: newCenter})
-      }
+      // let thisEvent = this.props.events.events.find(e => {
+      //   return e.id === id
+      // })
+      // if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
+      //   let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+      //   this.setState({center: newCenter})
+      // }
 
       this.props.updateActiveEvent(id)
       this.props.setPopupToShow('event')
