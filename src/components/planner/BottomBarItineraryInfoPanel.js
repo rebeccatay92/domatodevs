@@ -60,7 +60,7 @@ class BottomBarItineraryInfoPanel extends Component {
   }
 
   handleCountryAddition (tag) {
-    if (this.props.itineraryDetails.countries.map(obj => obj.text).includes(tag.text)) return
+    if (this.props.itineraryDetails.countries.map(obj => obj.text).includes(tag.text) || this.state.suggestions.filter(country => country.text === tag.text).length < 1) return
     this.props.updateItinerary('countries', [...this.props.itineraryDetails.countries, ...[tag]])
   }
 
