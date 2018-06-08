@@ -88,7 +88,7 @@ class PlannerPage extends Component {
             <PlannerLeftBar itineraryId={this.props.match.params.itineraryId} days={numOfDaysInt} daysArr={daysIntArr} datesArr={datesUnixArr} />
           }
           {this.props.plannerView.mapbox &&
-            <MapboxMap daysArr={daysIntArr} />
+            <MapboxMap daysArr={daysIntArr} itineraryId={this.props.match.params.itineraryId} />
           }
         </div>
 

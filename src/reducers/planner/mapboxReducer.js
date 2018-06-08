@@ -18,6 +18,18 @@ export const mapboxReducer = (state = {
           daysToShow: [...state.daysToShow, action.day]
         }
       }
+    case 'ENSURE_DAY_IS_CHECKED':
+      console.log('REDUX DAY', action.day, typeof(action.day))
+      if (state.daysToShow.includes(action.day)) {
+        console.log('already in days filter')
+        return state
+      } else {
+        console.log('not in days filter')
+        return {
+          ...state,
+          daysToShow: [...state.daysToShow, action.day]
+        }
+      }
     case 'SET_POPUP_TO_SHOW':
       return {
         ...state,

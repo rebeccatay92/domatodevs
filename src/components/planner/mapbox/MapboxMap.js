@@ -3,14 +3,16 @@ import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
 import LocationCellDropdown from '../LocationCellDropdown'
 
 import { connect } from 'react-redux'
-import { clickDayCheckbox, setPopupToShow } from '../../../actions/planner/mapboxActions'
+import { clickDayCheckbox, ensureDayIsChecked, setPopupToShow } from '../../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
 import { updateEvent } from '../../../actions/planner/eventsActions'
 
 import { graphql, compose } from 'react-apollo'
-import { updateEventBackend } from '../../../apollo/event'
+import { updateEventBackend, createEvent } from '../../../apollo/event'
 import { queryItinerary } from '../../../apollo/itinerary'
+
+import { createNewEventSequence } from '../../../helpers/plannerLoadSequence'
 
 import _ from 'lodash'
 import { Editor, EditorState, ContentState } from 'draft-js'
@@ -270,6 +272,7 @@ class MapboxMap extends Component {
 
     // extract visble markers and offset lat lng
     if (nextProps.events.events !== this.props.events.events || nextProps.mapbox.daysToShow !== this.props.mapbox.daysToShow) {
+      console.log('recalc latDisplay lngDisplay')
       let daysToShow = nextProps.mapbox.daysToShow
       let eventsInVisibleDays = nextProps.events.events.filter(e => {
         return daysToShow.includes(e.startDay)
@@ -307,6 +310,8 @@ class MapboxMap extends Component {
       })
       this.setState({
         eventMarkersToDisplay: eventsWithOffsetGeometry
+      }, () => {
+        console.log('eventMarkersToDisplay with latDisplay, lngDisplay done', this.state.eventMarkersToDisplay)
       })
     }
   }
@@ -687,7 +692,7 @@ class MapboxMap extends Component {
             }
           }
           let customMarker = {
-            verified: true,
+            verified: false,
             latitude: lat,
             longitude: lng,
             countryCode,
@@ -705,6 +710,49 @@ class MapboxMap extends Component {
       })
       .catch(err => {
         console.log('err', err)
+      })
+  }
+
+  customMarkerAddEvent () {
+    // get value of day dropdown (numeric string convert to number)
+    let customMarkerDayDropdown = document.querySelector('.customMarkerDayDropdown')
+    let startDay = parseInt(customMarkerDayDropdown.value)
+
+    let locationObj = {
+      verified: false,
+      latitude: this.state.customMarker.latitude,
+      longitude: this.state.customMarker.longitude,
+      name: this.state.customMarker.name,
+      address: this.state.customMarker.address,
+      countryCode: this.state.customMarker.countryCode
+    }
+
+    let loadSequence = createNewEventSequence(this.props.events.events, startDay)
+
+    this.props.createEvent({
+      variables: {
+        ItineraryId: this.props.itineraryId,
+        locationData: locationObj,
+        startDay,
+        loadSequence
+      }
+    })
+      .then(response => {
+        // after creating event, refetch queryItinerary, set daysFilter, setActiveEvent, open event marker, event popup. close custom marker, custom popup
+        let newEventId = response.data.createEvent.id
+        return Promise.all([this.props.data.refetch(), newEventId])
+      })
+      .then(promiseArr => {
+        let newEventId = promiseArr[1]
+
+        // ensure day is check in days filter first
+        // close custom marker, popup, change cursor back to normal
+        // set activeEvent to newEventId
+        // set popup to 'event'
+        this.props.ensureDayIsChecked(startDay)
+        this.togglePlotCustom()
+        this.props.updateActiveEvent(newEventId)
+        this.props.setPopupToShow('event')
       })
   }
 
@@ -783,6 +831,18 @@ class MapboxMap extends Component {
                       <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
                     </div>
                   }
+                </div>
+              }
+              {!this.props.activeEventId &&
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.customMarkerAddEvent()}>
+                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Add to</span>
+                  <select className={'customMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
+                    {this.props.daysArr.map((day, i) => {
+                      return (
+                        <option key={i} value={day}>Day {day}</option>
+                      )
+                    })}
+                  </select>
                 </div>
               }
             </div>
@@ -902,6 +962,9 @@ const mapDispatchToProps = (dispatch) => {
     clickDayCheckbox: (day) => {
       dispatch(clickDayCheckbox(day))
     },
+    ensureDayIsChecked: (day) => {
+      dispatch(ensureDayIsChecked(day))
+    },
     setPopupToShow: (name) => {
       dispatch(setPopupToShow(name))
     },
@@ -917,6 +980,16 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
+const options = {
+  options: props => ({
+    variables: {
+      id: props.itineraryId
+    }
+  })
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
-  graphql(updateEventBackend, {name: 'updateEventBackend'})
+  graphql(updateEventBackend, {name: 'updateEventBackend'}),
+  graphql(createEvent, {name: 'createEvent'}),
+  graphql(queryItinerary, options)
 )(MapboxMap))
