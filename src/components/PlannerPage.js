@@ -52,7 +52,13 @@ class PlannerPage extends Component {
         days: itinerary.days,
         startDate: itinerary.startDate,
         isPrivate: itinerary.isPrivate,
-        countries: itinerary.countries
+        countries: itinerary.countries ? itinerary.countries.map(country => {
+          return {
+            id: country.id,
+            text: country.name,
+            code: country.code
+          }
+        }) : []
       }
       this.props.initializeItineraryDetails(details)
     }
