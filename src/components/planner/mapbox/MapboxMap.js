@@ -738,7 +738,6 @@ class MapboxMap extends Component {
       }
     })
       .then(response => {
-        // after creating event, refetch queryItinerary, set daysFilter, setActiveEvent, open event marker, event popup. close custom marker, custom popup
         let newEventId = response.data.createEvent.id
         return Promise.all([this.props.data.refetch(), newEventId])
       })
@@ -751,6 +750,34 @@ class MapboxMap extends Component {
         // set popup to 'event'
         this.props.ensureDayIsChecked(startDay)
         this.togglePlotCustom()
+        this.props.updateActiveEvent(newEventId)
+        this.props.setPopupToShow('event')
+      })
+  }
+
+  searchMarkerAddEvent () {
+    let searchMarkerDayDropdown = document.querySelector('.searchMarkerDayDropdown')
+    let startDay = parseInt(searchMarkerDayDropdown.value)
+    let locationObj = this.state.searchMarker
+    let loadSequence = createNewEventSequence(this.props.events.events, startDay)
+
+    this.props.createEvent({
+      variables: {
+        ItineraryId: this.props.itineraryId,
+        locationData: locationObj,
+        startDay,
+        loadSequence
+      }
+    })
+      .then(response => {
+        let newEventId = response.data.createEvent.id
+        return Promise.all([this.props.data.refetch(), newEventId])
+      })
+      .then(promiseArr => {
+        let newEventId = promiseArr[1]
+
+        this.props.ensureDayIsChecked(startDay)
+        this.clearSearch()
         this.props.updateActiveEvent(newEventId)
         this.props.setPopupToShow('event')
       })
@@ -894,6 +921,18 @@ class MapboxMap extends Component {
                       <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
                     </div>
                   }
+                </div>
+              }
+              {!this.props.activeEventId &&
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.searchMarkerAddEvent()}>
+                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Add to</span>
+                  <select className={'searchMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
+                    {this.props.daysArr.map((day, i) => {
+                      return (
+                        <option key={i} value={day}>Day {day}</option>
+                      )
+                    })}
+                  </select>
                 </div>
               }
             </div>
