@@ -374,7 +374,7 @@ class PlannerSideBarLocationNameField extends Component {
           }
         </div>
         {this.state.showDropdown &&
-          <LocationCellDropdown openedIn={'rightbar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
+          <LocationCellDropdown openedIn={'rightBar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
         }
       </div>
     )
