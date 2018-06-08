@@ -60,7 +60,7 @@ class BottomBarItineraryInfoPanel extends Component {
   }
 
   handleCountryAddition (tag) {
-    if (this.props.itineraryDetails.countries.map(obj => obj.text).includes(tag.text) || this.state.suggestions.filter(country => country.text === tag.text).length < 1) return
+    if (this.props.itineraryDetails.countries.map(obj => obj.text).includes(tag.text)) return
     this.props.updateItinerary('countries', [...this.props.itineraryDetails.countries, ...[tag]])
   }
 
@@ -81,7 +81,7 @@ class BottomBarItineraryInfoPanel extends Component {
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
           <h6 style={labelTextStyle}>Countries</h6>
           <div className='itinerary-info-countries' style={{width: '100%', minHeight: '35px'}}>
-            <ReactTags autofocus={false} suggestions={this.state.suggestions} delimiters={[13, 9]} inline placeholder='Add new country' tags={this.props.itineraryDetails.countries} handleDelete={(i, e) => this.handleCountryDelete(i, e)} handleAddition={(tag) => this.handleCountryAddition(tag)} />
+            <ReactTags autofocus={false} autocomplete suggestions={this.state.suggestions} delimiters={[13, 9]} inline placeholder='Add new country' tags={this.props.itineraryDetails.countries} handleDelete={(i, e) => this.handleCountryDelete(i, e)} handleAddition={(tag) => this.handleCountryAddition(tag)} />
           </div>
           {/* CALL CREATECOUNTRIESITINERARIES / DELETECOUNTRIESITINERARIES DIRECTLY? */}
           <hr style={{margin: 0, border: '1px solid rgba(60, 58, 68, 0.1)'}} />
