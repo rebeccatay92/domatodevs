@@ -23,6 +23,7 @@
     "react": "^16.2.0",
     "react-apollo": "^1.4.16",
     "react-bootstrap": "^0.31.5",
+    "react-contextmenu": "^2.9.2",
     "react-custom-scrollbars": "^4.2.1",
     "react-datepicker": "^1.2.1",
     "react-dnd": "^2.5.4",

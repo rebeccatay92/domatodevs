@@ -62,7 +62,7 @@ class EventRowInfoCell extends Component {
 
     this.focus = (e) => {
       // check whether the click is within the text, or within the cell but outside of the text, if outside of text, move cursor to the end
-      if (e.target.className === 'planner-table-cell') {
+      if (e.target.className === 'planner-table-cell-container') {
         this.editor.focus()
         this.setState({editorState: EditorState.moveFocusToEnd(this.state.editorState)})
       } else {
@@ -163,7 +163,7 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div onClick={(e) => this.handleCellClick(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e)}>
+      <div className='planner-table-cell-container' onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e)}>
         {column === 'Price' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} onFocus={() => this.handleOnFocus()} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
