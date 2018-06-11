@@ -10,6 +10,7 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 // import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
 import { createEvent, changingLoadSequence } from '../../apollo/event'
+import { deleteMultipleEvents } from '../../apollo/deleteMultipleEvents'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
 import { dropActivity, deleteActivity, plannerActivityHoverOverActivity, hoverOutsidePlanner, initializePlanner } from '../../actions/plannerActions'
@@ -19,6 +20,9 @@ import { toggleSpinner } from '../../actions/spinnerActions'
 import { timelineStyle, dateTableStyle, timelineColumnStyle, dateTableFirstHeaderStyle, headerDayStyle, headerDateStyle, dateTableHorizontalLineStyle } from '../../Styles/styles'
 
 import { ContentState } from 'draft-js'
+
+import findEventsFromDayToDelete from '../../helpers/findEventsFromDayToDelete'
+import { deleteDay } from '../../helpers/deleteDay'
 
 // new actions
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
@@ -98,6 +102,62 @@ class DateBox extends Component {
     this.props.sortEvents('startTime', type)
   }
 
+  deleteDay () {
+    if (this.props.days === 1) {
+      alert('cannot lah')
+      return
+    }
+    this.toggleDateDropdown()
+    const eventsToDelete = findEventsFromDayToDelete(this.props.allEvents, this.props.day)
+    const newEventsArr = deleteDay(this.props.allEvents, this.props.day)
+    this.props.toggleSpinner(true)
+
+    this.props.changingLoadSequence({
+      variables: {
+        input: newEventsArr
+      }
+    })
+    .then(response => {
+      this.props.deleteMultipleEvents({
+        variables: {
+          input: eventsToDelete
+        }
+      })
+    })
+    .then(response => {
+      this.props.updateItineraryDetails({
+        variables: {
+          id: this.props.itineraryId,
+          days: this.props.days - 1
+        }
+      })
+    })
+    .then(response => {
+      setTimeout(() => {
+        this.props.data.refetch()
+      }, 100)
+    })
+  }
+
+  clearDay () {
+    this.toggleDateDropdown()
+    const events = findEventsFromDayToDelete(this.props.allEvents, this.props.day)
+
+    if (events.length === 0) return
+
+    this.props.toggleSpinner(true)
+    this.props.deleteMultipleEvents({
+      variables: {
+        input: events
+      }
+    })
+    .then(response => {
+      setTimeout(() => {
+        this.props.data.refetch()
+      }, 500)
+    })
+  }
+
   render () {
     // console.log(this.props.events)
     // console.log('PROPS DATE UNIX', this.props.date)
@@ -141,10 +201,10 @@ class DateBox extends Component {
                         {dateStringUpcase}
                       </span>
                     }
-                    {/* <div style={{position: 'relative', display: 'inline'}}>
+                    <div style={{position: 'relative', display: 'inline'}}>
                       {expandButton}
                       {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} days={this.props.days} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
-                    </div> */}
+                    </div>
                   </div>
                   <div style={{position: 'absolute', right: '0', top: '5px', height: '100%', display: 'flex', alignItems: 'center'}}>
                     <i onClick={() => this.setState({expanded: !this.state.expanded})} className='material-icons' style={{cursor: 'pointer'}}>{this.state.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
@@ -160,10 +220,10 @@ class DateBox extends Component {
               </td>
               <td>
                 <ContextMenu id={'eventRowContextMenu-day-' + this.props.day}>
-                  <MenuItem onClick={() => this.handleDelete()}>
+                  <MenuItem onClick={() => this.deleteDay()}>
                     Delete Day
                   </MenuItem>
-                  <MenuItem onClick={() => this.handleDuplicate()}>
+                  <MenuItem onClick={() => this.clearDay()}>
                     Clear Day
                   </MenuItem>
                 </ContextMenu>
@@ -289,7 +349,8 @@ const mapStateToProps = (state) => {
     timeline: state.plannerTimeline,
     timelineDay: state.plannerTimelineDay,
     plannerView: state.plannerView,
-    sortOptions: state.sortOptions
+    sortOptions: state.sortOptions,
+    allEvents: state.events.events
   }
 }
 
@@ -305,5 +366,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options),
   graphql(changingLoadSequence, { name: 'changingLoadSequence' }),
   graphql(updateItineraryDetails, { name: 'updateItineraryDetails' }),
-  graphql(createEvent, { name: 'createEvent' })
+  graphql(createEvent, { name: 'createEvent' }),
+  graphql(deleteMultipleEvents, {name: 'deleteMultipleEvents'})
 )(DropTarget(['plannerEvent'], dateTarget, collect)(Radium(DateBox))))
