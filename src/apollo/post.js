@@ -9,7 +9,7 @@ export const findPost = gql`
         id
         title
       }
-      ParentPostId
+      # ParentPostId
       LocationId
       location {
         id
@@ -17,17 +17,18 @@ export const findPost = gql`
       }
       loadSequence
       title
-      description
+      # description
       textContent
-      contentOnly
+      # contentOnly
       eventType
-      start
+      bucketCategory
+      # start
       startDay
-      endDay
-      childPosts {
-        id
-        title
-      }
+      # endDay
+      # childPosts {
+      #   id
+      #   title
+      # }
       media {
         id
         PostId
@@ -46,6 +47,8 @@ export const findPost = gql`
     }
   }
 `
+
+// CRUD NEEDS TO BE RELOOKED FOR NEW BLOG STRUCTURE
 
 export const createPost = gql`
   mutation createPost(

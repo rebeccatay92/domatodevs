@@ -7,6 +7,7 @@ import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab, switchToMapView } from '../../actions/planner/plannerViewActions'
 import { clickDayCheckbox, setPopupToShow } from '../../actions/planner/mapboxActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { openConfirmWindow } from '../../actions/confirmWindowActions'
 
 import { updateEventBackend, deleteEvent } from '../../apollo/event'
 import { changingLoadSequence } from '../../apollo/changingLoadSequence'
@@ -169,6 +170,25 @@ class PlannerRightBar extends Component {
       })
   }
 
+  confirmDeleteEvent () {
+    this.props.openConfirmWindow({
+      message: 'Are you sure you want to delete this event?',
+      secondaryMessage: '',
+      confirmMessage: 'Yes, I am sure.'
+    })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.confirmWindow !== this.props.confirmWindow) {
+      if (!nextProps.confirmWindow.open && nextProps.confirmWindow.confirmClicked) {
+        console.log('confirm clicked')
+        this.deleteEvent(this.props.activeEventId)
+      } else if (!nextProps.confirmWindow.open && !nextProps.confirmWindow.confirmClicked) {
+        console.log('cancelled')
+      }
+    }
+  }
+
   render () {
     let thisEvent = this.props.events.events.find(e => {
       return e.id === this.props.activeEventId
@@ -317,7 +337,7 @@ class PlannerRightBar extends Component {
                 </div>
               </div>
 
-              <button style={{border: '2px solid red', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px', position: 'absolute', bottom: '16px', right: '16px'}} onClick={() => this.deleteEvent(this.props.activeEventId)}>Delete this event</button>
+              <button style={{border: '2px solid red', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px', position: 'absolute', bottom: '16px', right: '16px'}} onClick={() => this.confirmDeleteEvent()}>Delete this event</button>
               {/* <hr style={styles.sectionDivider} />
               <div style={{width: '100%', display: 'flex'}}>
                 <div style={styles.iconSection}>
@@ -340,7 +360,8 @@ const mapStateToProps = (state) => {
     events: state.events,
     activeEventId: state.activeEventId,
     plannerView: state.plannerView,
-    mapbox: state.mapbox
+    mapbox: state.mapbox,
+    confirmWindow: state.confirmWindow
   }
 }
 
@@ -365,7 +386,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(updateActiveEvent(id))
     },
     changeActiveField: (field) => {
-      return dispatch(changeActiveField(field))
+      dispatch(changeActiveField(field))
+    },
+    openConfirmWindow: (input) => {
+      dispatch(openConfirmWindow(input))
     }
   }
 }

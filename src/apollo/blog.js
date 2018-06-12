@@ -18,24 +18,32 @@ export const getAllPublishedBlogs = gql`
         username
       }
       title
-      textContent
+      # textContent
       days
       hashtags {
         id
         name
       }
-      media {
+      # media {
+      #   id
+      #   MediumId
+      #   BlogId
+      #   loadSequence
+      #   caption
+      #   AlbumId
+      #   type
+      #   objectName
+      #   imageUrl
+      #   youtubeUrl
+      # }
+      medium {
         id
-        MediumId
-        BlogId
-        loadSequence
-        caption
-        AlbumId
         type
         objectName
         imageUrl
         youtubeUrl
       }
+      caption
       createdAt
       updatedAt
       # eg 10th april 2018
@@ -55,10 +63,10 @@ export const getUserBlogs = gql`
       views
       publishDate
       timeFromPublishDate
-      media {
+      medium {
         id
-        MediumId
-        BlogId
+        # MediumId
+        # BlogId
         imageUrl
       }
       hashtags {
@@ -75,7 +83,7 @@ export const queryBlog = gql`
       id
       title
       published
-      textContent
+      # textContent
       views
       shares
       days
@@ -87,18 +95,26 @@ export const queryBlog = gql`
         id
         username
       }
-      media {
+      # media {
+      #   id
+      #   BlogId
+      #   loadSequence
+      #   caption
+      #   MediumId
+      #   type
+      #   AlbumId
+      #   objectName
+      #   imageUrl
+      #   youtubeUrl
+      # }
+      medium {
         id
-        BlogId
-        loadSequence
-        caption
-        MediumId
         type
-        AlbumId
         objectName
         imageUrl
         youtubeUrl
       }
+      caption
       hashtags {
         id
         name
@@ -110,6 +126,11 @@ export const queryBlog = gql`
         BlogHeading {
           id
           title
+          medium {
+            id
+            imageUrl
+          }
+          caption
         }
         Post {
           id
@@ -117,20 +138,21 @@ export const queryBlog = gql`
           location {
             name
           }
-          contentOnly
-          ParentPostId
+          # contentOnly
+          # ParentPostId
           title
-          description
+          # description
           eventType
-          start
+          bucketCategory
+          # start
           startDay
-          endDay
+          # endDay
           startTime
           endTime
-          childPosts {
-            id
-            loadSequence
-          }
+          # childPosts {
+          #   id
+          #   loadSequence
+          # }
           media {
             id
             loadSequence
@@ -158,6 +180,7 @@ export const increaseBlogViews = gql`
   }
 `
 
+// CRUD NEEDS TO BE RELOOKED FOR NEW BLOG STRUCTURE
 export const createBlog = gql`
   mutation createBlog(
     $UserId: ID!,

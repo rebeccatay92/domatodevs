@@ -11,6 +11,7 @@ export const findBlogHeading = gql`
   }
 `
 
+// CRUD NEEDS TO BE RELOOKED FOR NEW BLOG STRUCTURE
 export const createBlogHeading = gql`
   mutation createBlogHeading(
     $BlogId: ID!,

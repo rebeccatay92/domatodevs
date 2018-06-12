@@ -57,8 +57,8 @@ class BlogsTab extends Component {
             <div key={`dashboardBlog${i}`} style={styles.blogThumbnailContainer}>
               {/* IMAGE CONTAINER -> IMAGE AND ICON */}
               <div style={styles.thumbnailImageContainer}>
-                {blog.media[0] &&
-                  <img src={blog.media[0].imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer'}} onClick={() => console.log('redirect to public view?')} />
+                {blog.medium &&
+                  <img src={blog.medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer'}} onClick={() => console.log('redirect to public view?')} />
                 }
                 {/* PUBLIC / PRIVATE TOGGLE ICON */}
                 <div style={blog.published ? styles.blogPublishedIconContainer : styles.blogPrivateIconContainer}>

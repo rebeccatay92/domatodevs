@@ -52,8 +52,8 @@ class HomePage extends Component {
                 </div>
                 {/* THUMBNAIL IMAGE */}
                 <div style={styles.thumbnailImageContainer}>
-                  {blog.media[0] &&
-                    <img src={blog.media[0].imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} onClick={() => this.redirectToBlog(blog.id)} />
+                  {blog.medium &&
+                    <img src={blog.medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} onClick={() => this.redirectToBlog(blog.id)} />
                   }
                 </div>
                 {/* BOTTOM INFO ROW */}

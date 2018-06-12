@@ -222,6 +222,7 @@ class PlannerSideBarLocationNameField extends Component {
       let activeEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.activeEventId
       })
+      if (!activeEvent) return
       let nameContentState = activeEvent.locationName
       this.setState({
         editorState: EditorState.createWithContent(nameContentState)
