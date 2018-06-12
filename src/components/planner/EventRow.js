@@ -4,6 +4,7 @@ import onClickOutside from 'react-onclickoutside'
 import { DropTarget, DragSource } from 'react-dnd'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 
 import { queryItinerary } from '../../apollo/itinerary'
 import { deleteEvent, changingLoadSequence } from '../../apollo/event'
@@ -15,7 +16,7 @@ import EventRowLocationCell from './EventRowLocationCell'
 import { toggleSpinner } from '../../actions/spinnerActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
-import { initializeEvents, plannerEventHoverOverEvent, dropPlannerEvent } from '../../actions/planner/eventsActions'
+import { initializeEvents, plannerEventHoverOverEvent, dropPlannerEvent, updateEvent } from '../../actions/planner/eventsActions'
 
 // helpers
 import { initializeEventsHelper } from '../../helpers/initializeEvents'
@@ -100,6 +101,12 @@ class EventRow extends Component {
     })
   }
 
+  handleDuplicate () {
+    const { event } = this.props
+    this.props.updateEvent(null, null, null, false)
+    this.props.toggleSpinner(true)
+  }
+
   render () {
     const { columns, id, connectDropTarget, connectDragSource, connectDragPreview, event, isDragging, sortOptions } = this.props
     let columnState = []
@@ -134,20 +141,40 @@ class EventRow extends Component {
           </div>
         </td>
         <td className='planner-table-cell' style={{width: '114px', textAlign: 'center'}}>
-          <EventRowTimeCell id={id} />
+          <ContextMenuTrigger id={`eventRowContextMenu-${id}`}>
+            <EventRowTimeCell id={id} />
+          </ContextMenuTrigger>
         </td>
         {columnState.map((column, i) => {
           return <td className='planner-table-cell' key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
             {column.name === 'Location' &&
-              <EventRowLocationCell id={id} />
+              <ContextMenuTrigger id={`eventRowContextMenu-${id}`}>
+                <EventRowLocationCell id={id} />
+              </ContextMenuTrigger>
             }
             {column.name !== 'Location' &&
-              <EventRowInfoCell column={column.name} id={id} />
+              <ContextMenuTrigger id={`eventRowContextMenu-${id}`}>
+                <EventRowInfoCell column={column.name} id={id} />
+              </ContextMenuTrigger>
             }
           </td>
         })}
         <td style={{position: 'absolute'}}>
           <i className='material-icons delete-event-button' style={{fontSize: '16px', opacity: '0.2', cursor: 'pointer', position: 'relative', top: '16px'}} onClick={() => this.handleDelete()}>close</i>
+        </td>
+        <td>
+          <ContextMenu id={`eventRowContextMenu-${id}`}>
+            <MenuItem onClick={() => this.handleDelete()}>
+              Delete Row
+            </MenuItem>
+            <MenuItem onClick={() => this.handleDuplicate()}>
+              Duplicate Row
+            </MenuItem>
+            <MenuItem divider />
+            <MenuItem onClick={this.handleClick}>
+              Show On Map
+            </MenuItem>
+          </ContextMenu>
         </td>
       </tr>
     ))
@@ -180,6 +207,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     dropPlannerEvent: (event, index) => {
       dispatch(dropPlannerEvent(event, index))
+    },
+    updateEvent: (id, property, value, fromSidebar) => {
+      return dispatch(updateEvent(id, property, value, fromSidebar))
     }
   }
 }

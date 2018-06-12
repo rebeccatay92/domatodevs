@@ -6,6 +6,7 @@ import EventRow from './EventRow'
 import ColumnHeader from './ColumnHeader'
 import DateDropdownMenu from '../DateDropdownMenu'
 import { graphql, compose } from 'react-apollo'
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 // import { changingLoadSequence } from '../../apollo/changingLoadSequence'
 import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
 import { createEvent, changingLoadSequence } from '../../apollo/event'
@@ -130,44 +131,42 @@ class DateBox extends Component {
         <table style={dateTableStyle}>
           <thead>
             <tr>
-              {/* <PlannerTimelineHeader firstDay={this.props.firstDay} dates={this.props.dates} itineraryId={this.props.itineraryId} days={this.props.days} daysArr={this.props.daysArr} /> */}
               <th style={{width: '0px'}}></th>
               <th colSpan={this.props.columns.length + 1} style={dateTableFirstHeaderStyle} onMouseEnter={() => this.setState({hoveringOverDate: true})} onMouseLeave={() => this.setState({hoveringOverDate: false})}>
-                <Element name={'day-' + this.props.day}>
-                  <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px', cursor: 'default'}}>
+                <ContextMenuTrigger id={'eventRowContextMenu-day-' + this.props.day}>
+                  <div id={'day-' + this.props.day} style={{position: 'absolute', bottom: '8px', cursor: 'default', width: '100%'}}>
                     <h3 style={headerDayStyle}>Day {this.props.day} </h3>
                     {this.props.date &&
                       <span style={headerDateStyle}>
                         {dateStringUpcase}
                       </span>
                     }
-                    <div style={{position: 'relative', display: 'inline'}}>
+                    {/* <div style={{position: 'relative', display: 'inline'}}>
                       {expandButton}
                       {this.state.showDateMenu && <DateDropdownMenu day={this.props.day} days={this.props.days} itineraryId={this.props.itineraryId} toggleDateDropdown={(event) => this.toggleDateDropdown(event)} />}
-                    </div>
+                    </div> */}
                   </div>
                   <div style={{position: 'absolute', right: '0', top: '5px', height: '100%', display: 'flex', alignItems: 'center'}}>
                     <i onClick={() => this.setState({expanded: !this.state.expanded})} className='material-icons' style={{cursor: 'pointer'}}>{this.state.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
                   </div>
-                </Element>
+                </ContextMenuTrigger>
               </th>
-              {/* {[1, 2, 3].map(i => {
-                return !this.props.firstDay && (
-                  <th style={dateTableOtherHeaderStyle} key={i} />
-                )
-              })} */}
-              {/* {this.props.firstDay && (
-              this.props.columns.map((column, i) => {
-                return (
-                  <PlannerColumnHeader key={i} column={column} index={i} />
-                )
-              }))} */}
             </tr>
             <tr>
               <td style={timelineColumnStyle()}>
               </td>
               <td colSpan='6'>
                 <hr style={dateTableHorizontalLineStyle(this.props.firstDay)} />
+              </td>
+              <td>
+                <ContextMenu id={'eventRowContextMenu-day-' + this.props.day}>
+                  <MenuItem onClick={() => this.handleDelete()}>
+                    Delete Day
+                  </MenuItem>
+                  <MenuItem onClick={() => this.handleDuplicate()}>
+                    Clear Day
+                  </MenuItem>
+                </ContextMenu>
               </td>
             </tr>
           </thead>
