@@ -12,18 +12,6 @@ export const findMedium = gql`
   }
 `
 
-export const findMediaBlog = gql`
-  query findMediaBlog($id: ID!) {
-    findMediaBlog(id: $id) {
-      id
-      MediaId
-      BlogId
-      loadSequence
-      caption
-    }
-  }
-`
-
 export const findMediaPost = gql`
   query findMediaPost($id: ID!) {
     findMediaPost(id: $id) {
@@ -62,28 +50,6 @@ export const moveMediaToAlbum = gql`
 `
 /* ---------------------------- */
 
-export const createMediaBlog = gql`
-  mutation createMediaBlog(
-    $MediumId: ID!,
-    $BlogId: ID!,
-    $loadSequence: Int!,
-    $caption: String
-  ) {
-    createMediaBlog(
-      MediumId: $MediumId,
-      BlogId: $BlogID,
-      loadSequence: $loadSequence,
-      caption: $caption
-    ) {
-      id
-      MediumId
-      BlogId
-      loadSequence
-      caption
-    }
-  }
-`
-
 export const createMediaPost = gql`
   mutation createMediaPost(
     $MediumId: ID!,
@@ -106,22 +72,6 @@ export const createMediaPost = gql`
   }
 `
 
-export const updateMediaBlog = gql`
-  mutation updateMediaBlog(
-    $id: ID!,
-    $loadSequence: Int,
-    $caption: String
-  ) {
-    updateMediaBlog(
-      id: $id,
-      loadSequence: $loadSequence,
-      caption: $caption
-    ) {
-      id
-    }
-  }
-`
-
 export const updateMediaPost = gql`
   mutation updateMediaPost(
     $id: ID!,
@@ -138,12 +88,6 @@ export const updateMediaPost = gql`
   }
 `
 
-export const deleteMediaBlog = gql`
-  mutation deleteMediaBlog($id: ID!) {
-    deleteMediaBlog(id: $id)
-  }
-`
-
 export const deleteMediaPost = gql`
   mutation deleteMediaPost($id: ID!) {
     deleteMediaPost(id: $id)
@@ -151,12 +95,6 @@ export const deleteMediaPost = gql`
 `
 
 /* ---------------------------- */
-
-export const reorderMediaBlog = gql`
-  mutation reorderMediaBlog($input: [reorderMediaBlogInput]) {
-    reorderMediaBlog(input: $input)
-  }
-`
 
 export const reorderMediaPost = gql`
   mutation reorderMediaPost($input: [reorderMediaPostInput]) {
