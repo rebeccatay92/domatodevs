@@ -101,14 +101,14 @@ class EventRow extends Component {
     })
   }
 
-  handleDuplicate () {
-    const { event } = this.props
-    this.props.updateEvent(null, null, null, false)
-    this.props.toggleSpinner(true)
-  }
+  // handleDuplicate () {
+  //   const { event } = this.props
+  //   this.props.updateEvent(null, null, null, false)
+  //   this.props.toggleSpinner(true)
+  // }
 
   render () {
-    const { columns, id, connectDropTarget, connectDragSource, connectDragPreview, event, isDragging, sortOptions } = this.props
+    const { columns, id, connectDropTarget, connectDragSource, connectDragPreview, event, isDragging, sortOptions, index, day } = this.props
     let columnState = []
     let activeColumn = ''
     columns.forEach((column, i) => {
@@ -142,19 +142,19 @@ class EventRow extends Component {
         </td>
         <td className='planner-table-cell' style={{width: '114px', textAlign: 'center'}}>
           <ContextMenuTrigger id={`eventRowContextMenu-${id}`}>
-            <EventRowTimeCell id={id} />
+            <EventRowTimeCell id={id} columnState={columnState} day={day} eventIndex={index} />
           </ContextMenuTrigger>
         </td>
         {columnState.map((column, i) => {
           return <td className='planner-table-cell' key={i} style={{width: `calc(232px * ${column.width})`, maxWidth: `calc(232px * ${column.width})`}} colSpan={column.width}>
             {column.name === 'Location' &&
               <ContextMenuTrigger id={`eventRowContextMenu-${id}`}>
-                <EventRowLocationCell id={id} />
+                <EventRowLocationCell column={column.name} id={id} columnState={columnState} index={i} day={day} eventIndex={index} />
               </ContextMenuTrigger>
             }
             {column.name !== 'Location' &&
               <ContextMenuTrigger id={`eventRowContextMenu-${id}`}>
-                <EventRowInfoCell column={column.name} id={id} />
+                <EventRowInfoCell column={column.name} id={id} columnState={columnState} index={i} day={day} eventIndex={index} />
               </ContextMenuTrigger>
             }
           </td>
@@ -166,9 +166,6 @@ class EventRow extends Component {
           <ContextMenu id={`eventRowContextMenu-${id}`}>
             <MenuItem onClick={() => this.handleDelete()}>
               Delete Row
-            </MenuItem>
-            <MenuItem onClick={() => this.handleDuplicate()}>
-              Duplicate Row
             </MenuItem>
             <MenuItem divider />
             <MenuItem onClick={this.handleClick}>

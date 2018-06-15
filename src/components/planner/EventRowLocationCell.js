@@ -14,6 +14,15 @@ import { updateEventBackend } from '../../apollo/event'
 
 import _ from 'lodash'
 
+const eventPropertyNames = {
+  Event: 'eventType',
+  Price: 'cost',
+  Notes: 'notes',
+  'Booking Service': 'bookingService',
+  'Confirmation Number': 'bookingConfirmation',
+  Location: 'location'
+}
+
 class EventRowLocationCell extends Component {
   constructor (props) {
     super(props)
@@ -189,6 +198,7 @@ class EventRowLocationCell extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    const property = eventPropertyNames[this.props.column]
     // KEEPS LOCATION CELL IN SYNC WITH RIGHTBAR
     if (nextProps.events.updatedFromSidebar || nextProps.column !== this.props.column || nextProps.events.refetch) {
       const thisEvent = nextProps.events.events.find(e => {
@@ -224,12 +234,18 @@ class EventRowLocationCell extends Component {
       const locationContentState = thisEvent.locationName
       this.setState({editorState: EditorState.createWithContent(locationContentState)})
     }
+
+    // if cell receives focus as a result of arrow keys, force focus on the cell
+    if (nextProps.activeEventId === this.props.id && nextProps.activeField === property && !this.state.editorFocus) {
+      this.cell.focus()
+    }
   }
 
   handleOnBlur () {
     // if dropdown is open, blur needs to be overriden
     // selectLocation -> send backend manually.
     if (!this.state.showDropdown) {
+      this.setState({editorFocus: false})
       console.log('blur')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
@@ -311,7 +327,36 @@ class EventRowLocationCell extends Component {
   }
 
   // for component
-  handleKeyDown (e) {
+  handleArrowKeyDown (key) {
+    const { columnState, index, events, day, eventIndex } = this.props
+    if (key === 37) {
+      index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
+      if (index === 0) this.props.changeActiveField('startTime')
+      this.cell.blur()
+    } else if (key === 39) {
+      index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
+      if (index === columnState.length - 1) {
+        this.props.changeActiveField('startTime')
+        const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+        newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+      }
+      this.cell.blur()
+    } else if (key === 38) {
+      const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
+      newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+      this.cell.blur()
+    } else if (key === 40) {
+      const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+      newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+      this.cell.blur()
+    }
+  }
+
+  handleKeyDown (e, isActive, editorFocus) {
+    if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
+      this.handleArrowKeyDown(e.keyCode)
+    }
+
     // esc will close dropdown, undo changes
     if (e.key === 'Escape') {
       let thisEvent = this.props.events.events.find(e => {
@@ -376,8 +421,8 @@ class EventRowLocationCell extends Component {
     // console.log('props id', this.props.id)
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
-      <div className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={(e) => this.handleCellClick(e)} style={{position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={e => this.handleKeyDown(e)}>
-        <Editor editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.handleOnFocus()} onBlur={() => this.handleOnBlur()} handleReturn={(event, editorState) => this.handleReturn()} />
+      <div ref={(element) => { this.cell = element }} tabIndex='-1' className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{zIndex: 0, position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)}>
+        <Editor readOnly={!isActive} editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.setState({editorFocus: true})} onBlur={() => this.handleOnBlur()} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'table'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />
         }

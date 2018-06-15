@@ -10,7 +10,24 @@ import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import { updateEventBackend } from '../../apollo/event'
 
+const eventPropertyNames = {
+  Event: 'eventType',
+  Price: 'cost',
+  Notes: 'notes',
+  'Booking Service': 'bookingService',
+  'Confirmation Number': 'bookingConfirmation',
+  Location: 'location'
+}
+
 class EventRowTimeCell extends Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      editorFocus: false
+    }
+  }
+
   handleChange (e, type) {
     const { id } = this.props
     let unixSecsFromMidnight
@@ -48,6 +65,36 @@ class EventRowTimeCell extends Component {
       // this.props.setTimeCellFocus(false)
       this.editor.focus()
     }
+
+    if (nextProps.activeEventId === id && nextProps.activeField === 'startTime' && !this.state.editorFocus) {
+      this.cell.focus()
+    }
+  }
+
+  handleKeyDown (e, isActive, editorFocus) {
+    console.log('called');
+    if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
+      this.handleArrowKeyDown(e.keyCode)
+    }
+  }
+
+  handleArrowKeyDown (key) {
+    const { columnState, events, day, eventIndex } = this.props
+    if (key === 37) {
+      this.props.changeActiveField(eventPropertyNames[columnState[columnState.length - 1].name])
+      this.cell.blur()
+    } else if (key === 39) {
+      this.props.changeActiveField(eventPropertyNames[columnState[0].name])
+      this.cell.blur()
+    } else if (key === 38) {
+      const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
+      newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+      this.cell.blur()
+    } else if (key === 40) {
+      const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+      newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+      this.cell.blur()
+    }
   }
 
   handleOnFocus () {
@@ -67,11 +114,11 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     const endTime = events.filter(event => event.id === id)[0].endTime
     return (
-      <div className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e, 'startTime')} />
+      <div ref={(element) => { this.cell = element }} tabIndex='-1' onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onClick={() => this.handleOnFocus()} className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+        <input disabled={!isActive} type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true})} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={() => this.setState({editorFocus: false})} />
         {endTime && <React.Fragment>
           <div style={{height: '10px', borderRight: '1px solid rgba(60, 58, 68, 1)'}} />
-          <input type='time' value={endTime} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.handleOnFocus()} onChange={(e) => this.handleChange(e, 'endTime')} />
+          <input disabled={!isActive} type='time' value={endTime} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true})} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={() => this.setState({editorFocus: false})} />
         </React.Fragment>}
       </div>
     )
