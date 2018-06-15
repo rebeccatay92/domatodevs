@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
+import mapboxgl from 'mapbox-gl'
 import LocationCellDropdown from '../LocationCellDropdown'
 
 import { connect } from 'react-redux'
@@ -259,12 +260,60 @@ class MapboxMap extends Component {
           let currentBounds = this.map.getBounds()
           console.log('currentBounds', currentBounds)
 
-          if ((thisEvent.longitudeDisplay >= currentBounds._sw.lng && thisEvent.longitudeDisplay <= currentBounds._ne.lng) && (thisEvent.latitudeDisplay >= currentBounds._sw.lat && thisEvent.latitudeDisplay <= currentBounds._ne.lat)) {
-            console.log('within bounds')
-            let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-            this.setState({center: newCenter})
+          let eventMarkerIsWithinBounds = (thisEvent.longitudeDisplay >= currentBounds._sw.lng && thisEvent.longitudeDisplay <= currentBounds._ne.lng) && (thisEvent.latitudeDisplay >= currentBounds._sw.lat && thisEvent.latitudeDisplay <= currentBounds._ne.lat)
+
+          if (this.state.searchMarker && !this.state.customMarker) {
+            // search marker exists
+            let searchMarkerIsWithinBounds = (this.state.searchMarker.longitude >= currentBounds._sw.lng && this.state.searchMarker.longitude <= currentBounds._ne.lng) && (this.state.searchMarker.latitude >= currentBounds._sw.lat && this.state.searchMarker.latitude <= currentBounds._ne.lat)
+            if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds) {
+              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+              this.setState({center: newCenter})
+            } else {
+              // if either is out of bounds, setbounds to include both markers
+              // console.log('mapboxgl', mapboxgl)
+              let bounds = new mapboxgl.LngLatBounds()
+              bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
+              bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+              console.log('bounds', bounds)
+              this.map.fitBounds(bounds, {padding: 200})
+            }
+          } else if (!this.state.searchMarker && this.state.customMarker) {
+            let customMarkerIsWithinBounds = (this.state.customMarker.longitude >= currentBounds._sw.lng && this.state.customMarker.longitude <= currentBounds._ne.lng) && (this.state.customMarker.latitude >= currentBounds._sw.lat && this.state.customMarker.latitude <= currentBounds._ne.lat)
+            if (eventMarkerIsWithinBounds && customMarkerIsWithinBounds) {
+              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+              this.setState({center: newCenter})
+            } else {
+              // if either is out of bounds, setbounds to include both markers
+              // console.log('mapboxgl', mapboxgl)
+              let bounds = new mapboxgl.LngLatBounds()
+              bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
+              bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+              console.log('bounds', bounds)
+              this.map.fitBounds(bounds, {padding: 200})
+            }
+          } else if (this.state.searchMarker && this.state.customMarker) {
+            let searchMarkerIsWithinBounds = (this.state.searchMarker.longitude >= currentBounds._sw.lng && this.state.searchMarker.longitude <= currentBounds._ne.lng) && (this.state.searchMarker.latitude >= currentBounds._sw.lat && this.state.searchMarker.latitude <= currentBounds._ne.lat)
+            let customMarkerIsWithinBounds = (this.state.customMarker.longitude >= currentBounds._sw.lng && this.state.customMarker.longitude <= currentBounds._ne.lng) && (this.state.customMarker.latitude >= currentBounds._sw.lat && this.state.customMarker.latitude <= currentBounds._ne.lat)
+            if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds && customMarkerIsWithinBounds) {
+              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+              this.setState({center: newCenter})
+            } else {
+              // fit all 3 markers
+              let bounds = new mapboxgl.LngLatBounds()
+              bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
+              bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
+              bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+              console.log('bounds', bounds)
+              this.map.fitBounds(bounds, {padding: 200})
+            }
           } else {
-            this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
+            if (eventMarkerIsWithinBounds) {
+              console.log('within bounds')
+              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+              this.setState({center: newCenter})
+            } else {
+              this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
+            }
           }
         }
       }
@@ -976,9 +1025,6 @@ class MapboxMap extends Component {
                 <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
                 <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.address}</h6>
               </div>
-              {/* <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)'}}>
-                <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Delete Location</span>
-              </div> */}
             </div>
           </Popup>
         }
