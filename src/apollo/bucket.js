@@ -3,27 +3,42 @@ import { gql } from 'react-apollo'
 // depends on context
 export const getUserBucketList = gql`
   query getUserBucketList {
-    id
-    UserId
-    LocationId
-    location {
-      id
-      verified
-      name
-      address
-      latitude
-      longitude
+    getUserBucketList {
+      buckets {
+        id
+        UserId
+        LocationId
+        location {
+          id
+          verified
+          name
+          address
+          latitude
+          longitude
+          CountryId
+          country {
+            id
+            name
+            code
+          }
+        }
+        notes
+        eventType
+        bucketCategory
+        thumbnailUrl
+        visited
+      }
+      countries {
+        id
+        name
+        code
+      }
     }
-    notes
-    eventType
-    bucketCategory
-    thumbnailUrl
-    visited
   }
 `
 
 export const findBucket = gql`
-  query findBucket(id: ID!) {
+  query findBucket($id: ID!) {
     findBucket(id: $id) {
       id
       UserId

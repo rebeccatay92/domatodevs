@@ -3,6 +3,7 @@ import AccountTab from './AccountTab'
 import MediaTab from './MediaTab'
 import BlogsTab from './BlogsTab'
 import ItinerariesTab from './ItinerariesTab'
+import BucketTab from './BucketTab'
 
 class DashboardTabsHOC extends Component {
   // constructor (props) {
@@ -21,6 +22,8 @@ class DashboardTabsHOC extends Component {
       return <BlogsTab />
     } else if (this.props.focusedTab === 'itineraries') {
       return <ItinerariesTab />
+    } else if (this.props.focusedTab === 'bucket') {
+      return <BucketTab />
     } else {
       return <div>Component</div>
     }
