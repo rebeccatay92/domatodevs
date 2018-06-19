@@ -290,10 +290,6 @@ class PlannerRightBar extends Component {
                   {this.props.plannerView.tablePlanner &&
                     <button style={{border: '2px solid rgb(67, 132, 150)', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px'}} onClick={() => this.openInMap(this.props.activeEventId)}>Open in Map</button>
                   }
-                  {/* <label style={styles.labelContainer}>
-                  </label> */}
-                  {/* <span style={styles.labelText}>Verified</span>
-                  <span>{isVerified}</span> */}
                 </div>
               </div>
               <hr style={styles.sectionDivider} />

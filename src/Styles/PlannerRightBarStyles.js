@@ -34,17 +34,19 @@ const tabUnclicked = {
   justifyContent: 'center',
   alignItems: 'center',
   cursor: 'pointer',
-  border: `1px solid ${coreColors.black03}`,
-  background: 'rgb(245, 245, 245)'
+  border: `1px solid transparent`,
+  background: 'rgb(245, 245, 245)',
+  boxShadow: '-2px 3px 10px rgba(0, 0 , 0, 0.16)'
 }
 
 const tabClicked = {
   ...tabUnclicked,
+  width: '36px',
   zIndex: 12,
-  border: '1px solid black',
+  border: `1px solid ${coreColors.black03}`,
   borderRight: '1px rgb(245, 245, 245)',
-  position: 'relative',
-  left: '1px'
+  position: 'relative'
+  // left: '1px'
 }
 
 const tabText = {
@@ -61,8 +63,9 @@ const mainAreaContainer = {
   width: '344px',
   height: '100%',
   background: 'rgb(245, 245, 245)',
-  border: `1px solid ${coreColors.blackSolid}`,
-  padding: '16px' // more padding else too close to edge
+  border: `1px solid ${coreColors.black03}`,
+  padding: '16px', // more padding else too close to edge
+  boxShadow: '-2px 0px 5px rgba(0, 0 , 0, 0.16)'
 }
 
 const sectionDivider = {
