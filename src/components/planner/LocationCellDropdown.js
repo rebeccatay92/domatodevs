@@ -4,7 +4,7 @@ import onClickOutside from 'react-onclickoutside'
 import Radium from 'radium'
 
 const inTableStyle = {position: 'absolute', top: '83px', left: '-1px', background: 'white', width: '100%', border: '1px solid #ed685a', zIndex: '2', minHeight: '35px', boxSizing: 'content-box'}
-const inRightBarStyle = {position: 'absolute', top: '20px', left: '0', background: 'white', width: '100%', border: '1px solid black', zIndex: '2', minHeight: '35px'}
+const inRightBarStyle = {position: 'absolute', top: '35px', left: '0', background: 'white', width: '100%', border: '1px solid black', zIndex: '2', minHeight: '35px'}
 const inMapStyle = {position: 'absolute', top: '32px', left: 0, width: '300px', background: 'white'}
 
 class LocationCellDropdown extends Component {
