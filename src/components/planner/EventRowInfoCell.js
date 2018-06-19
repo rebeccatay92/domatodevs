@@ -124,9 +124,9 @@ class EventRowInfoCell extends Component {
     const { column, id } = this.props
     const property = eventPropertyNames[column]
 
-    if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
-      this.handleArrowKeyDown(e.keyCode)
-    }
+    // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
+    //   this.handleArrowKeyDown(e.keyCode)
+    // }
 
     if (e.key === 'Escape') {
       const editorState = EditorState.createWithContent(this.state.initialValue)
@@ -138,28 +138,28 @@ class EventRowInfoCell extends Component {
   }
 
   handleArrowKeyDown (key) {
-    const { columnState, index, events, day, eventIndex } = this.props
-    if (key === 37) {
-      index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
-      if (index === 0) this.props.changeActiveField('startTime')
-      this.cell.blur()
-    } else if (key === 39) {
-      index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
-      if (index === columnState.length - 1) {
-        this.props.changeActiveField('startTime')
-        const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-        newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-      }
-      this.cell.blur()
-    } else if (key === 38) {
-      const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
-      newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-      this.cell.blur()
-    } else if (key === 40) {
-      const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-      newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-      this.cell.blur()
-    }
+    // const { columnState, index, events, day, eventIndex } = this.props
+    // if (key === 37) {
+    //   index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
+    //   if (index === 0) this.props.changeActiveField('startTime')
+    //   this.cell.blur()
+    // } else if (key === 39) {
+    //   index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
+    //   if (index === columnState.length - 1) {
+    //     this.props.changeActiveField('startTime')
+    //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+    //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+    //   }
+    //   this.cell.blur()
+    // } else if (key === 38) {
+    //   const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
+    //   newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+    //   this.cell.blur()
+    // } else if (key === 40) {
+    //   const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+    //   newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+    //   this.cell.blur()
+    // }
   }
 
   handleOnBlur () {
@@ -199,7 +199,7 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div ref={(element) => { this.cell = element }} className='planner-table-cell-container' tabIndex='-1' onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
+      <div ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
         {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
