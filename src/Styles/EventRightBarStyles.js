@@ -1,8 +1,6 @@
 import { coreColors, coreFonts } from './cores'
 
 /* ----------------------------- */
-/* ----------------------------- */
-
 const mainAreaContainer = {
   zIndex: 11,
   width: '344px',

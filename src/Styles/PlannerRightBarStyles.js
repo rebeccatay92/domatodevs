@@ -46,7 +46,6 @@ const tabClicked = {
   border: `1px solid ${coreColors.black03}`,
   borderRight: '1px rgb(245, 245, 245)',
   position: 'relative'
-  // left: '1px'
 }
 
 const tabText = {
