@@ -12,8 +12,8 @@ import { EditorState, convertFromRaw, ContentState } from 'draft-js'
 import Planner from './Planner'
 
 import PlannerLeftBar from './planner/PlannerLeftBar'
-import PlannerRightBar from './planner/PlannerRightBar'
-import PlannerBottomBar from './planner/PlannerBottomBar'
+import PlannerRightBar from './planner/rightBar/PlannerRightBar'
+import PlannerBottomBar from './planner/bottomBar/PlannerBottomBar'
 
 import MapboxMap from './planner/mapbox/MapboxMap'
 

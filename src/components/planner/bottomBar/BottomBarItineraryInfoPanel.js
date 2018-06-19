@@ -4,13 +4,13 @@ import { WithOutContext as ReactTags } from 'react-tag-input'
 import moment from 'moment'
 
 import DatePicker from 'react-datepicker'
-import CustomDateInput from './CustomDateInput'
+import CustomDateInput from '../CustomDateInput'
 import 'react-datepicker/dist/react-datepicker.css'
 
 import { connect } from 'react-redux'
-import { updateItinerary } from '../../actions/planner/itineraryActions'
+import { updateItinerary } from '../../../actions/planner/itineraryActions'
 
-import countries from '../../data/countries.json'
+import countries from '../../../data/countries.json'
 
 class BottomBarItineraryInfoPanel extends Component {
   // constructor (props) {

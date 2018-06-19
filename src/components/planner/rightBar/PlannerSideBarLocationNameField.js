@@ -3,14 +3,14 @@ import { connect } from 'react-redux'
 
 import { Editor, EditorState, ContentState } from 'draft-js'
 
-import LocationCellDropdown from './LocationCellDropdown'
+import LocationCellDropdown from '../LocationCellDropdown'
 
-import { updateEvent } from '../../actions/planner/eventsActions'
-import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { updateEvent } from '../../../actions/planner/eventsActions'
+import { changeActiveField } from '../../../actions/planner/activeFieldActions'
 
 import { graphql, compose } from 'react-apollo'
-import { updateEventBackend } from '../../apollo/event'
-import { queryItinerary } from '../../apollo/itinerary'
+import { updateEventBackend } from '../../../apollo/event'
+import { queryItinerary } from '../../../apollo/itinerary'
 
 import _ from 'lodash'
 

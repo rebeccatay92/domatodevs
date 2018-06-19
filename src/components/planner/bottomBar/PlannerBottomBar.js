@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import BottomBarItineraryInfoPanel from './BottomBarItineraryInfoPanel'
 
 import { connect } from 'react-redux'
-import { switchToTableView, switchToMapView } from '../../actions/planner/plannerViewActions'
-import { updateActiveEvent } from '../../actions/planner/activeEventActions'
+import { switchToTableView, switchToMapView } from '../../../actions/planner/plannerViewActions'
+import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 
 import { graphql, compose } from 'react-apollo'
-import { updateItineraryDetails, queryItinerary } from '../../apollo/itinerary'
+import { updateItineraryDetails, queryItinerary } from '../../../apollo/itinerary'
 
 import Radium from 'radium'
-import { PlannerBottomBarStyles as styles } from '../../Styles/PlannerBottomBarStyles'
+import { PlannerBottomBarStyles as styles } from '../../../Styles/PlannerBottomBarStyles'
 
 class PlannerBottomBar extends Component {
   constructor (props) {

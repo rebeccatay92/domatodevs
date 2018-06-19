@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState, ContentState } from 'draft-js'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+import { allCurrenciesList } from '../../../helpers/countriesToCurrencyList'
 
-import { updateEvent } from '../../actions/planner/eventsActions'
-import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { updateEvent } from '../../../actions/planner/eventsActions'
+import { changeActiveField } from '../../../actions/planner/activeFieldActions'
 
-import { updateEventBackend } from '../../apollo/event'
+import { updateEventBackend } from '../../../apollo/event'
 
 class PlannerSideBarInfoField extends Component {
   constructor (props) {
