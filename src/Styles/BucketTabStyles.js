@@ -10,7 +10,7 @@ const bucketTabContainer = {
 
 const leftColumnNonSticky = {
   display: 'inline-block',
-  width: '265px',
+  width: '190px',
   height: 'calc(100vh - 52px - 56px)', // minus navbar and horizontal tabs
   verticalAlign: 'top',
   paddingTop: '24px',
@@ -67,17 +67,9 @@ const clickedTab = {
 const rightColumn = {
   display: 'inline-block',
   verticalAlign: 'top',
-  width: 'calc(100% - 265px)',
-  // height: '100%', // 100% of mediaTabContainer
+  width: 'calc(100% - 190px)',
   height: 'calc(100vh - 52px - 56px)', // minus height of nav bar + horizontal tabs bar
   boxSizing: 'border-box'
-}
-
-const bucketContainer = {
-  width: '100%',
-  height: '100px',
-  display: 'flex',
-  alignItems: 'center'
 }
 
 export const BucketTabStyles = {
@@ -90,6 +82,5 @@ export const BucketTabStyles = {
   unclickedTab,
   clickedTab,
   // main area
-  rightColumn,
-  bucketContainer
+  rightColumn
 }

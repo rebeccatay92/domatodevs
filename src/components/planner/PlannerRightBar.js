@@ -174,7 +174,7 @@ class PlannerRightBar extends Component {
     this.props.openConfirmWindow({
       message: 'Are you sure you want to delete this event?',
       secondaryMessage: '',
-      confirmMessage: 'Yes, I am sure.'
+      confirmMessage: 'Yes'
     })
   }
 

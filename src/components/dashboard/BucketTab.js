@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import BucketRow from './BucketRow'
 
 import { graphql } from 'react-apollo'
 import { getUserBucketList } from '../../apollo/bucket'
@@ -78,46 +79,36 @@ class BucketTab extends Component {
     return (
       <div className='bucketTabComponent' style={styles.bucketTabContainer}>
         {stickySidebar &&
-          <div style={{display: 'inline-block', width: '265px', height: 'calc(100vh - 108px)'}} />
+          <div style={{display: 'inline-block', width: '190px', height: 'calc(100vh - 108px)'}} />
         }
         <div style={stickySidebar ? styles.leftColumnSticky : styles.leftColumnNonSticky}>
           <h4 style={styles.countryListHeaderText}>Countries</h4>
           <div style={styles.countryListContainer}>
-            {bucketList.countries.map((country, i) => {
+            {bucketList.countries.length && bucketList.countries.map((country, i) => {
               return (
                 <h4 key={i} style={this.state.focusedTabCountryId === country.id ? styles.clickedTab : styles.unclickedTab} onClick={() => this.switchFocusedCountry(country.id)}>{country.name}</h4>
               )
             })}
+            {!bucketList.countries.length &&
+              <h4 style={styles.clickedTab}>Oops!</h4>
+            }
           </div>
         </div>
 
         <div style={styles.rightColumn}>
-          {bucketsByCountry.map((bucket, i) => {
+          {bucketsByCountry.length && bucketsByCountry.map((bucket, i) => {
             return (
               <div key={i}>
                 {i !== 0 &&
                   <hr style={{margin: 0, borderTop: '1px solid rgba(60, 58, 68, 0.3)'}} />
                 }
-                <div style={styles.bucketContainer}>
-                  <div style={{width: '100px'}}>
-                    <i className='material-icons' style={{display: 'block'}}>restaurant</i>
-                    <span style={{display: 'block'}}>10 adds</span>
-                  </div>
-                  <div style={{width: '100px'}}>
-                    <img src={bucket.thumbnailUrl} style={{height: '70px', width: '70px', borderRadius: '50%', objectFit: 'cover'}} />
-                  </div>
-                  <div style={{width: '200px'}}>
-                    <h6>{bucket.location.name}</h6>
-                    <h6>{bucket.eventType}</h6>
-                  </div>
-                  <div style={{width: '600px'}}>
-                    <span>{bucket.notes}</span>
-                  </div>
-                  <i className='material-icons'>clear</i>
-                </div>
+                <BucketRow bucket={bucket} />
               </div>
             )
           })}
+          {!bucketsByCountry.length &&
+            <h1>Oops! Your bucket list is empty. Explore our site and save things to see them here.</h1>
+          }
         </div>
       </div>
     )
