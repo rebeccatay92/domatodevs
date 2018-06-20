@@ -307,7 +307,7 @@ class EventRightBar extends Component {
           </div>
         </div>
 
-        <button style={{border: '2px solid red', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px', position: 'absolute', bottom: '16px', right: '16px'}} onClick={() => this.confirmDeleteEvent()}>Delete this event</button>
+        <button style={{border: '2px solid red', marginTop: '8px', outline: 'none', background: 'rgb(245, 245, 245)', fontFamily: 'Roboto, sans-serif', fontWeight: 500, fontSize: '14px'}} onClick={() => this.confirmDeleteEvent()}>Delete this event</button>
         {/* <hr style={styles.sectionDivider} />
         <div style={{width: '100%', display: 'flex'}}>
           <div style={styles.iconSection}>

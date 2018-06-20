@@ -200,7 +200,7 @@ class EventRowInfoCell extends Component {
 
     return (
       <div ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
-        {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} style={{backgroundColor: 'transparent', border: 'none'}}>
+        {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency || ''} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}
