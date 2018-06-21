@@ -113,7 +113,7 @@ class EventRowTimeCell extends Component {
     const startTime = events.filter(event => event.id === id)[0].startTime
     const endTime = events.filter(event => event.id === id)[0].endTime
     return (
-      <div ref={(element) => { this.cell = element }} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onClick={() => this.handleOnFocus()} className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+      <div tabIndex='1' ref={(element) => { this.cell = element }} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onFocus={() => this.handleOnFocus()} className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
         <input disabled={!isActive} type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true})} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={() => this.setState({editorFocus: false})} />
         {endTime && <React.Fragment>
           <div style={{height: '10px', borderRight: '1px solid rgba(60, 58, 68, 1)'}} />

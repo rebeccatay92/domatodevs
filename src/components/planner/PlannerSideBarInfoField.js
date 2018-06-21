@@ -27,6 +27,16 @@ class PlannerSideBarInfoField extends Component {
       const contentState = editorState.getCurrentContent()
       this.props.updateEvent(id, property, contentState, true)
     }
+
+    this.focus = (e) => {
+      // check whether the click is within the text, or within the cell but outside of the text, if outside of text, move cursor to the end
+      if (e.target.className === `sidebar-${property}`) {
+        this.editor.focus()
+        this.setState({editorState: EditorState.moveFocusToEnd(this.state.editorState)})
+      } else {
+        this.editor.focus()
+      }
+    }
   }
 
   // shouldComponentUpdate (nextProps) {
@@ -78,13 +88,13 @@ class PlannerSideBarInfoField extends Component {
     const { events } = this.props.events
     const eventCurrency = events.filter(event => event.id === id)[0].currency
     return (
-      <div style={{cursor: 'text', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)', minHeight: '35px', display: 'flex', alignItems: 'center'}} className={`sidebar-${property}`}>
+      <div onClick={this.focus} style={{cursor: 'text', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)', minHeight: '35px', display: 'flex', alignItems: 'center'}} className={`sidebar-${property}`}>
         {property === 'cost' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} onFocus={() => this.props.changeActiveField(property)} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}
         </select>}
-        <Editor editorState={this.state.editorState} onChange={this.onChange} onFocus={() => this.props.changeActiveField(property)} />
+        <Editor ref={(element) => { this.editor = element }} editorState={this.state.editorState} onChange={this.onChange} onFocus={() => this.props.changeActiveField(property)} />
       </div>
     )
   }
