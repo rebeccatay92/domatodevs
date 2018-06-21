@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import LocationCellDropdown from '../LocationCellDropdown'
 
 import { connect } from 'react-redux'
-import { clickDayCheckbox, ensureDayIsChecked, setPopupToShow } from '../../../actions/planner/mapboxActions'
+import { clickDayCheckbox, ensureDayIsChecked, setPopupToShow, clickBucketCheckbox } from '../../../actions/planner/mapboxActions'
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
 import { updateEvent } from '../../../actions/planner/eventsActions'
@@ -459,101 +459,8 @@ class MapboxMap extends Component {
       this.props.setRightBarFocusedTab('')
       this.props.setPopupToShow('')
     } else {
-      // let thisEvent = this.props.events.events.find(e => {
-      //   return e.id === id
-      // })
-      // if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
-      //   let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-      //   this.setState({center: newCenter})
-      // }
-
       this.props.updateActiveEvent(id)
       this.props.setPopupToShow('event')
-      // this.props.setRightBarFocusedTab('event')
-
-      // if (thisEvent.locationObj && thisEvent.locationObj.latitude) {
-      //   let latitude = thisEvent.latitudeDisplay
-      //   let longitude = thisEvent.longitudeDisplay
-      //
-      //   let shiftDownwards = 0
-      //   let shiftLeftwards = 0
-      //   let shiftRightwards = 0
-      //   let shiftUpwards = 0
-      //
-      //   // project
-      //   let projectionX = this.map.project([longitude, latitude]).x
-      //   let projectionY = this.map.project([longitude, latitude]).y
-      //   console.log('x,y', projectionX, projectionY)
-      //
-      //   let exceedTopEdge = 282 - projectionY // if positive (means insufficient space)
-      //   if (exceedTopEdge > 0) {
-      //     console.log('exceed by', exceedTopEdge)
-      //     shiftDownwards = exceedTopEdge
-      //   }
-      //
-      //   let mapboxDiv = document.querySelector('.mapboxgl-map')
-      //   let mapboxHeight = mapboxDiv.clientHeight
-      //   let mapboxWidth = mapboxDiv.clientWidth
-      //   // check right edge (depends on whether right bar is open)
-      //   if (!this.props.plannerView.rightBar) {
-      //     // if right bar is not open. account for right bar width too
-      //     console.log('mapboxWidth', mapboxWidth) // 1185 if right bar is hidden
-      //     let exceedRightEdge = projectionX - (mapboxWidth - 530) // if positive means too far right
-      //     if (exceedRightEdge > 0) {
-      //       console.log('exceed right by', exceedRightEdge)
-      //       shiftLeftwards = exceedRightEdge
-      //     }
-      //   } else {
-      //     // if right bar is already open, clientWidth is smaller
-      //     let exceedRightEdge = projectionX - (mapboxWidth - 185)
-      //     if (exceedRightEdge > 0) {
-      //       console.log('exceed right by', exceedRightEdge)
-      //       shiftLeftwards = exceedRightEdge
-      //     }
-      //   }
-      //   let daysFilterDiv = document.querySelector('.mapboxDaysFilter')
-      //   let daysFilterHeight = daysFilterDiv.clientHeight
-      //
-      //   // check distance from bottom, then check left edge
-      //
-      //   if (projectionY <= mapboxHeight - daysFilterHeight - 10) {
-      //     // if marker is above daysFilter, check left edge only
-      //     console.log('lies above daysFilter')
-      //     let exceedLeftEdge = 150 - projectionX
-      //     if (exceedLeftEdge > 0) {
-      //       console.log('exceed left edge by', exceedLeftEdge)
-      //       shiftRightwards = exceedLeftEdge
-      //     }
-      //   } else {
-      //     console.log('lies below daysFilter')
-      //     // if marker lies lower than daysFilter, check if exceedLeftEdge vs distance to top of daysFilter. shift either up or right (whichever is smaller).
-      //     let exceedLeftEdge = 160 + 150 - projectionX
-      //     let distanceFromTopOfDaysFilter = projectionY - (mapboxHeight - daysFilterHeight - 10)
-      //     if (exceedLeftEdge > 0) {
-      //       console.log('exceed left by', exceedLeftEdge)
-      //       console.log('distance from top is', distanceFromTopOfDaysFilter)
-      //       if (exceedLeftEdge < distanceFromTopOfDaysFilter) {
-      //         shiftRightwards = exceedLeftEdge
-      //       } else {
-      //         shiftUpwards = distanceFromTopOfDaysFilter
-      //       }
-      //     }
-      //   }
-      //
-      //   // console.log('shifts', shiftDownwards, shiftRightwards, shiftLeftwards, shiftUpwards)
-      //
-      //   // console.log('center', this.map.project(this.state.center))
-      //   let centerProjectionX = this.map.project(this.state.center).x
-      //   let centerProjectionY = this.map.project(this.state.center).y
-      //   // console.log('center points', centerProjectionX, centerProjectionY)
-      //
-      //   let finalCenterProjectionY = centerProjectionY - shiftDownwards + shiftUpwards
-      //   let finalCenterProjectionX = centerProjectionX - shiftRightwards + shiftLeftwards
-      //
-      //   // console.log('points', finalCenterProjectionX, finalCenterProjectionY)
-      //   let newCenterLatLng = this.map.unproject([finalCenterProjectionX, finalCenterProjectionY])
-      //   this.setState({center: [newCenterLatLng.lng, newCenterLatLng.lat]})
-      // }
     }
   }
 
@@ -832,6 +739,10 @@ class MapboxMap extends Component {
       })
   }
 
+  clickBucketCheckbox () {
+    this.props.clickBucketCheckbox()
+  }
+
   render () {
     // activeEvent is the event that was clicked (might not hv marker)
     let activeEvent = this.props.events.events.find(e => {
@@ -847,6 +758,7 @@ class MapboxMap extends Component {
     }
     // console.log('activeEvent', activeEvent)
     // console.log('activeEventLocationObj', activeEventLocationObj)
+    console.log('bucketList', this.props.bucketList)
     return (
       <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
         <ZoomControl position='top-left' />
@@ -1004,6 +916,15 @@ class MapboxMap extends Component {
               </div>
             )
           })}
+          <div key={`bucketCheckbox`} style={{display: 'flex', alignItems: 'center', margin: '8px 0'}}>
+            {this.props.mapbox.bucketCheckbox &&
+              <i className='material-icons' onClick={() => this.clickBucketCheckbox()} style={{color: 'rgb(237, 106, 90)', cursor: 'pointer'}}>check_box</i>
+            }
+            {!this.props.mapbox.bucketCheckbox &&
+              <i className='material-icons' onClick={() => this.clickBucketCheckbox()} style={{color: 'rgb(237, 106, 90)', cursor: 'pointer'}}>check_box_outline_blank</i>
+            }
+            <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(237, 106, 90)', marginLeft: '8px'}}>Bucket</span>
+          </div>
         </div>
 
         {this.state.eventMarkersToDisplay.map((event, i) => {
@@ -1038,7 +959,8 @@ const mapStateToProps = (state) => {
     events: state.events,
     activeEventId: state.activeEventId,
     plannerView: state.plannerView,
-    mapbox: state.mapbox
+    mapbox: state.mapbox,
+    bucketList: state.bucketList
   }
 }
 
@@ -1052,6 +974,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setPopupToShow: (name) => {
       dispatch(setPopupToShow(name))
+    },
+    clickBucketCheckbox: () => {
+      dispatch(clickBucketCheckbox())
     },
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))

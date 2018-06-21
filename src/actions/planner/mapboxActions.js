@@ -18,3 +18,9 @@ export const setPopupToShow = (name) => {
     name
   }
 }
+
+export const clickBucketCheckbox = () => {
+  return {
+    type: 'CLICK_BUCKET_CHECKBOX'
+  }
+}

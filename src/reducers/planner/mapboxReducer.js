@@ -1,5 +1,6 @@
 export const mapboxReducer = (state = {
   daysToShow: [1],
+  bucketCheckbox: false,
   popupToShow: '' // '' or 'event' or 'search'
 }, action) => {
   switch (action.type) {
@@ -19,7 +20,7 @@ export const mapboxReducer = (state = {
         }
       }
     case 'ENSURE_DAY_IS_CHECKED':
-      console.log('REDUX DAY', action.day, typeof(action.day))
+      // console.log('REDUX DAY', action.day, typeof(action.day))
       if (state.daysToShow.includes(action.day)) {
         console.log('already in days filter')
         return state
@@ -34,6 +35,11 @@ export const mapboxReducer = (state = {
       return {
         ...state,
         popupToShow: action.name
+      }
+    case 'CLICK_BUCKET_CHECKBOX':
+      return {
+        ...state,
+        bucketCheckbox: !state.bucketCheckbox
       }
     default:
       return state

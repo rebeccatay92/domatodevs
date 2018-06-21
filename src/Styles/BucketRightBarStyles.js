@@ -55,7 +55,7 @@ const horizontalDivider = {
   borderTop: '1px solid rgba(60, 58, 68, 0.3)'
 }
 
-const bucketRow = {
+const bucketRowUnfocused = {
   width: '100%',
   height: '100px',
   display: 'flex',
@@ -63,8 +63,13 @@ const bucketRow = {
   padding: '0 16px',
   cursor: 'pointer',
   ':hover': {
-    background: 'rgb(250, 250, 250)'
+    background: 'rgb(255, 255, 255)'
   }
+}
+
+const bucketRowFocused = {
+  ...bucketRowUnfocused,
+  background: 'rgb(255, 255, 255)'
 }
 
 /* ----------------------------- */
@@ -133,7 +138,8 @@ export const BucketRightBarStyles = {
   // bucket list itself
   bucketListContainer,
   horizontalDivider,
-  bucketRow,
+  bucketRowUnfocused,
+  bucketRowFocused,
   // within each row
   thumbnailImage,
   contentContainer,

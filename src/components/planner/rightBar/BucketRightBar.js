@@ -17,30 +17,39 @@ class BucketRightBar extends Component {
 
   componentDidMount () {
     if (this.props.data.getUserBucketList) {
-      console.log('did mount intiialize bucket')
+      // console.log('did mount intiialize bucket')
       this.props.initializeBucketList(this.props.data.getUserBucketList.buckets, this.props.data.getUserBucketList.countries)
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.data.getUserBucketList !== this.props.data.getUserBucketList) {
-      console.log('receiveprops intialize bucket', nextProps.data.getUserBucketList)
+      // console.log('receiveprops intialize bucket', nextProps.data.getUserBucketList)
       this.props.initializeBucketList(nextProps.data.getUserBucketList.buckets, nextProps.data.getUserBucketList.countries)
     }
   }
 
   selectCountryFilter (id) {
-    console.log('country id', id)
+    // console.log('country id', id)
     this.props.selectCountryFilter(id)
+    this.props.setFocusedBucketId('')
   }
 
   selectCategoryFilter (category) {
     this.props.selectCategoryFilter(category)
+    this.props.setFocusedBucketId('')
   }
 
   toggleFocusedBucket (id) {
-    console.log('bucket id', id)
-    console.log('focusedBucketId', this.props.bucketList.focusedBucketId)
+    if (this.props.plannerView.mapbox) {
+      // console.log('bucket id', id)
+      // console.log('focusedBucketId', this.props.bucketList.focusedBucketId)
+      if (this.props.bucketList.focusedBucketId === id) {
+        this.props.setFocusedBucketId('')
+      } else {
+        this.props.setFocusedBucketId(id)
+      }
+    }
   }
 
   render () {
@@ -100,7 +109,7 @@ class BucketRightBar extends Component {
                 {i !== 0 &&
                   <hr style={styles.horizontalDivider} />
                 }
-                <div style={styles.bucketRow} key={`bucketItem${i}`} onClick={() => this.toggleFocusedBucket(bucket.id)}>
+                <div style={this.props.bucketList.focusedBucketId === bucket.id ? styles.bucketRowFocused : styles.bucketRowUnfocused} key={`bucketItem${i}`} onClick={() => this.toggleFocusedBucket(bucket.id)}>
                   <img src={bucket.thumbnailUrl} style={styles.thumbnailImage} />
                   <div style={styles.contentContainer}>
                     <div style={styles.locationAndCategoryDiv}>
