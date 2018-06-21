@@ -100,11 +100,11 @@ class BucketRightBar extends Component {
                   <img src={bucket.thumbnailUrl} style={{width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginRight: '16px'}} />
                   <div style={{width: 'calc(100% - 80px - 16px)', height: '80px', display: 'flex', flexDirection: 'column'}}>
                     <div style={{height: '24px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(67, 132, 150)'}}>{bucket.location.name}</span>
+                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(67, 132, 150)', width: 'calc(100% - 24px)', height: '24px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{bucket.location.name}</span>
                       <i className='material-icons' style={{color: 'rgb(199, 130, 131)', fontSize: '24px'}}>{category[bucket.bucketCategory]}</i>
                     </div>
-                    <div style={{height: 'calc(80px - 24px)', width: '100%', overflow: 'hidden'}}>
-                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '13px', lineHeight: '20px'}}>{bucket.notes}</span>
+                    <div style={{height: 'calc(80px - 24px)', width: '100%', overflow: 'hidden', dispay: 'flex', alignContent: 'flex-start'}}>
+                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '13px', lineHeight: '19px'}}>{bucket.notes}</span>
                     </div>
                   </div>
                 </div>
