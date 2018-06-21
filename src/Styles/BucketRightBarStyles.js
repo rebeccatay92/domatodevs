@@ -7,7 +7,6 @@ const mainAreaContainer = {
   height: '100%',
   background: 'rgb(245, 245, 245)',
   border: `1px solid ${coreColors.black03}`,
-  padding: '0 16px',
   boxShadow: '-2px 0px 5px rgba(0, 0 , 0, 0.16)'
 }
 

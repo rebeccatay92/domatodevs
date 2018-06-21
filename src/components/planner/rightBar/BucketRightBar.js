@@ -6,6 +6,7 @@ import { getUserBucketList } from '../../../apollo/bucket'
 import { connect } from 'react-redux'
 import { initializeBucketList, selectCountryFilter, selectCategoryFilter } from '../../../actions/planner/bucketListActions'
 
+import Radium from 'radium'
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
 
 class BucketRightBar extends Component {
@@ -66,7 +67,7 @@ class BucketRightBar extends Component {
     return (
       <div style={styles.mainAreaContainer}>
         {/* HEADER WITH FILTERS */}
-        <div style={{width: '100%', height: '64px', display: 'flex', alignItems: 'center'}}>
+        <div style={{width: '100%', height: '64px', display: 'flex', alignItems: 'center', paddingLeft: '16px'}}>
           <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '24px', color: 'rgb(60, 58, 68)'}}>BUCKET LIST</span>
           <div style={{display: 'inline-flex', flexDirection: 'column', justifyContent: 'center', marginLeft: '16px'}}>
             <select value={selectedCountryId} onChange={e => this.selectCountryFilter(e.target.value)} style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '13px', color: 'rgb(60, 58, 68)'}}>
@@ -92,11 +93,11 @@ class BucketRightBar extends Component {
         <div style={{width: '100%', height: 'calc(100% - 64px)', overflow: 'scroll'}}>
           {filteredFinalArr.length !== 0 && filteredFinalArr.map((bucket, i) => {
             return (
-              <div style={{width: '100%'}}>
+              <div style={{width: '100%'}} key={i}>
                 {i !== 0 &&
-                  <hr style={{width: '100%', height: '1px', margin: 0, borderTop: '1px solid rgba(60, 58, 68, 0.3)'}} />
+                  <hr style={{width: 'calc(100% - 32px)', height: '1px', margin: '0 16px', borderTop: '1px solid rgba(60, 58, 68, 0.3)'}} />
                 }
-                <div style={{width: '100%', height: '100px', display: 'flex', alignItems: 'center'}}>
+                <div style={{width: '100%', height: '100px', display: 'flex', alignItems: 'center', padding: '0 16px', cursor: 'pointer', ':hover': {background: 'rgb(250, 250, 250)'}}} key={`bucketItem${i}`}>
                   <img src={bucket.thumbnailUrl} style={{width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginRight: '16px'}} />
                   <div style={{width: 'calc(100% - 80px - 16px)', height: '80px', display: 'flex', flexDirection: 'column'}}>
                     <div style={{height: '24px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -151,4 +152,4 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(getUserBucketList)
-)(BucketRightBar))
+)(Radium(BucketRightBar)))
