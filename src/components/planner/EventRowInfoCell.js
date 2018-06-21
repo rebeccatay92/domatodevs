@@ -130,7 +130,6 @@ class EventRowInfoCell extends Component {
     if (!this.state.cellClickedTwice) {
       this.setState({cellClickedTwice: true})
     } else {
-      console.log('called');
       this.focus(e)
     }
   }
@@ -138,13 +137,13 @@ class EventRowInfoCell extends Component {
   handleKeyDown (e, isActive, editorFocus) {
     const { column, id } = this.props
     const property = eventPropertyNames[column]
-
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
     //   this.handleArrowKeyDown(e.keyCode)
     // }
 
     if (e.keyCode === 13 && !editorFocus) {
-      this.editor.focus()
+      e.preventDefault()
+      this.setState({cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
     }
 
     if (e.key === 'Escape') {
