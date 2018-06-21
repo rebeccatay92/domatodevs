@@ -4,7 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { getUserBucketList } from '../../../apollo/bucket'
 
 import { connect } from 'react-redux'
-import { initializeBucketList, selectCountryFilter, selectCategoryFilter } from '../../../actions/planner/bucketListActions'
+import { initializeBucketList, selectCountryFilter, selectCategoryFilter, setFocusedBucketId } from '../../../actions/planner/bucketListActions'
 
 import Radium from 'radium'
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
@@ -38,11 +38,14 @@ class BucketRightBar extends Component {
     this.props.selectCategoryFilter(category)
   }
 
+  toggleFocusedBucket (id) {
+    console.log('bucket id', id)
+    console.log('focusedBucketId', this.props.bucketList.focusedBucketId)
+  }
+
   render () {
     if (this.props.data.loading) return <h1>Loading</h1>
-    // let bucketList = this.props.data.getUserBucketList.buckets
-    // let countriesArr = this.props.data.getUserBucketList.countries
-    // console.log('buckets', bucketList, 'countries', countriesArr)
+
     let { buckets, countries, selectedBucketCategory, selectedCountryId } = this.props.bucketList
 
     let filteredByCountryArr
@@ -67,10 +70,10 @@ class BucketRightBar extends Component {
     return (
       <div style={styles.mainAreaContainer}>
         {/* HEADER WITH FILTERS */}
-        <div style={{width: '100%', height: '64px', display: 'flex', alignItems: 'center', paddingLeft: '16px'}}>
-          <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '24px', color: 'rgb(60, 58, 68)'}}>BUCKET LIST</span>
-          <div style={{display: 'inline-flex', flexDirection: 'column', justifyContent: 'center', marginLeft: '16px'}}>
-            <select value={selectedCountryId} onChange={e => this.selectCountryFilter(e.target.value)} style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '13px', color: 'rgb(60, 58, 68)'}}>
+        <div style={styles.headerSection}>
+          <span style={styles.headerText}>BUCKET LIST</span>
+          <div style={styles.filtersDiv}>
+            <select value={selectedCountryId} onChange={e => this.selectCountryFilter(e.target.value)} style={styles.filtersDropdown}>
               <option value=''>All countries</option>
               {countries.map((country, i) => {
                 return (
@@ -78,7 +81,7 @@ class BucketRightBar extends Component {
                 )
               })}
             </select>
-            <select value={selectedBucketCategory} onChange={e => this.selectCategoryFilter(e.target.value)} style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '13px', color: 'rgb(60, 58, 68)', marginTop: '8px'}}>
+            <select value={selectedBucketCategory} onChange={e => this.selectCategoryFilter(e.target.value)} style={{...styles.filtersDropdown, marginTop: '8px'}}>
               <option value=''>All categories</option>
               <option value='Location'>Location</option>
               <option value='Activity'>Activity</option>
@@ -90,22 +93,22 @@ class BucketRightBar extends Component {
           </div>
         </div>
 
-        <div style={{width: '100%', height: 'calc(100% - 64px)', overflow: 'scroll'}}>
+        <div style={styles.bucketListContainer}>
           {filteredFinalArr.length !== 0 && filteredFinalArr.map((bucket, i) => {
             return (
               <div style={{width: '100%'}} key={i}>
                 {i !== 0 &&
-                  <hr style={{width: 'calc(100% - 32px)', height: '1px', margin: '0 16px', borderTop: '1px solid rgba(60, 58, 68, 0.3)'}} />
+                  <hr style={styles.horizontalDivider} />
                 }
-                <div style={{width: '100%', height: '100px', display: 'flex', alignItems: 'center', padding: '0 16px', cursor: 'pointer', ':hover': {background: 'rgb(250, 250, 250)'}}} key={`bucketItem${i}`}>
-                  <img src={bucket.thumbnailUrl} style={{width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginRight: '16px'}} />
-                  <div style={{width: 'calc(100% - 80px - 16px)', height: '80px', display: 'flex', flexDirection: 'column'}}>
-                    <div style={{height: '24px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(67, 132, 150)', width: 'calc(100% - 24px)', height: '24px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{bucket.location.name}</span>
-                      <i className='material-icons' style={{color: 'rgb(199, 130, 131)', fontSize: '24px'}}>{category[bucket.bucketCategory]}</i>
+                <div style={styles.bucketRow} key={`bucketItem${i}`} onClick={() => this.toggleFocusedBucket(bucket.id)}>
+                  <img src={bucket.thumbnailUrl} style={styles.thumbnailImage} />
+                  <div style={styles.contentContainer}>
+                    <div style={styles.locationAndCategoryDiv}>
+                      <span style={styles.locationName}>{bucket.location.name}</span>
+                      <i className='material-icons' style={styles.categoryIcon}>{category[bucket.bucketCategory]}</i>
                     </div>
-                    <div style={{height: 'calc(80px - 24px)', width: '100%', overflow: 'hidden', dispay: 'flex', alignContent: 'flex-start'}}>
-                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '13px', lineHeight: '19px'}}>{bucket.notes}</span>
+                    <div style={styles.notesContainer}>
+                      <span style={styles.notes}>{bucket.notes}</span>
                     </div>
                   </div>
                 </div>
@@ -113,7 +116,7 @@ class BucketRightBar extends Component {
             )
           })}
           {!filteredFinalArr.length &&
-            <h4 style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '24px', color: 'rgb(60, 58, 68)'}}>No results</h4>
+            <h4 style={styles.headerText}>No results</h4>
           }
         </div>
       </div>
@@ -132,7 +135,9 @@ const category = {
 
 const mapStateToProps = (state) => {
   return {
-    bucketList: state.bucketList
+    bucketList: state.bucketList,
+    plannerView: state.plannerView,
+    mapbox: state.mapbox
   }
 }
 
@@ -146,6 +151,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     selectCategoryFilter: (category) => {
       dispatch(selectCategoryFilter(category))
+    },
+    setFocusedBucketId: (id) => {
+      dispatch(setFocusedBucketId(id))
     }
   }
 }

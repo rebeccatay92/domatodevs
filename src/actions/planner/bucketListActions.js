@@ -19,3 +19,10 @@ export const selectCategoryFilter = (category) => {
     category
   }
 }
+
+export const setFocusedBucketId = (id) => {
+  return {
+    type: 'SET_FOCUSED_BUCKET_ID',
+    id
+  }
+}
