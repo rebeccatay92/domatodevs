@@ -15,19 +15,18 @@ class BucketRightBar extends Component {
     this.state = {}
   }
 
-  componentDidMount () {
-    if (this.props.data.getUserBucketList) {
-      // console.log('did mount intiialize bucket')
-      this.props.initializeBucketList(this.props.data.getUserBucketList.buckets, this.props.data.getUserBucketList.countries)
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.data.getUserBucketList !== this.props.data.getUserBucketList) {
-      // console.log('receiveprops intialize bucket', nextProps.data.getUserBucketList)
-      this.props.initializeBucketList(nextProps.data.getUserBucketList.buckets, nextProps.data.getUserBucketList.countries)
-    }
-  }
+  // BUCKET LIST IS ALREADY INITIALIZED IN PLANNERPAGE.
+  // componentDidMount () {
+  //   if (this.props.data.getUserBucketList) {
+  //     this.props.initializeBucketList(this.props.data.getUserBucketList.buckets, this.props.data.getUserBucketList.countries)
+  //   }
+  // }
+  // componentWillReceiveProps (nextProps) {
+  //   if (nextProps.data.getUserBucketList !== this.props.data.getUserBucketList) {
+  //     // console.log('receiveprops intialize bucket', nextProps.data.getUserBucketList)
+  //     this.props.initializeBucketList(nextProps.data.getUserBucketList.buckets, nextProps.data.getUserBucketList.countries)
+  //   }
+  // }
 
   selectCountryFilter (id) {
     // console.log('country id', id)
@@ -42,8 +41,6 @@ class BucketRightBar extends Component {
 
   toggleFocusedBucket (id) {
     if (this.props.plannerView.mapbox) {
-      // console.log('bucket id', id)
-      // console.log('focusedBucketId', this.props.bucketList.focusedBucketId)
       if (this.props.bucketList.focusedBucketId === id) {
         this.props.setFocusedBucketId('')
       } else {

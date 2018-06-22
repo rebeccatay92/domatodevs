@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
 
-import { graphql } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import { queryItinerary } from '../apollo/itinerary'
+import { getUserBucketList } from '../apollo/bucket'
 
 import { connect } from 'react-redux'
 import { toggleSpinner } from '../actions/spinnerActions'
 import { initializeEvents } from '../actions/planner/eventsActions'
 import { initializeItineraryDetails } from '../actions/planner/itineraryActions'
-import { EditorState, convertFromRaw, ContentState } from 'draft-js'
+import { initializeBucketList } from '../actions/planner/bucketListActions'
+
+// import { EditorState, convertFromRaw, ContentState } from 'draft-js'
 
 import Planner from './Planner'
 
@@ -38,13 +41,14 @@ class PlannerPage extends Component {
 
   componentWillReceiveProps (nextProps) {
     // GRAPHQL DATA FROM BACKEND.
-    if (this.props.data.findItinerary !== nextProps.data.findItinerary) {
-      console.log('nextProps allevents', nextProps.data.findItinerary.events)
-      initializeEventsHelper(nextProps.data.findItinerary.events, this.props.initializeEvents)
+    // we now have two named queries to initialize
+    if (!nextProps.queryItinerary.loading && nextProps.queryItinerary.findItinerary !== this.props.queryItinerary.findItinerary) {
+      // console.log('nextProps allevents', nextProps.queryItinerary.findItinerary.events)
+      initializeEventsHelper(nextProps.queryItinerary.findItinerary.events, this.props.initializeEvents)
       setTimeout(() => this.props.toggleSpinner(false), 250)
 
-      console.log('itinerary details', nextProps.data.findItinerary)
-      let itinerary = nextProps.data.findItinerary
+      // console.log('itinerary details', nextProps.queryItinerary.findItinerary)
+      let itinerary = nextProps.queryItinerary.findItinerary
       let details = {
         id: itinerary.id,
         name: itinerary.name,
@@ -62,16 +66,21 @@ class PlannerPage extends Component {
       }
       this.props.initializeItineraryDetails(details)
     }
+    if (!nextProps.getUserBucketList.loading && nextProps.getUserBucketList.getUserBucketList !== this.props.getUserBucketList.getUserBucketList) {
+      // console.log('bucketlist', nextProps.getUserBucketList.getUserBucketList)
+      this.props.initializeBucketList(nextProps.getUserBucketList.getUserBucketList.buckets, nextProps.getUserBucketList.getUserBucketList.countries)
+    }
   }
 
   // PUBLIC VS PRIVATE ROUTE: REPLACE COMPONENTS WITH A PUBLIC FACING COMPONENT?
   render () {
-    if (this.props.data.loading) return (<h1>Loading</h1>)
+    // console.log('this.props', this.props)
+    if (this.props.queryItinerary.loading) return (<h1>Loading</h1>)
+    if (this.props.getUserBucketList.loading) return (<h1>Loading</h1>)
 
     // CALCULATE DATES, DAYS HERE. DATES ARR IN UNIX (SECS).
-    const startDateUnix = this.props.data.findItinerary.startDate
-    const numOfDaysInt = this.props.data.findItinerary.days
-
+    const startDateUnix = this.props.queryItinerary.findItinerary.startDate
+    const numOfDaysInt = this.props.queryItinerary.findItinerary.days
     // [1, 2, 3 ...days] props to pass Planner
     let daysIntArr = _.range(1, numOfDaysInt + 1)
 
@@ -105,13 +114,13 @@ class PlannerPage extends Component {
   }
 }
 
-const options = {
-  options: props => ({
-    variables: {
-      id: props.match.params.itineraryId
-    }
-  })
-}
+// const options = {
+//   options: props => ({
+//     variables: {
+//       id: props.match.params.itineraryId
+//     }
+//   })
+// }
 
 const mapStateToProps = (state) => {
   return {
@@ -129,8 +138,21 @@ const mapDispatchToProps = (dispatch) => {
     },
     initializeItineraryDetails: (details) => {
       dispatch(initializeItineraryDetails(details))
+    },
+    initializeBucketList: (buckets, countries) => {
+      dispatch(initializeBucketList(buckets, countries))
     }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(graphql(queryItinerary, options)(PlannerPage))
+export default connect(mapStateToProps, mapDispatchToProps)(compose(
+  graphql(queryItinerary, {
+    options: props => ({
+      variables: {
+        id: props.match.params.itineraryId
+      }
+    }),
+    name: 'queryItinerary'
+  }),
+  graphql(getUserBucketList, {name: 'getUserBucketList'})
+)(PlannerPage))

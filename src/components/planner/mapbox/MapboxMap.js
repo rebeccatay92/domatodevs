@@ -409,7 +409,7 @@ class MapboxMap extends Component {
     }
 
     // check y value of marker if under or over top edge of days filter
-    let daysFilterDiv = document.querySelector('.mapboxDaysFilter')
+    let daysFilterDiv = document.querySelector('.mapboxFiltersContainer')
     let daysFilterHeight = daysFilterDiv.clientHeight
 
     if (projectionY <= mapboxHeight - daysFilterHeight - 10) {
@@ -758,7 +758,7 @@ class MapboxMap extends Component {
     }
     // console.log('activeEvent', activeEvent)
     // console.log('activeEventLocationObj', activeEventLocationObj)
-    console.log('bucketList', this.props.bucketList)
+    // console.log('bucketList', this.props.bucketList)
     return (
       <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
         <ZoomControl position='top-left' />
@@ -901,29 +901,29 @@ class MapboxMap extends Component {
         }
 
         {/* DAYS FILTER */}
-        <div style={styles.daysFilterContainer} className={'mapboxDaysFilter'}>
+        <div style={styles.filtersContainer} className={'mapboxFiltersContainer'}>
           {this.props.daysArr.map((day, i) => {
             let isChecked = this.props.mapbox.daysToShow.includes(day)
             return (
-              <div key={`day${day}`} style={{display: 'flex', alignItems: 'center', margin: '8px 0'}}>
+              <div key={`day${day}`} style={styles.filtersRow} onClick={() => this.clickDayCheckbox(day)}>
                 {isChecked &&
-                  <i className='material-icons' onClick={() => this.clickDayCheckbox(day)} style={{color: 'rgb(67, 132, 150)', cursor: 'pointer'}}>check_box</i>
+                  <i className='material-icons' style={{color: 'rgb(67, 132, 150)'}}>check_box</i>
                 }
                 {!isChecked &&
-                  <i className='material-icons' onClick={() => this.clickDayCheckbox(day)} style={{color: 'rgb(67, 132, 150)', cursor: 'pointer'}}>check_box_outline_blank</i>
+                  <i className='material-icons' style={{color: 'rgb(67, 132, 150)'}}>check_box_outline_blank</i>
                 }
-                <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(67, 132, 150)', marginLeft: '8px'}}>Day {day}</span>
+                <span style={styles.filtersText}>Day {day}</span>
               </div>
             )
           })}
-          <div key={`bucketCheckbox`} style={{display: 'flex', alignItems: 'center', margin: '8px 0'}}>
+          <div key={`bucketCheckbox`} style={styles.filtersRow} onClick={() => this.clickBucketCheckbox()}>
             {this.props.mapbox.bucketCheckbox &&
-              <i className='material-icons' onClick={() => this.clickBucketCheckbox()} style={{color: 'rgb(237, 106, 90)', cursor: 'pointer'}}>check_box</i>
+              <i className='material-icons' style={{color: 'rgb(237, 106, 90)'}}>check_box</i>
             }
             {!this.props.mapbox.bucketCheckbox &&
-              <i className='material-icons' onClick={() => this.clickBucketCheckbox()} style={{color: 'rgb(237, 106, 90)', cursor: 'pointer'}}>check_box_outline_blank</i>
+              <i className='material-icons' style={{color: 'rgb(237, 106, 90)'}}>check_box_outline_blank</i>
             }
-            <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(237, 106, 90)', marginLeft: '8px'}}>Bucket</span>
+            <span style={{...styles.filtersText, color: 'rgb(237, 106, 90)'}}>Bucket</span>
           </div>
         </div>
 
@@ -949,6 +949,8 @@ class MapboxMap extends Component {
             </div>
           </Popup>
         }
+
+        //BUCKET MARKERS + BUCKET FOCUSED MARKER
       </Map>
     )
   }

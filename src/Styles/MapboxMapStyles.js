@@ -49,7 +49,7 @@ const customMarkerButtonContainer = {
 }
 
 /* ----------------------------- */
-const daysFilterContainer = {
+const filtersContainer = {
   position: 'absolute',
   bottom: '10px',
   left: '10px',
@@ -62,6 +62,20 @@ const daysFilterContainer = {
   border: '1px solid rgba(0, 0, 0, 0.1)'
 }
 
+const filtersRow = {
+  display: 'flex',
+  alignItems: 'center',
+  margin: '8px 0',
+  cursor: 'pointer'
+}
+
+const filtersText = {
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  color: coreColors.greenSolid,
+  marginLeft: '8px'
+}
+
 /* ----------------------------- */
 
 /* ----------------------------- */
@@ -72,5 +86,7 @@ export const MapboxMapStyles = {
   searchBarClearIcon,
   searchBarInputField,
   customMarkerButtonContainer,
-  daysFilterContainer
+  filtersContainer,
+  filtersRow,
+  filtersText
 }
