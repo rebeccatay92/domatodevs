@@ -780,22 +780,22 @@ class MapboxMap extends Component {
         </div>
 
         {this.state.customMarker &&
-          <Marker coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}} onClick={() => this.onCustomMarkerClick()}>
+          <Marker coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} anchor='bottom' style={styles.markerContainer} onClick={() => this.onCustomMarkerClick()}>
             <i className='material-icons' style={{color: 'green', fontSize: '35px'}}>place</i>
           </Marker>
         }
 
         {this.state.customMarker && this.props.mapbox.popupToShow === 'custom' &&
           <Popup anchor='bottom' coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
-            <div style={{width: '300px'}}>
-              <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
-              <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
+            <div style={styles.popupContainer}>
+              <i className='material-icons' style={styles.popupCloseIcon} onClick={() => this.closePopup()}>clear</i>
+              <div style={styles.popupContentContainer}>
                 {this.state.customMarker.address &&
                   <React.Fragment>
-                    <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
-                    <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.name}</h6>
-                    <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
-                    <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.customMarker.address}</h6>
+                    <h6 style={styles.popupContentHeader}>Name</h6>
+                    <h6 style={styles.popupContentText}>{this.state.customMarker.name}</h6>
+                    <h6 style={styles.popupContentHeader}>Address</h6>
+                    <h6 style={styles.popupContentText}>{this.state.customMarker.address}</h6>
                   </React.Fragment>
                 }
                 {!this.state.customMarker.address &&
@@ -803,27 +803,27 @@ class MapboxMap extends Component {
                 }
               </div>
               {this.props.activeEventId && this.state.customMarker.address &&
-                <div style={{display: 'inline-flex'}}>
+                <div style={{display: 'flex'}}>
                   {activeEventLocationObj &&
                     <React.Fragment>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveCustomLocation()}>
-                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveCustomLocation()}>
+                        <span style={styles.popupButtonText}>Save Location</span>
                       </div>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveCustomAddress()}>
-                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
+                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveCustomAddress()}>
+                        <span style={styles.popupButtonText}>Save Address only</span>
                       </div>
                     </React.Fragment>
                   }
                   {!activeEventLocationObj &&
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveCustomLocation()}>
-                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                    <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.saveCustomLocation()}>
+                      <span style={styles.popupButtonText}>Save Location</span>
                     </div>
                   }
                 </div>
               }
               {!this.props.activeEventId &&
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.customMarkerAddEvent()}>
-                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Add to</span>
+                <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.customMarkerAddEvent()}>
+                  <span style={styles.popupButtonText}>Add to</span>
                   <select className={'customMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
                     {this.props.daysArr.map((day, i) => {
                       return (
@@ -849,7 +849,7 @@ class MapboxMap extends Component {
         </div>
 
         {this.state.searchMarker &&
-          <Marker coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: 4}} onClick={() => this.onSearchMarkerClick()}>
+          <Marker coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} anchor='bottom' style={styles.markerContainer} onClick={() => this.onSearchMarkerClick()}>
             <i className='material-icons' style={{color: 'black', fontSize: '35px'}}>place</i>
           </Marker>
         }
@@ -857,36 +857,36 @@ class MapboxMap extends Component {
         {/* SEARCH MARKER POPUP */}
         {this.state.searchMarker && this.props.mapbox.popupToShow === 'search' &&
           <Popup anchor='bottom' coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
-            <div style={{width: '300px'}}>
-              <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
-              <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
-                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
-                <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.name}</h6>
-                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{this.state.searchMarker.address}</h6>
+            <div style={styles.popupContainer}>
+              <i className='material-icons' style={styles.popupCloseIcon} onClick={() => this.closePopup()}>clear</i>
+              <div style={styles.popupContentContainer}>
+                <h6 style={styles.popupContentHeader}>Name</h6>
+                <h6 style={styles.popupContentText}>{this.state.searchMarker.name}</h6>
+                <h6 style={styles.popupContentHeader}>Address</h6>
+                <h6 style={styles.popupContentText}>{this.state.searchMarker.address}</h6>
               </div>
               {this.props.activeEventId &&
-                <div style={{display: 'inline-flex'}}>
+                <div style={{display: 'flex'}}>
                   {activeEventLocationObj &&
                     <React.Fragment>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchLocation()}>
-                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveSearchLocation()}>
+                        <span style={styles.popupButtonText}>Save Location</span>
                       </div>
-                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '150px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.saveSearchAddress()}>
-                        <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Address only</span>
+                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveSearchAddress()}>
+                        <span style={styles.popupButtonText}>Save Address only</span>
                       </div>
                     </React.Fragment>
                   }
                   {!activeEventLocationObj &&
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}}>
-                      <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Save Location</span>
+                    <div style={styles.popupDoubleButtonWidthContainer}>
+                      <span style={styles.popupButtonText}>Save Location</span>
                     </div>
                   }
                 </div>
               }
               {!this.props.activeEventId &&
-                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '35px', border: '1px solid rgba(223, 56, 107, 1)', cursor: 'pointer'}} onClick={() => this.searchMarkerAddEvent()}>
-                  <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Add to</span>
+                <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.searchMarkerAddEvent()}>
+                  <span style={styles.popupButtonText}>Add to</span>
                   <select className={'searchMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
                     {this.props.daysArr.map((day, i) => {
                       return (
@@ -907,30 +907,30 @@ class MapboxMap extends Component {
             return (
               <div key={`day${day}`} style={styles.filtersRow} onClick={() => this.clickDayCheckbox(day)}>
                 {isChecked &&
-                  <i className='material-icons' style={{color: 'rgb(67, 132, 150)'}}>check_box</i>
+                  <i className='material-icons'>check_box</i>
                 }
                 {!isChecked &&
-                  <i className='material-icons' style={{color: 'rgb(67, 132, 150)'}}>check_box_outline_blank</i>
+                  <i className='material-icons'>check_box_outline_blank</i>
                 }
                 <span style={styles.filtersText}>Day {day}</span>
               </div>
             )
           })}
-          <div key={`bucketCheckbox`} style={styles.filtersRow} onClick={() => this.clickBucketCheckbox()}>
+          <div key={`bucketCheckbox`} style={{...styles.filtersRow, color: 'rgb(237, 106, 90)'}} onClick={() => this.clickBucketCheckbox()}>
             {this.props.mapbox.bucketCheckbox &&
-              <i className='material-icons' style={{color: 'rgb(237, 106, 90)'}}>check_box</i>
+              <i className='material-icons'>check_box</i>
             }
             {!this.props.mapbox.bucketCheckbox &&
-              <i className='material-icons' style={{color: 'rgb(237, 106, 90)'}}>check_box_outline_blank</i>
+              <i className='material-icons'>check_box_outline_blank</i>
             }
-            <span style={{...styles.filtersText, color: 'rgb(237, 106, 90)'}}>Bucket</span>
+            <span style={styles.filtersText}>Bucket</span>
           </div>
         </div>
 
         {this.state.eventMarkersToDisplay.map((event, i) => {
           let isActiveEvent = this.props.activeEventId === event.id
           return (
-            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', zIndex: isActiveEvent ? 4 : 3}} onClick={(evt) => this.onEventMarkerClick(event.id, evt)}>
+            <Marker key={i} coordinates={[event.longitudeDisplay, event.latitudeDisplay]} anchor='bottom' style={{...styles.markerContainer, zIndex: isActiveEvent ? 4 : 3}} onClick={(evt) => this.onEventMarkerClick(event.id, evt)}>
               <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)', fontSize: '35px'}}>place</i>
             </Marker>
           )
@@ -938,13 +938,13 @@ class MapboxMap extends Component {
 
         {activeEvent && activeEventHasCoordinates && this.props.mapbox.popupToShow === 'event' &&
           <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
-            <div style={{width: '300px'}}>
-              <i className='material-icons' style={{position: 'absolute', top: '5px', right: '5px', fontSize: '18px', cursor: 'pointer'}} onClick={() => this.closePopup()}>clear</i>
-              <div style={{width: '300px', border: '1px solid rgba(223, 56, 107, 1)', padding: '16px'}}>
-                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Name</h6>
-                <h6 style={{margin: '0 0 16px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.name}</h6>
-                <h6 style={{margin: '0 0 5px 0', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '16px', color: 'rgb(60, 58, 68)'}}>Address</h6>
-                <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', lineHeight: '24px', color: 'rgb(60, 58, 68)'}}>{activeEvent.locationObj.address}</h6>
+            <div style={styles.popupContainer}>
+              <i className='material-icons' style={styles.popupCloseIcon} onClick={() => this.closePopup()}>clear</i>
+              <div style={styles.popupContentContainer}>
+                <h6 style={styles.popupContentHeader}>Name</h6>
+                <h6 style={styles.popupContentText}>{activeEvent.locationObj.name}</h6>
+                <h6 style={styles.popupContentHeader}>Address</h6>
+                <h6 style={styles.popupContentText}>{activeEvent.locationObj.address}</h6>
               </div>
             </div>
           </Popup>
