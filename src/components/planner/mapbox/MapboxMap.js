@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import ReactMapboxGL, { ZoomControl, Marker, Popup } from 'react-mapbox-gl'
 import mapboxgl from 'mapbox-gl'
 import LocationCellDropdown from '../LocationCellDropdown'
+import PopupTemplate from './PopupTemplate'
 
 import { connect } from 'react-redux'
 import { clickDayCheckbox, ensureDayIsChecked, setPopupToShow, clickBucketCheckbox } from '../../../actions/planner/mapboxActions'
@@ -786,55 +787,7 @@ class MapboxMap extends Component {
         }
 
         {this.state.customMarker && this.props.mapbox.popupToShow === 'custom' &&
-          <Popup anchor='bottom' coordinates={[this.state.customMarker.longitude, this.state.customMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
-            <div style={styles.popupContainer}>
-              <i className='material-icons' style={styles.popupCloseIcon} onClick={() => this.closePopup()}>clear</i>
-              <div style={styles.popupContentContainer}>
-                {this.state.customMarker.address &&
-                  <React.Fragment>
-                    <h6 style={styles.popupContentHeader}>Name</h6>
-                    <h6 style={styles.popupContentText}>{this.state.customMarker.name}</h6>
-                    <h6 style={styles.popupContentHeader}>Address</h6>
-                    <h6 style={styles.popupContentText}>{this.state.customMarker.address}</h6>
-                  </React.Fragment>
-                }
-                {!this.state.customMarker.address &&
-                  <h6>No result found. Please try again.</h6>
-                }
-              </div>
-              {this.props.activeEventId && this.state.customMarker.address &&
-                <div style={{display: 'flex'}}>
-                  {activeEventLocationObj &&
-                    <React.Fragment>
-                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveCustomLocation()}>
-                        <span style={styles.popupButtonText}>Save Location</span>
-                      </div>
-                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveCustomAddress()}>
-                        <span style={styles.popupButtonText}>Save Address only</span>
-                      </div>
-                    </React.Fragment>
-                  }
-                  {!activeEventLocationObj &&
-                    <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.saveCustomLocation()}>
-                      <span style={styles.popupButtonText}>Save Location</span>
-                    </div>
-                  }
-                </div>
-              }
-              {!this.props.activeEventId &&
-                <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.customMarkerAddEvent()}>
-                  <span style={styles.popupButtonText}>Add to</span>
-                  <select className={'customMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
-                    {this.props.daysArr.map((day, i) => {
-                      return (
-                        <option key={i} value={day}>Day {day}</option>
-                      )
-                    })}
-                  </select>
-                </div>
-              }
-            </div>
-          </Popup>
+          <PopupTemplate longitude={this.state.customMarker.longitude} latitude={this.state.customMarker.latitude} markerType='custom' locationObj={this.state.customMarker} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
         }
 
         {/* PLACE SEARCH BAR */}
@@ -856,48 +809,7 @@ class MapboxMap extends Component {
 
         {/* SEARCH MARKER POPUP */}
         {this.state.searchMarker && this.props.mapbox.popupToShow === 'search' &&
-          <Popup anchor='bottom' coordinates={[this.state.searchMarker.longitude, this.state.searchMarker.latitude]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
-            <div style={styles.popupContainer}>
-              <i className='material-icons' style={styles.popupCloseIcon} onClick={() => this.closePopup()}>clear</i>
-              <div style={styles.popupContentContainer}>
-                <h6 style={styles.popupContentHeader}>Name</h6>
-                <h6 style={styles.popupContentText}>{this.state.searchMarker.name}</h6>
-                <h6 style={styles.popupContentHeader}>Address</h6>
-                <h6 style={styles.popupContentText}>{this.state.searchMarker.address}</h6>
-              </div>
-              {this.props.activeEventId &&
-                <div style={{display: 'flex'}}>
-                  {activeEventLocationObj &&
-                    <React.Fragment>
-                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveSearchLocation()}>
-                        <span style={styles.popupButtonText}>Save Location</span>
-                      </div>
-                      <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.saveSearchAddress()}>
-                        <span style={styles.popupButtonText}>Save Address only</span>
-                      </div>
-                    </React.Fragment>
-                  }
-                  {!activeEventLocationObj &&
-                    <div style={styles.popupDoubleButtonWidthContainer}>
-                      <span style={styles.popupButtonText}>Save Location</span>
-                    </div>
-                  }
-                </div>
-              }
-              {!this.props.activeEventId &&
-                <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.searchMarkerAddEvent()}>
-                  <span style={styles.popupButtonText}>Add to</span>
-                  <select className={'searchMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
-                    {this.props.daysArr.map((day, i) => {
-                      return (
-                        <option key={i} value={day}>Day {day}</option>
-                      )
-                    })}
-                  </select>
-                </div>
-              }
-            </div>
-          </Popup>
+          <PopupTemplate longitude={this.state.searchMarker.longitude} latitude={this.state.searchMarker.latitude} markerType='search' locationObj={this.state.searchMarker} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
         }
 
         {/* DAYS FILTER */}
@@ -937,19 +849,8 @@ class MapboxMap extends Component {
         })}
 
         {activeEvent && activeEventHasCoordinates && this.props.mapbox.popupToShow === 'event' &&
-          <Popup anchor='bottom' coordinates={[activeEvent.longitudeDisplay, activeEvent.latitudeDisplay]} offset={{'bottom': [0, -40]}} style={{zIndex: 5}}>
-            <div style={styles.popupContainer}>
-              <i className='material-icons' style={styles.popupCloseIcon} onClick={() => this.closePopup()}>clear</i>
-              <div style={styles.popupContentContainer}>
-                <h6 style={styles.popupContentHeader}>Name</h6>
-                <h6 style={styles.popupContentText}>{activeEvent.locationObj.name}</h6>
-                <h6 style={styles.popupContentHeader}>Address</h6>
-                <h6 style={styles.popupContentText}>{activeEvent.locationObj.address}</h6>
-              </div>
-            </div>
-          </Popup>
+          <PopupTemplate longitude={activeEvent.longitudeDisplay} latitude={activeEvent.latitudeDisplay} markerType='event' locationObj={activeEventLocationObj} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
         }
-
         //BUCKET MARKERS + BUCKET FOCUSED MARKER
       </Map>
     )
