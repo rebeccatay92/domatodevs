@@ -79,7 +79,7 @@ class PlannerSideBarInfoField extends Component {
     const eventCurrency = events.filter(event => event.id === id)[0].currency
     return (
       <div style={{cursor: 'text', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)', minHeight: '35px', display: 'flex', alignItems: 'center'}} className={`sidebar-${property}`}>
-        {property === 'cost' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} onFocus={() => this.props.changeActiveField(property)} style={{backgroundColor: 'transparent', border: 'none'}}>
+        {property === 'cost' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency || ''} onFocus={() => this.props.changeActiveField(property)} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}

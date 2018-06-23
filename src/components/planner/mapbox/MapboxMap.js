@@ -169,9 +169,18 @@ class MapboxMap extends Component {
 
   // synx state with map's final zoom and center
   onMapMoveEnd (map, evt) {
+    let longitude = map.getCenter().lng
+    let latitude = map.getCenter().lat
+
+    // if (longitude < -180) {
+    //   longitude += 180
+    // } else if (longitude > 180) {
+    //   longitude -= 180
+    // }
+
     this.setState({
       zoom: [map.getZoom()],
-      center: [map.getCenter().lng, map.getCenter().lat]
+      center: [longitude, latitude]
     }, () => {
       // console.log('updated state after move-end', this.state)
     })
@@ -513,8 +522,13 @@ class MapboxMap extends Component {
     // toggle activeEventId
     if (this.props.activeEventId === id) {
       this.props.updateActiveEvent('')
-      this.props.setRightBarFocusedTab('')
       this.props.setPopupToShow('')
+      // if no focused event marker, but right bar is open, revert to bucket. if right bar is close, just close.
+      if (this.props.plannerView.rightBar === '') {
+        this.props.setRightBarFocusedTab('')
+      } else if (this.props.plannerView.rightBar === 'event') {
+        this.props.setRightBarFocusedTab('bucket')
+      }
     } else {
       this.props.updateActiveEvent(id)
       this.props.setPopupToShow('event')
@@ -550,8 +564,19 @@ class MapboxMap extends Component {
   onBucketMarkerClick (id) {
     if (this.props.bucketList.focusedBucketId === id) {
       this.props.setFocusedBucketId('')
+      this.props.setPopupToShow('')
     } else {
       this.props.setFocusedBucketId(id)
+      this.props.setPopupToShow('bucket')
+    }
+  }
+
+  onSingleBucketMarkerClick () {
+    // only can toggle popup. will not unfocus
+    if (this.props.mapbox.popupToShow === 'bucket') {
+      this.props.setPopupToShow('')
+    } else {
+      this.props.setPopupToShow('bucket')
     }
   }
 
@@ -648,6 +673,76 @@ class MapboxMap extends Component {
     let nameContentState = ContentState.createFromText(currentLocationName)
     this.props.updateEvent(EventId, 'locationName', nameContentState, false)
     this.props.updateEvent(EventId, 'locationObj', {...this.state.customMarker, name: currentLocationName, verified: false}, false)
+  }
+
+  saveBucketLocation () {
+    let EventId = this.props.activeEventId
+
+    let bucketMarker = this.props.bucketList.buckets.find(e => {
+      return e.id === this.props.bucketList.focusedBucketId
+    })
+    let { verified, name, address, latitude, longitude, country } = bucketMarker.location
+
+    // console.log('destructure', verified, name, address, country)
+    this.props.updateEventBackend({
+      variables: {
+        id: EventId,
+        locationData: {
+          verified,
+          name,
+          address,
+          latitude,
+          longitude,
+          countryCode: country.code
+        }
+      }
+    })
+
+    // unfocus bucket so the marker wont cover the event marker.
+    this.props.setFocusedBucketId('')
+    this.props.setPopupToShow('event')
+    let nameContentState = ContentState.createFromText(bucketMarker.location.name)
+    this.props.updateEvent(EventId, 'locationName', nameContentState, false)
+    this.props.updateEvent(EventId, 'locationObj', bucketMarker.location, false)
+
+    this.props.setRightBarFocusedTab('event')
+  }
+
+  saveBucketAddress () {
+    let EventId = this.props.activeEventId
+
+    let currentEvent = this.props.events.events.find(e => {
+      return e.id === EventId
+    })
+    let currentLocationName = currentEvent.locationObj.name
+
+    let bucketMarker = this.props.bucketList.buckets.find(e => {
+      return e.id === this.props.bucketList.focusedBucketId
+    })
+    let { address, latitude, longitude, country } = bucketMarker.location
+
+    this.props.updateEventBackend({
+      variables: {
+        id: EventId,
+        locationData: {
+          verified: false,
+          name: currentLocationName,
+          address,
+          latitude,
+          longitude,
+          countryCode: country.code
+        }
+      }
+    })
+
+    this.props.setFocusedBucketId('')
+    this.props.setPopupToShow('event')
+
+    let nameContentState = ContentState.createFromText(currentLocationName)
+    this.props.updateEvent(EventId, 'locationName', nameContentState, false)
+    this.props.updateEvent(EventId, 'locationObj', {verified: false, name: currentLocationName, address, latitude, longitude, countryCode: country.code}, false)
+
+    this.props.setRightBarFocusedTab('event')
   }
 
   togglePlotCustom () {
@@ -804,7 +899,51 @@ class MapboxMap extends Component {
       })
   }
 
+  bucketMarkerAddEvent () {
+    let bucketMarkerDayDropdown = document.querySelector('.bucketMarkerDayDropdown')
+    let startDay = parseInt(bucketMarkerDayDropdown.value)
+
+    let bucketMarker = this.props.bucketList.buckets.find(e => {
+      return e.id === this.props.bucketList.focusedBucketId
+    })
+    let { verified, name, address, latitude, longitude, country } = bucketMarker.location
+
+    let loadSequence = createNewEventSequence(this.props.events.events, startDay)
+
+    this.props.createEvent({
+      variables: {
+        ItineraryId: this.props.itineraryId,
+        locationData: {
+          verified,
+          name,
+          address,
+          latitude,
+          longitude,
+          countryCode: country.code
+        },
+        startDay,
+        loadSequence
+      }
+    })
+      .then(response => {
+        let newEventId = response.data.createEvent.id
+        return Promise.all([this.props.data.refetch(), newEventId])
+      })
+      .then(promiseArr => {
+        let newEventId = promiseArr[1]
+
+        this.props.ensureDayIsChecked(startDay)
+        this.props.setFocusedBucketId('')
+        this.props.updateActiveEvent(newEventId)
+        this.props.setPopupToShow('event')
+        this.props.setRightBarFocusedTab('event')
+      })
+  }
+
   clickBucketCheckbox () {
+    if (!this.props.mapbox.bucketCheckbox) {
+      this.props.setRightBarFocusedTab('bucket')
+    }
     this.props.clickBucketCheckbox()
   }
 
@@ -823,14 +962,6 @@ class MapboxMap extends Component {
     }
     // console.log('activeEvent', activeEvent)
     // console.log('activeEventLocationObj', activeEventLocationObj)
-    // console.log('bucketList', this.props.bucketList)
-    // let singleBucketMarker
-    // if (!this.props.mapbox.bucketCheckbox && this.props.bucketList.focusedBucketId) {
-    //   singleBucketMarker = this.props.bucketList.buckets.find(e => {
-    //     return e.id === this.props.bucketList.focusedBucketId
-    //   })
-    // }
-
     let activeBucketMarker = this.props.bucketList.buckets.find(e => {
       return e.id === this.props.bucketList.focusedBucketId
     })
@@ -862,7 +993,7 @@ class MapboxMap extends Component {
         }
 
         {this.state.customMarker && this.props.mapbox.popupToShow === 'custom' &&
-          <PopupTemplate longitude={this.state.customMarker.longitude} latitude={this.state.customMarker.latitude} markerType='custom' locationObj={this.state.customMarker} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
+          <PopupTemplate longitude={this.state.customMarker.longitude} latitude={this.state.customMarker.latitude} markerType='custom' locationObj={this.state.customMarker} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} saveBucketLocation={() => this.saveBucketLocation()} saveBucketAddress={() => this.saveBucketAddress()} bucketMarkerAddEvent={() => this.bucketMarkerAddEvent()} />
         }
 
         {/* PLACE SEARCH BAR */}
@@ -884,7 +1015,7 @@ class MapboxMap extends Component {
 
         {/* SEARCH MARKER POPUP */}
         {this.state.searchMarker && this.props.mapbox.popupToShow === 'search' &&
-          <PopupTemplate longitude={this.state.searchMarker.longitude} latitude={this.state.searchMarker.latitude} markerType='search' locationObj={this.state.searchMarker} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
+          <PopupTemplate longitude={this.state.searchMarker.longitude} latitude={this.state.searchMarker.latitude} markerType='search' locationObj={this.state.searchMarker} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} saveBucketLocation={() => this.saveBucketLocation()} saveBucketAddress={() => this.saveBucketAddress()} bucketMarkerAddEvent={() => this.bucketMarkerAddEvent()} />
         }
 
         {/* DAYS FILTER */}
@@ -924,7 +1055,7 @@ class MapboxMap extends Component {
         })}
 
         {activeEvent && activeEventHasCoordinates && this.props.mapbox.popupToShow === 'event' &&
-          <PopupTemplate longitude={activeEvent.longitudeDisplay} latitude={activeEvent.latitudeDisplay} markerType='event' locationObj={activeEventLocationObj} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
+          <PopupTemplate longitude={activeEvent.longitudeDisplay} latitude={activeEvent.latitudeDisplay} markerType='event' locationObj={activeEventLocationObj} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} saveBucketLocation={() => this.saveBucketLocation()} saveBucketAddress={() => this.saveBucketAddress()} bucketMarkerAddEvent={() => this.bucketMarkerAddEvent()} />
         }
 
         //BUCKET MARKERS + BUCKET FOCUSED MARKER
@@ -939,9 +1070,13 @@ class MapboxMap extends Component {
         }
 
         {!this.props.mapbox.bucketCheckbox && this.props.bucketList.focusedBucketId &&
-          <Marker coordinates={[activeBucketMarker.location.longitude, activeBucketMarker.location.latitude]} anchor='bottom' style={styles.markerContainer} >
+          <Marker coordinates={[activeBucketMarker.location.longitude, activeBucketMarker.location.latitude]} anchor='bottom' style={styles.markerContainer} onClick={() => this.onSingleBucketMarkerClick()}>
             <i className='material-icons' style={{color: 'purple', fontSize: '35px'}}>place</i>
           </Marker>
+        }
+
+        {activeBucketMarker && this.props.mapbox.popupToShow === 'bucket' &&
+          <PopupTemplate longitude={activeBucketMarker.location.longitude} latitude={activeBucketMarker.location.latitude} markerType='bucket' locationObj={activeBucketMarker.location} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} saveBucketLocation={() => this.saveBucketLocation()} saveBucketAddress={() => this.saveBucketAddress()} bucketMarkerAddEvent={() => this.bucketMarkerAddEvent()} />
         }
       </Map>
     )

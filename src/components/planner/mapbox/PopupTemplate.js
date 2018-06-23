@@ -111,6 +111,45 @@ class PopupTemplate extends Component {
           </div>
         )
       }
+    } else if (markerType === 'bucket') {
+      if (activeEventId) {
+        if (activeEventLocationObj) {
+          // 2 buttons
+          popupActionButtonsDiv = (
+            <div style={{display: 'flex'}}>
+              <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.props.saveBucketLocation()}>
+                <span style={styles.popupButtonText}>Save Location</span>
+              </div>
+              <div style={styles.popupSingleButtonWidthContainer} onClick={() => this.props.saveBucketAddress()}>
+                <span style={styles.popupButtonText}>Save Address only</span>
+              </div>
+            </div>
+          )
+        } else {
+          // 1 button
+          popupActionButtonsDiv = (
+            <div style={{display: 'flex'}}>
+              <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.props.saveBucketLocation()}>
+                <span style={styles.popupButtonText}>Save Location</span>
+              </div>
+            </div>
+          )
+        }
+      } else if (!activeEventId) {
+        // add to day button
+        popupActionButtonsDiv = (
+          <div style={styles.popupDoubleButtonWidthContainer} onClick={() => this.props.bucketMarkerAddEvent()}>
+            <span style={styles.popupButtonText}>Add to</span>
+            <select className={'bucketMarkerDayDropdown'} onClick={e => e.stopPropagation()}>
+              {this.props.daysArr.map((day, i) => {
+                return (
+                  <option key={i} value={day}>Day {day}</option>
+                )
+              })}
+            </select>
+          </div>
+        )
+      }
     }
 
     return (
