@@ -9,6 +9,7 @@ import { clickDayCheckbox, ensureDayIsChecked, setPopupToShow, clickBucketCheckb
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../../actions/planner/plannerViewActions'
 import { updateEvent } from '../../../actions/planner/eventsActions'
+import { setFocusedBucketId } from '../../../actions/planner/bucketListActions'
 
 import { graphql, compose } from 'react-apollo'
 import { updateEventBackend, createEvent } from '../../../apollo/event'
@@ -49,7 +50,8 @@ class MapboxMap extends Component {
       eventMarkersToDisplay: [],
       searchMarker: null, // obj holding locationData
       plottingCustomMarker: false,
-      customMarker: null
+      customMarker: null,
+      bucketMarkersToDisplay: []
     }
     this.queryGooglePlacesAutoSuggest = _.debounce(this.queryGooglePlacesAutoSuggest, 500)
   }
@@ -226,6 +228,33 @@ class MapboxMap extends Component {
     this.setState({
       eventMarkersToDisplay: eventsWithOffsetGeometry
     })
+
+    // filter out which buckets to display
+    if (this.props.bucketList) {
+      let filteredByCountry
+      let finalFilteredArr
+
+      if (this.props.bucketList.selectedCountryId) {
+        filteredByCountry = this.props.bucketList.buckets.filter(e => {
+          return e.location.CountryId === this.props.bucketList.selectedCountryId
+        })
+      } else {
+        filteredByCountry = this.props.bucketList.buckets
+      }
+
+      if (this.props.bucketList.selectedBucketCategory) {
+        finalFilteredArr = filteredByCountry.filter(e => {
+          return e.bucketCategory === this.props.bucketList.selectedBucketCategory
+        })
+      } else {
+        finalFilteredArr = filteredByCountry
+      }
+
+      // bucketMarkers are the bucket obj with a nested location obj.
+      this.setState({
+        bucketMarkersToDisplay: finalFilteredArr
+      })
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -364,6 +393,33 @@ class MapboxMap extends Component {
         console.log('eventMarkersToDisplay with latDisplay, lngDisplay done', this.state.eventMarkersToDisplay)
       })
     }
+
+    // change bucket markers arr
+    if (nextProps.bucketList.selectedBucketCategory !== this.props.bucketList.selectedBucketCategory || nextProps.bucketList.selectedCountryId !== this.props.bucketList.selectedCountryId) {
+      let filteredByCountry
+      let finalFilteredArr
+
+      if (nextProps.bucketList.selectedCountryId) {
+        filteredByCountry = nextProps.bucketList.buckets.filter(e => {
+          return e.location.CountryId === nextProps.bucketList.selectedCountryId
+        })
+      } else {
+        filteredByCountry = nextProps.bucketList.buckets
+      }
+
+      if (nextProps.bucketList.selectedBucketCategory) {
+        finalFilteredArr = filteredByCountry.filter(e => {
+          return e.bucketCategory === this.props.bucketList.selectedBucketCategory
+        })
+      } else {
+        finalFilteredArr = filteredByCountry
+      }
+
+      // bucketMarkers are the bucket obj with a nested location obj.
+      this.setState({
+        bucketMarkersToDisplay: finalFilteredArr
+      })
+    }
   }
 
   clickDayCheckbox (day) {
@@ -488,6 +544,14 @@ class MapboxMap extends Component {
       this.setState({center: newCenter})
     } else if (this.props.mapbox.popupToShow === 'custom') {
       this.props.setPopupToShow('')
+    }
+  }
+
+  onBucketMarkerClick (id) {
+    if (this.props.bucketList.focusedBucketId === id) {
+      this.props.setFocusedBucketId('')
+    } else {
+      this.props.setFocusedBucketId(id)
     }
   }
 
@@ -760,6 +824,17 @@ class MapboxMap extends Component {
     // console.log('activeEvent', activeEvent)
     // console.log('activeEventLocationObj', activeEventLocationObj)
     // console.log('bucketList', this.props.bucketList)
+    // let singleBucketMarker
+    // if (!this.props.mapbox.bucketCheckbox && this.props.bucketList.focusedBucketId) {
+    //   singleBucketMarker = this.props.bucketList.buckets.find(e => {
+    //     return e.id === this.props.bucketList.focusedBucketId
+    //   })
+    // }
+
+    let activeBucketMarker = this.props.bucketList.buckets.find(e => {
+      return e.id === this.props.bucketList.focusedBucketId
+    })
+
     return (
       <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
         <ZoomControl position='top-left' />
@@ -851,7 +926,23 @@ class MapboxMap extends Component {
         {activeEvent && activeEventHasCoordinates && this.props.mapbox.popupToShow === 'event' &&
           <PopupTemplate longitude={activeEvent.longitudeDisplay} latitude={activeEvent.latitudeDisplay} markerType='event' locationObj={activeEventLocationObj} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} />
         }
+
         //BUCKET MARKERS + BUCKET FOCUSED MARKER
+        {this.props.mapbox.bucketCheckbox && this.state.bucketMarkersToDisplay.map((bucket, i) => {
+          let isActiveBucket = this.props.bucketList.focusedBucketId === bucket.id
+          return (
+            <Marker key={i} coordinates={[bucket.location.longitude, bucket.location.latitude]} anchor='bottom' style={{...styles.markerContainer, zIndex: isActiveBucket ? 4 : 3}} onClick={() => this.onBucketMarkerClick(bucket.id)}>
+              <i className='material-icons' style={{color: isActiveBucket ? 'purple' : 'purple', fontSize: '35px'}}>place</i>
+            </Marker>
+          )
+        })
+        }
+
+        {!this.props.mapbox.bucketCheckbox && this.props.bucketList.focusedBucketId &&
+          <Marker coordinates={[activeBucketMarker.location.longitude, activeBucketMarker.location.latitude]} anchor='bottom' style={styles.markerContainer} >
+            <i className='material-icons' style={{color: 'purple', fontSize: '35px'}}>place</i>
+          </Marker>
+        }
       </Map>
     )
   }
@@ -889,6 +980,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateEvent: (id, property, value, fromSidebar) => {
       dispatch(updateEvent(id, property, value, fromSidebar))
+    },
+    setFocusedBucketId: (id) => {
+      dispatch(setFocusedBucketId(id))
     }
   }
 }
