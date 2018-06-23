@@ -134,16 +134,17 @@ class EventRowInfoCell extends Component {
     }
   }
 
-  handleKeyDown (e, isActive, editorFocus) {
+  handleKeyDown (e, isActive) {
     const { column, id } = this.props
     const property = eventPropertyNames[column]
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
     //   this.handleArrowKeyDown(e.keyCode)
     // }
 
-    if (e.keyCode === 13 && !editorFocus) {
+    if (e.keyCode === 13 && !this.state.editorFocus) {
       e.preventDefault()
-      this.setState({cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
+      console.log('wrong enter');
+      this.setState({editorFocus: true, cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
     }
 
     if (e.key === 'Escape') {
@@ -209,6 +210,8 @@ class EventRowInfoCell extends Component {
 
   handleKeyCommand (command) {
     if (command === 'enterPressed') {
+      this.editor.blur()
+      this.cell.focus()
       return 'handled'
     }
     return 'not-handled'
@@ -224,13 +227,13 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div tabIndex='1' ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onFocus={(e) => this.handleOnFocus(e)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
-        {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} style={{backgroundColor: 'transparent', border: 'none'}}>
+      <div tabIndex='1' ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive)} onFocus={(e) => this.handleOnFocus(e)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
+        {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency || ''} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}
         </select>}
-        <Editor readOnly={!isActive || !this.state.cellClickedTwice} editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.handleOnBlur()} onFocus={() => this.setState({editorFocus: true})} keyBindingFn={keyBindingFn} handleKeyCommand={this.handleKeyCommand} />
+        <Editor readOnly={!isActive || !this.state.cellClickedTwice} editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.handleOnBlur()} keyBindingFn={keyBindingFn} handleKeyCommand={this.handleKeyCommand} />
       </div>
     )
   }
