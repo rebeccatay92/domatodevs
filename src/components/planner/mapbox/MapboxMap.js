@@ -274,6 +274,8 @@ class MapboxMap extends Component {
             ...this.state.containerStyle,
             width: 'calc(100vw - 376px - 344px)'
           }
+        }, () => {
+          this.map.resize()
         })
       } else {
         // if rightBar is ''
@@ -282,86 +284,150 @@ class MapboxMap extends Component {
             ...this.state.containerStyle,
             width: 'calc(100vw - 376px)'
           }
+        }, () => {
+          this.map.resize()
         })
       }
     }
 
     // if activeEventId changed (left bar clicked, or event marker clicked)
-    // NEED TO REFACTOR AND INCLUDE BUCKET INTERACTIONS
-    if (nextProps.activeEventId !== this.props.activeEventId) {
-      if (nextProps.activeEventId) {
-        // console.log('next active event', nextProps.activeEventId)
-        let thisEvent = nextProps.events.events.find(e => {
-          return e.id === nextProps.activeEventId
+    if (nextProps.activeEventId !== this.props.activeEventId && nextProps.activeEventId) {
+      let currentBounds = this.map.getBounds()
+      console.log('currentBounds', currentBounds)
+      let thisEvent = nextProps.events.events.find(e => {
+        return e.id === nextProps.activeEventId
+      })
+      let eventMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+
+      if (thisEvent.longitudeDisplay && thisEvent.latitudeDisplay) {
+        let activeBucketMarker = nextProps.bucketList.buckets.find(e => {
+          return e.id === nextProps.bucketList.focusedBucketId
         })
-        if (thisEvent.longitudeDisplay && thisEvent.latitudeDisplay) {
-          // console.log('longitude', thisEvent.longitudeDisplay)
-          // check if marker is already within the bounds
-          let currentBounds = this.map.getBounds()
-          // console.log('currentBounds', currentBounds)
-
-          let eventMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-
-          if (this.state.searchMarker && !this.state.customMarker) {
-            // search marker exists
-            let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
-
-            if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds) {
-              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-              this.setState({center: newCenter})
-            } else {
-              // if either is out of bounds, setbounds to include both markers
-              // console.log('mapboxgl', mapboxgl)
-              let bounds = new mapboxgl.LngLatBounds()
-              bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
-              bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
-              console.log('bounds', bounds)
-              this.map.fitBounds(bounds, {padding: 200})
-            }
-          } else if (!this.state.searchMarker && this.state.customMarker) {
-            let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
-
-            if (eventMarkerIsWithinBounds && customMarkerIsWithinBounds) {
-              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-              this.setState({center: newCenter})
-            } else {
-              // if either is out of bounds, setbounds to include both markers
-              // console.log('mapboxgl', mapboxgl)
-              let bounds = new mapboxgl.LngLatBounds()
-              bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
-              bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
-              console.log('bounds', bounds)
-              this.map.fitBounds(bounds, {padding: 200})
-            }
-          } else if (this.state.searchMarker && this.state.customMarker) {
-            let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
-            let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
-
-            if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds && customMarkerIsWithinBounds) {
-              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-              this.setState({center: newCenter})
-            } else {
-              // fit all 3 markers
-              let bounds = new mapboxgl.LngLatBounds()
-              bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
-              bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
-              bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
-              console.log('bounds', bounds)
-              this.map.fitBounds(bounds, {padding: 200})
-            }
+        let activeBucketMarkerLocationObj = null
+        if (activeBucketMarker) {
+          activeBucketMarkerLocationObj = activeBucketMarker.location
+        }
+        if (!this.state.searchMarker && !this.state.customMarker && !activeBucketMarker) {
+          // if no other markers
+          if (eventMarkerIsWithinBounds) {
+            let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+            this.setState({center: newCenter})
           } else {
-            if (eventMarkerIsWithinBounds) {
-              console.log('only event marker, within bounds')
-              let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-              this.setState({center: newCenter})
-            } else {
-              console.log('only event marker. not within bounds')
-              this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
+            this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
+          }
+        } else {
+          // for each present marker, check if all are within bounds
+          // if all are within bounds, fitPopup,
+          // else fitBounds for all present markers + event marker
+          // three markers to check. search, custom, bucket.location
+          let otherMarkers = [this.state.searchMarker, this.state.customMarker, activeBucketMarkerLocationObj]
+
+          let allOthersWithinBounds = true
+          otherMarkers.forEach(marker => {
+            if (marker) {
+              let markerIsWithinBounds = this.checkIfWithinBounds(currentBounds, marker.latitude, marker.longitude)
+              if (!markerIsWithinBounds) {
+                allOthersWithinBounds = false
+              }
             }
+          })
+
+          if (eventMarkerIsWithinBounds && allOthersWithinBounds) {
+            // if all present markers are within bounds, fitPopup for event popup
+            let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+            this.setState({center: newCenter})
+          } else {
+            // fitBounds around all present markers
+            let newBounds = new mapboxgl.LngLatBounds()
+            newBounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+
+            otherMarkers.forEach(marker => {
+              if (marker) {
+                newBounds.extend([marker.longitude, marker.latitude])
+              }
+            })
+
+            console.log('finalBounds', newBounds)
+            this.map.fitBounds(newBounds, {padding: 200})
           }
         }
       }
     }
+
+    // if (nextProps.activeEventId !== this.props.activeEventId) {
+    //   if (nextProps.activeEventId) {
+    //     // console.log('next active event', nextProps.activeEventId)
+    //     let thisEvent = nextProps.events.events.find(e => {
+    //       return e.id === nextProps.activeEventId
+    //     })
+    //     if (thisEvent.longitudeDisplay && thisEvent.latitudeDisplay) {
+    //       // console.log('longitude', thisEvent.longitudeDisplay)
+    //       // check if marker is already within the bounds
+    //       let currentBounds = this.map.getBounds()
+    //       // console.log('currentBounds', currentBounds)
+    //
+    //       let eventMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+    //
+    //       if (this.state.searchMarker && !this.state.customMarker) {
+    //         // search marker exists
+    //         let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
+    //
+    //         if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds) {
+    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+    //           this.setState({center: newCenter})
+    //         } else {
+    //           // if either is out of bounds, setbounds to include both markers
+    //           // console.log('mapboxgl', mapboxgl)
+    //           let bounds = new mapboxgl.LngLatBounds()
+    //           bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
+    //           bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+    //           console.log('bounds', bounds)
+    //           this.map.fitBounds(bounds, {padding: 200})
+    //         }
+    //       } else if (!this.state.searchMarker && this.state.customMarker) {
+    //         let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
+    //
+    //         if (eventMarkerIsWithinBounds && customMarkerIsWithinBounds) {
+    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+    //           this.setState({center: newCenter})
+    //         } else {
+    //           // if either is out of bounds, setbounds to include both markers
+    //           // console.log('mapboxgl', mapboxgl)
+    //           let bounds = new mapboxgl.LngLatBounds()
+    //           bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
+    //           bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+    //           console.log('bounds', bounds)
+    //           this.map.fitBounds(bounds, {padding: 200})
+    //         }
+    //       } else if (this.state.searchMarker && this.state.customMarker) {
+    //         let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
+    //         let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
+    //
+    //         if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds && customMarkerIsWithinBounds) {
+    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+    //           this.setState({center: newCenter})
+    //         } else {
+    //           // fit all 3 markers
+    //           let bounds = new mapboxgl.LngLatBounds()
+    //           bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
+    //           bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
+    //           bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
+    //           console.log('bounds', bounds)
+    //           this.map.fitBounds(bounds, {padding: 200})
+    //         }
+    //       } else {
+    //         if (eventMarkerIsWithinBounds) {
+    //           console.log('only event marker, within bounds')
+    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
+    //           this.setState({center: newCenter})
+    //         } else {
+    //           console.log('only event marker. not within bounds')
+    //           this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     // if clicking on bucket marker or bucket right bar
     if (nextProps.bucketList.focusedBucketId !== this.props.bucketList.focusedBucketId) {
