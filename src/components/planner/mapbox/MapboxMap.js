@@ -295,16 +295,17 @@ class MapboxMap extends Component {
           return e.id === nextProps.activeEventId
         })
         if (thisEvent.longitudeDisplay && thisEvent.latitudeDisplay) {
-          console.log('longitude', thisEvent.longitudeDisplay)
+          // console.log('longitude', thisEvent.longitudeDisplay)
           // check if marker is already within the bounds
           let currentBounds = this.map.getBounds()
-          console.log('currentBounds', currentBounds)
+          // console.log('currentBounds', currentBounds)
 
-          let eventMarkerIsWithinBounds = (thisEvent.longitudeDisplay >= currentBounds._sw.lng && thisEvent.longitudeDisplay <= currentBounds._ne.lng) && (thisEvent.latitudeDisplay >= currentBounds._sw.lat && thisEvent.latitudeDisplay <= currentBounds._ne.lat)
+          let eventMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
 
           if (this.state.searchMarker && !this.state.customMarker) {
             // search marker exists
-            let searchMarkerIsWithinBounds = (this.state.searchMarker.longitude >= currentBounds._sw.lng && this.state.searchMarker.longitude <= currentBounds._ne.lng) && (this.state.searchMarker.latitude >= currentBounds._sw.lat && this.state.searchMarker.latitude <= currentBounds._ne.lat)
+            let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
+
             if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds) {
               let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
               this.setState({center: newCenter})
@@ -318,7 +319,8 @@ class MapboxMap extends Component {
               this.map.fitBounds(bounds, {padding: 200})
             }
           } else if (!this.state.searchMarker && this.state.customMarker) {
-            let customMarkerIsWithinBounds = (this.state.customMarker.longitude >= currentBounds._sw.lng && this.state.customMarker.longitude <= currentBounds._ne.lng) && (this.state.customMarker.latitude >= currentBounds._sw.lat && this.state.customMarker.latitude <= currentBounds._ne.lat)
+            let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
+
             if (eventMarkerIsWithinBounds && customMarkerIsWithinBounds) {
               let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
               this.setState({center: newCenter})
@@ -332,8 +334,9 @@ class MapboxMap extends Component {
               this.map.fitBounds(bounds, {padding: 200})
             }
           } else if (this.state.searchMarker && this.state.customMarker) {
-            let searchMarkerIsWithinBounds = (this.state.searchMarker.longitude >= currentBounds._sw.lng && this.state.searchMarker.longitude <= currentBounds._ne.lng) && (this.state.searchMarker.latitude >= currentBounds._sw.lat && this.state.searchMarker.latitude <= currentBounds._ne.lat)
-            let customMarkerIsWithinBounds = (this.state.customMarker.longitude >= currentBounds._sw.lng && this.state.customMarker.longitude <= currentBounds._ne.lng) && (this.state.customMarker.latitude >= currentBounds._sw.lat && this.state.customMarker.latitude <= currentBounds._ne.lat)
+            let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
+            let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
+
             if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds && customMarkerIsWithinBounds) {
               let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
               this.setState({center: newCenter})
@@ -348,12 +351,11 @@ class MapboxMap extends Component {
             }
           } else {
             if (eventMarkerIsWithinBounds) {
-              console.log('within bounds')
+              console.log('only event marker, within bounds')
               let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
               this.setState({center: newCenter})
             } else {
               console.log('only event marker. not within bounds')
-              console.log('lnglat', thisEvent.longitudeDisplay, thisEvent.latitudeDisplay)
               this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
             }
           }
@@ -469,6 +471,10 @@ class MapboxMap extends Component {
       this.props.setRightBarFocusedTab('')
     }
     this.props.clickDayCheckbox(day)
+  }
+
+  checkIfWithinBounds (mapBounds, latitude, longitude) {
+    return (longitude >= mapBounds._sw.lng && longitude <= mapBounds._ne.lng) && (latitude >= mapBounds._sw.lat && latitude <= mapBounds._ne.lat)
   }
 
   calculateNewCenterToFitPopup (markerLatitude, markerLongitude) {

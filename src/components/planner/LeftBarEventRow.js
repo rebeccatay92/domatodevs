@@ -15,8 +15,12 @@ class LeftBarEventRow extends Component {
   toggleActiveEvent (id) {
     if (this.props.activeEventId === id) {
       this.props.updateActiveEvent('')
-      this.props.setRightBarFocusedTab('')
       this.props.setPopupToShow('')
+      if (this.props.plannerView.rightBar === '') {
+        this.props.setRightBarFocusedTab('')
+      } else if (this.props.plannerView.rightBar === 'event') {
+        this.props.setRightBarFocusedTab('bucket')
+      }
     } else {
       this.props.updateActiveEvent(id)
       this.props.setPopupToShow('event')
@@ -60,7 +64,8 @@ class LeftBarEventRow extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    activeEventId: state.activeEventId
+    activeEventId: state.activeEventId,
+    plannerView: state.plannerView
   }
 }
 
