@@ -5,6 +5,7 @@ import { getUserBucketList } from '../../../apollo/bucket'
 
 import { connect } from 'react-redux'
 import { initializeBucketList, selectCountryFilter, selectCategoryFilter, setFocusedBucketId } from '../../../actions/planner/bucketListActions'
+import { setPopupToShow } from '../../../actions/planner/mapboxActions'
 
 import Radium from 'radium'
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
@@ -43,8 +44,10 @@ class BucketRightBar extends Component {
     if (this.props.plannerView.mapbox) {
       if (this.props.bucketList.focusedBucketId === id) {
         this.props.setFocusedBucketId('')
+        this.props.setPopupToShow('')
       } else {
         this.props.setFocusedBucketId(id)
+        this.props.setPopupToShow('bucket')
       }
     }
   }
@@ -160,6 +163,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setFocusedBucketId: (id) => {
       dispatch(setFocusedBucketId(id))
+    },
+    setPopupToShow: (name) => {
+      dispatch(setPopupToShow(name))
     }
   }
 }

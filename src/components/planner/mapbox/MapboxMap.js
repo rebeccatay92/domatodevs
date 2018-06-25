@@ -287,6 +287,7 @@ class MapboxMap extends Component {
     }
 
     // if activeEventId changed (left bar clicked, or event marker clicked)
+    // NEED TO REFACTOR AND INCLUDE BUCKET INTERACTIONS
     if (nextProps.activeEventId !== this.props.activeEventId) {
       if (nextProps.activeEventId) {
         // console.log('next active event', nextProps.activeEventId)
@@ -351,9 +352,34 @@ class MapboxMap extends Component {
               let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
               this.setState({center: newCenter})
             } else {
+              console.log('only event marker. not within bounds')
+              console.log('lnglat', thisEvent.longitudeDisplay, thisEvent.latitudeDisplay)
               this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
             }
           }
+        }
+      }
+    }
+
+    // if clicking on bucket marker or bucket right bar
+    if (nextProps.bucketList.focusedBucketId !== this.props.bucketList.focusedBucketId) {
+      if (nextProps.bucketList.focusedBucketId) {
+        // check if within bounds
+        // if yes fitPopup, if no center?
+        let activeBucketMarker = nextProps.bucketList.buckets.find(e => {
+          return e.id === nextProps.bucketList.focusedBucketId
+        })
+        let currentBounds = this.map.getBounds()
+        let bucketMarkerIsWithinBounds = (activeBucketMarker.location.longitude >= currentBounds._sw.lng && activeBucketMarker.location.longitude <= currentBounds._ne.lng) && (activeBucketMarker.location.latitude >= currentBounds._sw.lat && activeBucketMarker.location.latitude <= currentBounds._ne.lat)
+
+        if (bucketMarkerIsWithinBounds) {
+          // calculate fitPopup
+          let newCenter = this.calculateNewCenterToFitPopup(activeBucketMarker.location.latitude, activeBucketMarker.location.longitude)
+          this.setState({center: newCenter})
+        } else {
+          this.setState({
+            center: [activeBucketMarker.location.longitude, activeBucketMarker.location.latitude]
+          })
         }
       }
     }
