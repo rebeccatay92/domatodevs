@@ -9,31 +9,34 @@ export const findPost = gql`
         id
         title
       }
-      ParentPostId
       LocationId
       location {
         id
+        verified
         name
+        address
+        latitude
+        longitude
+        country {
+          id
+          name
+          code
+        }
       }
       loadSequence
       title
-      description
       textContent
-      contentOnly
       eventType
-      start
+      bucketCategory
       startDay
-      endDay
-      childPosts {
-        id
-        title
-      }
+      startTime
+      endTime
       media {
         id
         PostId
+        MediumId
         loadSequence
         caption
-        MediumId
         type
         AlbumId
         objectName
@@ -41,6 +44,7 @@ export const findPost = gql`
         youtubeUrl
       }
       hashtags {
+        id
         name
       }
     }
@@ -50,48 +54,48 @@ export const findPost = gql`
 export const createPost = gql`
   mutation createPost(
     $BlogId: ID!,
-    $ParentPostId: ID,
     $loadSequence: Int!,
     $title: String
   ) {
     createPost(
       BlogId: $BlogId,
-      ParentPostId: $ParentPostId,
       loadSequence: $loadSequence,
       title: $title
     ) {
       id
       loadSequence
-      contentOnly
       textContent
       title
-      description
       eventType
-      start
+      bucketCategory
       startDay
-      endDay
+      startTime
+      endTime
       BlogId
       blog {
         id
         title
       }
-      ParentPostId
       LocationId
       location {
         id
         name
-      }
-      childPosts {
-        id
-        title
+        address
+        verified
+        latitude
+        longitude
       }
       media {
         id
         AlbumId
+        type
         objectName
         imageUrl
         youtubeUrl
-        type
+        MediumId
+        PostId
+        loadSequence
+        caption
       }
     }
   }
@@ -100,18 +104,14 @@ export const createPost = gql`
 export const updatePost = gql`
   mutation updatePost(
     $id: ID!,
-    $ParentPostId: ID,
-    $googlePlaceData: googlePlaceData,
+    $locationData: locationDataInput,
     $LocationId: ID,
     $loadSequence: Int,
-    $contentOnly: Boolean,
     $title: String,
     $textContent: String,
-    $description: String,
     $eventType: String,
-    $start: Boolean,
+    $bucketCategory: String,
     $startDay: Int,
-    $endDay: Int,
     $startTime: Int,
     $endTime: Int,
     $hashtags: [String],
@@ -119,18 +119,14 @@ export const updatePost = gql`
   ) {
     updatePost(
       id: $id,
-      ParentPostId: $ParentPostId,
-      googlePlaceData: $googlePlaceData,
+      locationData: $locationData,
       LocationId: $LocationId,
       loadSequence: $loadSequence,
-      contentOnly: $contentOnly,
       title: $title,
       textContent: $textContent,
-      description: $description,
       eventType: $eventType,
-      start: $start,
+      bucketCategory: $bucketCategory,
       startDay: $startDay,
-      endDay: $endDay,
       startTime: $startTime,
       endTime: $endTime,
       hashtags: $hashtags,
@@ -141,6 +137,7 @@ export const updatePost = gql`
   }
 `
 
+// IS UPDATEMULTIPLE STILL NEEDED IF NO PARENT-CHILD POSTS?
 export const updateMultiplePosts = gql`
   mutation updateMultiplePosts(
     $input: [updateMultiplePostsInput]

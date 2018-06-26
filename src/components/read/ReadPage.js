@@ -16,12 +16,12 @@ class ReadPage extends Component {
     if (this.props.data.loading) {
       return <span>Loading...</span>
     }
-    console.log(this.props.data)
+    console.log('findBlog', this.props.data.findBlog)
     return (
       <div style={readPageStyle}>
-        <PostsList pages={this.props.pages} />
+        {/* <PostsList pages={this.props.pages} />
         <PostMediaContent pages={this.props.pages} blogMedia={this.props.data.findBlog.media} />
-        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.data.findBlog.textContent)))} blogAuthor={this.props.data.findBlog.user.username} blogHashtags={this.props.data.findBlog.hashtags} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} noOfShares={this.props.data.findBlog.shares} dateCreated={this.props.data.findBlog.createdAt} />
+        <PostTextContent pages={this.props.pages} blogTitle={this.props.data.findBlog.title} blogContent={EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.data.findBlog.textContent)))} blogAuthor={this.props.data.findBlog.user.username} blogHashtags={this.props.data.findBlog.hashtags} noOfLikes={this.props.data.findBlog.likes.length} noOfViews={this.props.data.findBlog.views} noOfShares={this.props.data.findBlog.shares} dateCreated={this.props.data.findBlog.createdAt} /> */}
       </div>
     )
   }

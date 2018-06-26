@@ -3,14 +3,14 @@ import { connect } from 'react-redux'
 
 import { Editor, EditorState, ContentState } from 'draft-js'
 
-import LocationCellDropdown from './LocationCellDropdown'
+import LocationCellDropdown from '../LocationCellDropdown'
 
-import { updateEvent } from '../../actions/planner/eventsActions'
-import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { updateEvent } from '../../../actions/planner/eventsActions'
+import { changeActiveField } from '../../../actions/planner/activeFieldActions'
 
 import { graphql, compose } from 'react-apollo'
-import { updateEventBackend } from '../../apollo/event'
-import { queryItinerary } from '../../apollo/itinerary'
+import { updateEventBackend } from '../../../apollo/event'
+import { queryItinerary } from '../../../apollo/itinerary'
 
 import _ from 'lodash'
 
@@ -222,6 +222,7 @@ class PlannerSideBarLocationNameField extends Component {
       let activeEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.activeEventId
       })
+      if (!activeEvent) return
       let nameContentState = activeEvent.locationName
       this.setState({
         editorState: EditorState.createWithContent(nameContentState)
@@ -374,7 +375,7 @@ class PlannerSideBarLocationNameField extends Component {
           }
         </div>
         {this.state.showDropdown &&
-          <LocationCellDropdown openedIn={'rightbar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
+          <LocationCellDropdown openedIn={'rightBar'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreRightBarLocation`} />
         }
       </div>
     )

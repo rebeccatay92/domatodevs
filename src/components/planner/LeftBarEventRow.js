@@ -15,11 +15,14 @@ class LeftBarEventRow extends Component {
   toggleActiveEvent (id) {
     if (this.props.activeEventId === id) {
       this.props.updateActiveEvent('')
-      this.props.setRightBarFocusedTab('')
       this.props.setPopupToShow('')
+      if (this.props.plannerView.rightBar === '') {
+        this.props.setRightBarFocusedTab('')
+      } else if (this.props.plannerView.rightBar === 'event') {
+        this.props.setRightBarFocusedTab('bucket')
+      }
     } else {
       this.props.updateActiveEvent(id)
-      // this.props.setRightBarFocusedTab('event')
       this.props.setPopupToShow('event')
     }
   }
@@ -41,8 +44,14 @@ class LeftBarEventRow extends Component {
             <i className='material-icons' style={{color: isActiveEvent ? 'red' : 'rgb(67, 132, 150)'}}>not_listed_location</i>
           }
         </div>
-        <div style={{width: '113px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <div style={{width: '113px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
           <input type='time' value={startTime} style={{fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '16px', color: 'rgba(60, 58, 68, 1)', outline: 'none', background: 'inherit'}} disabled />
+          {this.props.event.endTime &&
+            <React.Fragment>
+              <div style={{width: '1px', height: '10px', borderRight: '1px solid rgb(60, 58, 68)'}} />
+              <input type='time' value={this.props.event.endTime} style={{fontFamily: 'Roboto, sans-serif', fontWeight: '300', fontSize: '16px', color: 'rgba(60, 58, 68, 1)', outline: 'none', background: 'inherit'}} disabled />
+            </React.Fragment>
+          }
         </div>
         <div style={{width: '226px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
           <span>{eventType || '---'}</span>
@@ -55,7 +64,8 @@ class LeftBarEventRow extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    activeEventId: state.activeEventId
+    activeEventId: state.activeEventId,
+    plannerView: state.plannerView
   }
 }
 

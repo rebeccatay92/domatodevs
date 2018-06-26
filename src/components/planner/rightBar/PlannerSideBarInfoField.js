@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { Editor, EditorState, ContentState } from 'draft-js'
-import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
+import { allCurrenciesList } from '../../../helpers/countriesToCurrencyList'
 
-import { updateEvent } from '../../actions/planner/eventsActions'
-import { changeActiveField } from '../../actions/planner/activeFieldActions'
+import { updateEvent } from '../../../actions/planner/eventsActions'
+import { changeActiveField } from '../../../actions/planner/activeFieldActions'
 
-import { updateEventBackend } from '../../apollo/event'
+import { updateEventBackend } from '../../../apollo/event'
 
 class PlannerSideBarInfoField extends Component {
   constructor (props) {
@@ -89,7 +89,7 @@ class PlannerSideBarInfoField extends Component {
     const eventCurrency = events.filter(event => event.id === id)[0].currency
     return (
       <div onClick={this.focus} style={{cursor: 'text', fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '16px', color: 'rgb(60, 58, 68)', minHeight: '35px', display: 'flex', alignItems: 'center'}} className={`sidebar-${property}`}>
-        {property === 'cost' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency} onFocus={() => this.props.changeActiveField(property)} style={{backgroundColor: 'transparent', border: 'none'}}>
+        {property === 'cost' && <select onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency || ''} onFocus={() => this.props.changeActiveField(property)} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}

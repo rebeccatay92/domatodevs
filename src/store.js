@@ -1,7 +1,6 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 
 // import { plannerReducer } from './reducers/plannerReducer'
-// import { bucketReducer } from './reducers/bucketReducer'
 import { userReducer } from './reducers/userReducer'
 import { plannerColumnReducer } from './reducers/plannerColumnReducer'
 import { plannerTimelineReducer } from './reducers/plannerTimelineReducer'
@@ -26,6 +25,7 @@ import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
 import { mapboxReducer } from './reducers/planner/mapboxReducer'
 import { timeCellFocusReducer } from './reducers/planner/timeCellFocusReducer'
 import { sortReducer } from './reducers/planner/sortReducer'
+import { bucketListReducer } from './reducers/planner/bucketListReducer'
 
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
@@ -50,7 +50,6 @@ const client = new ApolloClient({
 
 const store = createStore(combineReducers({
   // plannerActivities: plannerReducer,
-  // bucketList: bucketReducer,
   plannerColumns: plannerColumnReducer,
   plannerTimeline: plannerTimelineReducer,
   plannerTimelineDay: plannerTimelineDayReducer,
@@ -73,6 +72,7 @@ const store = createStore(combineReducers({
   mapbox: mapboxReducer,
   timeCellFocus: timeCellFocusReducer,
   sortOptions: sortReducer,
+  bucketList: bucketListReducer,
   apollo: client.reducer()
 }),
 {},

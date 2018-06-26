@@ -7,10 +7,18 @@ export const findBlogHeading = gql`
       BlogId
       loadSequence
       title
+      medium {
+        id
+        type
+        objectName
+        imageUrl
+        youtubeUrl
+      }
     }
   }
 `
 
+// CRUD NEEDS TO BE RELOOKED FOR NEW BLOG STRUCTURE
 export const createBlogHeading = gql`
   mutation createBlogHeading(
     $BlogId: ID!,
@@ -24,6 +32,13 @@ export const createBlogHeading = gql`
       BlogId
       loadSequence
       title
+      medium {
+        id
+        type
+        objectName
+        imageUrl
+        youtubeUrl
+      }
     }
   }
 `
@@ -31,14 +46,25 @@ export const updateBlogHeading = gql`
   mutation updateBlogHeading(
     $id: ID!,
     $loadSequence: Int,
-    $title: String
+    $title: String,
+    $MediumId: ID
   ) {
     updateBlogHeading(
       id: $id,
       loadSequence: $loadSequence,
-      title: $title
+      title: $title,
+      MediumId: $MediumId
     ) {
       id
+      loadSequence
+      title
+      medium {
+        id
+        type
+        objectName
+        imageUrl
+        youtubeUrl
+      }
     }
   }
 `
