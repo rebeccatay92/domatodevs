@@ -72,10 +72,7 @@ class EventRowTimeCell extends Component {
   }
 
   handleKeyDown (e, isActive, editorFocus) {
-<<<<<<< HEAD
-=======
     // console.log('called');
->>>>>>> 64470e194b20d0c2fa4a4575e597da1de64081ab
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
     //   this.handleArrowKeyDown(e.keyCode)
     // }

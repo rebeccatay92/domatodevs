@@ -141,17 +141,11 @@ class EventRowInfoCell extends Component {
     //   this.handleArrowKeyDown(e.keyCode)
     // }
 
-<<<<<<< HEAD
     if (e.keyCode === 13 && !this.state.editorFocus) {
       e.preventDefault()
       console.log('wrong enter');
       this.setState({editorFocus: true, cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
     }
-=======
-    // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
-    //   this.handleArrowKeyDown(e.keyCode)
-    // }
->>>>>>> 64470e194b20d0c2fa4a4575e597da1de64081ab
 
     if (e.key === 'Escape') {
       const editorState = EditorState.createWithContent(this.state.initialValue)
