@@ -10,30 +10,64 @@ class PostTextContent extends Component {
     // const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
     console.log('this.props.page', this.props.page, 'type', this.props.page.type)
     return (
-      <div style={{width: '30vw', height: 'calc(100vh - 52px)', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', overflowY: 'scroll', border: '1px solid red', boxSizing: 'border-box'}}>
+      <div style={{width: '30vw', height: 'calc(100vh - 52px)', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '0 56px', overflowY: 'scroll', border: '1px solid red', boxSizing: 'border-box'}}>
         {this.props.page.type === 'homepage' &&
-          <div>
-            <h4>homepage with blog title, author and date section, likes, shares, views</h4>
-            <span style={{fontFamily: 'Roboto, sans-serf', fontSize: '16px', lineHeight: '24px'}}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras malesuada nisl at dignissim tempor. Aenean malesuada venenatis enim. Ut fringilla massa vitae ligula pulvinar maximus. Vivamus porta vel urna non ornare. Proin in elementum urna, non dapibus leo. Nunc nec pharetra risus. Curabitur ornare ipsum ex, sed molestie orci condimentum a. Nam eu eleifend sapien. Sed diam nisi, aliquet sed libero id, pharetra sodales metus. Aliquam ornare magna neque, malesuada ultrices risus pulvinar sed. Vestibulum nunc nisi, vulputate non neque auctor, vestibulum aliquam odio. Donec nibh nisl, aliquam at vestibulum vitae, mattis dapibus diam. Aliquam tempor tincidunt finibus. Integer vestibulum molestie diam et aliquam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam facilisis eget metus sed laoreet.
+          <React.Fragment>
+            <div style={{width: '100%', minHeight: 'calc(100vh - 52px)', borderBottom: '10px solid red'}}>
+              {/* <h1>homepage with blog title, author and date section, likes, shares, views</h1> */}
+              <h1 style={{marginBottom: '50px'}}>Title</h1>
+              <span style={{fontFamily: 'Roboto, sans-serf', fontSize: '16px', lineHeight: '24px'}}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras malesuada nisl at dignissim tempor. Aenean malesuada venenatis enim. Ut fringilla massa vitae ligula pulvinar maximus. Vivamus porta vel urna non ornare. Proin in elementum urna, non dapibus leo. Nunc nec pharetra risus. Curabitur ornare ipsum ex, sed molestie orci condimentum a. Nam eu eleifend sapien. Sed diam nisi, aliquet sed libero id, pharetra sodales metus. Aliquam ornare magna neque, malesuada ultrices risus pulvinar sed. Vestibulum nunc nisi, vulputate non neque auctor, vestibulum aliquam odio. Donec nibh nisl, aliquam at vestibulum vitae, mattis dapibus diam. Aliquam tempor tincidunt finibus. Integer vestibulum molestie diam et aliquam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam facilisis eget metus sed laoreet.
 
-              Mauris dignissim sagittis volutpat. Suspendisse potenti. Quisque nec dignissim nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel libero molestie, porttitor elit id, facilisis enim. Nullam hendrerit ornare justo, id faucibus enim imperdiet in. In vulputate eu elit id egestas. Morbi eu justo ante. Sed est lorem, lobortis ut aliquet et, lacinia sit amet turpis. Quisque luctus cursus nisi, a dapibus tellus. Phasellus porta erat id justo sollicitudin, quis tincidunt lorem lobortis.
+                Mauris dignissim sagittis volutpat. Suspendisse potenti. Quisque nec dignissim nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel libero molestie, porttitor elit id, facilisis enim. Nullam hendrerit ornare justo, id faucibus enim imperdiet in. In vulputate eu elit id egestas. Morbi eu justo ante. Sed est lorem, lobortis ut aliquet et, lacinia sit amet turpis. Quisque luctus cursus nisi, a dapibus tellus. Phasellus porta erat id justo sollicitudin, quis tincidunt lorem lobortis.
 
-              Pellentesque maximus, ante vel molestie pellentesque, orci eros mattis ipsum, ac rhoncus diam eros et augue. Quisque aliquam convallis augue mattis consectetur. Curabitur sed tincidunt odio. Donec porta posuere nulla at tristique. Donec enim metus, porttitor a velit et, bibendum ornare elit. Morbi blandit fermentum magna, nec congue libero ultricies ut. Sed egestas tempus commodo. Vivamus hendrerit dui sit amet nibh mattis faucibus. Etiam non iaculis lectus, quis maximus dui. Donec vel tincidunt arcu. Pellentesque eu eros sapien.
+                Pellentesque maximus, ante vel molestie pellentesque, orci eros mattis ipsum, ac rhoncus diam eros et augue. Quisque aliquam convallis augue mattis consectetur. Curabitur sed tincidunt odio. Donec porta posuere nulla at tristique. Donec enim metus, porttitor a velit et, bibendum ornare elit. Morbi blandit fermentum magna, nec congue libero ultricies ut. Sed egestas tempus commodo. Vivamus hendrerit dui sit amet nibh mattis faucibus. Etiam non iaculis lectus, quis maximus dui. Donec vel tincidunt arcu. Pellentesque eu eros sapien.
 
-              Proin ultricies sagittis arcu et tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean cursus, mauris in sagittis efficitur, purus risus gravida lacus, sit amet faucibus nunc elit et nunc. Nunc interdum vitae quam non scelerisque. Proin pharetra ac sem nec dapibus. Pellentesque imperdiet non est sit amet rutrum. Vestibulum vel massa malesuada, dapibus arcu non, congue mi. Duis efficitur ex leo, laoreet scelerisque felis porta ac. Maecenas id laoreet est. Maecenas at dui sem. Proin quis maximus nulla, non suscipit leo. Vestibulum pharetra mi eu varius congue.
+                Proin ultricies sagittis arcu et tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean cursus, mauris in sagittis efficitur, purus risus gravida lacus, sit amet faucibus nunc elit et nunc. Nunc interdum vitae quam non scelerisque. Proin pharetra ac sem nec dapibus. Pellentesque imperdiet non est sit amet rutrum. Vestibulum vel massa malesuada, dapibus arcu non, congue mi. Duis efficitur ex leo, laoreet scelerisque felis porta ac. Maecenas id laoreet est. Maecenas at dui sem. Proin quis maximus nulla, non suscipit leo. Vestibulum pharetra mi eu varius congue.
 
-              Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
 
-              Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
 
-              Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
 
-              Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
 
-              Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
-            </span>
-          </div>
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+              </span>
+            </div>
+            <div style={{width: '100%', minHeight: 'calc(100vh - 52px)'}}>
+              {/* <h1>homepage with blog title, author and date section, likes, shares, views</h1> */}
+              <h1 style={{marginBottom: '50px'}}>NEXT SECTION</h1>
+              <span style={{fontFamily: 'Roboto, sans-serf', fontSize: '16px', lineHeight: '24px'}}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras malesuada nisl at dignissim tempor. Aenean malesuada venenatis enim. Ut fringilla massa vitae ligula pulvinar maximus. Vivamus porta vel urna non ornare. Proin in elementum urna, non
+              </span>
+              <h1 style={{marginBottom: '200px'}}>SHORT CONTENT EMPTY SPACE</h1>
+            </div>
+            <div style={{width: '100%', minHeight: 'calc(100vh - 52px)', borderBottom: '10px solid red'}}>
+              {/* <h1>homepage with blog title, author and date section, likes, shares, views</h1> */}
+              <h1 style={{marginBottom: '50px'}}>NEXT SECTION</h1>
+              <span style={{fontFamily: 'Roboto, sans-serf', fontSize: '16px', lineHeight: '24px'}}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras malesuada nisl at dignissim tempor. Aenean malesuada venenatis enim. Ut fringilla massa vitae ligula pulvinar maximus. Vivamus porta vel urna non ornare. Proin in elementum urna, non dapibus leo. Nunc nec pharetra risus. Curabitur ornare ipsum ex, sed molestie orci condimentum a. Nam eu eleifend sapien. Sed diam nisi, aliquet sed libero id, pharetra sodales metus. Aliquam ornare magna neque, malesuada ultrices risus pulvinar sed. Vestibulum nunc nisi, vulputate non neque auctor, vestibulum aliquam odio. Donec nibh nisl, aliquam at vestibulum vitae, mattis dapibus diam. Aliquam tempor tincidunt finibus. Integer vestibulum molestie diam et aliquam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam facilisis eget metus sed laoreet.
+
+                Mauris dignissim sagittis volutpat. Suspendisse potenti. Quisque nec dignissim nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel libero molestie, porttitor elit id, facilisis enim. Nullam hendrerit ornare justo, id faucibus enim imperdiet in. In vulputate eu elit id egestas. Morbi eu justo ante. Sed est lorem, lobortis ut aliquet et, lacinia sit amet turpis. Quisque luctus cursus nisi, a dapibus tellus. Phasellus porta erat id justo sollicitudin, quis tincidunt lorem lobortis.
+
+                Pellentesque maximus, ante vel molestie pellentesque, orci eros mattis ipsum, ac rhoncus diam eros et augue. Quisque aliquam convallis augue mattis consectetur. Curabitur sed tincidunt odio. Donec porta posuere nulla at tristique. Donec enim metus, porttitor a velit et, bibendum ornare elit. Morbi blandit fermentum magna, nec congue libero ultricies ut. Sed egestas tempus commodo. Vivamus hendrerit dui sit amet nibh mattis faucibus. Etiam non iaculis lectus, quis maximus dui. Donec vel tincidunt arcu. Pellentesque eu eros sapien.
+
+                Proin ultricies sagittis arcu et tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean cursus, mauris in sagittis efficitur, purus risus gravida lacus, sit amet faucibus nunc elit et nunc. Nunc interdum vitae quam non scelerisque. Proin pharetra ac sem nec dapibus. Pellentesque imperdiet non est sit amet rutrum. Vestibulum vel massa malesuada, dapibus arcu non, congue mi. Duis efficitur ex leo, laoreet scelerisque felis porta ac. Maecenas id laoreet est. Maecenas at dui sem. Proin quis maximus nulla, non suscipit leo. Vestibulum pharetra mi eu varius congue.
+
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+
+                Etiam quis arcu feugiat, blandit est vitae, pulvinar nulla. Donec vitae feugiat ipsum. Proin nibh ex, scelerisque vitae lacinia nec, cursus eget metus. Duis leo velit, fringilla sed eleifend ut, auctor at lacus. Nulla dignissim purus arcu, nec eleifend enim scelerisque eget. Nullam id elementum dui. Proin pretium accumsan venenatis.
+              </span>
+            </div>
+          </React.Fragment>
         }
         {this.props.page.type === 'BlogHeading' &&
           <span>header only</span>

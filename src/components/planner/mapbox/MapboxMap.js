@@ -25,10 +25,11 @@ import { MapboxMapStyles as styles } from '../../../Styles/MapboxMapStyles'
 // react wrapper factory
 const Map = ReactMapboxGL({
   accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
-  minZoom: 1,
+  minZoom: 1.6,
   dragRotate: false,
   attributionControl: false,
-  logoPosition: 'bottom-right'
+  logoPosition: 'bottom-right',
+  renderWorldCopies: false
 })
 
 const mapStyle = 'mapbox://styles/mapbox/streets-v10'
@@ -1065,7 +1066,7 @@ class MapboxMap extends Component {
     })
 
     return (
-      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
+      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)} maxBounds={[[-180, -90], [180, 90]]}>
         <ZoomControl position='top-left' />
 
         {/* CUSTOM MARKER */}

@@ -1,7 +1,7 @@
 export const plannerViewReducer = (state = {
-  tablePlanner: false,
-  leftBar: true,
-  mapbox: true,
+  tablePlanner: true,
+  leftBar: false,
+  mapbox: false,
   rightBar: ''
 }, action) => {
   switch (action.type) {
