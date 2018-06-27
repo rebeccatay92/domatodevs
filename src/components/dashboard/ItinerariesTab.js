@@ -61,7 +61,10 @@ class ItinerariesTab extends Component {
         UserId: this.props.userProfile.id,
         name: 'New Itinerary',
         days: 1
-      }
+      },
+      refetchQueries: [{
+        query: itinerariesByUser
+      }]
     })
       .then(response => {
         // console.log('response', response)

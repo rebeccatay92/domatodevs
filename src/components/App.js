@@ -10,7 +10,6 @@ import HTML5Backend from 'react-dnd-html5-backend'
 
 import NavSideBar from './NavSideBar'
 import HomePage from './HomePage'
-// import ItineraryPage from './itinerary/ItineraryPage'
 import PlannerPage from './PlannerPage'
 import ReadPage from './read/ReadPage'
 import BlogEditorPage from './read/editor/BlogEditorPage'
@@ -54,10 +53,6 @@ class App extends Component {
             <Route exact path='/user/:tab' render={(props) => (
               <UserDashboardPage {...props} />
             )} />
-
-            {/* <Route path='/itineraries' render={(props) => (
-              <ItineraryPage lock={lock} {...props} />
-            )} /> */}
 
             {/* PLANNER WILL CONDITIONALLY RENDER COMPONENTS.  */}
             <Route path='/planner/:itineraryId' component={PlannerPage} />
