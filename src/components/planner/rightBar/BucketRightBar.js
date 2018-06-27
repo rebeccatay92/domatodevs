@@ -10,6 +10,8 @@ import { setPopupToShow } from '../../../actions/planner/mapboxActions'
 import Radium from 'radium'
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
 
+import BucketItem from './BucketItem'
+
 class BucketRightBar extends Component {
   constructor (props) {
     super(props)
@@ -105,23 +107,24 @@ class BucketRightBar extends Component {
         <div style={styles.bucketListContainer}>
           {filteredFinalArr.length !== 0 && filteredFinalArr.map((bucket, i) => {
             return (
-              <div style={{width: '100%'}} key={i}>
-                {i !== 0 &&
-                  <hr style={styles.horizontalDivider} />
-                }
-                <div style={this.props.bucketList.focusedBucketId === bucket.id ? styles.bucketRowFocused : styles.bucketRowUnfocused} key={`bucketItem${i}`} onClick={() => this.toggleFocusedBucket(bucket.id)}>
-                  <img src={bucket.thumbnailUrl} style={styles.thumbnailImage} />
-                  <div style={styles.contentContainer}>
-                    <div style={styles.locationAndCategoryDiv}>
-                      <span style={styles.locationName}>{bucket.location.name}</span>
-                      <i className='material-icons' style={styles.categoryIcon}>{category[bucket.bucketCategory]}</i>
-                    </div>
-                    <div style={styles.notesContainer}>
-                      <span style={styles.notes}>{bucket.notes}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <BucketItem key={i} index={i} focusedBucketId={this.props.bucketList.focfocusedBucketId} bucket={bucket} category={category} toggleFocusedBucket={(id) => this.toggleFocusedBucket(id)} />
+              // <div style={{width: '100%'}} key={i}>
+              //   {i !== 0 &&
+              //     <hr style={styles.horizontalDivider} />
+              //   }
+              //   <div style={this.props.bucketList.focusedBucketId === bucket.id ? styles.bucketRowFocused : styles.bucketRowUnfocused} key={`bucketItem${i}`} onClick={() => this.toggleFocusedBucket(bucket.id)}>
+              //     <img src={bucket.thumbnailUrl} style={styles.thumbnailImage} />
+              //     <div style={styles.contentContainer}>
+              //       <div style={styles.locationAndCategoryDiv}>
+              //         <span style={styles.locationName}>{bucket.location.name}</span>
+              //         <i className='material-icons' style={styles.categoryIcon}>{category[bucket.bucketCategory]}</i>
+              //       </div>
+              //       <div style={styles.notesContainer}>
+              //         <span style={styles.notes}>{bucket.notes}</span>
+              //       </div>
+              //     </div>
+              //   </div>
+              // </div>
             )
           })}
           {!filteredFinalArr.length &&

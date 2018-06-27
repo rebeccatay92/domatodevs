@@ -28,7 +28,7 @@ import { deleteDay } from '../../helpers/deleteDay'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
-import { updateEvent, initializeEvents, plannerEventHoverOverEvent, sortEvents } from '../../actions/planner/eventsActions'
+import { updateEvent, initializeEvents, hoverOverEvent, sortEvents } from '../../actions/planner/eventsActions'
 import { setTimeCellFocus } from '../../actions/planner/timeCellFocusActions'
 import { changeColumnSort } from '../../actions/planner/sortActions'
 
@@ -41,7 +41,7 @@ const dateTarget = {
     let day = props.day
     if (props.events.filter(event => event.dropzone && event.startDay === day).length > 0) return
     if (monitor.getItemType() === 'plannerEvent') {
-      props.plannerEventHoverOverEvent(props.events.length, monitor.getItem(), day)
+      props.hoverOverEvent(props.events.length, monitor.getItem(), day)
     }
   }
 }
@@ -331,8 +331,8 @@ const mapDispatchToProps = (dispatch) => {
     setTimeCellFocus: (focus) => {
       dispatch(setTimeCellFocus(focus))
     },
-    plannerEventHoverOverEvent: (index, event, day) => {
-      dispatch(plannerEventHoverOverEvent(index, event, day))
+    hoverOverEvent: (index, event, day) => {
+      dispatch(hoverOverEvent(index, event, day))
     },
     changeColumnSort: (column, sortType) => {
       return dispatch(changeColumnSort(column, sortType))

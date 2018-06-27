@@ -116,7 +116,7 @@ export const eventsReducer = (state = {
         updatedProperty: action.property === 'currency' ? 'cost' : action.property,
         updatedFromSidebar: action.fromSidebar
       }
-    case 'PLANNER_EVENT_HOVER_OVER_EVENT':
+    case 'HOVER_OVER_EVENT':
       let targetDayEventsArr = state.events.filter(event => event.startDay === action.day && !event.dropzone)
       let newTargetDayEventsArr = [
         ...targetDayEventsArr.slice(0, action.index),
