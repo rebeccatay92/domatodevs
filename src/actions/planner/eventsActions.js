@@ -23,9 +23,9 @@ export const sortEvents = (column, sortType) => {
   }
 }
 
-export const plannerEventHoverOverEvent = (index, event, day) => {
+export const hoverOverEvent = (index, event, day) => {
   return {
-    type: 'PLANNER_EVENT_HOVER_OVER_EVENT',
+    type: 'HOVER_OVER_EVENT',
     index,
     event,
     day

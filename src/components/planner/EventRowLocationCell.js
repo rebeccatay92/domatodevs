@@ -193,7 +193,8 @@ class EventRowLocationCell extends Component {
     this.setState({
       showDropdown: false,
       showSpinner: false,
-      predictions: []
+      predictions: [],
+      cellClickedTwice: false
     })
   }
 
@@ -236,8 +237,11 @@ class EventRowLocationCell extends Component {
     }
 
     // if cell receives focus as a result of arrow keys, force focus on the cell
-    if (nextProps.activeEventId === this.props.id && nextProps.activeField === property && !this.state.editorFocus) {
-      this.cell.focus()
+    // if (nextProps.activeEventId === this.props.id && nextProps.activeField === property && !this.state.editorFocus) {
+    //   this.cell.focus()
+    // }
+    if (nextProps.activeEventId !== this.props.activeEventId || nextProps.activeField !== this.props.activeField) {
+      this.setState({cellClickedTwice: false})
     }
   }
 
@@ -314,8 +318,8 @@ class EventRowLocationCell extends Component {
   }
 
   handleCellClick (e) {
-    if (this.props.activeEventId !== this.props.id || this.props.activeField !== 'location') {
-      this.handleOnFocus()
+    if (!this.state.cellClickedTwice) {
+      this.setState({cellClickedTwice: true})
     } else {
       this.focus(e)
     }
@@ -327,30 +331,30 @@ class EventRowLocationCell extends Component {
   }
 
   // for component
-  handleArrowKeyDown (key) {
-    // const { columnState, index, events, day, eventIndex } = this.props
-    // if (key === 37) {
-    //   index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
-    //   if (index === 0) this.props.changeActiveField('startTime')
-    //   this.cell.blur()
-    // } else if (key === 39) {
-    //   index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
-    //   if (index === columnState.length - 1) {
-    //     this.props.changeActiveField('startTime')
-    //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-    //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-    //   }
-    //   this.cell.blur()
-    // } else if (key === 38) {
-    //   const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
-    //   newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-    //   this.cell.blur()
-    // } else if (key === 40) {
-    //   const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-    //   newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-    //   this.cell.blur()
-    // }
-  }
+  // handleArrowKeyDown (key) {
+  //   const { columnState, index, events, day, eventIndex } = this.props
+  //   if (key === 37) {
+  //     index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
+  //     if (index === 0) this.props.changeActiveField('startTime')
+  //     this.cell.blur()
+  //   } else if (key === 39) {
+  //     index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
+  //     if (index === columnState.length - 1) {
+  //       this.props.changeActiveField('startTime')
+  //       const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+  //       newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+  //     }
+  //     this.cell.blur()
+  //   } else if (key === 38) {
+  //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
+  //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+  //     this.cell.blur()
+  //   } else if (key === 40) {
+  //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+  //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+  //     this.cell.blur()
+  //   }
+  // }
 
   handleKeyDown (e, isActive, editorFocus) {
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
@@ -421,7 +425,7 @@ class EventRowLocationCell extends Component {
     // console.log('props id', this.props.id)
     const isActive = this.props.activeEventId === this.props.id && this.props.activeField === 'location'
     return (
-      <div ref={(element) => { this.cell = element }} className={`planner-table-cell ignoreLocationCell${this.props.id}`} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)}>
+      <div tabIndex='1' ref={(element) => { this.cell = element }} className={`planner-table-cell ignoreLocationCell${this.props.id}`} onFocus={(e) => this.handleOnFocus(e)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{zIndex: 0, position: 'relative', minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)}>
         <Editor readOnly={!isActive} editorState={this.state.editorState} onChange={this.onChange} ref={element => { this.editor = element }} onFocus={() => this.setState({editorFocus: true})} onBlur={() => this.handleOnBlur()} handleReturn={(event, editorState) => this.handleReturn()} />
         {this.state.showDropdown &&
           <LocationCellDropdown openedIn={'table'} showSpinner={this.state.showSpinner} predictions={this.state.predictions} selectLocation={prediction => this.selectLocation(prediction)} handleClickOutside={() => this.handleClickOutside()} outsideClickIgnoreClass={`ignoreLocationCell${this.props.id}`} />

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
-import { Editor, EditorState, ContentState } from 'draft-js'
+import { Editor, EditorState, ContentState, getDefaultKeyBinding, KeyBindingUtil } from 'draft-js'
 import { allCurrenciesList } from '../../helpers/countriesToCurrencyList'
 
 import { updateEvent } from '../../actions/planner/eventsActions'
@@ -10,6 +10,7 @@ import { changeActiveField } from '../../actions/planner/activeFieldActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
 
 import { updateEventBackend } from '../../apollo/event'
+const { hasCommandModifier } = KeyBindingUtil
 
 const eventPropertyNames = {
   Event: 'eventType',
@@ -33,6 +34,13 @@ const getEventProp = (columnInput, eventInput) => {
   return eventProperties[columnInput]
 }
 
+const keyBindingFn = (e) => {
+  if (e.keyCode === 13 && !hasCommandModifier(e)) {
+    return 'enterPressed'
+  }
+  return getDefaultKeyBinding(e)
+}
+
 class EventRowInfoCell extends Component {
   constructor (props) {
     super(props)
@@ -42,8 +50,11 @@ class EventRowInfoCell extends Component {
 
     this.state = {
       editorState: EditorState.createWithContent(value),
-      initialValue: value
+      initialValue: value,
+      cellClickedTwice: false
     }
+
+    this.handleKeyCommand = this.handleKeyCommand.bind(this)
 
     this.onChange = (editorState) => {
       const { column, id } = this.props
@@ -81,8 +92,11 @@ class EventRowInfoCell extends Component {
       this.setState({editorState: EditorState.createWithContent(value)})
     }
 
-    if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
-      this.cell.focus()
+    // if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
+    //   this.cell.focus()
+    // }
+    if (nextProps.activeEventId !== this.props.activeEventId || nextProps.activeField !== this.props.activeField) {
+      this.setState({cellClickedTwice: false})
     }
   }
 
@@ -103,7 +117,7 @@ class EventRowInfoCell extends Component {
     }
   }
 
-  handleOnFocus () {
+  handleOnFocus (e) {
     const property = eventPropertyNames[this.props.column]
     this.props.changeActiveField(property)
     if (this.props.activeEventId !== this.props.id) {
@@ -112,21 +126,26 @@ class EventRowInfoCell extends Component {
   }
 
   handleCellClick (e) {
-    const property = eventPropertyNames[this.props.column]
-    if (this.props.activeEventId !== this.props.id || this.props.activeField !== property) {
-      this.handleOnFocus()
+    // const property = eventPropertyNames[this.props.column]
+    if (!this.state.cellClickedTwice) {
+      this.setState({cellClickedTwice: true})
     } else {
       this.focus(e)
     }
   }
 
-  handleKeyDown (e, isActive, editorFocus) {
+  handleKeyDown (e, isActive) {
     const { column, id } = this.props
     const property = eventPropertyNames[column]
-
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
     //   this.handleArrowKeyDown(e.keyCode)
     // }
+
+    if (e.keyCode === 13 && !this.state.editorFocus) {
+      e.preventDefault()
+      console.log('wrong enter');
+      this.setState({editorFocus: true, cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
+    }
 
     if (e.key === 'Escape') {
       const editorState = EditorState.createWithContent(this.state.initialValue)
@@ -137,30 +156,30 @@ class EventRowInfoCell extends Component {
     }
   }
 
-  handleArrowKeyDown (key) {
-    // const { columnState, index, events, day, eventIndex } = this.props
-    // if (key === 37) {
-    //   index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
-    //   if (index === 0) this.props.changeActiveField('startTime')
-    //   this.cell.blur()
-    // } else if (key === 39) {
-    //   index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
-    //   if (index === columnState.length - 1) {
-    //     this.props.changeActiveField('startTime')
-    //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-    //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-    //   }
-    //   this.cell.blur()
-    // } else if (key === 38) {
-    //   const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
-    //   newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-    //   this.cell.blur()
-    // } else if (key === 40) {
-    //   const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-    //   newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-    //   this.cell.blur()
-    // }
-  }
+  // handleArrowKeyDown (key) {
+  //   const { columnState, index, events, day, eventIndex } = this.props
+  //   if (key === 37) {
+  //     index > 0 && this.props.changeActiveField(eventPropertyNames[columnState[index - 1].name])
+  //     if (index === 0) this.props.changeActiveField('startTime')
+  //     this.cell.blur()
+  //   } else if (key === 39) {
+  //     index < columnState.length - 1 && this.props.changeActiveField(eventPropertyNames[columnState[index + 1].name])
+  //     if (index === columnState.length - 1) {
+  //       this.props.changeActiveField('startTime')
+  //       const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+  //       newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+  //     }
+  //     this.cell.blur()
+  //   } else if (key === 38) {
+  //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
+  //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+  //     this.cell.blur()
+  //   } else if (key === 40) {
+  //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
+  //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
+  //     this.cell.blur()
+  //   }
+  // }
 
   handleOnBlur () {
     const { id, column } = this.props
@@ -189,6 +208,15 @@ class EventRowInfoCell extends Component {
     })
   }
 
+  handleKeyCommand (command) {
+    if (command === 'enterPressed') {
+      this.editor.blur()
+      this.cell.focus()
+      return 'handled'
+    }
+    return 'not-handled'
+  }
+
   render () {
     const { column, id } = this.props
     const { events } = this.props.events
@@ -199,13 +227,13 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
+      <div tabIndex='1' ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive)} onFocus={(e) => this.handleOnFocus(e)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
         {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency || ''} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>
           })}
         </select>}
-        <Editor readOnly={!isActive} editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.handleOnBlur()} onFocus={() => this.setState({editorFocus: true})} />
+        <Editor readOnly={!isActive || !this.state.cellClickedTwice} editorState={this.state.editorState} onChange={this.onChange} ref={(element) => { this.editor = element }} onBlur={() => this.handleOnBlur()} keyBindingFn={keyBindingFn} handleKeyCommand={this.handleKeyCommand} />
       </div>
     )
   }

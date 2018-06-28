@@ -16,7 +16,7 @@ import EventRowLocationCell from './EventRowLocationCell'
 import { toggleSpinner } from '../../actions/spinnerActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
 import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
-import { initializeEvents, plannerEventHoverOverEvent, dropPlannerEvent, updateEvent } from '../../actions/planner/eventsActions'
+import { initializeEvents, hoverOverEvent, dropPlannerEvent, updateEvent } from '../../actions/planner/eventsActions'
 
 // helpers
 import { initializeEventsHelper } from '../../helpers/initializeEvents'
@@ -37,7 +37,9 @@ const eventRowTarget = {
     if (props.event.dropzone) return
     let day = props.event.startDay
     if (monitor.getItemType() === 'plannerEvent') {
-      props.plannerEventHoverOverEvent(props.index, monitor.getItem(), day)
+      props.hoverOverEvent(props.index, monitor.getItem(), day)
+    } else if (monitor.getItemType() === 'bucketItem') {
+      props.hoverOverEvent(props.index, {id: 'bucketItem'}, day)
     }
   },
   drop (props, monitor) {
@@ -46,13 +48,15 @@ const eventRowTarget = {
       initializeEventsHelper(props.data.findItinerary.events, props.initializeEvents)
       return
     }
-    const newEvent = {
-      ...monitor.getItem(),
-      ...{
-        startDay: day
+    if (monitor.getItemType() === 'plannerEvent') {
+      const newEvent = {
+        ...monitor.getItem(),
+        ...{
+          startDay: day
+        }
       }
+      props.dropPlannerEvent(newEvent, props.index)
     }
-    props.dropPlannerEvent(newEvent, props.index)
   }
 }
 
@@ -137,7 +141,9 @@ class EventRow extends Component {
       <tr style={{position: 'relative'}} onMouseOver={() => this.setState({hover: true})} onMouseOut={() => this.setState({hover: false})}>
         <td style={{width: '0px'}}>
           <div style={{minHeight: '83px', position: 'relative', display: 'flex', alignItems: 'center'}}>
-            {sortOptions.type === 'unsorted' && connectDragSource(<i className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>unfold_more</i>)}
+            {sortOptions.type === 'unsorted' && connectDragSource(<i onMouseDown={() => this.setState({mouseOverDragHandler: true}, () => {
+              setTimeout(() => this.setState({mouseOverDragHandler: false}), 1000)
+            })} className='material-icons drag-handle' style={{position: 'absolute', right: 0, display: this.state.hover && !isDragging ? 'initial' : 'none', cursor: 'pointer', opacity: '0.2'}}>unfold_more</i>)}
           </div>
         </td>
         <td className='planner-table-cell' style={{width: '114px', textAlign: 'center'}}>
@@ -163,7 +169,7 @@ class EventRow extends Component {
           <i className='material-icons delete-event-button' style={{fontSize: '16px', opacity: '0.2', cursor: 'pointer', position: 'relative', top: '16px'}} onClick={() => this.handleDelete()}>close</i>
         </td>
         <td>
-          <ContextMenu id={`eventRowContextMenu-${id}`}>
+          {!this.state.mouseOverDragHandler && <ContextMenu id={`eventRowContextMenu-${id}`}>
             <MenuItem onClick={() => this.handleDelete()}>
               Delete Row
             </MenuItem>
@@ -171,7 +177,7 @@ class EventRow extends Component {
             <MenuItem onClick={this.handleClick}>
               Show On Map
             </MenuItem>
-          </ContextMenu>
+          </ContextMenu>}
         </td>
       </tr>
     ))
@@ -199,8 +205,8 @@ const mapDispatchToProps = (dispatch) => {
     initializeEvents: (events) => {
       dispatch(initializeEvents(events))
     },
-    plannerEventHoverOverEvent: (index, event, day) => {
-      dispatch(plannerEventHoverOverEvent(index, event, day))
+    hoverOverEvent: (index, event, day) => {
+      dispatch(hoverOverEvent(index, event, day))
     },
     dropPlannerEvent: (event, index) => {
       dispatch(dropPlannerEvent(event, index))
