@@ -73,6 +73,7 @@ const daysCountriesText = {
   lineHeight: '24px',
   color: coreColors.blackSolid
 }
+
 /* ----------------------------- */
 const itineraryDetailsContainer = {
   width: '765px',

@@ -92,7 +92,53 @@ class HomePage extends Component {
         {/* ITINERARIES SECTIONS */}
 
         {this.state.focusedTab === 'itineraries' &&
-          <div>ITINERARIES</div>
+          <div style={styles.itinerarySectionContainer}>
+            {this.props.getAllPublishedItineraries.getAllPublishedItineraries.map((itinerary, i) => {
+              return (
+                <div style={styles.itineraryRowContainer} key={i}>
+                  <div style={styles.authorSectionContainer}>
+                    <img src={itinerary.owner.profilePic} style={{width: '35px', height: '35px', objectFit: 'cover', borderRadius: '50%'}} />
+                    <h6 style={styles.authorInfoText}>{itinerary.owner.username}</h6>
+                    <h6 style={styles.authorInfoText}>{itinerary.timeFromPublishDate}</h6>
+                  </div>
+                  <div style={styles.daysCountriesContainer}>
+                    <div>
+                      <span style={styles.daysNumber}>{itinerary.days}</span>
+                      <span style={styles.daysText}>days</span>
+                    </div>
+                    {itinerary.countries.map((country, i) => {
+                      return (
+                        <h6 style={styles.countriesText} key={i}>{country.name}</h6>
+                      )
+                    })}
+                  </div>
+                  <div style={styles.itineraryDetailsContainer}>
+                    <h2 style={styles.itineraryName}>{itinerary.name}</h2>
+                    <h6 style={styles.itineraryDescription}>{itinerary.description}</h6>
+                    <div style={styles.itineraryTagsRow}>
+                      {['budget', 'experience', 'different', 'photography'].map((hashtag, i) => {
+                        return (
+                          <div key={`itineraryHashtagDiv${i}`}>
+                            {i !== 0 &&
+                              <span style={styles.itineraryTagsSpacer}>&#8226;</span>
+                            }
+                            <span style={styles.itineraryTags}>{hashtag}</span>
+                          </div>
+                        )
+                      })}
+                      <span style={styles.socialTagsSpacer}>&#8226;</span>
+                      <span style={styles.socialTags}>800 views</span>
+                      <span style={styles.socialTagsSpacer}>&#8226;</span>
+                      <span style={styles.socialTags}>10 copies</span>
+                    </div>
+                  </div>
+                  <div style={styles.budgetContainer}>
+                    <span style={styles.budgetText}>SGD 1000 / pax</span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         }
       </div>
     )

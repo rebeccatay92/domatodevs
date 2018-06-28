@@ -188,6 +188,150 @@ const blogViewsText = {
   color: coreColors.pinkSolid
 }
 /* ----------------------------- */
+
+const itinerarySectionContainer = {
+  width: '100%',
+  minHeight: 'calc(100vh - 52px - 56px)'
+}
+
+const itineraryRowContainer = {
+  width: '100%',
+  height: '135px',
+  padding: '24px 0', // 135px - 48px padding = 87px for all content
+  display: 'flex'
+}
+
+/* ----------------------------- */
+
+const authorSectionContainer = {
+  width: '120px',
+  height: '100%',
+  display: 'inline-flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center'
+}
+
+const authorInfoText = {
+  margin: 0,
+  ...coreFonts.garamondRegular,
+  fontSize: '16px',
+  lineHeight: '21px',
+  color: coreColors.blackSolid
+}
+
+const daysCountriesContainer = {
+  width: '120px',
+  height: '100%',
+  borderRight: `1px solid ${coreColors.black03}`,
+  display: 'inline-flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center'
+}
+
+const daysNumber = {
+  ...coreFonts.garamondRegular,
+  fontSize: '30px',
+  lineHeight: '39px',
+  color: coreColors.black07,
+  marginRight: '5px'
+}
+
+const daysText = {
+  ...coreFonts.garamondRegular,
+  fontSize: '13px',
+  lineHeight: '17px',
+  color: coreColors.black07
+}
+
+const countriesText = {
+  ...coreFonts.garamondRegular,
+  fontSize: '16px',
+  lineHeight: '21px',
+  color: coreColors.black07,
+  margin: 0
+}
+
+const itineraryDetailsContainer = {
+  width: '800px',
+  height: '100%',
+  paddingLeft: '25px',
+  display: 'inline-flex',
+  flexDirection: 'column'
+}
+
+const itineraryName = {
+  ...coreFonts.garamondRegular,
+  fontSize: '24px',
+  lineHeight: '31px',
+  color: coreColors.black07,
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+  margin: 0,
+  marginBottom: '10px'
+}
+
+const itineraryDescription = {
+  ...coreFonts.robotoLight,
+  fontSize: '16px',
+  lineHeight: '19px',
+  height: '19px',
+  color: coreColors.blackSolid,
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+  margin: 0
+}
+
+const itineraryTagsRow = {
+  display: 'flex',
+  flexFlow: 'row nowrap',
+  justifyContent: 'flex-start',
+  height: '21px'
+}
+
+const itineraryTags = {
+  ...coreFonts.garamondRegular,
+  color: coreColors.greenSolid,
+  fontSize: '16px',
+  lineHeight: '21px'
+}
+
+const itineraryTagsSpacer = {
+  color: coreColors.greenSolid,
+  fontSize: '14px',
+  lineHeight: '21px',
+  margin: '0 5px'
+}
+
+const socialTags = {
+  ...itineraryTags,
+  color: 'rgb(237, 106, 90)'
+}
+
+const socialTagsSpacer = {
+  ...itineraryTagsSpacer,
+  color: 'rgb(237, 106, 90)'
+}
+
+const budgetContainer = {
+  width: '225px',
+  height: '100%',
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center'
+}
+
+const budgetText = {
+  ...coreFonts.garamondRegular,
+  color: coreColors.black07,
+  fontSize: '24px',
+  lineHeight: '31px'
+}
+
+/* ----------------------------- */
 export const HomePageStyles = {
   homePageContainer,
   // horizontal tabs
@@ -215,5 +359,24 @@ export const HomePageStyles = {
   blogTagsRow,
   blogTags,
   blogTagsSpacer,
-  blogViewsText
+  blogViewsText,
+  // itineraries tab
+  itinerarySectionContainer,
+  itineraryRowContainer,
+  authorSectionContainer,
+  authorInfoText,
+  daysCountriesContainer,
+  daysNumber,
+  daysText,
+  countriesText,
+  itineraryDetailsContainer,
+  itineraryName,
+  itineraryDescription,
+  itineraryTagsRow,
+  itineraryTags,
+  itineraryTagsSpacer,
+  socialTags,
+  socialTagsSpacer,
+  budgetContainer,
+  budgetText
 }

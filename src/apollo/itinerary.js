@@ -83,6 +83,7 @@ export const getAllPublishedItineraries = gql`
     getAllPublishedItineraries {
       id
       name
+      description
       days
       startDate
       isPrivate
@@ -94,9 +95,10 @@ export const getAllPublishedItineraries = gql`
       owner {
         id
         username
-        email
+        profilePic
       }
       createdAt
+      timeFromPublishDate
     }
   }
 `
