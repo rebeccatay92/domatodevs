@@ -14,6 +14,7 @@ import { setFocusedBucketId } from '../../../actions/planner/bucketListActions'
 import { graphql, compose } from 'react-apollo'
 import { updateEventBackend, createEvent } from '../../../apollo/event'
 import { queryItinerary } from '../../../apollo/itinerary'
+import { getUserBucketList, updateBucket } from '../../../apollo/bucket'
 
 import { createNewEventSequence } from '../../../helpers/plannerLoadSequence'
 
@@ -177,7 +178,7 @@ class MapboxMap extends Component {
       zoom: [map.getZoom()],
       center: [longitude, latitude]
     }, () => {
-      console.log('updated state after move-end', this.state)
+      // console.log('updated state after move-end', this.state)
       // console.log('bounds', map.getBounds())
       // console.log(map.transform.latRange[0], map.transform.latRange[1])
     })
@@ -727,7 +728,17 @@ class MapboxMap extends Component {
     })
     let { verified, name, address, latitude, longitude, country } = bucketMarker.location
 
-    // console.log('destructure', verified, name, address, country)
+    // update bucket visited status
+    this.props.updateBucket({
+      variables: {
+        id: bucketMarker.id,
+        visited: true
+      },
+      refetchQueries: [{
+        query: getUserBucketList
+      }]
+    })
+
     this.props.updateEventBackend({
       variables: {
         id: EventId,
@@ -764,6 +775,17 @@ class MapboxMap extends Component {
       return e.id === this.props.bucketList.focusedBucketId
     })
     let { address, latitude, longitude, country } = bucketMarker.location
+
+    // update bucket visited status
+    this.props.updateBucket({
+      variables: {
+        id: bucketMarker.id,
+        visited: true
+      },
+      refetchQueries: [{
+        query: getUserBucketList
+      }]
+    })
 
     this.props.updateEventBackend({
       variables: {
@@ -953,6 +975,17 @@ class MapboxMap extends Component {
     let { verified, name, address, latitude, longitude, country } = bucketMarker.location
 
     let loadSequence = createNewEventSequence(this.props.events.events, startDay)
+
+    // update bucket visited status
+    this.props.updateBucket({
+      variables: {
+        id: bucketMarker.id,
+        visited: true
+      },
+      refetchQueries: [{
+        query: getUserBucketList
+      }]
+    })
 
     this.props.createEvent({
       variables: {
@@ -1176,5 +1209,6 @@ const options = {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(updateEventBackend, {name: 'updateEventBackend'}),
   graphql(createEvent, {name: 'createEvent'}),
+  graphql(updateBucket, {name: 'updateBucket'}),
   graphql(queryItinerary, options)
 )(MapboxMap))
