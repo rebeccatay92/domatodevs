@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { initializeBucketList, selectCountryFilter, selectCategoryFilter, selectVisitedFilter, setFocusedBucketId } from '../../../actions/planner/bucketListActions'
 import { setPopupToShow } from '../../../actions/planner/mapboxActions'
 
-import Radium from 'radium'
+// import Radium from 'radium'
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
 
 import BucketItem from './BucketItem'
@@ -116,7 +116,7 @@ class BucketRightBar extends Component {
         <div style={styles.bucketListContainer}>
           {filteredFinalArr.length !== 0 && filteredFinalArr.map((bucket, i) => {
             return (
-              <BucketItem key={i} index={i} focusedBucketId={this.props.bucketList.focfocusedBucketId} bucket={bucket} category={category} toggleFocusedBucket={(id) => this.toggleFocusedBucket(id)} />
+              <BucketItem key={i} index={i} focusedBucketId={this.props.bucketList.focusedBucketId} bucket={bucket} category={category} toggleFocusedBucket={(id) => this.toggleFocusedBucket(id)} />
             )
           })}
           {!filteredFinalArr.length &&
@@ -170,4 +170,4 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(getUserBucketList)
-)(Radium(BucketRightBar)))
+)(BucketRightBar))
