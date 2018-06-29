@@ -23,7 +23,6 @@ import history from './Auth0/history'
 import Lock from './Auth0/lock'
 
 import GoogleCloudStorage from './Google/GoogleCloudStorage'
-
 const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 
@@ -50,12 +49,18 @@ class App extends Component {
             <Route exact path='/user' render={props => (
               <UserDashboardPage {...props} />
             )} />
-            <Route exact path='/user/:tab' render={(props) => (
-              <UserDashboardPage {...props} />
+            <Route exact path='/user/:tab' render={props => (
+              lock.isAuthenticated()
+                ? <UserDashboardPage {...props} />
+                : <TriggerLockLoginPrompt {...props} />
             )} />
 
             {/* PLANNER WILL CONDITIONALLY RENDER COMPONENTS.  */}
-            <Route path='/planner/:itineraryId' component={PlannerPage} />
+            <Route path='/planner/:itineraryId' render={props => (
+              lock.isAuthenticated()
+                ? <PlannerPage {...props} />
+                : <TriggerLockLoginPrompt {...props} />
+            )} />
 
             <Route path='/blog/:blogId' component={ReadPage} />
             <Route path='/blogeditor/:blogId' component={BlogEditorPage} />
@@ -78,6 +83,15 @@ class App extends Component {
         </div>
       </Router>
     )
+  }
+}
+
+class TriggerLockLoginPrompt extends Component {
+  render () {
+    let url = this.props.location.pathname
+    lock.setRedirectUrlAfterLoggingIn(url)
+    lock.login()
+    return null
   }
 }
 

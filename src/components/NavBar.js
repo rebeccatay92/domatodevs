@@ -30,7 +30,7 @@ class NavBar extends Component {
           {isLoggedIn &&
             <React.Fragment>
               <span onClick={() => this.props.lock.logout()} style={styles.logInlogOutText}>Log out</span>
-              <Link to={'/user/media'}>
+              <Link to={'/user/itineraries'}>
                 <img src={profilePic} style={styles.profilePic} />
               </Link>
             </React.Fragment>

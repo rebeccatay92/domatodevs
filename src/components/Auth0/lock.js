@@ -25,18 +25,22 @@ class Lock {
   )
   constructor (props) {
     let tokenRenewalTimeout
-    // let userProfile
+    let redirectUrlAfterLoggingIn = '/'
 
-    // this.fetchUserProfile = this.fetchUserProfile.bind(this)
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)
     this.isAuthenticated = this.isAuthenticated.bind(this)
+    this.setRedirectUrlAfterLoggingIn = this.setRedirectUrlAfterLoggingIn.bind(this)
 
     this.onAuthenticated = this.onAuthenticated.bind(this)
     this.onAuthenticated()
 
-    // immediatel initialize user profile
+    // immediately initialize user profile
     this.fetchUserProfile()
+  }
+
+  setRedirectUrlAfterLoggingIn (url) {
+    this.redirectUrlAfterLoggingIn = url
   }
 
   // fetches user profile from backend and sets redux state
@@ -105,7 +109,10 @@ class Lock {
         console.log('err', err)
       })
 
-      history.replace('/')
+      // history.replace('/')
+      history.replace(this.redirectUrlAfterLoggingIn)
+      this.setRedirectUrlAfterLoggingIn('/')
+      // need to reset it after login and redirect to original url is complete
     }) // close listener
     this.scheduleRenewal()
   }

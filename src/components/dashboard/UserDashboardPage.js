@@ -122,7 +122,7 @@ class UserDashboardPage extends Component {
 
     if (tab !== 'account' && tab !== 'blogs' && tab !== 'itineraries' && tab !== 'media' && tab !== 'savedArticles' && tab !== 'bucket') {
       console.log('no match with tab. default to account')
-      this.props.history.replace('/user/account')
+      this.props.history.replace('/user/itineraries')
     }
 
     this.setState({
