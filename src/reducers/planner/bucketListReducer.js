@@ -3,6 +3,7 @@ export const bucketListReducer = (state = {
   countries: [],
   selectedbucketCategory: '',
   selectedCountryId: '',
+  selectedVisitedFilter: 'unvisited',
   focusedBucketId: ''
 }, action) => {
   switch (action.type) {
@@ -21,6 +22,11 @@ export const bucketListReducer = (state = {
       return {
         ...state,
         selectedBucketCategory: action.category
+      }
+    case 'SELECT_VISITED_FILTER':
+      return {
+        ...state,
+        selectedVisitedFilter: action.visited
       }
     case 'SET_FOCUSED_BUCKET_ID':
       return {

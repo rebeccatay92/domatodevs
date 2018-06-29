@@ -15,6 +15,7 @@ class BucketRow extends Component {
     this.state = {
       editing: false,
       bucketCategory: '',
+      visited: false,
       eventType: '',
       notes: '',
       thumbnailUrl: '',
@@ -30,6 +31,7 @@ class BucketRow extends Component {
         editing: false,
         bucketCategory: this.props.bucket.bucketCategory,
         eventType: this.props.bucket.eventType || '',
+        visited: this.props.bucket.visited || false,
         notes: this.props.bucket.notes || '',
         thumbnailUrl: this.props.bucket.thumbnailUrl || '',
         locationName: this.props.bucket.location.name
@@ -46,7 +48,8 @@ class BucketRow extends Component {
       id: this.props.bucket.id,
       bucketCategory: this.state.bucketCategory,
       eventType: this.state.eventType,
-      notes: this.state.notes
+      notes: this.state.notes,
+      visited: this.state.visited
     }
     // console.log('updates for backend', updatesObj)
     this.props.updateBucket({
@@ -98,6 +101,7 @@ class BucketRow extends Component {
     this.setState({
       bucketCategory: bucket.bucketCategory,
       eventType: bucket.eventType || '',
+      visited: bucket.visited || false,
       notes: bucket.notes || '',
       thumbnailUrl: bucket.thumbnailUrl || '',
       locationName: bucket.location.name
@@ -109,6 +113,7 @@ class BucketRow extends Component {
       this.setState({
         bucketCategory: nextProps.bucket.bucketCategory,
         eventType: nextProps.bucket.eventType || '',
+        visited: nextProps.bucket.visited || false,
         notes: nextProps.bucket.notes || '',
         thumbnailUrl: nextProps.bucket.thumbnailUrl || '',
         locationName: nextProps.bucket.location.name
@@ -136,7 +141,7 @@ class BucketRow extends Component {
     }
     return (
       <div style={styles.bucketRowContainer}>
-        <div style={{width: '100px', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <div style={{width: '100px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
           {this.state.editing &&
             <select value={this.state.bucketCategory} onChange={e => this.setState({bucketCategory: e.target.value})}>
               <option value='Location'>Location</option>
@@ -149,6 +154,30 @@ class BucketRow extends Component {
           }
           {!this.state.editing &&
             <i className='material-icons' style={{fontSize: '24px'}}>{category[this.state.bucketCategory]}</i>
+          }
+          {this.state.editing && !this.state.visited &&
+            <div style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}} onClick={() => this.setState({visited: true})}>
+              <span>Not visited</span>
+              <i className='material-icons' style={{fontSize: '24px'}}>check_box_outline_blank</i>
+            </div>
+          }
+          {this.state.editing && this.state.visited &&
+            <div style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}} onClick={() => this.setState({visited: false})}>
+              <span>Visited</span>
+              <i className='material-icons' style={{fontSize: '24px'}}>check_box</i>
+            </div>
+          }
+          {!this.state.editing && !this.state.visited &&
+            <div style={{display: 'flex', alignItems: 'center'}}>
+              <span>Not visited</span>
+              {/* <i className='material-icons' style={{fontSize: '24px'}}>check_box_outline_blank</i> */}
+            </div>
+          }
+          {!this.state.editing && this.state.visited &&
+            <div style={{display: 'flex', alignItems: 'center'}}>
+              <span>Visited</span>
+              {/* <i className='material-icons' style={{fontSize: '24px'}}>check_box</i> */}
+            </div>
           }
           {/* <span style={{display: 'block'}}>10 adds</span> */}
         </div>

@@ -4,7 +4,7 @@ import { graphql, compose } from 'react-apollo'
 import { getUserBucketList } from '../../../apollo/bucket'
 
 import { connect } from 'react-redux'
-import { initializeBucketList, selectCountryFilter, selectCategoryFilter, setFocusedBucketId } from '../../../actions/planner/bucketListActions'
+import { initializeBucketList, selectCountryFilter, selectCategoryFilter, selectVisitedFilter, setFocusedBucketId } from '../../../actions/planner/bucketListActions'
 import { setPopupToShow } from '../../../actions/planner/mapboxActions'
 
 import Radium from 'radium'
@@ -18,27 +18,18 @@ class BucketRightBar extends Component {
     this.state = {}
   }
 
-  // BUCKET LIST IS ALREADY INITIALIZED IN PLANNERPAGE.
-  // componentDidMount () {
-  //   if (this.props.data.getUserBucketList) {
-  //     this.props.initializeBucketList(this.props.data.getUserBucketList.buckets, this.props.data.getUserBucketList.countries)
-  //   }
-  // }
-  // componentWillReceiveProps (nextProps) {
-  //   if (nextProps.data.getUserBucketList !== this.props.data.getUserBucketList) {
-  //     // console.log('receiveprops intialize bucket', nextProps.data.getUserBucketList)
-  //     this.props.initializeBucketList(nextProps.data.getUserBucketList.buckets, nextProps.data.getUserBucketList.countries)
-  //   }
-  // }
-
   selectCountryFilter (id) {
-    // console.log('country id', id)
     this.props.selectCountryFilter(id)
     this.props.setFocusedBucketId('')
   }
 
   selectCategoryFilter (category) {
     this.props.selectCategoryFilter(category)
+    this.props.setFocusedBucketId('')
+  }
+
+  selectVisitedFilter (visited) {
+    this.props.selectVisitedFilter(visited)
     this.props.setFocusedBucketId('')
   }
 
@@ -57,9 +48,10 @@ class BucketRightBar extends Component {
   render () {
     if (this.props.data.loading) return <h1>Loading</h1>
 
-    let { buckets, countries, selectedBucketCategory, selectedCountryId } = this.props.bucketList
+    let { buckets, countries, selectedBucketCategory, selectedVisitedFilter, selectedCountryId } = this.props.bucketList
 
     let filteredByCountryArr
+    let filteredByCategoryArr
     let filteredFinalArr
 
     if (selectedCountryId) {
@@ -71,11 +63,23 @@ class BucketRightBar extends Component {
     }
 
     if (selectedBucketCategory) {
-      filteredFinalArr = filteredByCountryArr.filter(e => {
+      filteredByCategoryArr = filteredByCountryArr.filter(e => {
         return e.bucketCategory === selectedBucketCategory
       })
     } else {
-      filteredFinalArr = filteredByCountryArr
+      filteredByCategoryArr = filteredByCountryArr
+    }
+
+    if (selectedVisitedFilter) {
+      filteredFinalArr = filteredByCategoryArr.filter(e => {
+        if (selectedVisitedFilter === 'unvisited') {
+          return e.visited === false
+        } else if (selectedVisitedFilter === 'visited') {
+          return e.visited === true
+        }
+      })
+    } else {
+      filteredFinalArr = filteredByCategoryArr
     }
 
     return (
@@ -92,7 +96,7 @@ class BucketRightBar extends Component {
                 )
               })}
             </select>
-            <select value={selectedBucketCategory} onChange={e => this.selectCategoryFilter(e.target.value)} style={{...styles.filtersDropdown, marginTop: '8px'}}>
+            <select value={selectedBucketCategory} onChange={e => this.selectCategoryFilter(e.target.value)} style={{...styles.filtersDropdown}}>
               <option value=''>All categories</option>
               <option value='Location'>Location</option>
               <option value='Activity'>Activity</option>
@@ -101,6 +105,11 @@ class BucketRightBar extends Component {
               <option value='Flight'>Flight</option>
               <option value='Transport'>Transport</option>
             </select>
+            <select value={selectedVisitedFilter} onChange={e => this.selectVisitedFilter(e.target.value)} style={{...styles.filtersDropdown}}>
+              <option value=''>All items</option>
+              <option value='unvisited'>Unvisited</option>
+              <option value='visited'>Visited</option>
+            </select>
           </div>
         </div>
 
@@ -108,23 +117,6 @@ class BucketRightBar extends Component {
           {filteredFinalArr.length !== 0 && filteredFinalArr.map((bucket, i) => {
             return (
               <BucketItem key={i} index={i} focusedBucketId={this.props.bucketList.focfocusedBucketId} bucket={bucket} category={category} toggleFocusedBucket={(id) => this.toggleFocusedBucket(id)} />
-              // <div style={{width: '100%'}} key={i}>
-              //   {i !== 0 &&
-              //     <hr style={styles.horizontalDivider} />
-              //   }
-              //   <div style={this.props.bucketList.focusedBucketId === bucket.id ? styles.bucketRowFocused : styles.bucketRowUnfocused} key={`bucketItem${i}`} onClick={() => this.toggleFocusedBucket(bucket.id)}>
-              //     <img src={bucket.thumbnailUrl} style={styles.thumbnailImage} />
-              //     <div style={styles.contentContainer}>
-              //       <div style={styles.locationAndCategoryDiv}>
-              //         <span style={styles.locationName}>{bucket.location.name}</span>
-              //         <i className='material-icons' style={styles.categoryIcon}>{category[bucket.bucketCategory]}</i>
-              //       </div>
-              //       <div style={styles.notesContainer}>
-              //         <span style={styles.notes}>{bucket.notes}</span>
-              //       </div>
-              //     </div>
-              //   </div>
-              // </div>
             )
           })}
           {!filteredFinalArr.length &&
@@ -163,6 +155,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     selectCategoryFilter: (category) => {
       dispatch(selectCategoryFilter(category))
+    },
+    selectVisitedFilter: (visited) => {
+      dispatch(selectVisitedFilter(visited))
     },
     setFocusedBucketId: (id) => {
       dispatch(setFocusedBucketId(id))

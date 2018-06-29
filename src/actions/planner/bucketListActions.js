@@ -20,6 +20,13 @@ export const selectCategoryFilter = (category) => {
   }
 }
 
+export const selectVisitedFilter = (visited) => {
+  return {
+    type: 'SELECT_VISITED_FILTER',
+    visited
+  }
+}
+
 export const setFocusedBucketId = (id) => {
   return {
     type: 'SET_FOCUSED_BUCKET_ID',

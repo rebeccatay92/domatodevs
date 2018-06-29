@@ -238,6 +238,7 @@ class MapboxMap extends Component {
     // filter out which buckets to display
     if (this.props.bucketList) {
       let filteredByCountry
+      let filteredByCategory
       let finalFilteredArr
 
       if (this.props.bucketList.selectedCountryId) {
@@ -249,13 +250,24 @@ class MapboxMap extends Component {
       }
 
       if (this.props.bucketList.selectedBucketCategory) {
-        finalFilteredArr = filteredByCountry.filter(e => {
+        filteredByCategory = filteredByCountry.filter(e => {
           return e.bucketCategory === this.props.bucketList.selectedBucketCategory
         })
       } else {
-        finalFilteredArr = filteredByCountry
+        filteredByCategory = filteredByCountry
       }
 
+      if (this.props.bucketList.selectedVisitedFilter) {
+        finalFilteredArr = filteredByCategory.filter(e => {
+          if (this.props.bucketList.selectedVisitedFilter === 'unvisited') {
+            return e.visited === false
+          } else if (this.props.bucketList.selectedVisitedFilter === 'visited') {
+            return e.visited === true
+          }
+        })
+      } else {
+        finalFilteredArr = filteredByCategory
+      }
       // bucketMarkers are the bucket obj with a nested location obj.
       this.setState({
         bucketMarkersToDisplay: finalFilteredArr
@@ -350,82 +362,6 @@ class MapboxMap extends Component {
         }
       }
     }
-
-    // if (nextProps.activeEventId !== this.props.activeEventId) {
-    //   if (nextProps.activeEventId) {
-    //     // console.log('next active event', nextProps.activeEventId)
-    //     let thisEvent = nextProps.events.events.find(e => {
-    //       return e.id === nextProps.activeEventId
-    //     })
-    //     if (thisEvent.longitudeDisplay && thisEvent.latitudeDisplay) {
-    //       // console.log('longitude', thisEvent.longitudeDisplay)
-    //       // check if marker is already within the bounds
-    //       let currentBounds = this.map.getBounds()
-    //       // console.log('currentBounds', currentBounds)
-    //
-    //       let eventMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-    //
-    //       if (this.state.searchMarker && !this.state.customMarker) {
-    //         // search marker exists
-    //         let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
-    //
-    //         if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds) {
-    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-    //           this.setState({center: newCenter})
-    //         } else {
-    //           // if either is out of bounds, setbounds to include both markers
-    //           // console.log('mapboxgl', mapboxgl)
-    //           let bounds = new mapboxgl.LngLatBounds()
-    //           bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
-    //           bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
-    //           console.log('bounds', bounds)
-    //           this.map.fitBounds(bounds, {padding: 200})
-    //         }
-    //       } else if (!this.state.searchMarker && this.state.customMarker) {
-    //         let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
-    //
-    //         if (eventMarkerIsWithinBounds && customMarkerIsWithinBounds) {
-    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-    //           this.setState({center: newCenter})
-    //         } else {
-    //           // if either is out of bounds, setbounds to include both markers
-    //           // console.log('mapboxgl', mapboxgl)
-    //           let bounds = new mapboxgl.LngLatBounds()
-    //           bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
-    //           bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
-    //           console.log('bounds', bounds)
-    //           this.map.fitBounds(bounds, {padding: 200})
-    //         }
-    //       } else if (this.state.searchMarker && this.state.customMarker) {
-    //         let searchMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.searchMarker.latitude, this.state.searchMarker.longitude)
-    //         let customMarkerIsWithinBounds = this.checkIfWithinBounds(currentBounds, this.state.customMarker.latitude, this.state.customMarker.longitude)
-    //
-    //         if (eventMarkerIsWithinBounds && searchMarkerIsWithinBounds && customMarkerIsWithinBounds) {
-    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-    //           this.setState({center: newCenter})
-    //         } else {
-    //           // fit all 3 markers
-    //           let bounds = new mapboxgl.LngLatBounds()
-    //           bounds.extend([this.state.customMarker.longitude, this.state.customMarker.latitude])
-    //           bounds.extend([this.state.searchMarker.longitude, this.state.searchMarker.latitude])
-    //           bounds.extend([thisEvent.longitudeDisplay, thisEvent.latitudeDisplay])
-    //           console.log('bounds', bounds)
-    //           this.map.fitBounds(bounds, {padding: 200})
-    //         }
-    //       } else {
-    //         if (eventMarkerIsWithinBounds) {
-    //           console.log('only event marker, within bounds')
-    //           let newCenter = this.calculateNewCenterToFitPopup(thisEvent.latitudeDisplay, thisEvent.longitudeDisplay)
-    //           this.setState({center: newCenter})
-    //         } else {
-    //           console.log('only event marker. not within bounds')
-    //           this.setState({center: [thisEvent.longitudeDisplay, thisEvent.latitudeDisplay]})
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-
     // if clicking on bucket marker or bucket right bar
     if (nextProps.bucketList.focusedBucketId !== this.props.bucketList.focusedBucketId) {
       if (nextProps.bucketList.focusedBucketId) {
@@ -495,8 +431,9 @@ class MapboxMap extends Component {
     }
 
     // change bucket markers arr
-    if (nextProps.bucketList.selectedBucketCategory !== this.props.bucketList.selectedBucketCategory || nextProps.bucketList.selectedCountryId !== this.props.bucketList.selectedCountryId) {
+    if (nextProps.bucketList.selectedBucketCategory !== this.props.bucketList.selectedBucketCategory || nextProps.bucketList.selectedCountryId !== this.props.bucketList.selectedCountryId || nextProps.bucketList.selectedVisitedFilter !== this.props.bucketList.selectedVisitedFilter) {
       let filteredByCountry
+      let filteredByCategory
       let finalFilteredArr
 
       if (nextProps.bucketList.selectedCountryId) {
@@ -508,11 +445,23 @@ class MapboxMap extends Component {
       }
 
       if (nextProps.bucketList.selectedBucketCategory) {
-        finalFilteredArr = filteredByCountry.filter(e => {
+        filteredByCategory = filteredByCountry.filter(e => {
           return e.bucketCategory === this.props.bucketList.selectedBucketCategory
         })
       } else {
-        finalFilteredArr = filteredByCountry
+        filteredByCategory = filteredByCountry
+      }
+
+      if (nextProps.bucketList.selectedVisitedFilter) {
+        finalFilteredArr = filteredByCategory.filter(e => {
+          if (nextProps.bucketList.selectedVisitedFilter === 'unvisited') {
+            return e.visited === false
+          } else if (nextProps.bucketList.selectedVisitedFilter === 'visited') {
+            return e.visited === true
+          }
+        })
+      } else {
+        finalFilteredArr = filteredByCategory
       }
 
       // bucketMarkers are the bucket obj with a nested location obj.
