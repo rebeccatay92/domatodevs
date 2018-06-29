@@ -7,6 +7,10 @@ export const queryItinerary = gql`
       name
       description
       isPrivate
+      owner {
+        id
+        username
+      }
       countries {
         id
         name

@@ -78,6 +78,13 @@ class PlannerPage extends Component {
     if (this.props.queryItinerary.loading) return (<h1>Loading</h1>)
     if (this.props.getUserBucketList.loading) return (<h1>Loading</h1>)
 
+    // console.log('queryItinerary', this.props.queryItinerary)
+    // console.log('owner id', this.props.queryItinerary.findItinerary.owner.id)
+    // console.log(this.props.userProfile.id)
+    if (this.props.queryItinerary.findItinerary.owner.id !== this.props.userProfile.id) {
+      return <h1>You are not authorized to view this itinerary</h1>
+    }
+
     // CALCULATE DATES, DAYS HERE. DATES ARR IN UNIX (SECS).
     const startDateUnix = this.props.queryItinerary.findItinerary.startDate
     const numOfDaysInt = this.props.queryItinerary.findItinerary.days
@@ -124,7 +131,8 @@ class PlannerPage extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    plannerView: state.plannerView
+    plannerView: state.plannerView,
+    userProfile: state.userProfile
   }
 }
 
