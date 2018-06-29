@@ -13,7 +13,8 @@ class BucketTab extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      focusedTabCountryId: ''
+      focusedTabCountryId: '',
+      visitedFilter: ''
     }
     this.handleScrollBound = (e) => this.handleScroll(e)
   }
@@ -76,6 +77,20 @@ class BucketTab extends Component {
       return e.location.CountryId === this.state.focusedTabCountryId
     })
     console.log('bucketsByCountry', bucketsByCountry)
+
+    let finalFilteredArr
+    if (this.state.visitedFilter === '') {
+      finalFilteredArr = bucketsByCountry
+    } else if (this.state.visitedFilter === 'visited') {
+      finalFilteredArr = bucketsByCountry.filter(e => {
+        return e.visited === true
+      })
+    } else if (this.state.visitedFilter === 'unvisited') {
+      finalFilteredArr = bucketsByCountry.filter(e => {
+        return e.visited === false
+      })
+    }
+
     return (
       <div className='bucketTabComponent' style={styles.bucketTabContainer}>
         {stickySidebar &&
@@ -92,11 +107,16 @@ class BucketTab extends Component {
             {!bucketList.countries.length &&
               <h4 style={styles.clickedTab}>Oops!</h4>
             }
+            <select value={this.state.visitedFilter} onChange={e => this.setState({visitedFilter: e.target.value})}>
+              <option value=''>Filter by:</option>
+              <option value='unvisited'>Unvisited</option>
+              <option value='visited'>Visited</option>
+            </select>
           </div>
         </div>
 
         <div style={styles.rightColumn}>
-          {bucketsByCountry.length && bucketsByCountry.map((bucket, i) => {
+          {finalFilteredArr.length && finalFilteredArr.map((bucket, i) => {
             return (
               <div key={i}>
                 {i !== 0 &&
@@ -106,6 +126,9 @@ class BucketTab extends Component {
               </div>
             )
           })}
+          {!finalFilteredArr.length &&
+            <h1>No results for this filter</h1>
+          }
           {!bucketsByCountry.length &&
             <h1>Oops! Your bucket list is empty. Explore our site and save things to see them here.</h1>
           }
