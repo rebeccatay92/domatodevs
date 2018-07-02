@@ -170,12 +170,12 @@ class EventRowInfoCell extends Component {
 
     // listner for active cell requires focus to trigger
     // console.log('listener trigger for cell id', this.props.id)
-    if (e.keyCode === 13 && !this.state.editorFocus) {
+    if (e.key === 'Enter' && !this.state.editorFocus) {
       e.preventDefault()
       console.log('UNFOCUSED. ENTER TO FOCUS')
       this.setState({editorFocus: true, cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
     }
-    if (e.keyCode === 13 && this.state.editorFocus) {
+    if (e.key === 'Enter' && this.state.editorFocus) {
       e.preventDefault()
       console.log('ENTER TO GO TO NEXT ROW')
       // find next active row EventId
@@ -202,7 +202,7 @@ class EventRowInfoCell extends Component {
 
     if (e.key === 'ArrowRight') {
       // switch active col
-      console.log('props', this.props)
+      // console.log('props', this.props)
       let currentColumnName = this.props.column
       let currentColumnIndex = this.props.columnState.findIndex(e => {
         return e.name === currentColumnName
@@ -217,13 +217,39 @@ class EventRowInfoCell extends Component {
       }
     }
     if (e.key === 'ArrowLeft') {
-
+      let currentColumnName = this.props.column
+      let currentColumnIndex = this.props.columnState.findIndex(e => {
+        return e.name === currentColumnName
+      })
+      if (currentColumnIndex >= 1) {
+        console.log('can go further right to', eventPropertyNames[this.props.columnState[currentColumnIndex - 1].name])
+        this.props.changeActiveField(eventPropertyNames[this.props.columnState[currentColumnIndex - 1].name])
+        console.log('after change active field', this.props)
+      } else {
+        console.log('first col')
+      }
     }
     if (e.key === 'ArrowDown') {
-
+      console.log('go to next row if possible')
+      let thisEventIndex = this.props.events.events.findIndex(e => {
+        return e.id === this.props.id
+      }) + 1
+      if (thisEventIndex < this.props.events.events.length) {
+        console.log('next id', (thisEventIndex + 1).toString())
+        this.props.updateActiveEvent((thisEventIndex + 1).toString())
+      }
+      this.setState({editorFocus: false, cellClickedTwice: false})
     }
     if (e.key === 'ArrowUp') {
-
+      console.log('go up if possible')
+      let thisEventIndex = this.props.events.events.findIndex(e => {
+        return e.id === this.props.id
+      }) + 1
+      if (thisEventIndex > 1) {
+        console.log('next id', (thisEventIndex - 1).toString())
+        this.props.updateActiveEvent((thisEventIndex - 1).toString())
+      }
+      this.setState({editorFocus: false, cellClickedTwice: false})
     }
   }
 
