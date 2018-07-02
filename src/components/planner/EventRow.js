@@ -5,9 +5,11 @@ import { DropTarget, DragSource } from 'react-dnd'
 import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
+import { ContentState } from 'draft-js'
 
 import { queryItinerary } from '../../apollo/itinerary'
-import { deleteEvent, changingLoadSequence } from '../../apollo/event'
+import { deleteEvent, createEvent, changingLoadSequence } from '../../apollo/event'
+import { updateBucket } from '../../apollo/bucket'
 
 import EventRowInfoCell from './EventRowInfoCell'
 import EventRowTimeCell from './EventRowTimeCell'
@@ -44,18 +46,65 @@ const eventRowTarget = {
   },
   drop (props, monitor) {
     let day = props.event.startDay
-    if (day === monitor.getItem().day && monitor.getItem().index === props.index) {
+    let draggedItem = monitor.getItem()
+    if (monitor.getItemType() === 'plannerEvent' && day === draggedItem.day && draggedItem.index === props.index) {
       initializeEventsHelper(props.data.findItinerary.events, props.initializeEvents)
       return
     }
     if (monitor.getItemType() === 'plannerEvent') {
       const newEvent = {
-        ...monitor.getItem(),
+        ...draggedItem,
         ...{
           startDay: day
         }
       }
       props.dropPlannerEvent(newEvent, props.index)
+    } else if (monitor.getItemType() === 'bucketItem') {
+      props.createEvent({
+        variables: {
+          ItineraryId: props.itineraryId,
+          startDay: day,
+          loadSequence: props.index + 1,
+          eventType: draggedItem.bucketCategory,
+          notes: draggedItem.notes,
+          LocationID: draggedItem.location.id
+        }
+      })
+      .then(res => {
+        const newEvent = {
+          id: res.data.createEvent.id,
+          ItineraryId: props.itineraryId,
+          currency: null,
+          startDay: day,
+          startTime: '',
+          endTime: '',
+          eventType: ContentState.createFromText(draggedItem.bucketCategory),
+          // content state for place name
+          locationName: draggedItem.location ? ContentState.createFromText(draggedItem.location.name) : ContentState.createFromText(''),
+          // regular json object holding verified, name, address, latlng, countrycode.
+          locationObj: draggedItem.location ? {
+            verified: draggedItem.location.verified,
+            name: draggedItem.location.name,
+            address: draggedItem.location.address,
+            latitude: draggedItem.location.latitude,
+            longitude: draggedItem.location.longitude,
+            countryCode: draggedItem.location.country ? draggedItem.location.country.code : ''
+          } : null,
+          cost: ContentState.createFromText(''),
+          notes: draggedItem.notes ? ContentState.createFromText(draggedItem.notes) : ContentState.createFromText(''),
+          bookingService: ContentState.createFromText(''),
+          bookingConfirmation: ContentState.createFromText('')
+        }
+        props.dropPlannerEvent(newEvent, props.index)
+      })
+      .then(() => {
+        props.updateBucket({
+          variables: {
+            id: draggedItem.id,
+            visited: true
+          }
+        })
+      })
     }
   }
 }
@@ -228,5 +277,7 @@ const options = {
 export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options),
   graphql(deleteEvent, { name: 'deleteEvent' }),
+  graphql(createEvent, { name: 'createEvent' }),
+  graphql(updateBucket, { name: 'updateBucket' }),
   graphql(changingLoadSequence, { name: 'changingLoadSequence' })
 )(DragSource('plannerEvent', eventRowSource, collectSource)(DropTarget(['plannerEvent', 'bucketItem'], eventRowTarget, collectTarget)(EventRow))))
