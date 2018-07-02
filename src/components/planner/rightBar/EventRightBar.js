@@ -202,8 +202,11 @@ class EventRightBar extends Component {
     this.props.setFocusTo('rightbar')
   }
 
-  handleClickOutside () {
-    console.log('clicking outside of right bar')
+  handleClickOutside (evt) {
+    console.log('clicking outside of right bar', evt.target)
+    evt.preventDefault() // prevent click to focus on dom nodes. but cant change to other cell when right is open
+    // if else to check click target is original focus?
+    // evt.stopPropagation()
     this.props.setFocusTo('')
   }
 
@@ -222,7 +225,7 @@ class EventRightBar extends Component {
     }
 
     return (
-      <div style={styles.mainAreaContainer} onClick={() => this.onEventRightBarClick()}>
+      <div tabIndex='1' style={styles.mainAreaContainer} onClick={() => this.onEventRightBarClick()}>
         <div style={styles.minHeightSection}>
           <div style={styles.iconSection}>
             <i className='material-icons' style={styles.icon}>schedule</i>

@@ -27,11 +27,17 @@ const GoogleCloudStorageInstance = new GoogleCloudStorage()
 const lock = new Lock()
 
 class App extends Component {
+
+  checkFocus () {
+    console.log('does doc have focus?', document.hasFocus())
+    console.log('focused el', document.activeElement)
+  }
+
   render () {
     // var isAuthenticated = lock.isAuthenticated()
     return (
       <Router history={history}>
-        <div style={{backgroundColor: '#FFFFFF'}}>
+        <div style={{backgroundColor: '#FFFFFF'}} onClick={() => this.checkFocus()}>
           <NavBar lock={lock} />
 
           {this.props.navBar.showNavBar &&

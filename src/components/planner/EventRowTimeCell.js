@@ -59,16 +59,9 @@ class EventRowTimeCell extends Component {
     } else return false
   }
 
-  componentWillReceiveProps (nextProps) {
-    const { timeCellFocus, id } = nextProps
-    // if (timeCellFocus && nextProps.activeEventId === id) {
-    //   // this.props.setTimeCellFocus(false)
-    //   this.editor.focus()
-    // }
-
-    // TIMECELLFOCUS NOT CURRENTLY IN USE. CHECK ACTIVEFIELD TO SEE IF THIS IS CORRECT CELL TO FOCUS
-    if (nextProps.activeEventId !== this.props.activeEventId) {
-      if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
+  componentDidUpdate (prevProps) {
+    if (prevProps.activeEventId !== this.props.activeEventId) {
+      if (this.props.activeEventId === this.props.id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')) {
         console.log('this is correct row n col')
         if (this.props.plannerFocus !== 'rightbar') {
           console.log('active cell changed, right bar not focused')
@@ -78,20 +71,61 @@ class EventRowTimeCell extends Component {
       }
     }
 
-    if (nextProps.plannerFocus !== this.props.plannerFocus) {
-      if (nextProps.plannerFocus !== 'rightbar') {
+    if (prevProps.plannerFocus !== this.props.plannerFocus) {
+      if (this.props.plannerFocus !== 'rightbar') {
         // console.log('planner focus changed, not rightbar')
         // console.log('activefield', nextProps.activeField)
-        if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
-          console.log('correct activeEventId, activeField is time, this cell id is', id)
+        if (this.props.activeEventId === this.props.id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')) {
+          console.log('correct activeEventId, activeField is time, this cell id is', this.props.id)
           // CLICKING IN RIGHT BAR, THEN BACK INTO TIME CELL EXACTLY IS OK. CLICKING OUTSIDE OF TIME CELL FULFILS THIS IF, BUT FOCUS IS STILL NOT IN THIS CELL. FOCUS IS ON PARENT DIV MAYBE?
+          console.log('ref', this.cell)
           this.cell.focus()
-          this.editor.focus()
+          // this.editor.focus()
+          // WHERE DID THE FOCUS GO
+          console.log('hasFocus', document.hasFocus(), 'activeElement', document.activeElement)
+
+          // check if they are the same nodes
+          console.log(document.activeElement === this.cell)
         }
       }
     }
   }
 
+  // componentWillReceiveProps (nextProps) {
+  //   const { timeCellFocus, id } = nextProps
+  //   // if (timeCellFocus && nextProps.activeEventId === id) {
+  //   //   // this.props.setTimeCellFocus(false)
+  //   //   this.editor.focus()
+  //   // }
+  //
+  //   // TIMECELLFOCUS NOT CURRENTLY IN USE. CHECK ACTIVEFIELD TO SEE IF THIS IS CORRECT CELL TO FOCUS
+  //   if (nextProps.activeEventId !== this.props.activeEventId) {
+  //     if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
+  //       console.log('this is correct row n col')
+  //       if (this.props.plannerFocus !== 'rightbar') {
+  //         console.log('active cell changed, right bar not focused')
+  //         this.cell.focus()
+  //         this.editor.focus()
+  //       }
+  //     }
+  //   }
+  //
+  //   if (nextProps.plannerFocus !== this.props.plannerFocus) {
+  //     if (nextProps.plannerFocus !== 'rightbar') {
+  //       // console.log('planner focus changed, not rightbar')
+  //       // console.log('activefield', nextProps.activeField)
+  //       if (nextProps.activeEventId === id && (nextProps.activeField === 'startTime' || nextProps.activeField === 'endTime')) {
+  //         console.log('correct activeEventId, activeField is time, this cell id is', id)
+  //         // CLICKING IN RIGHT BAR, THEN BACK INTO TIME CELL EXACTLY IS OK. CLICKING OUTSIDE OF TIME CELL FULFILS THIS IF, BUT FOCUS IS STILL NOT IN THIS CELL. FOCUS IS ON PARENT DIV MAYBE?
+  //         // console.log('ref', this.cell)
+  //         this.cell.focus()
+  //         this.editor.focus()
+  //       }
+  //     }
+  //   }
+  // }
+
+  // keydown is not firing after clicking outside rightbar (focus is not actually on cell)
   handleKeyDown (e, isActive, editorFocus) {
     // console.log('called');
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
@@ -116,7 +150,11 @@ class EventRowTimeCell extends Component {
     }
     // NO ARROW LEFT SINCE TIME IS LEFTMOST COL (UNLESS WE WANT TO REVERSE TO PREVIOUS ROW LAST COL)
     if (e.key === 'ArrowDown') {
+      // console.log('e', e)
       // go to next row if possible
+      // e.preventDefault()
+      // e.stopPropagation()
+      // e.nativeEvent.stopImmediatePropagation()
       let thisEventIndex = this.props.events.events.findIndex(e => {
         return e.id === this.props.id
       }) + 1
