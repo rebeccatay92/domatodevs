@@ -9,6 +9,7 @@ import { ContentState } from 'draft-js'
 
 import { queryItinerary } from '../../apollo/itinerary'
 import { deleteEvent, createEvent, changingLoadSequence } from '../../apollo/event'
+import { updateBucket } from '../../apollo/bucket'
 
 import EventRowInfoCell from './EventRowInfoCell'
 import EventRowTimeCell from './EventRowTimeCell'
@@ -95,6 +96,14 @@ const eventRowTarget = {
           bookingConfirmation: ContentState.createFromText('')
         }
         props.dropPlannerEvent(newEvent, props.index)
+      })
+      .then(() => {
+        props.updateBucket({
+          variables: {
+            id: draggedItem.id,
+            visited: true
+          }
+        })
       })
     }
   }
@@ -269,5 +278,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(queryItinerary, options),
   graphql(deleteEvent, { name: 'deleteEvent' }),
   graphql(createEvent, { name: 'createEvent' }),
+  graphql(updateBucket, { name: 'updateBucket' }),
   graphql(changingLoadSequence, { name: 'changingLoadSequence' })
 )(DragSource('plannerEvent', eventRowSource, collectSource)(DropTarget(['plannerEvent', 'bucketItem'], eventRowTarget, collectTarget)(EventRow))))

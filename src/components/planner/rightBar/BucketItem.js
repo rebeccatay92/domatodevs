@@ -12,6 +12,7 @@ import { initializeBucketList } from '../../../actions/planner/bucketListActions
 
 const bucketItemSource = {
   beginDrag (props) {
+    console.log(props.bucket);
     return {...props.bucket, ...{index: props.index}}
   },
   endDrag (props, monitor) {

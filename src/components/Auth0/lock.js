@@ -10,7 +10,7 @@ class Lock {
     process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
     {
       auth: {
-        redirectUrl: 'http://localhost:3000/callback',
+        redirectUrl: 'http://localhost:3000/',
         audience: 'http://localhost:3001',
         autoParseHash: true,
         responseType: 'token id_token',
