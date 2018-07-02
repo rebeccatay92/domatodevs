@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { DropTarget, DragSource } from 'react-dnd'
 import { connect } from 'react-redux'
+import Radium from 'radium'
 
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
 
@@ -71,4 +72,4 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(null, mapDispatchToProps)(compose(
   graphql(getUserBucketList, {name: 'getUserBucketList'})
-)(DragSource('bucketItem', bucketItemSource, collectSource)(BucketItem)))
+)(DragSource('bucketItem', bucketItemSource, collectSource)(Radium(BucketItem))))

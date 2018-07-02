@@ -107,7 +107,7 @@ class BucketRightBar extends Component {
         <div style={styles.bucketListContainer}>
           {filteredFinalArr.length !== 0 && filteredFinalArr.map((bucket, i) => {
             return (
-              <BucketItem key={i} index={i} focusedBucketId={this.props.bucketList.focfocusedBucketId} bucket={bucket} category={category} toggleFocusedBucket={(id) => this.toggleFocusedBucket(id)} />
+              <BucketItem key={i} index={i} focusedBucketId={this.props.bucketList.focusedBucketId} bucket={bucket} category={category} toggleFocusedBucket={(id) => this.toggleFocusedBucket(id)} />
               // <div style={{width: '100%'}} key={i}>
               //   {i !== 0 &&
               //     <hr style={styles.horizontalDivider} />
