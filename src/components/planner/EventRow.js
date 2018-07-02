@@ -17,8 +17,9 @@ import EventRowLocationCell from './EventRowLocationCell'
 
 import { toggleSpinner } from '../../actions/spinnerActions'
 import { updateActiveEvent } from '../../actions/planner/activeEventActions'
-import { setRightBarFocusedTab } from '../../actions/planner/plannerViewActions'
+import { setRightBarFocusedTab, switchToMapView } from '../../actions/planner/plannerViewActions'
 import { initializeEvents, hoverOverEvent, dropPlannerEvent, updateEvent } from '../../actions/planner/eventsActions'
+import { ensureDayIsChecked, setPopupToShow } from '../../actions/planner/mapboxActions'
 
 // helpers
 import { initializeEventsHelper } from '../../helpers/initializeEvents'
@@ -154,6 +155,17 @@ class EventRow extends Component {
     })
   }
 
+  openInMap () {
+    let thisEvent = this.props.events.events.find(e => {
+      return e.id === this.props.activeEventId
+    })
+    let startDay = thisEvent.startDay
+    this.props.ensureDayIsChecked(startDay)
+    this.props.switchToMapView()
+    // this.props.setRightBarFocusedTab('event')
+    this.props.setPopupToShow('event')
+  }
+
   // handleDuplicate () {
   //   const { event } = this.props
   //   this.props.updateEvent(null, null, null, false)
@@ -223,7 +235,7 @@ class EventRow extends Component {
               Delete Row
             </MenuItem>
             <MenuItem divider />
-            <MenuItem onClick={this.handleClick}>
+            <MenuItem onClick={() => this.openInMap()}>
               Show On Map
             </MenuItem>
           </ContextMenu>}
@@ -236,7 +248,9 @@ class EventRow extends Component {
 const mapStateToProps = (state) => {
   return {
     columns: state.columns,
-    sortOptions: state.sortOptions
+    sortOptions: state.sortOptions,
+    events: state.events,
+    activeEventId: state.activeEventId
   }
 }
 
@@ -262,6 +276,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateEvent: (id, property, value, fromSidebar) => {
       return dispatch(updateEvent(id, property, value, fromSidebar))
+    },
+    switchToMapView: () => {
+      dispatch(switchToMapView())
+    },
+    ensureDayIsChecked: (day) => {
+      dispatch(ensureDayIsChecked(day))
+    },
+    setPopupToShow: (name) => {
+      dispatch(setPopupToShow(name))
     }
   }
 }
