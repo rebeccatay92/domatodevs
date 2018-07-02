@@ -52,9 +52,35 @@ export const queryItinerary = gql`
     }
   }`
 
-export const allItineraries = gql`
-  query allItineraries {
-    allItineraries {
+// export const allItineraries = gql`
+//   query allItineraries {
+//     allItineraries {
+//       id
+//       name
+//       days
+//       startDate
+//       isPrivate
+//       countries {
+//         id
+//         name
+//         code
+//       }
+//       owner {
+//         id
+//         username
+//         email
+//       }
+//       users {
+//         id
+//         username
+//         email
+//       }
+//     }
+//   }`
+
+export const getAllPublishedItineraries = gql`
+  query getAllPublishedItineraries {
+    getAllPublishedItineraries {
       id
       name
       days
@@ -70,13 +96,10 @@ export const allItineraries = gql`
         username
         email
       }
-      users {
-        id
-        username
-        email
-      }
+      createdAt
     }
-  }`
+  }
+`
 
 export const itinerariesByUser = gql`
   query itinerariesByUser {

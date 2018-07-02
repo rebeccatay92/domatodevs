@@ -1,4 +1,7 @@
-export const readReducer = (state = {pagesArr: [], activePostIndex: 'home'}, action) => {
+export const readReducer = (state = {
+  pagesArr: [],
+  activePostIndex: 0 // 0 is homepage, then 1,2,3 follows load seq, and index in pagesArr
+}, action) => {
   switch (action.type) {
     case 'INITIALIZE_POSTS':
       return {...state, ...{pagesArr: action.pages}}

@@ -25,10 +25,11 @@ import { MapboxMapStyles as styles } from '../../../Styles/MapboxMapStyles'
 // react wrapper factory
 const Map = ReactMapboxGL({
   accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
-  minZoom: 1,
+  minZoom: 1.5,
   dragRotate: false,
   attributionControl: false,
-  logoPosition: 'bottom-right'
+  logoPosition: 'bottom-right',
+  renderWorldCopies: false
 })
 
 const mapStyle = 'mapbox://styles/mapbox/streets-v10'
@@ -41,7 +42,7 @@ class MapboxMap extends Component {
       showDropdown: false,
       showSpinner: false,
       predictions: [],
-      center: [0, 0], // lng/lat in that order to match GeoJSON
+      center: [20, 20], // lng/lat in that order to match GeoJSON
       zoom: [1],
       containerStyle: {
         height: 'calc(100vh - 52px - 51px)',
@@ -172,17 +173,13 @@ class MapboxMap extends Component {
     let longitude = map.getCenter().lng
     let latitude = map.getCenter().lat
 
-    // if (longitude < -180) {
-    //   longitude += 180
-    // } else if (longitude > 180) {
-    //   longitude -= 180
-    // }
-
     this.setState({
       zoom: [map.getZoom()],
       center: [longitude, latitude]
     }, () => {
-      // console.log('updated state after move-end', this.state)
+      console.log('updated state after move-end', this.state)
+      // console.log('bounds', map.getBounds())
+      // console.log(map.transform.latRange[0], map.transform.latRange[1])
     })
   }
 
@@ -1065,7 +1062,7 @@ class MapboxMap extends Component {
     })
 
     return (
-      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)}>
+      <Map style={mapStyle} zoom={this.state.zoom} center={this.state.center} containerStyle={this.state.containerStyle} onStyleLoad={el => { this.map = el }} onMoveEnd={(map, evt) => this.onMapMoveEnd(map, evt)} onClick={(map, evt) => this.onMapClick(map, evt)} maxBounds={[[-180, -85.05113], [180, 85.05113]]}>
         <ZoomControl position='top-left' />
 
         {/* CUSTOM MARKER */}
@@ -1156,7 +1153,6 @@ class MapboxMap extends Component {
           <PopupTemplate longitude={activeEvent.longitudeDisplay} latitude={activeEvent.latitudeDisplay} markerType='event' locationObj={activeEventLocationObj} activeEventId={this.props.activeEventId} activeEventLocationObj={activeEventLocationObj} daysArr={this.props.daysArr} closePopup={() => this.closePopup()} saveCustomLocation={() => this.saveCustomLocation()} saveCustomAddress={() => this.saveCustomAddress()} customMarkerAddEvent={() => this.customMarkerAddEvent()} saveSearchLocation={() => this.saveSearchLocation()} saveSearchAddress={() => this.saveSearchAddress()} searchMarkerAddEvent={() => this.searchMarkerAddEvent()} saveBucketLocation={() => this.saveBucketLocation()} saveBucketAddress={() => this.saveBucketAddress()} bucketMarkerAddEvent={() => this.bucketMarkerAddEvent()} />
         }
 
-        //BUCKET MARKERS + BUCKET FOCUSED MARKER
         {this.props.mapbox.bucketCheckbox && this.state.bucketMarkersToDisplay.map((bucket, i) => {
           let isActiveBucket = this.props.bucketList.focusedBucketId === bucket.id
           return (

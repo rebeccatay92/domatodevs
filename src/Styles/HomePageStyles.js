@@ -2,7 +2,8 @@ import { coreColors, coreFonts } from './cores'
 
 // NEEDS RADIUM? YES
 const homePageContainer = {
-  width: '1096px', // width of 4 thumbnails + 3 gutter
+  // width: '1096px', // width of 4 thumbnails + 3 gutter
+  width: '1266px',
   minHeight: 'calc(100vh - 52px)', // minus off horizontal tabs
   margin: '0 auto',
   position: 'relative'
@@ -39,17 +40,24 @@ const blogSectionContainer = {
   justifyContent: 'flex-start',
   alignContent: 'flex-start',
   // add back 2*12px margin for 1st and last
-  width: 'calc(100% + 24px)',
+  // width: 'calc(100% + 24px)',
+  width: 'calc(100% + 18px)',
   minHeight: 'calc(100vh - 52px - 56px)',
   // negative margin to counter 1st and last thumbnail
-  margin: '12px 0 -12px -12px'
+  // margin: '12px 0 -12px -12px',
+  paddingTop: '9px',
+  margin: '0 -9px'
 }
 /* ----------------------------- */
 
 const blogThumbnailContainer = {
-  width: '256px',
-  height: '254px', // for top row, img, bottom row
-  margin: '12px' // 24px spacing between thumbnails
+  // width: '256px',
+  // height: '254px', // for top row, img, bottom row
+  // margin: '12px', // 24px spacing between thumbnails
+  width: '303px',
+  // height: '171px',
+  height: 'calc(171px + 50px + 60px)', // img 171 plus top info 50 plus bottom info 60
+  margin: '9px'
 }
 
 /* ----------------------------- */
@@ -118,15 +126,17 @@ const countryName = {
 /* ----------------------------- */
 
 const thumbnailImageContainer = {
-  width: '256px',
-  height: '144px',
+  // width: '256px',
+  // height: '144px',
+  width: '303px',
+  height: '171px',
   cursor: 'pointer'
 }
 /* ----------------------------- */
 
 const blogThumbnailBottomInfoRow = {
   width: '100%',
-  height: 'calc(254px - 50px - 144px)' // equals 60px
+  height: '60px'
   // 3 lines of text. 24px + 18px + 18px
 }
 
