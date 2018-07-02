@@ -134,7 +134,7 @@ class EventRightBar extends Component {
     let startDay = thisEvent.startDay
 
     this.props.switchToMapView()
-    this.props.setRightBarFocusedTab('event')
+    // this.props.setRightBarFocusedTab('event')
 
     let daysToShow = this.props.mapbox.daysToShow
     let isStartDayInDaysArr = daysToShow.includes(startDay)
