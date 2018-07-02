@@ -113,9 +113,10 @@ class EventRowInfoCell extends Component {
 
     if (nextProps.plannerFocus !== this.props.plannerFocus) {
       if (nextProps.plannerFocus !== 'rightbar') {
-        if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
+        if (nextProps.activeEventId === id && nextProps.activeField === property) {
           console.log('area focus has changed')
           this.cell.focus()
+          // THIS IS NOT FOCUSING AFTER CLICKING AWAY FROM RIGHT BAR??
         }
       }
     }
