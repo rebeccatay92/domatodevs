@@ -8,6 +8,9 @@ import { setRightBarFocusedTab, switchToMapView } from '../../../actions/planner
 import { clickDayCheckbox, setPopupToShow } from '../../../actions/planner/mapboxActions'
 import { changeActiveField } from '../../../actions/planner/activeFieldActions'
 import { openConfirmWindow } from '../../../actions/confirmWindowActions'
+import { setFocusTo } from '../../../actions/planner/plannerFocusActions'
+
+import onClickOutside from 'react-onclickoutside'
 
 import { updateEventBackend, deleteEvent } from '../../../apollo/event'
 import { changingLoadSequence } from '../../../apollo/changingLoadSequence'
@@ -185,6 +188,25 @@ class EventRightBar extends Component {
     }
   }
 
+  componentDidMount () {
+    console.log('event side bar mounted')
+    this.props.setFocusTo('rightbar')
+  }
+
+  componentWillUnmount () {
+    console.log('unmount right bar')
+    this.props.setFocusTo('')
+  }
+
+  onEventRightBarClick () {
+    this.props.setFocusTo('rightbar')
+  }
+
+  handleClickOutside () {
+    console.log('clicking outside of right bar')
+    this.props.setFocusTo('')
+  }
+
   render () {
     let thisEvent = this.props.events.events.find(e => {
       return e.id === this.props.activeEventId
@@ -200,7 +222,7 @@ class EventRightBar extends Component {
     }
 
     return (
-      <div style={styles.mainAreaContainer}>
+      <div style={styles.mainAreaContainer} onClick={() => this.onEventRightBarClick()}>
         <div style={styles.minHeightSection}>
           <div style={styles.iconSection}>
             <i className='material-icons' style={styles.icon}>schedule</i>
@@ -223,7 +245,7 @@ class EventRightBar extends Component {
               <span style={styles.labelText}>Time</span>
               <input type='time' style={styles.timeInput} value={thisEvent.startTime} onChange={e => this.updateTime(e, 'startTime')} onFocus={() => this.props.changeActiveField('startTime')}/>
               <span style={{fontFamily: 'Roboto, sans-serif', fontWeight: 300, fontSize: '14px', color: 'rgba(60, 58, 68, 0.7)', margin: '0 5px 0 5px'}}>to</span>
-              <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} onFocus={() => this.props.changeActiveField('endTime')}/>
+              <input type='time' style={styles.timeInput} value={thisEvent.endTime} onChange={e => this.updateTime(e, 'endTime')} onFocus={() => this.props.changeActiveField('endTime')} />
             </label>
           </div>
         </div>
@@ -357,6 +379,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     openConfirmWindow: (input) => {
       dispatch(openConfirmWindow(input))
+    },
+    setFocusTo: (focus) => {
+      dispatch(setFocusTo(focus))
     }
   }
 }
@@ -374,4 +399,4 @@ export default connect(mapStateToProps, mapDispatchToProps)(compose(
   graphql(changingLoadSequence, {name: 'changingLoadSequence'}),
   graphql(deleteEvent, {name: 'deleteEvent'}),
   graphql(queryItinerary, options)
-)(EventRightBar))
+)(onClickOutside(EventRightBar)))

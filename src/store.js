@@ -22,6 +22,7 @@ import { itineraryReducer } from './reducers/planner/itineraryReducer'
 import { activeEventReducer } from './reducers/planner/activeEventReducer'
 import { activeFieldReducer } from './reducers/planner/activeFieldReducer'
 import { plannerViewReducer } from './reducers/planner/plannerViewReducer'
+import { plannerFocusReducer } from './reducers/planner/plannerFocusReducer'
 import { mapboxReducer } from './reducers/planner/mapboxReducer'
 import { timeCellFocusReducer } from './reducers/planner/timeCellFocusReducer'
 import { sortReducer } from './reducers/planner/sortReducer'
@@ -69,6 +70,7 @@ const store = createStore(combineReducers({
   activeEventId: activeEventReducer,
   activeField: activeFieldReducer,
   plannerView: plannerViewReducer,
+  plannerFocus: plannerFocusReducer,
   mapbox: mapboxReducer,
   timeCellFocus: timeCellFocusReducer,
   sortOptions: sortReducer,

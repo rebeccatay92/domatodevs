@@ -109,8 +109,8 @@ export const eventsReducer = (state = {
         ...state.events.filter(event => event.id === action.id)[0], ...{[action.property]: action.value}
       }
       return {
-        events: [...state.events.filter((event) => event.id !== action.id), ...[modifiedEvent]],
-        // .sort((a, b) => a.startDay - b.startDay || a.loadSequence - b.loadSequence)
+        events: [...state.events.filter((event) => event.id !== action.id), ...[modifiedEvent]].sort((a, b) => a.startDay - b.startDay || a.loadSequence - b.loadSequence),
+        //MUST BE SORTED IN SAME ORDER AS EVENTINDEX, ELSE CELLS DONT KNOW WHICH IS NEXT ACTIVEEVENTID TO SET
         refetch: false,
         updatedId: action.id,
         updatedProperty: action.property === 'currency' ? 'cost' : action.property,

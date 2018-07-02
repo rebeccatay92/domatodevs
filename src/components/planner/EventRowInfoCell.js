@@ -92,12 +92,37 @@ class EventRowInfoCell extends Component {
       this.setState({editorState: EditorState.createWithContent(value)})
     }
 
+    // if cell is newly active, focus so keydown listener can fire
+    // but this constantly fires. clicking in right bar should unfocus so typing can occur?
     // if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
-    //   this.cell.focus()
+    //   if (this.props.plannerFocus !== 'rightbar') {
+    //     console.log('planner focus is not on rightbar')
+    //     this.cell.focus()
+    //     // fire too often, cant type inside of cell
+    //   }
     // }
     if (nextProps.activeEventId !== this.props.activeEventId || nextProps.activeField !== this.props.activeField) {
-      this.setState({cellClickedTwice: false})
+      if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
+        // if active cell changes + this is the newest active cell
+        if (this.props.plannerFocus !== 'rightbar') {
+          console.log('active cell changed and right bar is not focused')
+          this.cell.focus()
+        }
+      }
     }
+
+    if (nextProps.plannerFocus !== this.props.plannerFocus) {
+      if (nextProps.plannerFocus !== 'rightbar') {
+        if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
+          console.log('area focus has changed')
+          this.cell.focus()
+        }
+      }
+    }
+    // if (nextProps.activeEventId !== this.props.activeEventId || nextProps.activeField !== this.props.activeField) {
+    //   console.log('activeEventId changed')
+    //   this.setState({cellClickedTwice: false})
+    // }
   }
 
   shouldComponentUpdate (nextProps) {
@@ -128,23 +153,42 @@ class EventRowInfoCell extends Component {
   handleCellClick (e) {
     // const property = eventPropertyNames[this.props.column]
     if (!this.state.cellClickedTwice) {
-      this.setState({cellClickedTwice: true})
+      this.setState({cellClickedTwice: true, editorFocus: true})
     } else {
       this.focus(e)
     }
   }
 
+  // listener is on div
   handleKeyDown (e, isActive) {
+    console.log('key pressed', e.key)
     const { column, id } = this.props
     const property = eventPropertyNames[column]
     // if (e.keyCode <= 40 && e.keyCode >= 37 && isActive && !editorFocus) {
     //   this.handleArrowKeyDown(e.keyCode)
     // }
 
+    // listner for active cell requires focus to trigger
+    // console.log('listener trigger for cell id', this.props.id)
     if (e.keyCode === 13 && !this.state.editorFocus) {
       e.preventDefault()
-      console.log('wrong enter');
+      console.log('UNFOCUSED. ENTER TO FOCUS')
       this.setState({editorFocus: true, cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
+    }
+    if (e.keyCode === 13 && this.state.editorFocus) {
+      e.preventDefault()
+      console.log('ENTER TO GO TO NEXT ROW')
+      // find next active row EventId
+      console.log('ordered all events', this.props.events.events)
+      let thisEventIndex = this.props.events.events.findIndex(e => {
+        return e.id === this.props.id
+      }) + 1
+      console.log('this event index', thisEventIndex, 'max index', this.props.events.events.length)
+      if (thisEventIndex < this.props.events.events.length) {
+        console.log('next id', (thisEventIndex + 1).toString())
+        this.props.updateActiveEvent((thisEventIndex + 1).toString())
+      }
+      this.setState({editorFocus: false, cellClickedTwice: false})
     }
 
     if (e.key === 'Escape') {
@@ -153,6 +197,33 @@ class EventRowInfoCell extends Component {
         editorState
       })
       this.props.updateEvent(id, property, this.state.initialValue, false)
+      // CARE: UPDATEEVENT MUST RETURN SORTED EVENTS ARR. ELSE NEWLY EDITED CELL JUMPS TO LAST POSITION, EVENTINDEX + 1 FAILS THE LENGTH CHECK.
+    }
+
+    if (e.key === 'ArrowRight') {
+      // switch active col
+      console.log('props', this.props)
+      let currentColumnName = this.props.column
+      let currentColumnIndex = this.props.columnState.findIndex(e => {
+        return e.name === currentColumnName
+      })
+      console.log('currentColumnIndex', currentColumnIndex)
+      if (currentColumnIndex < this.props.columnState.length - 1) {
+        console.log('can go further right to', eventPropertyNames[this.props.columnState[currentColumnIndex + 1].name])
+        this.props.changeActiveField(eventPropertyNames[this.props.columnState[currentColumnIndex + 1].name])
+        console.log('after change active field', this.props)
+      } else {
+        console.log('last col')
+      }
+    }
+    if (e.key === 'ArrowLeft') {
+
+    }
+    if (e.key === 'ArrowDown') {
+
+    }
+    if (e.key === 'ArrowUp') {
+
     }
   }
 
@@ -208,6 +279,7 @@ class EventRowInfoCell extends Component {
     })
   }
 
+  // this is draft js key listener
   handleKeyCommand (command) {
     if (command === 'enterPressed') {
       this.editor.blur()
@@ -224,6 +296,9 @@ class EventRowInfoCell extends Component {
     const isActive = this.props.activeEventId === id && this.props.activeField === property
     const eventCurrency = getEventProp('Currency', events.filter(event => event.id === id)[0])
 
+    if (isActive) {
+      console.log('this id', id, 'isActive', isActive)
+    }
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
@@ -243,7 +318,8 @@ const mapStateToProps = (state) => {
   return {
     events: state.events,
     activeField: state.activeField,
-    activeEventId: state.activeEventId
+    activeEventId: state.activeEventId,
+    plannerFocus: state.plannerFocus
   }
 }
 
