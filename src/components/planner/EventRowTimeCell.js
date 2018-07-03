@@ -174,25 +174,6 @@ class EventRowTimeCell extends Component {
     }
   }
 
-  // handleArrowKeyDown (key) {
-  //   const { columnState, events, day, eventIndex } = this.props
-  //   if (key === 37) {
-  //     this.props.changeActiveField(eventPropertyNames[columnState[columnState.length - 1].name])
-  //     this.cell.blur()
-  //   } else if (key === 39) {
-  //     this.props.changeActiveField(eventPropertyNames[columnState[0].name])
-  //     this.cell.blur()
-  //   } else if (key === 38) {
-  //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex - 1]
-  //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-  //     this.cell.blur()
-  //   } else if (key === 40) {
-  //     const newActiveEvent = events.events.filter(event => event.startDay === day)[eventIndex + 1]
-  //     newActiveEvent && this.props.updateActiveEvent(newActiveEvent.id)
-  //     this.cell.blur()
-  //   }
-  // }
-
   // fired by div, not input field
   handleOnFocus () {
     this.props.updateEvent(null, null, null, false)
