@@ -51,7 +51,9 @@ class EventRowInfoCell extends Component {
     this.state = {
       editorState: EditorState.createWithContent(value),
       initialValue: value,
-      cellClickedTwice: false
+      cellClickedTwice: false,
+      editorFocus: false,
+      cellFocus: false
     }
 
     this.handleKeyCommand = this.handleKeyCommand.bind(this)
@@ -76,9 +78,13 @@ class EventRowInfoCell extends Component {
       // check whether the click is within the text, or within the cell but outside of the text, if outside of text, move cursor to the end
       if (e.target.className === 'planner-table-cell-container') {
         this.editor.focus()
-        this.setState({editorState: EditorState.moveFocusToEnd(this.state.editorState)})
+        this.setState({
+          editorState: EditorState.moveFocusToEnd(this.state.editorState),
+          cellFocus: true
+        })
       } else {
         this.editor.focus()
+        this.setState({cellFocus: true})
       }
     }
   }
@@ -102,24 +108,26 @@ class EventRowInfoCell extends Component {
     //   }
     // }
     if (nextProps.activeEventId !== this.props.activeEventId || nextProps.activeField !== this.props.activeField) {
-      if (nextProps.activeEventId === id && nextProps.activeField === property && !this.state.editorFocus) {
+      if (nextProps.activeEventId === id && nextProps.activeField === property) {
+        // dont check if !editorFocus
         // if active cell changes + this is the newest active cell
         if (this.props.plannerFocus !== 'rightbar') {
           console.log('active cell changed and right bar is not focused')
           this.cell.focus()
+          this.setState({cellFocus: true})
         }
       }
     }
 
-    if (nextProps.plannerFocus !== this.props.plannerFocus) {
-      if (nextProps.plannerFocus !== 'rightbar') {
-        if (nextProps.activeEventId === id && nextProps.activeField === property) {
-          console.log('area focus has changed')
-          this.cell.focus()
-          // THIS IS NOT FOCUSING AFTER CLICKING AWAY FROM RIGHT BAR??
-        }
-      }
-    }
+    // if (nextProps.plannerFocus !== this.props.plannerFocus) {
+    //   if (nextProps.plannerFocus !== 'rightbar') {
+    //     if (nextProps.activeEventId === id && nextProps.activeField === property) {
+    //       console.log('area focus has changed')
+    //       this.cell.focus()
+    //       // THIS IS NOT FOCUSING AFTER CLICKING AWAY FROM RIGHT BAR??
+    //     }
+    //   }
+    // }
     // if (nextProps.activeEventId !== this.props.activeEventId || nextProps.activeField !== this.props.activeField) {
     //   console.log('activeEventId changed')
     //   this.setState({cellClickedTwice: false})
@@ -144,19 +152,22 @@ class EventRowInfoCell extends Component {
   }
 
   handleOnFocus (e) {
+    console.log('cell on focus')
     const property = eventPropertyNames[this.props.column]
     this.props.changeActiveField(property)
     if (this.props.activeEventId !== this.props.id) {
       this.props.updateActiveEvent(this.props.id)
     }
+    this.setState({cellFocus: true})
   }
 
   handleCellClick (e) {
     // const property = eventPropertyNames[this.props.column]
     if (!this.state.cellClickedTwice) {
-      this.setState({cellClickedTwice: true, editorFocus: true})
+      this.setState({cellClickedTwice: true, editorFocus: true, cellFocus: true})
     } else {
       this.focus(e)
+      this.setState({cellFocus: true})
     }
   }
 
@@ -223,11 +234,12 @@ class EventRowInfoCell extends Component {
         return e.name === currentColumnName
       })
       if (currentColumnIndex >= 1) {
-        console.log('can go further right to', eventPropertyNames[this.props.columnState[currentColumnIndex - 1].name])
+        console.log('can go further left to', eventPropertyNames[this.props.columnState[currentColumnIndex - 1].name])
         this.props.changeActiveField(eventPropertyNames[this.props.columnState[currentColumnIndex - 1].name])
         console.log('after change active field', this.props)
       } else {
-        console.log('first col')
+        console.log('first non-time col')
+        this.props.changeActiveField('startTime')
       }
     }
     if (e.key === 'ArrowDown') {
@@ -279,6 +291,14 @@ class EventRowInfoCell extends Component {
   //   }
   // }
 
+  handleCellOnBlur (e) {
+    console.log('cell on blur e', e)
+    // blur can be clicked outside of cell, or click on input inside cell
+    // this.setState({cellClickedTwice: false, editorFocus: false})
+    this.setState({cellFocus: false})
+    // editor on focus should set cellFocus back to true
+  }
+
   handleOnBlur () {
     const { id, column } = this.props
     const property = eventPropertyNames[column]
@@ -320,7 +340,7 @@ class EventRowInfoCell extends Component {
     const { column, id } = this.props
     const { events } = this.props.events
     const property = eventPropertyNames[column]
-    const isActive = this.props.activeEventId === id && this.props.activeField === property
+    const isActive = this.props.activeEventId === id && this.props.activeField === property && this.state.cellFocus
     const eventCurrency = getEventProp('Currency', events.filter(event => event.id === id)[0])
 
     if (isActive) {
@@ -329,7 +349,7 @@ class EventRowInfoCell extends Component {
     // const value = getEventProp(column, events.filter(event => event.id === id)[0])
 
     return (
-      <div tabIndex='1' ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive)} onFocus={(e) => this.handleOnFocus(e)} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
+      <div tabIndex='1' ref={(element) => { this.cell = element }} className='planner-table-cell-container' onKeyDown={(e) => this.handleKeyDown(e, isActive)} onFocus={(e) => this.handleOnFocus(e)} onBlur={e => this.handleCellOnBlur()} onClick={(e) => this.handleCellClick(e)} onContextMenu={(e) => this.handleOnFocus(e)} style={{minHeight: '83px', display: 'flex', alignItems: 'center', wordBreak: 'break-word', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)', padding: '8px'}}>
         {column === 'Price' && <select disabled={!isActive} onChange={(e) => this.handleCurrencySelect(e)} value={eventCurrency || ''} style={{backgroundColor: 'transparent', border: 'none'}}>
           {allCurrenciesList().map((currency, i) => {
             return <option key={i} value={currency}>{currency}</option>

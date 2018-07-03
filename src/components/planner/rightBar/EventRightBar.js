@@ -203,8 +203,9 @@ class EventRightBar extends Component {
   }
 
   handleClickOutside (evt) {
-    console.log('clicking outside of right bar', evt.target)
-    evt.preventDefault() // prevent click to focus on dom nodes. but cant change to other cell when right is open
+    // console.log('clicking outside of right bar', evt.target)
+    // evt.preventDefault()
+    // prevent click to focus on dom nodes. but cant change to other cell when right is open
     // if else to check click target is original focus?
     // evt.stopPropagation()
     this.props.setFocusTo('')

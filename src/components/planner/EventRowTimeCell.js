@@ -24,7 +24,8 @@ class EventRowTimeCell extends Component {
     super(props)
 
     this.state = {
-      editorFocus: false // what does this control?
+      editorFocus: false,
+      cellFocus: false
     }
   }
 
@@ -60,35 +61,36 @@ class EventRowTimeCell extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.activeEventId !== this.props.activeEventId) {
+    if (prevProps.activeEventId !== this.props.activeEventId || prevProps.activeField !== this.props.activeField) {
       if (this.props.activeEventId === this.props.id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')) {
         console.log('this is correct row n col')
         if (this.props.plannerFocus !== 'rightbar') {
           console.log('active cell changed, right bar not focused')
           this.cell.focus()
-          this.editor.focus()
-        }
-      }
-    }
-
-    if (prevProps.plannerFocus !== this.props.plannerFocus) {
-      if (this.props.plannerFocus !== 'rightbar') {
-        // console.log('planner focus changed, not rightbar')
-        // console.log('activefield', nextProps.activeField)
-        if (this.props.activeEventId === this.props.id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')) {
-          console.log('correct activeEventId, activeField is time, this cell id is', this.props.id)
-          // CLICKING IN RIGHT BAR, THEN BACK INTO TIME CELL EXACTLY IS OK. CLICKING OUTSIDE OF TIME CELL FULFILS THIS IF, BUT FOCUS IS STILL NOT IN THIS CELL. FOCUS IS ON PARENT DIV MAYBE?
-          console.log('ref', this.cell)
-          this.cell.focus()
           // this.editor.focus()
-          // WHERE DID THE FOCUS GO
-          console.log('hasFocus', document.hasFocus(), 'activeElement', document.activeElement)
-
-          // check if they are the same nodes
-          console.log(document.activeElement === this.cell)
+          this.setState({cellFocus: true})
         }
       }
     }
+
+    // if (prevProps.plannerFocus !== this.props.plannerFocus) {
+    //   if (this.props.plannerFocus !== 'rightbar') {
+    //     // console.log('planner focus changed, not rightbar')
+    //     // console.log('activefield', nextProps.activeField)
+    //     if (this.props.activeEventId === this.props.id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')) {
+    //       console.log('correct activeEventId, activeField is time, this cell id is', this.props.id)
+    //       // CLICKING IN RIGHT BAR, THEN BACK INTO TIME CELL EXACTLY IS OK. CLICKING OUTSIDE OF TIME CELL FULFILS THIS IF, BUT FOCUS IS STILL NOT IN THIS CELL. FOCUS IS ON PARENT DIV MAYBE?
+    //       // console.log('ref', this.cell)
+    //       this.cell.focus()
+    //       // this.editor.focus()
+    //       // WHERE DID THE FOCUS GO
+    //       // console.log('hasFocus', document.hasFocus(), 'activeElement', document.activeElement)
+    //
+    //       // check if they are the same nodes
+    //       // console.log(document.activeElement === this.cell)
+    //     }
+    //   }
+    // }
   }
 
   // componentWillReceiveProps (nextProps) {
@@ -152,9 +154,6 @@ class EventRowTimeCell extends Component {
     if (e.key === 'ArrowDown') {
       // console.log('e', e)
       // go to next row if possible
-      // e.preventDefault()
-      // e.stopPropagation()
-      // e.nativeEvent.stopImmediatePropagation()
       let thisEventIndex = this.props.events.events.findIndex(e => {
         return e.id === this.props.id
       }) + 1
@@ -194,6 +193,7 @@ class EventRowTimeCell extends Component {
   //   }
   // }
 
+  // fired by div, not input field
   handleOnFocus () {
     this.props.updateEvent(null, null, null, false)
     this.props.changeActiveField('startTime')
@@ -202,20 +202,28 @@ class EventRowTimeCell extends Component {
       // this.props.setRightBarFocusedTab('event')
       this.props.updateActiveEvent(this.props.id)
     }
+    this.setState({cellFocus: true})
+  }
+
+  handleCellOnBlur () {
+    console.log('cell on blur')
+    // need if else to check if the focus is moving from cell into input
+    this.setState({cellFocus: false})
   }
 
   render () {
     const { id } = this.props
     const { events } = this.props.events
-    const isActive = this.props.activeEventId === id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime')
+    const isActive = this.props.activeEventId === id && (this.props.activeField === 'startTime' || this.props.activeField === 'endTime') && this.state.cellFocus
+
     const startTime = events.filter(event => event.id === id)[0].startTime
     const endTime = events.filter(event => event.id === id)[0].endTime
     return (
-      <div tabIndex='1' ref={(element) => { this.cell = element }} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onFocus={() => this.handleOnFocus()} className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
-        <input tabIndex='1' disabled={!isActive} type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true})} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={() => this.setState({editorFocus: false})} />
+      <div tabIndex='1' ref={(element) => { this.cell = element }} onKeyDown={(e) => this.handleKeyDown(e, isActive, this.state.editorFocus)} onFocus={() => this.handleOnFocus()} onBlur={() => this.handleCellOnBlur()} className='planner-table-cell' style={{cursor: 'text', minHeight: '83px', display: 'flex', flexDirection: 'column', alignItems: 'center', wordBreak: 'break-word', justifyContent: 'center', outline: isActive ? '1px solid #ed685a' : 'none', color: isActive ? '#ed685a' : 'rgba(60, 58, 68, 1)'}}>
+        <input tabIndex='1' type='time' value={startTime} ref={(element) => { this.editor = element }} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true, cellFocus: true})} onChange={(e) => this.handleChange(e, 'startTime')} onBlur={() => this.setState({editorFocus: false})} />
         {endTime && <React.Fragment>
           <div style={{height: '10px', borderRight: '1px solid rgba(60, 58, 68, 1)'}} />
-          <input tabIndex='1' disabled={!isActive} type='time' value={endTime} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true})} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={() => this.setState({editorFocus: false})} />
+          <input tabIndex='1' type='time' value={endTime} style={{outline: 'none', textAlign: 'center', backgroundColor: 'transparent'}} onFocus={() => this.setState({editorFocus: true, cellFocus: true})} onChange={(e) => this.handleChange(e, 'endTime')} onBlur={() => this.setState({editorFocus: false})} />
         </React.Fragment>}
       </div>
     )

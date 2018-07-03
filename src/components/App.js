@@ -29,7 +29,7 @@ const lock = new Lock()
 class App extends Component {
 
   checkFocus () {
-    console.log('does doc have focus?', document.hasFocus())
+    // console.log('does doc have focus?', document.hasFocus())
     console.log('focused el', document.activeElement)
   }
 
