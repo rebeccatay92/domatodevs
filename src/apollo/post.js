@@ -31,6 +31,9 @@ export const findPost = gql`
       startDay
       startTime
       endTime
+      currency
+      cost
+      bookingService
       media {
         id
         PostId
@@ -71,6 +74,9 @@ export const createPost = gql`
       startDay
       startTime
       endTime
+      currency
+      cost
+      bookingService
       BlogId
       blog {
         id
@@ -114,6 +120,9 @@ export const updatePost = gql`
     $startDay: Int,
     $startTime: Int,
     $endTime: Int,
+    $currency: String,
+    $cost: Int,
+    $bookingService: String,
     $hashtags: [String],
     $media: [updatePostMediaInput]
   ) {
@@ -129,6 +138,9 @@ export const updatePost = gql`
       startDay: $startDay,
       startTime: $startTime,
       endTime: $endTime,
+      currency: $currency,
+      cost: $cost,
+      bookingService: $bookingService,
       hashtags: $hashtags,
       media: $media
     ) {

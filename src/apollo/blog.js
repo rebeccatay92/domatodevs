@@ -114,6 +114,9 @@ export const queryBlog = gql`
           startDay
           startTime
           endTime
+          currency
+          cost
+          bookingService
           media {
             id
             loadSequence
