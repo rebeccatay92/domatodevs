@@ -108,6 +108,12 @@ class PostTextContent extends Component {
                   <div style={{width: '100%'}}>
                     <hr style={{marginBottom: '8px', marginTop: '54px'}} />
                   </div>
+                  <div>
+                    <i style={{verticalAlign: 'middle'}} className='material-icons'>add_to_photos</i><span style={{verticalAlign: 'middle'}}>Add to Bucket</span>
+                  </div>
+                  <div style={{width: '100%'}}>
+                    <hr style={{marginBottom: '8px', marginTop: '8px'}} />
+                  </div>
                   <div style={{marginBottom: '56px'}}>
                     <Editor editorState={EditorState.createWithContent(convertFromRaw(JSON.parse(page.Post.textContent)))} readOnly />
                   </div>
