@@ -17,6 +17,7 @@ class ReadPage extends Component {
     this.state = {
       // allPages: [],
       // currentPage: 0
+      showSaveToBucketMenu: false
     }
   }
 
@@ -98,6 +99,29 @@ class ReadPage extends Component {
               <span>Current page: {this.props.pages.activePostIndex}</span>
               <span>type: {this.props.pages.pagesArr[this.props.pages.activePostIndex].type}</span>
             </React.Fragment>
+          }
+        </div>
+
+        <div style={{position: 'relative', zIndex: 999, border: '1px solid red'}}>
+          <button onClick={() => this.setState({showSaveToBucketMenu: !this.state.showSaveToBucketMenu})}>SAVE TO BUCKET</button>
+          {this.state.showSaveToBucketMenu &&
+            <div style={{width: '336px', height: '181px', background: 'white', border: '1px solid rgb(219, 219, 219)', position: 'absolute', left: '50px', padding: '12px', boxShadow: '0 3px 6px rgba(0, 0, 0, 0.16)'}}>
+              <h6 style={{margin: 0, fontFamily: 'Roboto, sans-serif', fontSize: '16px', fontWeight: 400, lineHeight: '26px', color: 'rgb(95, 93, 102)'}}>Write a note</h6>
+              <input type='text' placeholder={'Notes'} style={{width: '100%', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '13px', lineHeight: '26px', color: 'rgb(60, 58, 68)', outline: 'none', borderBottom: '1px solid rgb(219, 219, 219)'}} />
+              <h6 style={{margin: '14px 0 0 0', fontFamily: 'Roboto, sans-serif', fontSize: '16px', fontWeight: 400, lineHeight: '26px', color: 'rgb(95, 93, 102)'}}>Event</h6>
+              <input type='text' placeholder={'Type of event'} style={{display: 'inline-block', width: '213px', fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '13px', lineHeight: '26px', color: 'rgb(60, 58, 68)', outline: 'none', borderBottom: '1px solid rgb(219, 219, 219)'}} />
+              <select style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '13px', border: 'none', outline: 'none', color: 'rgb(60, 58, 68)', background: 'transparent'}}>
+                <option value='Location'>Location</option>
+                <option value='Activity'>Activity</option>
+                <option value='Food'>Food</option>
+                <option value='Lodging'>Lodging</option>
+                <option value='Flight'>Flight</option>
+                <option value='Transport'>Transport</option>
+              </select>
+
+              <button style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '13px', marginTop: '17px', background: 'transparent', border: 'none', color: 'rgb(250, 51, 82)', outline: 'none'}}>Save</button>
+              <button style={{fontFamily: 'Roboto, sans-serif', fontWeight: 400, fontSize: '13px', marginTop: '17px', background: 'transparent', border: 'none', color: 'rgb(60, 58, 68)', outline: 'none'}}>Cancel</button>
+            </div>
           }
         </div>
         {/* TEXT CONTENT COMPONENT RECEIVES 1 PAGE ONLY, INSTEAD OF ENTIRE ARR. EITHER HOMEPAGE, OR HEADER, OR POST. */}

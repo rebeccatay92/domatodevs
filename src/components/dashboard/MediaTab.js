@@ -107,7 +107,7 @@ class MediaTab extends Component {
               <i className='material-icons' style={styles.albumListHeaderIcon}>settings</i>
             </div>
 
-            <div style={styles.albumListContainer}>
+            <div className={'dashboardDivs'} style={styles.albumListContainer}>
               {mediaConsole.albums.map((album, i) => {
                 let isFocusedAlbum = mediaConsole.focusedAlbumId === album.id
                 return (

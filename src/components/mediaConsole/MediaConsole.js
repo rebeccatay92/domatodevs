@@ -538,7 +538,7 @@ class MediaConsole extends Component {
               </div>
 
               {/* DIV TO CONTAIN ALBUM NAMES WITH BORDER LEFT */}
-              <div style={styles.albumListContainer}>
+              <div className={'dashboardDivs'} style={styles.albumListContainer}>
                 {this.props.mediaConsole.albums.map((album, i) => {
                   if (focusedAlbum) {
                     var isFocusedAlbum = album.id === focusedAlbum.id

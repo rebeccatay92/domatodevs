@@ -21,7 +21,7 @@ class UserDashboardPage extends Component {
         {tab: 'itineraries', text: 'Itineraries'},
         {tab: 'media', text: 'Media'},
         {tab: 'bucket', text: 'Bucket'},
-        {tab: 'savedArticles', text: 'Saved Articles'},
+        // {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
       focusedTab: 'itineraries',

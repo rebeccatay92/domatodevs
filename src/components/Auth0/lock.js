@@ -64,7 +64,9 @@ class Lock {
         // console.log('lock fetch backend', userProfile)
 
         // set redux state when backend returns
-        store.dispatch(setUserProfile(userProfile))
+        if (userProfile) {
+          store.dispatch(setUserProfile(userProfile))
+        }
         // return userProfile
       })
       .catch(err => {
