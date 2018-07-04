@@ -5,10 +5,45 @@ import { Editor, EditorState, convertFromRaw } from 'draft-js'
 import { changeActivePost } from '../../actions/readActions'
 
 class PostTextContent extends Component {
+  constructor (props) {
+    super(props)
+
+    this.handleScroll = this.handleScroll.bind(this)
+  }
+
+  componentDidMount () {
+    this.container.addEventListener('scroll', this.handleScroll)
+  }
+
+  componentWillUnmount () {
+    this.container.removeEventListener('scroll', this.handleScroll)
+  }
+
+  handleScroll (e) {
+    function offset (el) {
+      const rect = el.getBoundingClientRect()
+      return { top: rect.top }
+    }
+    const pages = this.props.pages.pagesArr.length
+    let activePostIndex = 0
+    var hiddenElement = document.querySelector('#hidden-element')
+    for (var i = 0; i < pages; i++) {
+      var pageDiv = document.querySelector(`#page-${i}`)
+      if (offset(hiddenElement).top - offset(pageDiv).top > 0) {
+        activePostIndex = i
+      }
+    }
+    if (this.props.pages.activePostIndex !== activePostIndex) {
+      this.props.changeActivePost(activePostIndex)
+    }
+  }
+
   render () {
     // const post = this.props.pages.pagesArr[this.props.pages.activePostIndex]
+    // purpose of hidden element is to determine the position of the halfway point on the user's viewport
     return (
-      <div style={{width: '30vw', height: 'calc(100vh - 52px)', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '0 32px', overflowY: 'scroll', boxSizing: 'border-box'}}>
+      <div ref={(el) => { this.container = el }} className='postTextContentContainer' style={{width: '30vw', height: 'calc(100vh - 52px)', display: 'inline-block', verticalAlign: 'top', position: 'relative', backgroundColor: 'white', padding: '0 32px', marginRight: '4px', overflowY: 'scroll', boxSizing: 'border-box'}}>
+        <div id='hidden-element' style={{position: 'fixed', top: '50vh'}} />
         {this.props.pages.pagesArr.map((page, i) => {
           if (page.type === 'Homepage') {
             const dateCreatedString = moment(page.dateCreated).format('D MMM YYYY')
@@ -16,7 +51,7 @@ class PostTextContent extends Component {
               <div style={{width: '100%', minHeight: '100%', display: 'flex', alignItems: 'center'}} key={i}>
                 <div>
                   <div>
-                    <span style={{fontFamily: 'Roboto', fontSize: '48px', fontWeight: '100', textTransform: 'uppercase'}}>{page.blogTitle}</span>
+                    <span id={`page-${i}`} style={{fontFamily: 'Roboto', fontSize: '48px', fontWeight: '100', textTransform: 'uppercase'}}>{page.blogTitle}</span>
                   </div>
                   <div>
                     <div style={{maxWidth: '15%', display: 'inline-block', maxHeight: '15%'}}>
@@ -42,7 +77,7 @@ class PostTextContent extends Component {
             return (
               <div style={{width: '100%', minHeight: '100%', display: 'flex', alignItems: 'center'}} key={i}>
                 <div>
-                  <span style={{fontFamily: 'Roboto', fontSize: '48px', fontWeight: '100', textTransform: 'uppercase'}}>{page.BlogHeading.title}</span>
+                  <span id={`page-${i}`} style={{fontFamily: 'Roboto', fontSize: '48px', fontWeight: '100', textTransform: 'uppercase'}}>{page.BlogHeading.title}</span>
                 </div>
               </div>
             )
@@ -51,15 +86,23 @@ class PostTextContent extends Component {
               <div style={{width: '100%', minHeight: '100%', display: 'flex', alignItems: 'center'}} key={i}>
                 <div>
                   <div>
-                    <span style={{fontFamily: 'Roboto', fontSize: '48px', fontWeight: '100', textTransform: 'uppercase'}}>{page.Post.location ? page.Post.location.name : page.Post.eventType ? page.Post.eventType : page.Post.title}</span>
+                    <span id={`page-${i}`} style={{fontFamily: 'Roboto', fontSize: '48px', fontWeight: '100', textTransform: 'uppercase'}}>{page.Post.location ? page.Post.location.name : page.Post.eventType ? page.Post.eventType : page.Post.title}</span>
                   </div>
                   <div style={{width: '50%'}}>
-                    <hr style={{marginBottom: '8px', marginTop: '8px'}} />
+                    <hr style={{marginBottom: 0, marginTop: '8px'}} />
                   </div>
                   <div>
                     {page.Post.eventType && <div>
-                      <span style={{padding: '8px', backgroundColor: 'rgb(245, 245, 245)', marginRight: '8px', display: 'inline-block'}}>Event</span>
+                      <span style={{marginTop: '8px', padding: '8px', backgroundColor: 'rgb(245, 245, 245)', marginRight: '8px', display: 'inline-block'}}>Event</span>
                       <span>{page.Post.eventType}</span>
+                    </div>}
+                    {page.Post.cost && <div>
+                      <span style={{marginTop: '8px', padding: '8px', backgroundColor: 'rgb(245, 245, 245)', marginRight: '8px', display: 'inline-block'}}>Cost</span>
+                      <span>{page.Post.currency} {page.Post.cost}</span>
+                    </div>}
+                    {page.Post.bookingService && <div>
+                      <span style={{marginTop: '8px', padding: '8px', backgroundColor: 'rgb(245, 245, 245)', marginRight: '8px', display: 'inline-block'}}>Service</span>
+                      <span>{page.Post.bookingService}</span>
                     </div>}
                   </div>
                   <div style={{width: '100%'}}>

@@ -109,6 +109,9 @@ export const queryBlog = gql`
             name
           }
           title
+          currency
+          cost
+          bookingService
           eventType
           bucketCategory
           startDay
