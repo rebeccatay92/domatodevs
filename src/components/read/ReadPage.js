@@ -49,8 +49,9 @@ class ReadPage extends Component {
     if (nextProps.data.findBlog !== this.props.data.findBlog) {
       // console.log('willreceiveprops pages', nextProps.data.findBlog.pages)
       let findBlog = nextProps.data.findBlog
+      console.log(findBlog);
       let allPagesArr = [{
-        type: 'homepage',
+        type: 'Homepage',
         blogTitle: findBlog.title,
         author: findBlog.user.username,
         hashtags: findBlog.hashtags,
@@ -103,7 +104,7 @@ class ReadPage extends Component {
         {/* TEXT CONTENT COMPONENT RECEIVES 1 PAGE ONLY, INSTEAD OF ENTIRE ARR. EITHER HOMEPAGE, OR HEADER, OR POST. */}
         {/* DOM WANTS TEXT CONTENT TO BE CONTINOUS SCROLL LIKE MSWORD. RENDER ALL PAGES AT ONCE? */}
         {this.props.pages.pagesArr.length &&
-          <PostTextContent page={this.props.pages.pagesArr[this.props.pages.activePostIndex]} />
+          <PostTextContent />
         }
 
         {/* SCROLLABLE POSTS LIST COMPONENT */}
