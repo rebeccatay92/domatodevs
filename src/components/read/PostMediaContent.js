@@ -93,7 +93,7 @@ class PostMediaContent extends Component {
     //   emptySpaces.push(<div key={i} style={{display: 'inline-block', width: 'calc(8.1vw - 6.4px)', height: 'calc(100vh - 75vh - 84px)', marginBottom: '8px', verticalAlign: 'top'}} />)
     // }
     return (
-      <div style={{display: 'inline-block', width: '70vw', height: 'calc(100vh - 52px)', border: '1px solid blue', boxSizing: 'border-box'}}>
+      <div style={{display: 'inline-block', width: '70vw', height: 'calc(100vh - 52px)', boxSizing: 'border-box'}}>
         {!this.props.carousel && this.props.medium &&
           <img src={this.props.medium.imageUrl} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
         }
