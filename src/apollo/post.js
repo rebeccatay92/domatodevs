@@ -121,7 +121,7 @@ export const updatePost = gql`
     $startTime: Int,
     $endTime: Int,
     $currency: String,
-    $cost: Int,
+    $cost: Float,
     $bookingService: String,
     $hashtags: [String],
     $media: [updatePostMediaInput]
