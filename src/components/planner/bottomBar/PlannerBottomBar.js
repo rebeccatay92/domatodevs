@@ -4,6 +4,7 @@ import BottomBarItineraryInfoPanel from './BottomBarItineraryInfoPanel'
 import { connect } from 'react-redux'
 import { switchToTableView, switchToMapView } from '../../../actions/planner/plannerViewActions'
 import { updateActiveEvent } from '../../../actions/planner/activeEventActions'
+import { updateItinerary } from '../../../actions/planner/itineraryActions'
 
 import { graphql, compose } from 'react-apollo'
 import { updateItineraryDetails, queryItinerary } from '../../../apollo/itinerary'
@@ -68,6 +69,25 @@ class PlannerBottomBar extends Component {
     })
   }
 
+  handleAddDay () {
+    const initialDays = this.props.itineraryDetails.days
+
+    this.props.updateItinerary('days', initialDays + 1)
+
+    this.props.updateItineraryDetails({
+      variables: {
+        id: this.props.itineraryDetails.id,
+        days: initialDays + 1
+      },
+      refetchQueries: [{
+        query: queryItinerary,
+        variables: {
+          id: this.props.itineraryDetails.id
+        }
+      }]
+    })
+  }
+
   render () {
     // console.log('itinerary details', this.props.itineraryDetails)
     return (
@@ -82,7 +102,7 @@ class PlannerBottomBar extends Component {
             <span>Switch to planner</span>
           </div>
         }
-        <div key={'plannerBottomBarTab3'} style={styles.tabContainer}>
+        <div key={'plannerBottomBarTab3'} style={styles.tabContainer} onClick={() => this.handleAddDay()}>
           <span>Add Day</span>
         </div>
         <div key={'plannerBottomBarTab4'} style={styles.tabContainer}>
@@ -116,6 +136,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     updateActiveEvent: (id) => {
       dispatch(updateActiveEvent(id))
+    },
+    updateItinerary: (field, value) => {
+      dispatch(updateItinerary(field, value))
     }
   }
 }
