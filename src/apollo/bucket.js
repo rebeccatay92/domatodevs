@@ -62,7 +62,7 @@ export const findBucket = gql`
 
 export const createBucket = gql`
   mutation createBucket(
-    $UserId: ID!,
+    # $UserId: ID!,
     $LocationId: ID!,
     $bucketCategory: String,
     $eventType: String,
@@ -70,7 +70,7 @@ export const createBucket = gql`
     $thumbnailUrl: String
   ) {
     createBucket(
-      UserId: $UserId,
+      # UserId: $UserId,
       LocationId: $LocationId,
       bucketCategory: $bucketCategory,
       eventType: $eventType,

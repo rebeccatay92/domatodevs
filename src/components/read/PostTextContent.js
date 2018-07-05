@@ -3,11 +3,17 @@ import { connect } from 'react-redux'
 import moment from 'moment'
 import { Editor, EditorState, convertFromRaw } from 'draft-js'
 import { changeActivePost } from '../../actions/readActions'
+import SaveToBucketMenu from './SaveToBucketMenu'
 
 class PostTextContent extends Component {
   constructor (props) {
     super(props)
-
+    this.state = {
+      showSaveToBucketMenu: false
+      // notes: '',
+      // eventType: '',
+      // bucketCategory: 'Location'
+    }
     this.handleScroll = this.handleScroll.bind(this)
   }
 
@@ -108,8 +114,13 @@ class PostTextContent extends Component {
                   <div style={{width: '100%'}}>
                     <hr style={{marginBottom: '8px', marginTop: '54px'}} />
                   </div>
-                  <div>
-                    <i style={{verticalAlign: 'middle'}} className='material-icons'>add_to_photos</i><span style={{verticalAlign: 'middle'}}>Add to Bucket</span>
+                  <div style={{position: 'relative'}}>
+                    <div className='ignore-react-onclickoutside' style={{cursor: 'pointer', width: 'auto'}} onClick={() => this.setState({showSaveToBucketMenu: i})}>
+                      <i style={{verticalAlign: 'middle'}} className='material-icons'>add_to_photos</i><span style={{verticalAlign: 'middle'}}>Add to Bucket</span>
+                    </div>
+                    {this.state.showSaveToBucketMenu === i &&
+                      <SaveToBucketMenu closeSaveToBucketMenu={() => this.setState({showSaveToBucketMenu: false})} post={page.Post} eventType={page.Post.eventType} />
+                    }
                   </div>
                   <div style={{width: '100%'}}>
                     <hr style={{marginBottom: '8px', marginTop: '8px'}} />

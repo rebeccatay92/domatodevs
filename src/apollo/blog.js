@@ -106,7 +106,9 @@ export const queryBlog = gql`
           id
           textContent
           location {
+            id
             name
+            verified
           }
           title
           currency
