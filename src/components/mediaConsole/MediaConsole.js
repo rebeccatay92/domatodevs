@@ -595,7 +595,7 @@ class MediaConsole extends Component {
             <div style={styles.rightColumnContainer}>
 
               {/* TOP SECTION -> THUMBNAILS */}
-              <div style={styles.thumbnailsSectionContainer}>
+              <div className='dashboardDivs' style={styles.thumbnailsSectionContainer}>
                 {!this.state.isAddYoutubeComponentOpen &&
                   <div style={styles.addMediumContainer}>
                     <label key={'mediaConsoleAddPhotoButton'} style={styles.addMediumButton}>

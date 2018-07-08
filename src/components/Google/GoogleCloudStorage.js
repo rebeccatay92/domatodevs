@@ -45,6 +45,7 @@ class GoogleCloudStorage {
       'iat': Date.now() / 1000
     }
     let privateKey = JSON.parse(process.env.REACT_APP_OAUTH_PRIVATE_KEY)
+    // let privateKey = process.env.REACT_APP_OAUTH_PRIVATE_KEY
     var token = jwt.sign(payload, privateKey, {algorithm: 'RS256'})
 
     var dataString = `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${token}`
