@@ -30,7 +30,8 @@ import { bucketListReducer } from './reducers/planner/bucketListReducer'
 import { ApolloClient, createNetworkInterface } from 'react-apollo'
 
 const networkInterface = createNetworkInterface({
-  uri: 'http://localhost:3001/graphql'
+  // uri: 'http://localhost:3001/graphql'
+  uri: 'https://domatodevsbackend.herokuapp.com/graphql'
 })
 
 networkInterface.use([{

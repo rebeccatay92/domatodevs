@@ -5,13 +5,30 @@ import { store } from '../../store'
 import { setUserProfile } from '../../actions/userActions'
 
 class Lock {
+  // lock = new Auth0Lock(
+  //   process.env.REACT_APP_AUTH0_CLIENT_ID,
+  //   process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
+  //   {
+  //     auth: {
+  //       redirectUrl: 'http://localhost:3000',
+  //       audience: 'http://localhost:3001',
+  //       autoParseHash: true,
+  //       responseType: 'token id_token',
+  //       params: {
+  //         scope: 'openid profile email'
+  //       }
+  //     },
+  //     autoclose: true,
+  //     rememberLastLogin: true
+  //   }
+  // )
   lock = new Auth0Lock(
     process.env.REACT_APP_AUTH0_CLIENT_ID,
     process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
     {
       auth: {
         redirectUrl: 'http://localhost:3000',
-        audience: 'http://localhost:3001',
+        audience: 'https://domatodevsbackend.herokuapp.com/graphql',
         autoParseHash: true,
         responseType: 'token id_token',
         params: {
@@ -19,7 +36,6 @@ class Lock {
         }
       },
       autoclose: true,
-      // closable: true,
       rememberLastLogin: true
     }
   )
@@ -46,7 +62,7 @@ class Lock {
   // fetches user profile from backend and sets redux state
   fetchUserProfile () {
     if (this.isAuthenticated()) {
-      return fetch('http://localhost:3001/graphql', {
+      return fetch('https://domatodevsbackend.herokuapp.com/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +104,7 @@ class Lock {
       localStorage.setItem('expires_at', expiresAt)
       localStorage.setItem('user_id', authResult.idTokenPayload.sub)
 
-      fetch('http://localhost:3001/graphql', {
+      fetch('https://domatodevsbackend.herokuapp.com/graphql', {
         method:'POST',
         headers: {
           'Content-Type': 'application/json',
