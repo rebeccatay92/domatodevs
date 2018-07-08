@@ -27,7 +27,7 @@ class Lock {
     process.env.REACT_APP_AUTH0_CLIENT_DOMAIN,
     {
       auth: {
-        redirectUrl: 'http://localhost:3000',
+        redirectUrl: 'https://domatodevs.herokuapp.com',
         audience: 'https://domatodevsbackend.herokuapp.com/graphql',
         autoParseHash: true,
         responseType: 'token id_token',
