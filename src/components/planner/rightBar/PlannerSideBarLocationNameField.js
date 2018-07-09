@@ -10,7 +10,7 @@ import { changeActiveField } from '../../../actions/planner/activeFieldActions'
 
 import { graphql, compose } from 'react-apollo'
 import { updateEventBackend } from '../../../apollo/event'
-import { queryItinerary } from '../../../apollo/itinerary'
+// import { queryItinerary } from '../../../apollo/itinerary'
 
 import _ from 'lodash'
 
@@ -36,11 +36,11 @@ class PlannerSideBarLocationNameField extends Component {
 
     this.focus = (e) => {
       if (e.target.className === `ignoreRightBarLocation`) {
-        console.log('move focus to end')
+        // console.log('move focus to end')
         this.editor.focus()
         this.setState({editorState: EditorState.moveFocusToEnd(this.state.editorState)})
       } else {
-        console.log('focus')
+        // console.log('focus')
         this.editor.focus()
       }
     }
@@ -93,7 +93,7 @@ class PlannerSideBarLocationNameField extends Component {
 
   queryGooglePlaces (queryStr) {
     if (queryStr.length <= 2) return // dont query for useless fragments. 'eg Si'
-    console.log('query google with', queryStr)
+    // console.log('query google with', queryStr)
 
     let crossOriginUrl = `https://cors-anywhere.herokuapp.com/`
     let googlePlacesEndpoint = `${crossOriginUrl}https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${process.env.REACT_APP_GOOGLE_API_KEY}&language=en&input=${queryStr}`
@@ -199,7 +199,7 @@ class PlannerSideBarLocationNameField extends Component {
     if (oldPropsThisEvent.locationName !== nextPropsThisEvent.locationName) {
       if (this.state.overwriteContentState) {
         let nameContentState = nextPropsThisEvent.locationName
-        console.log('overwrite location name')
+        // console.log('overwrite location name')
         this.setState({
           editorState: EditorState.createWithContent(nameContentState),
           overwriteContentState: false
@@ -218,7 +218,7 @@ class PlannerSideBarLocationNameField extends Component {
 
     // need to update location name if activeEventId changes
     if (nextProps.activeEventId !== this.props.activeEventId) {
-      console.log('active event id changed')
+      // console.log('active event id changed')
       let activeEvent = nextProps.events.events.find(e => {
         return e.id === nextProps.activeEventId
       })
@@ -232,7 +232,7 @@ class PlannerSideBarLocationNameField extends Component {
 
   handleOnBlur () {
     if (!this.state.showDropdown) {
-      console.log('blur')
+      // console.log('blur')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
       })
@@ -268,7 +268,7 @@ class PlannerSideBarLocationNameField extends Component {
       }
 
       // need to send backend the most updated locationObj
-      console.log('locationDataForBackend', locationDataForBackend)
+      // console.log('locationDataForBackend', locationDataForBackend)
       let nameContentState = locationDataForBackend ? ContentState.createFromText(locationDataForBackend.name) : ContentState.createFromText('')
 
       this.props.updateEvent(this.props.id, 'locationName', nameContentState, true)

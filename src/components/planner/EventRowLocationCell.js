@@ -167,20 +167,6 @@ class EventRowLocationCell extends Component {
             locationData: locationObj
           }
         })
-        // this.props.updateEventBackend({
-        //   variables: {
-        //     id: this.props.id,
-        //     locationData: locationObj
-        //   },
-        //   refetchQueries: [{
-        //     query: queryItinerary,
-        //     variables: {
-        //       id: this.props.events.events.find(e => {
-        //         return e.id === this.props.id
-        //       }).ItineraryId
-        //     }
-        //   }]
-        // })
       })
       .catch(err => {
         console.log('err', err)
@@ -189,7 +175,7 @@ class EventRowLocationCell extends Component {
 
   // click outside of dropdown only
   handleClickOutside () {
-    console.log('click outside')
+    // console.log('click outside')
     this.setState({
       showDropdown: false,
       showSpinner: false,
@@ -250,7 +236,7 @@ class EventRowLocationCell extends Component {
     // selectLocation -> send backend manually.
     if (!this.state.showDropdown) {
       this.setState({editorFocus: false})
-      console.log('blur')
+      // console.log('blur')
       let thisEvent = this.props.events.events.find(e => {
         return e.id === this.props.id
       })
@@ -286,7 +272,7 @@ class EventRowLocationCell extends Component {
       }
 
       // need to send backend the most updated locationObj
-      console.log('locationDataForBackend', locationDataForBackend)
+      // console.log('locationDataForBackend', locationDataForBackend)
       let nameContentState = locationDataForBackend ? ContentState.createFromText(locationDataForBackend.name) : ContentState.createFromText('')
 
       this.props.updateEvent(this.props.id, 'locationName', nameContentState, false)
@@ -297,14 +283,6 @@ class EventRowLocationCell extends Component {
           id: this.props.id,
           locationData: locationDataForBackend
         }
-        // refetchQueries: [{
-        //   query: queryItinerary,
-        //   variables: {
-        //     id: this.props.events.events.find(e => {
-        //       return e.id === this.props.id
-        //     }).ItineraryId
-        //   }
-        // }]
       })
     } // close if
   }

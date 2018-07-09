@@ -61,7 +61,7 @@ class EventRightBar extends Component {
       newStartDayInt = parseInt(e.target.value)
     } else if (type === 'date') {
       // selected date prop in datepicker must be .utc(). else clicking on currently selected date returns -8 hrs from utc midnight
-      console.log('e', e)
+      // console.log('e', e)
       let unix = moment(e._d).unix()
       newStartDayInt = this.props.datesArr.indexOf(unix) + 1
     }
@@ -72,7 +72,7 @@ class EventRightBar extends Component {
     let currentStartDayInt = thisEvent.startDay
 
     if (currentStartDayInt !== newStartDayInt) {
-      console.log('currentStartDayInt', currentStartDayInt, 'new', newStartDayInt)
+      // console.log('currentStartDayInt', currentStartDayInt, 'new', newStartDayInt)
 
       let newDayEvents = this.props.events.events.filter(e => {
         return e.startDay === newStartDayInt
@@ -100,7 +100,7 @@ class EventRightBar extends Component {
         }
       })
 
-      console.log('changes', loadSequenceChanges)
+      // console.log('changes', loadSequenceChanges)
 
       // send both reqs to backend
       let updateEventBackendPromise = this.props.updateEventBackend({
@@ -177,7 +177,7 @@ class EventRightBar extends Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.confirmWindow !== this.props.confirmWindow) {
       if (!nextProps.confirmWindow.open && nextProps.confirmWindow.confirmClicked) {
-        console.log('confirm clicked')
+        // console.log('confirm clicked')
         this.deleteEvent(this.props.activeEventId)
       } else if (!nextProps.confirmWindow.open && !nextProps.confirmWindow.confirmClicked) {
         console.log('cancelled')

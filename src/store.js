@@ -50,7 +50,6 @@ const client = new ApolloClient({
 })
 
 const store = createStore(combineReducers({
-  // plannerActivities: plannerReducer,
   plannerColumns: plannerColumnReducer,
   plannerTimeline: plannerTimelineReducer,
   plannerTimelineDay: plannerTimelineDayReducer,

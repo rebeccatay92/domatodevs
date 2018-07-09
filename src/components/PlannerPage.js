@@ -10,14 +10,10 @@ import { initializeEvents } from '../actions/planner/eventsActions'
 import { initializeItineraryDetails } from '../actions/planner/itineraryActions'
 import { initializeBucketList } from '../actions/planner/bucketListActions'
 
-// import { EditorState, convertFromRaw, ContentState } from 'draft-js'
-
 import Planner from './Planner'
-
 import PlannerLeftBar from './planner/PlannerLeftBar'
 import PlannerRightBar from './planner/rightBar/PlannerRightBar'
 import PlannerBottomBar from './planner/bottomBar/PlannerBottomBar'
-
 import MapboxMap from './planner/mapbox/MapboxMap'
 
 // helpers
@@ -40,10 +36,7 @@ class PlannerPage extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    // GRAPHQL DATA FROM BACKEND.
-    // we now have two named queries to initialize
     if (!nextProps.queryItinerary.loading && nextProps.queryItinerary.findItinerary !== this.props.queryItinerary.findItinerary) {
-      // console.log('nextProps allevents', nextProps.queryItinerary.findItinerary.events)
       initializeEventsHelper(nextProps.queryItinerary.findItinerary.events, this.props.initializeEvents)
       setTimeout(() => this.props.toggleSpinner(false), 250)
 
@@ -67,20 +60,14 @@ class PlannerPage extends Component {
       this.props.initializeItineraryDetails(details)
     }
     if (!nextProps.getUserBucketList.loading && nextProps.getUserBucketList.getUserBucketList !== this.props.getUserBucketList.getUserBucketList) {
-      // console.log('bucketlist', nextProps.getUserBucketList.getUserBucketList)
       this.props.initializeBucketList(nextProps.getUserBucketList.getUserBucketList.buckets, nextProps.getUserBucketList.getUserBucketList.countries)
     }
   }
 
-  // PUBLIC VS PRIVATE ROUTE: REPLACE COMPONENTS WITH A PUBLIC FACING COMPONENT?
   render () {
-    // console.log('this.props', this.props)
     if (this.props.queryItinerary.loading) return (<h1>Loading</h1>)
     if (this.props.getUserBucketList.loading) return (<h1>Loading</h1>)
 
-    // console.log('queryItinerary', this.props.queryItinerary)
-    // console.log('owner id', this.props.queryItinerary.findItinerary.owner.id)
-    // console.log(this.props.userProfile.id)
     if (this.props.queryItinerary.findItinerary.owner.id !== this.props.userProfile.id) {
       return <h1>You are not authorized to view this itinerary</h1>
     }
@@ -120,14 +107,6 @@ class PlannerPage extends Component {
     )
   }
 }
-
-// const options = {
-//   options: props => ({
-//     variables: {
-//       id: props.match.params.itineraryId
-//     }
-//   })
-// }
 
 const mapStateToProps = (state) => {
   return {

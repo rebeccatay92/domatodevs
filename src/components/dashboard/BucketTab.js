@@ -76,7 +76,7 @@ class BucketTab extends Component {
     let bucketsByCountry = bucketList.buckets.filter(e => {
       return e.location.CountryId === this.state.focusedTabCountryId
     })
-    console.log('bucketsByCountry', bucketsByCountry)
+    // console.log('bucketsByCountry', bucketsByCountry)
 
     let finalFilteredArr
     if (this.state.visitedFilter === '') {

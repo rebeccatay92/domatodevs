@@ -26,7 +26,7 @@ class BucketRow extends Component {
   handleClickOutside () {
     if (this.state.editing && !this.props.confirmWindow.open) {
       // click outside behaviour only if user is editing. confirm window clicking is not considered outside
-      console.log('click outside. undo changes')
+      // console.log('click outside. undo changes')
       this.setState({
         editing: false,
         bucketCategory: this.props.bucket.bucketCategory,
@@ -79,7 +79,7 @@ class BucketRow extends Component {
     if (this.state.editing) {
       // only the currently editing row is the one to be deleted
       // prevents all rows from triggering?
-      console.log('send backend to delete, id is', this.props.bucket.id)
+      // console.log('send backend to delete, id is', this.props.bucket.id)
       this.props.deleteBucket({
         variables: {
           id: this.props.bucket.id
@@ -121,8 +121,7 @@ class BucketRow extends Component {
     }
     if (nextProps.confirmWindow !== this.props.confirmWindow) {
       if (!nextProps.confirmWindow.open && nextProps.confirmWindow.confirmClicked) {
-        console.log('confirm clicked')
-        // ALL THE ROWS ARE LISTENING TO THE SAME CONFIRM WINDOW. IT WILL TRIGGER DELETE FOR ALL.
+        // console.log('confirm clicked')
         this.deleteBucket()
       } else if (!nextProps.confirmWindow.open && !nextProps.confirmWindow.confirmClicked) {
         console.log('cancelled')

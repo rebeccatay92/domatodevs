@@ -30,9 +30,9 @@ class SaveToBucketMenu extends Component {
     let {location, media} = this.props.post
     let thumbnailUrl
     if (location) {
-      console.log('location id', location.id)
+      // console.log('location id', location.id)
       if (media.length) {
-        console.log('thumbnailUrl', media[0].imageUrl)
+        // console.log('thumbnailUrl', media[0].imageUrl)
         thumbnailUrl = media[0].imageUrl
       }
       let bucketObj = {
@@ -43,13 +43,13 @@ class SaveToBucketMenu extends Component {
         bucketCategory: this.state.bucketCategory,
         thumbnailUrl: thumbnailUrl
       }
-      console.log('bucketObj', bucketObj)
+      // console.log('bucketObj', bucketObj)
 
       this.props.createBucket({
         variables: bucketObj
       })
         .then(response => {
-          console.log('repsponse', response)
+          console.log('response', response)
         })
     }
   }

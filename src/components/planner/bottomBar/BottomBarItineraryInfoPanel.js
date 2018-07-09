@@ -13,20 +13,8 @@ import { updateItinerary } from '../../../actions/planner/itineraryActions'
 import countries from '../../../data/countries.json'
 
 class BottomBarItineraryInfoPanel extends Component {
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {
-  //     name: props.itinerary.name || '',
-  //     description: props.itinerary.description || '',
-  //     days: props.itinerary.days,
-  //     startDate: props.itinerary.startDate, // unix secs
-  //     // countries: props.itinerary.countries
-  //   }
-  // }
-
   constructor (props) {
     super(props)
-
     this.state = {
       suggestions: countries.map(country => {
         return {

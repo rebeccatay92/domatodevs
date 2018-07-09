@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import { initializeBucketList, selectCountryFilter, selectCategoryFilter, selectVisitedFilter, setFocusedBucketId } from '../../../actions/planner/bucketListActions'
 import { setPopupToShow } from '../../../actions/planner/mapboxActions'
 
-// import Radium from 'radium'
 import { BucketRightBarStyles as styles } from '../../../Styles/BucketRightBarStyles'
 
 import BucketItem from './BucketItem'

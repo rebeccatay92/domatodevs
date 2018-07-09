@@ -596,9 +596,6 @@ class MapboxMap extends Component {
   onCustomMarkerClick () {
     if (this.props.mapbox.popupToShow !== 'custom') {
       this.props.setPopupToShow('custom')
-      // this.setState({
-      //   center: [this.state.customMarker.longitude, this.state.customMarker.latitude]
-      // })
       let newCenter = this.calculateNewCenterToFitPopup(this.state.customMarker.latitude, this.state.customMarker.longitude)
       this.setState({center: newCenter})
     } else if (this.props.mapbox.popupToShow === 'custom') {
@@ -648,7 +645,6 @@ class MapboxMap extends Component {
   }
 
   saveSearchAddress () {
-    // console.log('save address', this.state.searchMarker)
     let EventId = this.props.activeEventId
 
     let currentEvent = this.props.events.events.find(e => {
@@ -677,7 +673,6 @@ class MapboxMap extends Component {
   }
 
   saveCustomLocation () {
-    console.log('custom marker', this.state.customMarker)
     let EventId = this.props.activeEventId
     this.props.updateEventBackend({
       variables: {
@@ -694,8 +689,6 @@ class MapboxMap extends Component {
   }
 
   saveCustomAddress () {
-    console.log('custom marker', this.state.customMarker)
-
     let EventId = this.props.activeEventId
     let currentEvent = this.props.events.events.find(e => {
       return e.id === EventId
@@ -813,7 +806,6 @@ class MapboxMap extends Component {
 
   togglePlotCustom () {
     let mapCanvasContainer = this.map.getCanvasContainer()
-    // console.log('canvascontainer', mapCanvasContainer)
 
     if (!this.state.plottingCustomMarker) {
       this.setState({
@@ -831,7 +823,6 @@ class MapboxMap extends Component {
   }
 
   onMapClick (map, evt) {
-    console.log('evt', evt)
     if (this.state.plottingCustomMarker) {
       this.queryMapboxReverseGeocoder(evt.lngLat.lat, evt.lngLat.lng)
     }

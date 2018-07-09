@@ -141,7 +141,7 @@ class MediaConsole extends Component {
     Promise.all(fileUploadPromiseArr)
       .then(values => {
         let mediaInputArr = values
-        console.log('mediaInputArr', mediaInputArr)
+        // console.log('mediaInputArr', mediaInputArr)
 
         // dispatch apollo req to createMedia
         this.props.createMedia({
@@ -203,7 +203,7 @@ class MediaConsole extends Component {
         // console.log('match videoid', match[2])
         let youtubeUrl = `https://www.youtube.com/embed/${match[2]}`
         let imageUrl = `http://img.youtube.com/vi/${match[2]}/0.jpg`
-        console.log('urls to send backend', youtubeUrl, imageUrl)
+        // console.log('urls to send backend', youtubeUrl, imageUrl)
         this.props.createMedia({
           variables: {
             AlbumId: this.state.id,
@@ -214,7 +214,7 @@ class MediaConsole extends Component {
           }]
         })
           .then(returning => {
-            console.log('returning', returning)
+            // console.log('returning', returning)
             this.setState({isAddYoutubeComponentOpen: false})
           })
       } else {

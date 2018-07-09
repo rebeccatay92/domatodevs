@@ -39,20 +39,6 @@ class PlannerSideBarInfoField extends Component {
     }
   }
 
-  // shouldComponentUpdate (nextProps) {
-  //   const { id, property } = this.props
-  //   const { refetch, updatedId, updatedProperty } = this.props.events
-  //   if (refetch) {
-  //     return true
-  //   } else if (updatedId === id && updatedProperty === property) {
-  //     return true
-  //   } else if ((nextProps.activeEventId === id && nextProps.activeField === property) || (this.props.activeEventId === id && this.props.activeField === property)) {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }
-
   componentWillReceiveProps (nextProps) {
     if (!nextProps.events.updatedFromSidebar) {
       const { property, id } = nextProps

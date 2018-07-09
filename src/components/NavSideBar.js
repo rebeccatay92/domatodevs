@@ -32,7 +32,7 @@ class NavSideBar extends Component {
   }
 
   componentDidMount () {
-    console.log('props', this.props.userProfile)
+    // console.log('props', this.props.userProfile)
     let itineraryList = this.props.userProfile.itineraries
     let length = itineraryList.length
 

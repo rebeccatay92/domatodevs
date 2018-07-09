@@ -143,7 +143,7 @@ class EventRowInfoCell extends Component {
 
     if (e.keyCode === 13 && !this.state.editorFocus) {
       e.preventDefault()
-      console.log('wrong enter');
+      // console.log('wrong enter')
       this.setState({editorFocus: true, cellClickedTwice: true, editorState: EditorState.moveFocusToEnd(this.state.editorState)})
     }
 

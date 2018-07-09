@@ -97,7 +97,7 @@ class Lock {
   //auth result on sign in has picture field
   onAuthenticated () {
     this.lock.on('authenticated', authResult => {
-      console.log('authResult', authResult)
+      // console.log('authResult', authResult)
       let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime())
       localStorage.setItem('access_token', authResult.accessToken)
       localStorage.setItem('id_token', authResult.idToken)
@@ -143,7 +143,7 @@ class Lock {
       if (err) {
         console.log('err', err)
       } else {
-        console.log('renew result', authResult)
+        // console.log('renew result', authResult)
         let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime())
         localStorage.setItem('access_token', authResult.accessToken)
         localStorage.setItem('id_token', authResult.idToken)
@@ -170,7 +170,7 @@ class Lock {
         this.renewToken()
       }, delay)
     } else {
-      console.log('expired. renew token now')
+      // console.log('expired. renew token now')
       this.renewToken()
     }
   }
@@ -239,7 +239,7 @@ class Lock {
         return response.json()
       })
       .then(json => {
-        console.log('ticket url', json.ticket)
+        // console.log('ticket url', json.ticket)
         window.location.assign(json.ticket)
         // window.open(json.ticket)
       })

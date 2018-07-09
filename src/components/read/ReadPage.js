@@ -50,7 +50,7 @@ class ReadPage extends Component {
     if (nextProps.data.findBlog !== this.props.data.findBlog) {
       // console.log('willreceiveprops pages', nextProps.data.findBlog.pages)
       let findBlog = nextProps.data.findBlog
-      console.log(findBlog);
+      // console.log(findBlog)
       let allPagesArr = [{
         type: 'Homepage',
         blogTitle: findBlog.title,
@@ -64,7 +64,7 @@ class ReadPage extends Component {
       }].concat(findBlog.pages)
       // page's position in arr will follow load seq and activePostIndex
       // home is 0, very fist post is load seq 1 and index 1
-      console.log('allPagesArr', allPagesArr)
+      // console.log('allPagesArr', allPagesArr)
 
       this.props.initializePosts(allPagesArr)
     }
@@ -75,11 +75,11 @@ class ReadPage extends Component {
       return <span>Loading...</span>
     }
     // console.log('findBlog', this.props.data.findBlog)
-    console.log('redux pagesArr', this.props.pages.pagesArr, 'activePostIndex', this.props.pages.activePostIndex)
+    // console.log('redux pagesArr', this.props.pages.pagesArr, 'activePostIndex', this.props.pages.activePostIndex)
 
     if (this.props.pages.pagesArr.length) {
       var page = this.props.pages.pagesArr[this.props.pages.activePostIndex]
-      console.log('page', page)
+      // console.log('page', page)
       var medium
       if (page.type === 'Post') {
         var mediaArr = page.Post.media

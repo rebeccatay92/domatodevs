@@ -21,7 +21,6 @@ class UserDashboardPage extends Component {
         {tab: 'itineraries', text: 'Itineraries'},
         {tab: 'media', text: 'Media'},
         {tab: 'bucket', text: 'Bucket'},
-        // {tab: 'savedArticles', text: 'Saved Articles'},
         {tab: 'account', text: 'Account'}
       ],
       focusedTab: 'itineraries',
@@ -92,9 +91,9 @@ class UserDashboardPage extends Component {
           return response.json()
         })
         .then(json => {
-          console.log('json', json)
+          // console.log('json', json)
           let publicUrl = `${process.env.REACT_APP_CLOUD_PUBLIC_URI}${json.name}`
-          console.log('public url', publicUrl)
+          // console.log('public url', publicUrl)
           return publicUrl
         })
         .then(publicUrl => {
