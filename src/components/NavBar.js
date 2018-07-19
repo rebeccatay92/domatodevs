@@ -12,6 +12,7 @@ class NavBar extends Component {
     var isLoggedIn = userProfile.id ? true : false
     if (isLoggedIn) {
       var profilePic = userProfile.profilePic
+      console.log('isLoggedIn')
     }
 
     return (
