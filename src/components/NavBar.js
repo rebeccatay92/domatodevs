@@ -17,7 +17,9 @@ class NavBar extends Component {
     return (
       <div style={styles.navBarContainer}>
         <div style={styles.alignLeftContainer}>
-          <i className='material-icons ignoreNavBarHamburger' style={styles.hamburgerIcon} onClick={() => this.props.toggleShowNavBar()}>menu</i>
+          {isLoggedIn &&
+            <i className='material-icons ignoreNavBarHamburger' style={styles.hamburgerIcon} onClick={() => this.props.toggleShowNavBar()}>menu</i>
+          }
           <Link to={'/'} >
             <img src={`${process.env.PUBLIC_URL}/img/marcoLogo.png`} style={styles.marcoLogo} />
           </Link>
